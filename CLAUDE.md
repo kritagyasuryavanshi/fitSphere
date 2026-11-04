@@ -24,7 +24,7 @@ Project memory lives in `MEMORY.md` here, not only in Claude's auto-memory.
 | `.claude/settings.json` | Commands that run without a permission prompt. |
 
 ## Stack
-Not chosen. See `PROJECT.md` for the proposal.
+Next.js + Vercel + Supabase + Claude API. See `PROJECT.md` and `docs/designs/fitsphere-v1.md`.
 
 ## Verification
 Each milestone in `PROJECT.md` has its own Verify line.
