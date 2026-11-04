@@ -29,7 +29,7 @@ Keep newest entries at the top of each section.
 | 2026-11-04 | Mobile-first PWA on Next.js + Vercel + Supabase. YouTube embeds for video. | House default stack. India-first and low cost. No video hosting bill before revenue. |
 | 2026-11-04 | Separate consent before health limitations go to the AI. Send minimum fields only. | Health data is sensitive. The AI provider sits outside India. |
 | 2026-11-04 | Out of v1: payments, marketplace, academies, minors, phone OTP, Hindi, native apps, 3D, live, community. | Keep v1 focused. Get real-user evidence first. |
-| 2026-11-04 | Moved the project folder to the Desktop. All project files live in `C:\Users\LENOVO\Projects\fitSphere`. | The owner wants one folder for the whole project. |
+| 2026-11-04 | All project files live in `C:\Users\LENOVO\Desktop\Projects\fitSphere`. Moved there from `C:\Users\LENOVO\Projects` the same day. | The owner wants one folder for the whole project, on the Desktop. |
 | 2026-11-04 | GitHub repo is private: `kritagyasuryavanshi/fitSphere`. | Default until the owner says otherwise. |
 | 2026-11-04 | Git author is `Kritagya Suryavanshi <kritagya.suryarock@gmail.com>`. | The owner's real name and email. |
 

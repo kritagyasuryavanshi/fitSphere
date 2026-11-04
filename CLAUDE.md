@@ -10,7 +10,7 @@
 - Update `TASKS.md` with what is done and what is next.
 
 ## Folder rule
-All project files live in this folder: `C:\Users\LENOVO\Projects\fitSphere`.
+All project files live in this folder: `C:\Users\LENOVO\Desktop\Projects\fitSphere`.
 Do not write project files anywhere else.
 Project memory lives in `MEMORY.md` here, not only in Claude's auto-memory.
 
