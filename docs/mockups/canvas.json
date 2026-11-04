@@ -2,24 +2,38 @@
   "v": 3,
   "createdOnFiles": {"v": 1, "at": "2026-11-04T11:15:00Z"},
   "title": "FitSphere Mockups",
-  "launch": {"view": "canvas"},
-  "pages": [],
+  "launch": {"view": "canvas", "page": "fightcamp"},
+  "pages": [
+    {"id": "fightcamp", "name": "Fight Camp v1"},
+    {"id": "explore", "name": "First directions"}
+  ],
   "boards": {
-    "Main.dc.html": {"x": 0, "y": 300, "w": 1440, "h": 2700, "title": "A · Studio — Landing", "expand": "fill", "is_interactive": false},
-    "A-Lesson.dc.html": {"x": 1520, "y": 300, "w": 1440, "h": 2100, "title": "A · Studio — Skill lesson (Jab)", "expand": "fill"},
-    "A-Today.dc.html": {"x": 3040, "y": 300, "w": 1440, "h": 1500, "title": "A · Studio — Today dashboard", "expand": "fill"},
-    "B-Landing.dc.html": {"x": 0, "y": 3350, "w": 1440, "h": 2700, "title": "B · Coach — Landing", "expand": "fill"},
-    "B-Lesson.dc.html": {"x": 1520, "y": 3350, "w": 1440, "h": 2100, "title": "B · Coach — Skill lesson (Jab)", "expand": "fill"},
-    "B-Today.dc.html": {"x": 3040, "y": 3350, "w": 1440, "h": 1500, "title": "B · Coach — Today dashboard", "expand": "fill"},
-    "C-Landing.dc.html": {"x": 0, "y": 6400, "w": 1440, "h": 2700, "title": "C · Fight Camp — Landing", "expand": "fill"},
-    "C-Lesson.dc.html": {"x": 1520, "y": 6400, "w": 1440, "h": 2100, "title": "C · Fight Camp — Skill lesson (Jab)", "expand": "fill"},
-    "C-Today.dc.html": {"x": 3040, "y": 6400, "w": 1440, "h": 1500, "title": "C · Fight Camp — Today dashboard", "expand": "fill"}
+    "Main.dc.html": {"x": 0, "y": 300, "w": 1440, "h": 2700, "title": "A · Studio — Landing", "expand": "fill", "is_interactive": false, "page": "explore"},
+    "A-Lesson.dc.html": {"x": 1520, "y": 300, "w": 1440, "h": 2100, "title": "A · Studio — Skill lesson (Jab)", "expand": "fill", "page": "explore"},
+    "A-Today.dc.html": {"x": 3040, "y": 300, "w": 1440, "h": 1500, "title": "A · Studio — Today dashboard", "expand": "fill", "page": "explore"},
+    "B-Landing.dc.html": {"x": 0, "y": 3350, "w": 1440, "h": 2700, "title": "B · Coach — Landing", "expand": "fill", "page": "explore"},
+    "B-Lesson.dc.html": {"x": 1520, "y": 3350, "w": 1440, "h": 2100, "title": "B · Coach — Skill lesson (Jab)", "expand": "fill", "page": "explore"},
+    "B-Today.dc.html": {"x": 3040, "y": 3350, "w": 1440, "h": 1500, "title": "B · Coach — Today dashboard", "expand": "fill", "page": "explore"},
+    "C-Landing.dc.html": {"x": 0, "y": 300, "w": 1440, "h": 2900, "title": "1 · Landing", "expand": "fill", "page": "fightcamp"},
+    "C-Library.dc.html": {"x": 1520, "y": 300, "w": 1440, "h": 2200, "title": "2 · Boxing library", "expand": "fill", "page": "fightcamp"},
+    "C-Lesson.dc.html": {"x": 3040, "y": 300, "w": 1440, "h": 2300, "title": "3 · Skill lesson (Jab)", "expand": "fill", "page": "fightcamp"},
+    "C-Today.dc.html": {"x": 0, "y": 3550, "w": 1440, "h": 1600, "title": "4 · Today dashboard", "expand": "fill", "page": "fightcamp"},
+    "C-Session.dc.html": {"x": 1520, "y": 3550, "w": 1440, "h": 1200, "title": "5 · Session player + logging", "expand": "fill", "page": "fightcamp"},
+    "C-Progress.dc.html": {"x": 3040, "y": 3550, "w": 1440, "h": 1500, "title": "6 · Progress", "expand": "fill", "page": "fightcamp"},
+    "C-AI.dc.html": {"x": 0, "y": 5500, "w": 1440, "h": 1300, "title": "7 · AI assistant", "expand": "fill", "page": "fightcamp"},
+    "C-Onboarding.dc.html": {"x": 1520, "y": 5500, "w": 1440, "h": 1100, "title": "8 · Onboarding", "expand": "fill", "page": "fightcamp"},
+    "C-CoachDash.dc.html": {"x": 0, "y": 7150, "w": 1440, "h": 1500, "title": "9 · Coach dashboard", "expand": "fill", "page": "fightcamp"},
+    "C-Builder.dc.html": {"x": 1520, "y": 7150, "w": 1440, "h": 1500, "title": "10 · Coach program builder", "expand": "fill", "page": "fightcamp"}
   },
-  "order": ["Main.dc.html", "A-Lesson.dc.html", "A-Today.dc.html", "B-Landing.dc.html", "B-Lesson.dc.html", "B-Today.dc.html", "C-Landing.dc.html", "C-Lesson.dc.html", "C-Today.dc.html"],
+  "order": ["Main.dc.html", "A-Lesson.dc.html", "A-Today.dc.html", "B-Landing.dc.html", "B-Lesson.dc.html", "B-Today.dc.html", "C-Landing.dc.html", "C-Library.dc.html", "C-Lesson.dc.html", "C-Today.dc.html", "C-Session.dc.html", "C-Progress.dc.html", "C-AI.dc.html", "C-Onboarding.dc.html", "C-CoachDash.dc.html", "C-Builder.dc.html"],
   "notes": {
-    "titleA": {"x": 0, "y": 0, "text": "A · Studio — calm, precise, Apple-grade", "kind": "title1", "maxW": 4480},
-    "titleB": {"x": 0, "y": 3050, "text": "B · Coach — warm, card-led, Airbnb-grade", "kind": "title1", "maxW": 4480},
-    "titleC": {"x": 0, "y": 6100, "text": "C · Fight Camp — bold, athletic, Nike-grade", "kind": "title1", "maxW": 4480}
+    "titleA": {"x": 0, "y": 0, "text": "A · Studio — calm, precise, Apple-grade", "kind": "title1", "maxW": 4480, "page": "explore"},
+    "titleB": {"x": 0, "y": 3050, "text": "B · Coach — warm, card-led, Airbnb-grade", "kind": "title1", "maxW": 4480, "page": "explore"},
+    "fcRow1": {"x": 0, "y": 0, "text": "Discover and learn", "kind": "title1", "maxW": 4480, "page": "fightcamp"},
+    "fcRow2": {"x": 0, "y": 3250, "text": "Train", "kind": "title1", "maxW": 4480, "page": "fightcamp"},
+    "fcRow3": {"x": 0, "y": 5200, "text": "Ask and get started", "kind": "title1", "maxW": 2960, "page": "fightcamp"},
+    "fcRow4": {"x": 0, "y": 6850, "text": "Coach side", "kind": "title1", "maxW": 2960, "page": "fightcamp"},
+    "fcNote": {"x": 3040, "y": 5500, "w": 520, "text": "Demo content throughout: coaches, athletes and numbers are fictional. Photos from Unsplash (free licence). Real content comes from founding coaches.", "size": "m", "fill": "orange", "page": "fightcamp"}
   },
   "designSystems": []
 }

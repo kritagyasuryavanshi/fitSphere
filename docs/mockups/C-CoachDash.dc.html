@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FitSphere — Coach dashboard</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#111111;text-decoration:none}a:hover{color:#707072}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #ffffff; color: #111111; font-family: Inter, Helvetica, Arial, sans-serif">
+
+  <header style="border-bottom: 1px solid #e5e5e5">
+    <nav aria-label="Coach" style="max-width: 1440px; margin: 0 auto; padding: 0 40px; min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap">
+      <a href="C-Landing.dc.html" style="display: flex; align-items: center; gap: 10px"><span style="font-family: Anton, Impact, sans-serif; font-size: 28px; text-transform: uppercase">FitSphere</span><span style="font-size: 12px; font-weight: 600; background: {{accent}}; padding: 4px 10px; border-radius: 30px">Coach</span></a>
+      <div style="display: flex; gap: 28px; font-size: 16px; font-weight: 500; flex-wrap: wrap"><a href="#athletes" style="text-decoration: underline; text-underline-offset: 6px">Athletes</a><a href="C-Builder.dc.html">Programs</a><a href="#content">My lessons</a><a href="#review">Review queue <span style="font-size: 12px; background: #111111; color: #ffffff; padding: 2px 7px; border-radius: 30px">2</span></a></div>
+      <img src="/_blob/fc8037ecec535b2be1f9befb3d629446" alt="Vikram Rathore, your profile" style="width: 36px; height: 36px; border-radius: 999px; object-fit: cover">
+    </nav>
+  </header>
+
+  <main id="athletes" style="max-width: 1440px; margin: 0 auto; padding: 40px 40px 80px">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap">
+      <div>
+        <p style="margin: 0; font-size: 16px; font-weight: 500; color: #707072">Good morning, Vikram · Wednesday, 4 November</p>
+        <h1 style="margin: 4px 0 0; font-family: Anton, Impact, sans-serif; font-weight: 400; font-size: clamp(72px, 8vw, 120px); line-height: 0.9; text-transform: uppercase">Athletes</h1>
+      </div>
+      <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap">
+        <span style="font-size: 12px; font-weight: 500; border: 1px solid #cacacb; padding: 5px 12px; border-radius: 30px">Demo data</span>
+        <button style="display: flex; align-items: center; gap: 8px; border: 1px solid #111111; background: #ffffff; font: inherit; font-size: 15px; font-weight: 500; padding: 12px 20px; border-radius: 30px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="2" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg>Copy invite link</button>
+        <a href="C-Builder.dc.html" style="font-size: 15px; font-weight: 500; background: #111111; color: #ffffff; padding: 13px 22px; border-radius: 30px">New program</a>
+      </div>
+    </div>
+
+    <div style="margin-top: 32px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); border-top: 2px solid #111111">
+      <div style="padding: 20px 20px 20px 0"><p style="margin: 0; font-size: 14px; font-weight: 500; color: #707072">Active athletes</p><p style="margin: 6px 0 0; font-family: Anton, Impact, sans-serif; font-size: 64px; line-height: 0.9">18</p></div>
+      <div style="padding: 20px"><p style="margin: 0; font-size: 14px; font-weight: 500; color: #707072">Sessions logged this week</p><p style="margin: 6px 0 0; font-family: Anton, Impact, sans-serif; font-size: 64px; line-height: 0.9">41</p></div>
+      <div style="padding: 20px"><p style="margin: 0; font-size: 14px; font-weight: 500; color: #707072">Average adherence</p><p style="margin: 6px 0 0; font-family: Anton, Impact, sans-serif; font-size: 64px; line-height: 0.9">76%</p></div>
+      <div style="padding: 20px"><p style="margin: 0; font-size: 14px; font-weight: 500; color: #707072">Feedback to give</p><p style="margin: 6px 0 0; font-family: Anton, Impact, sans-serif; font-size: 64px; line-height: 0.9">7</p></div>
+    </div>
+
+    <!-- Needs attention -->
+    <section aria-label="Needs attention" style="margin-top: 24px; background: #111111; color: #ffffff; padding: 28px 32px">
+      <h2 style="margin: 0; font-size: 18px; font-weight: 500">Needs your attention</h2>
+      <div style="margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 8px">
+        <div style="background: #1f1f21; padding: 18px; display: flex; flex-direction: column; gap: 8px"><p style="margin: 0; font-size: 13px; font-weight: 600; color: {{accent}}">Reported pain</p><p style="margin: 0; font-size: 16px; font-weight: 500">Kabir Malhotra</p><p style="margin: 0; font-size: 14px; color: #cacacb">Right shoulder sore after bag work. Raised through the AI guide today.</p><a href="#k" style="margin-top: 4px; font-size: 14px; font-weight: 500; color: #ffffff; text-decoration: underline">Adjust plan</a></div>
+        <div style="background: #1f1f21; padding: 18px; display: flex; flex-direction: column; gap: 8px"><p style="margin: 0; font-size: 13px; font-weight: 600; color: {{accent}}">Missed sessions</p><p style="margin: 0; font-size: 16px; font-weight: 500">Sana Sheikh</p><p style="margin: 0; font-size: 14px; color: #cacacb">3 sessions missed in a row. Last log 29 Oct.</p><a href="#s" style="margin-top: 4px; font-size: 14px; font-weight: 500; color: #ffffff; text-decoration: underline">Send a check-in</a></div>
+        <div style="background: #1f1f21; padding: 18px; display: flex; flex-direction: column; gap: 8px"><p style="margin: 0; font-size: 13px; font-weight: 600; color: {{accent}}">High effort</p><p style="margin: 0; font-size: 16px; font-weight: 500">Arjun Nair</p><p style="margin: 0; font-size: 14px; color: #cacacb">RPE 9 or higher in his last two sessions.</p><a href="#a" style="margin-top: 4px; font-size: 14px; font-weight: 500; color: #ffffff; text-decoration: underline">Review logs</a></div>
+      </div>
+    </section>
+
+    <!-- Adherence board -->
+    <section aria-label="Adherence board" style="margin-top: 48px">
+      <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap">
+        <h2 style="margin: 0; font-family: Anton, Impact, sans-serif; font-weight: 400; font-size: 48px; line-height: 0.9; text-transform: uppercase">This week</h2>
+        <label style="font-size: 14px; font-weight: 500; display: flex; gap: 8px; align-items: center">Program <select style="font: inherit; font-size: 14px; border: 1px solid #cacacb; border-radius: 30px; padding: 7px 12px; background: #ffffff"><option>All programs</option><option>Boxing Fundamentals</option><option>Footwork Lab</option></select></label>
+      </div>
+      <div style="margin-top: 16px; overflow-x: auto">
+        <table style="width: 100%; min-width: 900px; border-collapse: collapse; font-size: 15px">
+          <thead>
+            <tr style="border-bottom: 1px solid #111111">
+              <th scope="col" style="text-align: left; font-size: 13px; font-weight: 500; color: #707072; padding: 12px 12px 12px 0">Athlete</th>
+              <th scope="col" style="text-align: left; font-size: 13px; font-weight: 500; color: #707072; padding: 12px">Program</th>
+              <th scope="col" style="text-align: left; font-size: 13px; font-weight: 500; color: #707072; padding: 12px">Mon–Sun</th>
+              <th scope="col" style="text-align: right; font-size: 13px; font-weight: 500; color: #707072; padding: 12px">Adherence</th>
+              <th scope="col" style="text-align: left; font-size: 13px; font-weight: 500; color: #707072; padding: 12px">Latest note</th>
+              <th scope="col" style="text-align: right; font-size: 13px; font-weight: 500; color: #707072; padding: 12px 0 12px 12px"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Action</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid #e5e5e5">
+              <td style="padding: 14px 12px 14px 0"><span style="display: flex; gap: 10px; align-items: center"><span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 999px; background: #111111; color: #ffffff; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center">KM</span><span style="font-weight: 500">Kabir Malhotra</span></span></td>
+              <td style="padding: 14px 12px">Fundamentals · wk 2</td>
+              <td style="padding: 14px 12px"><span aria-label="Done Mon, Tue; today pending" style="display: flex; gap: 4px"><span style="width: 14px; height: 14px; background: #111111"></span><span style="width: 14px; height: 14px; background: #111111"></span><span style="width: 14px; height: 14px; border: 2px solid #111111; box-sizing: border-box"></span><span style="width: 14px; height: 14px; background: #e5e5e5"></span><span style="width: 14px; height: 14px; background: #e5e5e5"></span><span style="width: 14px; height: 14px; background: #e5e5e5"></span><span style="width: 14px; height: 14px; background: #f5f5f5"></span></span></td>
+              <td style="padding: 14px 12px; text-align: right; font-weight: 500">82%</td>
+              <td style="padding: 14px 12px; color: #39393b">Lead foot landing late on round 2.</td>
+              <td style="padding: 14px 0 14px 12px; text-align: right"><button style="border: 0; font: inherit; font-size: 14px; font-weight: 500; background: #111111; color: #ffffff; padding: 8px 16px; border-radius: 30px">Give feedback</button></td>
+            </tr>
+            <tr style="border-bottom: 1px solid #e5e5e5">
+              <td style="padding: 14px 12px 14px 0"><span style="display: flex; gap: 10px; align-items: center"><span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 999px; background: #f5f5f5; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center">PK</span><span style="font-weight: 500">Priya Kulkarni</span></span></td>
+              <td style="padding: 14px 12px">Footwork Lab · wk 1</td>
+              <td style="padding: 14px 12px"><span aria-label="Done Mon, Tue, Wed" style="display: flex; gap: 4px"><span style="width: 14px; height: 14px; background: #111111"></span><span style="width: 14px; height: 14px; background: #111111"></span><span style="width: 14px; height: 14px; background: #111111"></span><span style="width: 14px; height: 14px; background: #e5e5e5"></span><span style="width: 14px; height: 14px; background: #e5e5e5"></span><span style="width: 14px; height: 14px; background: #f5f5f5"></span><span style="width: 14px; height: 14px; background: #f5f5f5"></span></span></td>
+              <td style="padding: 14px 12px; text-align: right; font-weight: 500">100%</td>
+              <td style="padding: 14px 12px; color: #39393b">Pivot drill finally clicked.</td>
+              <td style="padding: 14px 0 14px 12px; text-align: right"><button style="border: 1px solid #cacacb; background: #ffffff; font: inherit; font-size: 14px; font-weight: 500; padding: 7px 15px; border-radius: 30px">View logs</button></td>
+            </tr>
+            <tr style="border-bottom: 1px solid #e5e5e5">
+              <td style="padding: 14px 12px 14px 0"><span style="display: flex; gap: 10px; align-items: center"><span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 999px; background: #f5f5f5; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center">AN</span><span style="font-weight: 500">Arjun Nair</span></span></td>
+              <td style="padding: 14px 12px">Fundamentals · wk 4</td>
+              <td style="padding: 14px 12px"><span aria-label="Done Mon, Tue" style="display: flex; gap: 4px"><span style="width: 14px; height: 14px; background: #111111"></span><span style="width: 14px; height: 14px; background: #111111"></span><span style="width: 14px; height: 14px; background: #e5e5e5"></span><span style="width: 14px; height: 14px; background: #e5e5e5"></span><span style="width: 14px; height: 14px; background: #e5e5e5"></span><span style="width: 14px; height: 14px; background: #f5f5f5"></span><span style="width: 14px; height: 14px; background: #f5f5f5"></span></span></td>
+              <td style="padding: 14px 12px; text-align: right; font-weight: 500">88%</td>
+              <td style="padding: 14px 12px; color: #39393b">Gassed by round 4 on the bag.</td>
+              <td style="padding: 14px 0 14px 12px; text-align: right"><button style="border: 0; font: inherit; font-size: 14px; font-weight: 500; background: #111111; color: #ffffff; padding: 8px 16px; border-radius: 30px">Give feedback</button></td>
+            </tr>
+            <tr style="border-bottom: 1px solid #e5e5e5">
+              <td style="padding: 14px 12px 14px 0"><span style="display: flex; gap: 10px; align-items: center"><span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 999px; background: #f5f5f5; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center">SS</span><span style="font-weight: 500">Sana Sheikh</span></span></td>
+              <td style="padding: 14px 12px">Fundamentals · wk 3</td>
+              <td style="padding: 14px 12px"><span aria-label="No sessions this week" style="display: flex; gap: 4px"><span style="width: 14px; height: 14px; border: 2px solid #cacacb; box-sizing: border-box"></span><span style="width: 14px; height: 14px; border: 2px solid #cacacb; box-sizing: border-box"></span><span style="width: 14px; height: 14px; background: #e5e5e5"></span><span style="width: 14px; height: 14px; background: #e5e5e5"></span><span style="width: 14px; height: 14px; background: #e5e5e5"></span><span style="width: 14px; height: 14px; background: #f5f5f5"></span><span style="width: 14px; height: 14px; background: #f5f5f5"></span></span></td>
+              <td style="padding: 14px 12px; text-align: right; font-weight: 500">54%</td>
+              <td style="padding: 14px 12px; color: #707072">No log since 29 Oct</td>
+              <td style="padding: 14px 0 14px 12px; text-align: right"><button style="border: 1px solid #cacacb; background: #ffffff; font: inherit; font-size: 14px; font-weight: 500; padding: 7px 15px; border-radius: 30px">Check in</button></td>
+            </tr>
+            <tr style="border-bottom: 1px solid #e5e5e5">
+              <td style="padding: 14px 12px 14px 0"><span style="display: flex; gap: 10px; align-items: center"><span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 999px; background: #f5f5f5; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center">RM</span><span style="font-weight: 500">Rahul Menon</span></span></td>
+              <td style="padding: 14px 12px">Fundamentals · wk 1</td>
+              <td style="padding: 14px 12px"><span aria-label="Done Mon" style="display: flex; gap: 4px"><span style="width: 14px; height: 14px; background: #111111"></span><span style="width: 14px; height: 14px; background: #e5e5e5"></span><span style="width: 14px; height: 14px; background: #e5e5e5"></span><span style="width: 14px; height: 14px; background: #e5e5e5"></span><span style="width: 14px; height: 14px; background: #e5e5e5"></span><span style="width: 14px; height: 14px; background: #f5f5f5"></span><span style="width: 14px; height: 14px; background: #f5f5f5"></span></span></td>
+              <td style="padding: 14px 12px; text-align: right; font-weight: 500">71%</td>
+              <td style="padding: 14px 12px; color: #39393b">Is the guard supposed to feel tiring?</td>
+              <td style="padding: 14px 0 14px 12px; text-align: right"><button style="border: 0; font: inherit; font-size: 14px; font-weight: 500; background: #111111; color: #ffffff; padding: 8px 16px; border-radius: 30px">Give feedback</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin: 12px 0 0; font-size: 13px; color: #707072">Showing 5 of 18 · Adherence = completed ÷ scheduled sessions to date · Demo athletes</p>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#D4F000","options":["#D4F000","#FF5A1F","#7CF5D2","#FFFFFF"]},"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#D4F000' };
+  }
+}
+</script>
+</body>
+</html>

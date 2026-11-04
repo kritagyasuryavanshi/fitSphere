@@ -21,6 +21,7 @@ Keep newest entries at the top of each section.
 ## Decisions
 | Date | Decision | Why |
 |---|---|---|
+| 2026-11-04 | Visual direction: "Fight Camp" (Nike-grade): Anton condensed caps + Inter, black/white, volt #D4F000 accent, square imagery, pill buttons. 10 screens in `docs/mockups/` and the canvas https://claude.ai/artifact/YVnwgT8qzwA2SerCSPasBe. | Owner picked C over Studio (Apple) and Coach (Airbnb). |
 | 2026-11-04 | v1 = three pillars: Video Learning Library, AI Instructional Assistant, Coach-Led Training. | Owner wants all three complete from day one and accepts a longer timeline. |
 | 2026-11-04 | Launch sports: Boxing primary, S&C integrated support. Data model stays multi-sport. | Owner's choice. Both suit adults. S&C must not become a generic gym app. |
 | 2026-11-04 | Coach-led content: coaches author, a reviewer publishes, nobody approves their own item. | Content quality and cold start are the main risks. Coaches bring content and athletes. |
