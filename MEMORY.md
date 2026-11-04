@@ -5,12 +5,23 @@ Every session reads it first and updates it before it ends.
 Keep newest entries at the top of each section.
 
 ## Current state
-- **Phase:** v1 design approved on 2026-11-04. Engineering plan next. No app code exists yet.
+- **Phase:** v1 design and visual direction approved. Mockups done. Engineering plan next. No app code exists yet.
 - **Current milestone:** M1 Foundation, not started.
-- **Next step for the next session:** Write the engineering plan for M1 to M5 in `docs/plans/` with the owner. It covers schema, RLS rules, test setup, and the four minor reviewer concerns in the design doc. After the owner approves it, build M1 hands-off.
+- **Next step for the next session:**
+  1. Get the owner's feedback on the 10 Fight Camp screens, or a go-ahead for mobile versions.
+  2. Settle the stack question: the owner asked for a "Python engineering plan", but the approved stack is Next.js + Supabase. Option on the table: Next.js web app plus a Python (FastAPI) service for the AI assistant. Ask once, then decide.
+  3. Write the engineering plan for M1 to M5 in `docs/plans/`. Cover schema, RLS rules, test setup, and the four minor reviewer concerns in the design doc. After approval, build M1 hands-off.
+- **Open owner decisions:** Mobbin install (only unofficial community MCPs exist; needs a paid Mobbin account and a session token; owner must say "install mobbin-mcp").
 - **Owner's parallel task:** meet one boxing coach and one S&C coach (the assignment in the design doc).
 
-## Last session (2026-11-04)
+## Session 2 (2026-11-04, later)
+- Moved the project to `C:\Users\LENOVO\Desktop\Projects\fitSphere`.
+- Built 3 visual directions (Studio/Apple, Coach/Airbnb, Fight Camp/Nike), 3 screens each. Owner chose Fight Camp.
+- Built the full Fight Camp set: 10 screens with demo data and 20 Unsplash photos. Canvas: https://claude.ai/artifact/YVnwgT8qzwA2SerCSPasBe (page "Fight Camp v1"). Sources in `docs/mockups/`; photo credits in `docs/mockups/images/CREDITS.md`.
+- Demo people (fictional): coaches Vikram Rathore (boxing), Ananya Iyer (S&C), Rohan Desai (reviewer); athlete Kabir Malhotra. Real coach photos must replace the Unsplash models before public launch.
+- GitHub pushes sometimes fail with "Internal Server Error"; a retry a few seconds later works.
+
+## Session 1 (2026-11-04)
 - Created the repo, the docs scaffold, and the private GitHub remote.
 - Saved the owner's full brief to `docs/PRODUCT_BRIEF.md`.
 - Ran /office-hours in startup mode. Approved design: `docs/designs/fitsphere-v1.md`. Cross-session copy: `~/.gstack/projects/kritagyasuryavanshi-fitSphere/`.
