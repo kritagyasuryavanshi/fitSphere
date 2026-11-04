@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FitSphere — Studio landing</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#1d1d1f;text-decoration:none}a:hover{color:#000000}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #ffffff; color: #1d1d1f; font-family: Inter, system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased">
+
+  <!-- Frosted top nav -->
+  <header style="position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,0.82); backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid #e8e8ed">
+    <nav aria-label="Main" style="max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap">
+      <a href="#top" style="display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 18px; letter-spacing: -0.02em">
+        <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="{{accent}}" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M3.5 9h17M3.5 15h17M12 3c2.8 2.6 2.8 15.4 0 18M12 3c-2.8 2.6-2.8 15.4 0 18"></path></svg>
+        FitSphere
+      </a>
+      <div style="display: flex; align-items: center; gap: 28px; font-size: 14px; flex-wrap: wrap">
+        <a href="#learn" style="color: #424245">Learn</a>
+        <a href="#train" style="color: #424245">Train</a>
+        <a href="#ai" style="color: #424245">AI Assistant</a>
+        <a href="#coaches" style="color: #424245">Coaches</a>
+      </div>
+      <div style="display: flex; align-items: center; gap: 16px">
+        <a href="#login" style="font-size: 14px; color: #424245">Log in</a>
+        <a href="#start" style="font-size: 14px; font-weight: 500; background: {{accent}}; color: #ffffff; padding: 9px 18px; border-radius: 999px">Get started</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section id="top" style="max-width: 1200px; margin: 0 auto; padding: 96px 24px 56px; text-align: center">
+    <p style="margin: 0 0 16px; font-size: 17px; font-weight: 500; color: {{accent}}">Boxing · Strength &amp; Conditioning</p>
+    <h1 style="margin: 0 auto; max-width: 880px; font-size: clamp(44px, 6.4vw, 80px); line-height: 1.04; font-weight: 700; letter-spacing: -0.035em">Learn boxing the right way.</h1>
+    <p style="margin: 24px auto 0; max-width: 640px; font-size: clamp(18px, 2vw, 22px); line-height: 1.45; color: #6e6e73">Step-by-step lessons from real coaches, an AI guide that shows its sources, and training that fits your week.</p>
+    <div style="margin-top: 36px; display: flex; gap: 24px; justify-content: center; align-items: center; flex-wrap: wrap">
+      <a href="#start" style="font-size: 17px; font-weight: 500; background: {{accent}}; color: #ffffff; padding: 14px 28px; border-radius: 999px">Start learning free</a>
+      <a href="#learn" style="font-size: 17px; color: {{accent}}">Explore the library ›</a>
+    </div>
+  </section>
+  <div style="max-width: 1200px; margin: 0 auto; padding: 0 24px 96px">
+    <div role="img" aria-label="Photo placeholder: boxer throwing a jab in a bright gym" style="aspect-ratio: 16 / 7; border-radius: 28px; background: #ececf0; display: flex; align-items: flex-end; justify-content: flex-start; padding: 24px; box-sizing: border-box">
+      <span style="font-size: 13px; color: #6e6e73; background: rgba(255,255,255,0.8); padding: 6px 12px; border-radius: 999px">Photo · boxer throwing a jab, bright gym, side light</span>
+    </div>
+  </div>
+
+  <!-- Three pillars -->
+  <section id="learn" style="background: #f5f5f7; padding: 96px 24px">
+    <div style="max-width: 1200px; margin: 0 auto">
+      <h2 style="margin: 0; font-size: clamp(32px, 4vw, 48px); line-height: 1.08; font-weight: 700; letter-spacing: -0.03em; text-align: center">Three ways to get better.</h2>
+      <p style="margin: 16px auto 0; max-width: 560px; text-align: center; font-size: 19px; line-height: 1.5; color: #6e6e73">Learn the skill, ask about it, then train it. Each step leads to the next.</p>
+      <div style="margin-top: 56px; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px">
+        <article style="background: #ffffff; border-radius: 22px; padding: 32px; display: flex; flex-direction: column; gap: 14px">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.8" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"></rect><path d="M10 9.5v5l4.5-2.5z"></path></svg>
+          <h3 style="margin: 0; font-size: 24px; font-weight: 600; letter-spacing: -0.02em">Learn</h3>
+          <p style="margin: 0; font-size: 17px; line-height: 1.5; color: #6e6e73">A video library for every skill: technique breakdowns, common mistakes and safety notes, reviewed by coaches.</p>
+          <a href="#library" style="margin-top: auto; font-size: 17px; color: {{accent}}">Browse lessons ›</a>
+        </article>
+        <article id="ai" style="background: #ffffff; border-radius: 22px; padding: 32px; display: flex; flex-direction: column; gap: 14px">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.8" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"></path><path d="M8 9.5h8M8 12.5h5"></path></svg>
+          <h3 style="margin: 0; font-size: 24px; font-weight: 600; letter-spacing: -0.02em">Ask</h3>
+          <p style="margin: 0; font-size: 17px; line-height: 1.5; color: #6e6e73">An AI guide that explains any technique step by step, links the lessons it used, and labels its own words clearly.</p>
+          <a href="#ask" style="margin-top: auto; font-size: 17px; color: {{accent}}">Try a question ›</a>
+        </article>
+        <article id="train" style="background: #ffffff; border-radius: 22px; padding: 32px; display: flex; flex-direction: column; gap: 14px">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="1.8" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="3"></rect><path d="M4 10h16M9 3v4M15 3v4M8.5 14.5l2 2 4-4"></path></svg>
+          <h3 style="margin: 0; font-size: 24px; font-weight: 600; letter-spacing: -0.02em">Train</h3>
+          <p style="margin: 0; font-size: 17px; line-height: 1.5; color: #6e6e73">Programs from your coach, boxing and strength in one Today view, and a log your coach can actually see.</p>
+          <a href="#programs" style="margin-top: auto; font-size: 17px; color: {{accent}}">See how it works ›</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Dark tile: skill path -->
+  <section style="background: #111113; color: #f5f5f7; padding: 104px 24px">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 56px; align-items: center">
+      <div style="flex: 1 1 420px; min-width: 0">
+        <h2 style="margin: 0; font-size: clamp(32px, 4vw, 48px); line-height: 1.08; font-weight: 700; letter-spacing: -0.03em">Every skill, broken down.</h2>
+        <p style="margin: 20px 0 0; font-size: 19px; line-height: 1.5; color: #a1a1a6">Boxing is organised the way coaches teach it. Start with stance, finish with combinations, and always know what comes next.</p>
+        <div style="margin-top: 32px; display: flex; flex-wrap: wrap; gap: 10px">
+          <span style="padding: 10px 16px; border-radius: 999px; background: #2a2a2e; font-size: 15px">Stance</span>
+          <span style="padding: 10px 16px; border-radius: 999px; background: #2a2a2e; font-size: 15px">Guard</span>
+          <span style="padding: 10px 16px; border-radius: 999px; background: #2a2a2e; font-size: 15px">Footwork</span>
+          <span style="padding: 10px 16px; border-radius: 999px; background: #f5f5f7; color: #111113; font-size: 15px; font-weight: 600">Jab</span>
+          <span style="padding: 10px 16px; border-radius: 999px; background: #2a2a2e; font-size: 15px">Cross</span>
+          <span style="padding: 10px 16px; border-radius: 999px; background: #2a2a2e; font-size: 15px">Hook</span>
+          <span style="padding: 10px 16px; border-radius: 999px; background: #2a2a2e; font-size: 15px">Defence</span>
+        </div>
+      </div>
+      <div style="flex: 1 1 420px; min-width: 0; background: #1d1d20; border-radius: 22px; padding: 28px; display: flex; flex-direction: column; gap: 18px">
+        <div role="img" aria-label="Video placeholder: jab demonstration" style="aspect-ratio: 16 / 9; border-radius: 14px; background: #2a2a2e; display: flex; align-items: center; justify-content: center">
+          <span style="width: 64px; height: 64px; border-radius: 999px; background: rgba(255,255,255,0.92); display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="#111113" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg></span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap">
+          <h3 style="margin: 0; font-size: 22px; font-weight: 600">The Jab</h3>
+          <span style="font-size: 14px; color: #a1a1a6">Beginner · 8 min</span>
+        </div>
+        <ol style="margin: 0; padding-left: 20px; font-size: 16px; line-height: 1.7; color: #d2d2d7">
+          <li>Start in your stance, hands up, chin down.</li>
+          <li>Extend the lead hand straight from the guard.</li>
+          <li>Turn the fist over as the arm straightens.</li>
+          <li>Snap it back to your cheek on the same line.</li>
+        </ol>
+        <span style="align-self: flex-start; font-size: 13px; color: #a1a1a6; border: 1px solid #3a3a3e; padding: 4px 10px; border-radius: 999px">Sample content</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Boxing + S&C together -->
+  <section id="programs" style="padding: 104px 24px">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 56px; align-items: center">
+      <div style="flex: 1 1 420px; min-width: 0">
+        <h2 style="margin: 0; font-size: clamp(32px, 4vw, 48px); line-height: 1.08; font-weight: 700; letter-spacing: -0.03em">Strength that serves your boxing.</h2>
+        <p style="margin: 20px 0 0; font-size: 19px; line-height: 1.5; color: #6e6e73">Strength &amp; Conditioning is built in, not bolted on. Rotational power, footwork speed and the engine to last every round.</p>
+        <ul style="margin: 28px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px; font-size: 17px">
+          <li style="display: flex; gap: 12px; align-items: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="2.2" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>One plan holds both your boxing and S&amp;C sessions</li>
+          <li style="display: flex; gap: 12px; align-items: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="2.2" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Log rounds for boxing, sets and load for strength</li>
+          <li style="display: flex; gap: 12px; align-items: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="2.2" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Every exercise tagged with the boxing skill it supports</li>
+        </ul>
+      </div>
+      <div style="flex: 1 1 420px; min-width: 0; background: #f5f5f7; border-radius: 28px; padding: 32px; display: flex; flex-direction: column; gap: 14px">
+        <p style="margin: 0 0 4px; font-size: 15px; font-weight: 600; color: #6e6e73">Today</p>
+        <div style="background: #ffffff; border-radius: 18px; padding: 20px 22px; display: flex; align-items: center; gap: 16px">
+          <span style="width: 44px; height: 44px; border-radius: 12px; background: {{accent}}; display: flex; align-items: center; justify-content: center; flex: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" aria-hidden="true"><path d="M7 10a4 4 0 0 1 4-4h3a4 4 0 0 1 4 4v3a5 5 0 0 1-5 5h-2a4 4 0 0 1-4-4z"></path><path d="M7 12h4"></path></svg></span>
+          <div style="flex: 1; min-width: 0"><p style="margin: 0; font-size: 17px; font-weight: 600">Jab &amp; footwork</p><p style="margin: 2px 0 0; font-size: 14px; color: #6e6e73">Boxing · 35 min · 6 drills</p></div>
+          <span style="font-size: 14px; color: {{accent}}">Start</span>
+        </div>
+        <div style="background: #ffffff; border-radius: 18px; padding: 20px 22px; display: flex; align-items: center; gap: 16px">
+          <span style="width: 44px; height: 44px; border-radius: 12px; background: #1d1d1f; display: flex; align-items: center; justify-content: center; flex: none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" aria-hidden="true"><path d="M3 12h3M18 12h3M6 8v8M18 8v8M9 10v4M15 10v4M9 12h6"></path></svg></span>
+          <div style="flex: 1; min-width: 0"><p style="margin: 0; font-size: 17px; font-weight: 600">Rotational power</p><p style="margin: 2px 0 0; font-size: 14px; color: #6e6e73">Strength &amp; Conditioning · 30 min</p></div>
+          <span style="font-size: 14px; color: {{accent}}">Start</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Coaches -->
+  <section id="coaches" style="background: #f5f5f7; padding: 104px 24px">
+    <div style="max-width: 1200px; margin: 0 auto; text-align: center">
+      <h2 style="margin: 0; font-size: clamp(32px, 4vw, 48px); line-height: 1.08; font-weight: 700; letter-spacing: -0.03em">Built with real coaches.</h2>
+      <p style="margin: 20px auto 0; max-width: 620px; font-size: 19px; line-height: 1.5; color: #6e6e73">Every lesson is written by a coach and checked by a second reviewer before it goes live. You always see who taught it.</p>
+      <div style="margin-top: 48px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; text-align: left">
+        <div style="background: #ffffff; border-radius: 22px; padding: 24px; display: flex; gap: 16px; align-items: center">
+          <span role="img" aria-label="Coach photo placeholder" style="width: 56px; height: 56px; border-radius: 999px; background: #e3e3e8; flex: none"></span>
+          <div><p style="margin: 0; font-size: 17px; font-weight: 600">[Coach name]</p><p style="margin: 2px 0 0; font-size: 14px; color: #6e6e73">Boxing · Founding coach</p></div>
+        </div>
+        <div style="background: #ffffff; border-radius: 22px; padding: 24px; display: flex; gap: 16px; align-items: center">
+          <span role="img" aria-label="Coach photo placeholder" style="width: 56px; height: 56px; border-radius: 999px; background: #e3e3e8; flex: none"></span>
+          <div><p style="margin: 0; font-size: 17px; font-weight: 600">[Coach name]</p><p style="margin: 2px 0 0; font-size: 14px; color: #6e6e73">Strength &amp; Conditioning</p></div>
+        </div>
+        <div style="background: #ffffff; border-radius: 22px; padding: 24px; display: flex; gap: 16px; align-items: center">
+          <span role="img" aria-label="Coach photo placeholder" style="width: 56px; height: 56px; border-radius: 999px; background: #e3e3e8; flex: none"></span>
+          <div><p style="margin: 0; font-size: 17px; font-weight: 600">[Coach name]</p><p style="margin: 2px 0 0; font-size: 14px; color: #6e6e73">Content reviewer</p></div>
+        </div>
+      </div>
+      <a href="#coach" style="display: inline-block; margin-top: 40px; font-size: 17px; color: {{accent}}; border: 1px solid {{accent}}; padding: 12px 24px; border-radius: 999px">Coach with FitSphere</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer style="padding: 56px 24px 40px; border-top: 1px solid #e8e8ed">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 40px; justify-content: space-between">
+      <div style="flex: 1 1 240px"><p style="margin: 0; font-weight: 600; font-size: 17px">FitSphere</p><p style="margin: 8px 0 0; font-size: 14px; color: #6e6e73">One platform. Every sport. Every skill. Every goal.</p></div>
+      <div style="display: flex; gap: 56px; flex-wrap: wrap; font-size: 14px">
+        <div style="display: flex; flex-direction: column; gap: 10px"><span style="font-weight: 600">Product</span><a href="#learn" style="color: #6e6e73">Learn</a><a href="#train" style="color: #6e6e73">Train</a><a href="#ai" style="color: #6e6e73">AI Assistant</a></div>
+        <div style="display: flex; flex-direction: column; gap: 10px"><span style="font-weight: 600">Company</span><a href="#about" style="color: #6e6e73">About</a><a href="#coach" style="color: #6e6e73">For coaches</a></div>
+        <div style="display: flex; flex-direction: column; gap: 10px"><span style="font-weight: 600">Legal</span><a href="#privacy" style="color: #6e6e73">Privacy</a><a href="#terms" style="color: #6e6e73">Terms</a></div>
+      </div>
+    </div>
+    <p style="max-width: 1200px; margin: 40px auto 0; font-size: 12px; color: #6e6e73">© 2026 FitSphere. Adults 18+ only.</p>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#0B5FFF","options":["#0B5FFF","#1D1D1F","#0A7C66","#C2410C"]},"$preview":{"width":1440,"height":2700}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#0B5FFF' };
+  }
+}
+</script>
+</body>
+</html>

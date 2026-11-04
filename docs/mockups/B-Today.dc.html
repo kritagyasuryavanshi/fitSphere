@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FitSphere — Coach Today dashboard</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#ffffff}
+a{color:#222222}a:hover{color:#000000}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #ffffff; color: #222222; font-family: 'Plus Jakarta Sans', system-ui, sans-serif">
+
+  <header style="border-bottom: 1px solid #ebebeb">
+    <nav aria-label="App" style="max-width: 1200px; margin: 0 auto; padding: 0 24px; min-height: 80px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap">
+      <a href="B-Landing.dc.html" style="display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 22px; letter-spacing: -0.03em; color: {{accent}}; text-decoration: none">
+        <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="{{accent}}" stroke-width="2.2"><circle cx="12" cy="12" r="9"></circle><path d="M3.5 9h17M3.5 15h17M12 3c2.8 2.6 2.8 15.4 0 18M12 3c-2.8 2.6-2.8 15.4 0 18"></path></svg>
+        fitsphere
+      </a>
+      <div style="display: flex; gap: 28px; font-size: 16px; font-weight: 600">
+        <a href="#today" style="padding: 8px 0; border-bottom: 2px solid #222222; text-decoration: none">Today</a>
+        <a href="B-Lesson.dc.html" style="padding: 8px 0; color: #6a6a6a; text-decoration: none">Learn</a>
+        <a href="#programs" style="padding: 8px 0; color: #6a6a6a; text-decoration: none">Programs</a>
+        <a href="#ask" style="padding: 8px 0; color: #6a6a6a; text-decoration: none">Ask AI</a>
+      </div>
+      <span role="img" aria-label="Your profile" style="width: 36px; height: 36px; border-radius: 999px; background: #6a6a6a"></span>
+    </nav>
+  </header>
+
+  <main id="today" style="max-width: 1200px; margin: 0 auto; padding: 40px 24px 80px">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap">
+      <div>
+        <h1 style="margin: 0; font-size: clamp(32px, 3.6vw, 44px); font-weight: 800; letter-spacing: -0.03em">Hi [Name], here's today.</h1>
+        <p style="margin: 8px 0 0; font-size: 17px; color: #3f3f3f">Wednesday, 4 November · 2 sessions · about 65 min</p>
+      </div>
+      <span style="font-size: 13px; font-weight: 600; color: #6a6a6a; border: 1px solid #dddddd; padding: 5px 12px; border-radius: 999px">Sample data</span>
+    </div>
+
+    <div style="margin-top: 32px; display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-start">
+      <!-- Sessions -->
+      <div style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+        <article style="display: flex; flex-wrap: wrap; border-radius: 20px; overflow: hidden; box-shadow: rgba(0,0,0,0.02) 0 0 0 1px, rgba(0,0,0,0.04) 0 2px 6px 0, rgba(0,0,0,0.1) 0 4px 8px 0">
+          <div role="img" aria-label="Photo placeholder: jab practice" style="flex: 1 1 220px; min-height: 220px; background: #e9e5e0; position: relative"><span style="position: absolute; top: 14px; left: 14px; font-size: 12px; font-weight: 700; background: #ffffff; padding: 5px 10px; border-radius: 999px">Boxing</span></div>
+          <div style="flex: 2 1 320px; padding: 24px; display: flex; flex-direction: column; gap: 10px">
+            <p style="margin: 0; font-size: 14px; color: #6a6a6a">Session 1 · Fundamentals, week 2 · [Coach name]</p>
+            <h2 style="margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.02em">Jab &amp; footwork</h2>
+            <p style="margin: 0; font-size: 15px; color: #3f3f3f">35 min · 6 drills · Shadow boxing, stationary jab, step and jab, heavy bag</p>
+            <div style="margin-top: auto; padding-top: 8px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap">
+              <button style="border: 0; font: inherit; font-size: 16px; font-weight: 600; background: {{accent}}; color: #ffffff; padding: 12px 22px; border-radius: 8px">Start session</button>
+              <a href="#preview" style="font-size: 15px; font-weight: 600">Preview drills</a>
+            </div>
+          </div>
+        </article>
+
+        <article style="display: flex; flex-wrap: wrap; border-radius: 20px; overflow: hidden; box-shadow: rgba(0,0,0,0.02) 0 0 0 1px, rgba(0,0,0,0.04) 0 2px 6px 0, rgba(0,0,0,0.1) 0 4px 8px 0">
+          <div role="img" aria-label="Photo placeholder: medicine ball throw" style="flex: 1 1 220px; min-height: 220px; background: #efece8; position: relative"><span style="position: absolute; top: 14px; left: 14px; font-size: 12px; font-weight: 700; background: #ffffff; padding: 5px 10px; border-radius: 999px">Strength &amp; Conditioning</span></div>
+          <div style="flex: 2 1 320px; padding: 24px; display: flex; flex-direction: column; gap: 10px">
+            <p style="margin: 0; font-size: 14px; color: #6a6a6a">Session 2 · Supports punching power</p>
+            <h2 style="margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.02em">Rotational power</h2>
+            <p style="margin: 0; font-size: 15px; color: #3f3f3f">30 min · 5 exercises · Med-ball throw, goblet squat, Pallof press</p>
+            <div style="margin-top: auto; padding-top: 8px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap">
+              <button style="border: 1px solid #222222; background: #ffffff; font: inherit; font-size: 16px; font-weight: 600; color: #222222; padding: 11px 21px; border-radius: 8px">Start session</button>
+              <a href="#preview" style="font-size: 15px; font-weight: 600">Preview exercises</a>
+            </div>
+          </div>
+        </article>
+
+        <section style="margin-top: 16px">
+          <h2 style="margin: 0; font-size: 22px; font-weight: 700">Pick up where you left off</h2>
+          <div style="margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px">
+            <a href="B-Lesson.dc.html" style="text-decoration: none; display: flex; flex-direction: column; gap: 8px"><span role="img" aria-label="Lesson thumbnail placeholder" style="display: block; aspect-ratio: 4 / 3; border-radius: 14px; background: #efece8"></span><span style="font-size: 15px; font-weight: 600">The Cross</span><span style="font-size: 13px; color: #6a6a6a">40% watched</span></a>
+            <a href="B-Lesson.dc.html" style="text-decoration: none; display: flex; flex-direction: column; gap: 8px"><span role="img" aria-label="Lesson thumbnail placeholder" style="display: block; aspect-ratio: 4 / 3; border-radius: 14px; background: #e9e5e0"></span><span style="font-size: 15px; font-weight: 600">Slipping the jab</span><span style="font-size: 13px; color: #6a6a6a">Saved</span></a>
+            <a href="B-Lesson.dc.html" style="text-decoration: none; display: flex; flex-direction: column; gap: 8px"><span role="img" aria-label="Lesson thumbnail placeholder" style="display: block; aspect-ratio: 4 / 3; border-radius: 14px; background: #efece8"></span><span style="font-size: 15px; font-weight: 600">Hip mobility flow</span><span style="font-size: 13px; color: #6a6a6a">Saved</span></a>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right column -->
+      <aside style="flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+        <div style="border: 1px solid #dddddd; border-radius: 20px; padding: 24px">
+          <div style="display: flex; gap: 14px; align-items: center">
+            <span role="img" aria-label="Coach photo placeholder" style="width: 52px; height: 52px; border-radius: 999px; background: #e9e5e0; flex: none"></span>
+            <div><p style="margin: 0; font-size: 16px; font-weight: 700">[Coach name]</p><p style="margin: 2px 0 0; font-size: 13px; color: #6a6a6a">On Monday's session</p></div>
+          </div>
+          <p style="margin: 16px 0 0; font-size: 16px; line-height: 1.6; color: #3f3f3f">“Good rhythm on the step and jab. On round three your rear hand drifted. Keep it glued to your cheek.”</p>
+          <button style="margin-top: 16px; width: 100%; border: 1px solid #222222; background: #ffffff; font: inherit; font-size: 15px; font-weight: 600; padding: 11px; border-radius: 8px">Reply to coach</button>
+        </div>
+
+        <div style="border: 1px solid #dddddd; border-radius: 20px; padding: 24px">
+          <h2 style="margin: 0; font-size: 18px; font-weight: 700">This week</h2>
+          <div aria-label="Sessions this week" style="margin-top: 16px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; text-align: center">
+            <div><span style="display: flex; margin: 0 auto; width: 34px; height: 34px; border-radius: 999px; background: #222222; color: #ffffff; font-size: 13px; font-weight: 600; align-items: center; justify-content: center">M</span></div>
+            <div><span style="display: flex; margin: 0 auto; width: 34px; height: 34px; border-radius: 999px; background: #222222; color: #ffffff; font-size: 13px; font-weight: 600; align-items: center; justify-content: center">T</span></div>
+            <div><span style="display: flex; margin: 0 auto; width: 34px; height: 34px; border-radius: 999px; border: 2px solid {{accent}}; color: {{accent}}; font-size: 13px; font-weight: 700; align-items: center; justify-content: center; box-sizing: border-box">W</span></div>
+            <div><span style="display: flex; margin: 0 auto; width: 34px; height: 34px; border-radius: 999px; background: #f7f7f7; color: #6a6a6a; font-size: 13px; align-items: center; justify-content: center">T</span></div>
+            <div><span style="display: flex; margin: 0 auto; width: 34px; height: 34px; border-radius: 999px; background: #f7f7f7; color: #6a6a6a; font-size: 13px; align-items: center; justify-content: center">F</span></div>
+            <div><span style="display: flex; margin: 0 auto; width: 34px; height: 34px; border-radius: 999px; background: #f7f7f7; color: #6a6a6a; font-size: 13px; align-items: center; justify-content: center">S</span></div>
+            <div><span style="display: flex; margin: 0 auto; width: 34px; height: 34px; border-radius: 999px; color: #929292; font-size: 13px; align-items: center; justify-content: center">S</span></div>
+          </div>
+          <p style="margin: 16px 0 0; font-size: 15px; color: #3f3f3f"><strong style="color: #222222">2 of 5</strong> sessions done</p>
+          <p style="margin: 6px 0 0; font-size: 15px; color: #3f3f3f">New record: <strong style="color: #222222">Goblet squat 20 kg × 8</strong></p>
+        </div>
+
+        <div id="ask" style="background: #f7f7f7; border-radius: 20px; padding: 24px">
+          <div style="display: flex; align-items: center; gap: 8px"><h2 style="margin: 0; font-size: 18px; font-weight: 700">Ask the AI guide</h2><span style="font-size: 11px; font-weight: 700; color: {{accent}}; background: #fdf0ea; padding: 3px 8px; border-radius: 999px">AI</span></div>
+          <label style="margin-top: 14px; display: flex; align-items: center; background: #ffffff; border: 1px solid #dddddd; border-radius: 8px; height: 48px; padding: 0 14px"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Your question</span><input placeholder="What should I focus on today?" style="flex: 1; border: 0; font: inherit; font-size: 14px; outline: none; background: transparent"></label>
+        </div>
+      </aside>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#C2410C","options":["#C2410C","#222222","#0A7C66","#1D4ED8"]},"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#C2410C' };
+  }
+}
+</script>
+</body>
+</html>

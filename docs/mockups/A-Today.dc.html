@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FitSphere — Studio Today dashboard</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#f5f5f7}
+a{color:#1d1d1f;text-decoration:none}a:hover{color:#000000}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #f5f5f7; color: #1d1d1f; font-family: Inter, system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased">
+
+  <header style="position: sticky; top: 0; z-index: 10; background: rgba(245,245,247,0.85); backdrop-filter: saturate(180%) blur(20px); border-bottom: 1px solid #e3e3e8">
+    <nav aria-label="App" style="max-width: 1240px; margin: 0 auto; padding: 0 24px; min-height: 60px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap">
+      <a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 18px; letter-spacing: -0.02em">
+        <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="{{accent}}" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M3.5 9h17M3.5 15h17M12 3c2.8 2.6 2.8 15.4 0 18M12 3c-2.8 2.6-2.8 15.4 0 18"></path></svg>
+        FitSphere
+      </a>
+      <div style="display: flex; gap: 24px; font-size: 14px; margin-left: auto; align-items: center">
+        <a href="#today" style="color: #1d1d1f; font-weight: 600">Today</a>
+        <a href="A-Lesson.dc.html" style="color: #424245">Learn</a>
+        <a href="#programs" style="color: #424245">Programs</a>
+        <a href="#ask" style="color: #424245">Ask AI</a>
+        <span role="img" aria-label="Your profile" style="width: 32px; height: 32px; border-radius: 999px; background: #d2d2d7"></span>
+      </div>
+    </nav>
+  </header>
+
+  <main id="today" style="max-width: 1240px; margin: 0 auto; padding: 48px 24px 96px">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap">
+      <div>
+        <p style="margin: 0; font-size: 15px; font-weight: 500; color: #6e6e73">Wednesday, 4 November</p>
+        <h1 style="margin: 6px 0 0; font-size: clamp(34px, 4vw, 48px); line-height: 1.08; font-weight: 700; letter-spacing: -0.03em">Good morning, [Name].</h1>
+        <p style="margin: 10px 0 0; font-size: 18px; color: #6e6e73">Two sessions today. About 65 minutes in total.</p>
+      </div>
+      <span style="font-size: 13px; color: #6e6e73; border: 1px solid #d2d2d7; padding: 4px 12px; border-radius: 999px">Sample data</span>
+    </div>
+
+    <!-- Week strip -->
+    <div aria-label="This week" style="margin-top: 32px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; max-width: 620px">
+      <div style="text-align: center; padding: 12px 0; border-radius: 16px; background: #ffffff"><p style="margin: 0; font-size: 13px; color: #6e6e73">Mon</p><p style="margin: 6px auto 0; width: 10px; height: 10px; border-radius: 999px; background: {{accent}}"></p></div>
+      <div style="text-align: center; padding: 12px 0; border-radius: 16px; background: #ffffff"><p style="margin: 0; font-size: 13px; color: #6e6e73">Tue</p><p style="margin: 6px auto 0; width: 10px; height: 10px; border-radius: 999px; background: {{accent}}"></p></div>
+      <div style="text-align: center; padding: 12px 0; border-radius: 16px; background: #1d1d1f; color: #ffffff"><p style="margin: 0; font-size: 13px; font-weight: 600">Wed</p><p style="margin: 6px auto 0; width: 10px; height: 10px; border-radius: 999px; border: 2px solid #ffffff; box-sizing: border-box"></p></div>
+      <div style="text-align: center; padding: 12px 0; border-radius: 16px; background: #ffffff"><p style="margin: 0; font-size: 13px; color: #6e6e73">Thu</p><p style="margin: 6px auto 0; width: 10px; height: 10px; border-radius: 999px; background: #e3e3e8"></p></div>
+      <div style="text-align: center; padding: 12px 0; border-radius: 16px; background: #ffffff"><p style="margin: 0; font-size: 13px; color: #6e6e73">Fri</p><p style="margin: 6px auto 0; width: 10px; height: 10px; border-radius: 999px; background: #e3e3e8"></p></div>
+      <div style="text-align: center; padding: 12px 0; border-radius: 16px; background: #ffffff"><p style="margin: 0; font-size: 13px; color: #6e6e73">Sat</p><p style="margin: 6px auto 0; width: 10px; height: 10px; border-radius: 999px; background: #e3e3e8"></p></div>
+      <div style="text-align: center; padding: 12px 0; border-radius: 16px; background: #ffffff"><p style="margin: 0; font-size: 13px; color: #6e6e73">Sun</p><p style="margin: 6px auto 0; width: 10px; height: 10px; border-radius: 999px; background: transparent"></p></div>
+    </div>
+
+    <!-- Sessions -->
+    <div style="margin-top: 32px; display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px">
+      <article style="background: #ffffff; border-radius: 28px; padding: 32px; display: flex; flex-direction: column; gap: 20px">
+        <div style="display: flex; align-items: center; gap: 12px">
+          <span style="width: 40px; height: 40px; border-radius: 12px; background: {{accent}}; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" aria-hidden="true"><path d="M7 10a4 4 0 0 1 4-4h3a4 4 0 0 1 4 4v3a5 5 0 0 1-5 5h-2a4 4 0 0 1-4-4z"></path><path d="M7 12h4"></path></svg></span>
+          <p style="margin: 0; font-size: 14px; color: #6e6e73">Boxing · Fundamentals, week 2 · [Coach name]</p>
+        </div>
+        <div>
+          <h2 style="margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -0.03em">Jab &amp; footwork</h2>
+          <p style="margin: 6px 0 0; font-size: 16px; color: #6e6e73">35 min · 6 drills · No equipment</p>
+        </div>
+        <ul style="margin: 0; padding: 0; list-style: none; border-top: 1px solid #f0f0f2">
+          <li style="display: flex; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid #f0f0f2; font-size: 15px"><span>Shadow boxing warm-up</span><span style="color: #6e6e73">2 × 3 min</span></li>
+          <li style="display: flex; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid #f0f0f2; font-size: 15px"><span>Stationary jab</span><span style="color: #6e6e73">3 × 2 min</span></li>
+          <li style="display: flex; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid #f0f0f2; font-size: 15px"><span>Step and jab</span><span style="color: #6e6e73">3 × 2 min</span></li>
+          <li style="display: flex; justify-content: space-between; padding: 13px 0; font-size: 15px; color: #6e6e73"><span>+ 3 more</span><span></span></li>
+        </ul>
+        <button style="margin-top: auto; border: 0; font: inherit; font-size: 16px; font-weight: 500; background: {{accent}}; color: #ffffff; padding: 14px; border-radius: 999px">Start session</button>
+      </article>
+
+      <article style="background: #ffffff; border-radius: 28px; padding: 32px; display: flex; flex-direction: column; gap: 20px">
+        <div style="display: flex; align-items: center; gap: 12px">
+          <span style="width: 40px; height: 40px; border-radius: 12px; background: #1d1d1f; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" aria-hidden="true"><path d="M3 12h3M18 12h3M6 8v8M18 8v8M9 10v4M15 10v4M9 12h6"></path></svg></span>
+          <p style="margin: 0; font-size: 14px; color: #6e6e73">Strength &amp; Conditioning · supports punching power</p>
+        </div>
+        <div>
+          <h2 style="margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -0.03em">Rotational power</h2>
+          <p style="margin: 6px 0 0; font-size: 16px; color: #6e6e73">30 min · 5 exercises · Med ball, dumbbell</p>
+        </div>
+        <ul style="margin: 0; padding: 0; list-style: none; border-top: 1px solid #f0f0f2">
+          <li style="display: flex; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid #f0f0f2; font-size: 15px"><span>Med-ball rotational throw</span><span style="color: #6e6e73">3 × 6 each side</span></li>
+          <li style="display: flex; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid #f0f0f2; font-size: 15px"><span>Goblet squat</span><span style="color: #6e6e73">3 × 8</span></li>
+          <li style="display: flex; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid #f0f0f2; font-size: 15px"><span>Pallof press</span><span style="color: #6e6e73">3 × 10 each side</span></li>
+          <li style="display: flex; justify-content: space-between; padding: 13px 0; font-size: 15px; color: #6e6e73"><span>+ 2 more</span><span></span></li>
+        </ul>
+        <button style="margin-top: auto; border: 0; font: inherit; font-size: 16px; font-weight: 500; background: #1d1d1f; color: #ffffff; padding: 14px; border-radius: 999px">Start session</button>
+      </article>
+    </div>
+
+    <!-- Secondary row -->
+    <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px">
+      <article style="background: #ffffff; border-radius: 28px; padding: 28px; display: flex; flex-direction: column; gap: 14px">
+        <div style="display: flex; align-items: center; gap: 12px">
+          <span role="img" aria-label="Coach photo placeholder" style="width: 40px; height: 40px; border-radius: 999px; background: #e3e3e8"></span>
+          <div><p style="margin: 0; font-size: 15px; font-weight: 600">[Coach name]</p><p style="margin: 0; font-size: 13px; color: #6e6e73">Feedback on Monday's session</p></div>
+        </div>
+        <p style="margin: 0; font-size: 17px; line-height: 1.5">“Good rhythm on the step and jab. On round three your rear hand drifted. Keep it glued to your cheek.”</p>
+        <a href="#reply" style="margin-top: auto; font-size: 15px; color: {{accent}}">Reply ›</a>
+      </article>
+
+      <article style="background: #ffffff; border-radius: 28px; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+        <h2 style="margin: 0; font-size: 17px; font-weight: 600">This week</h2>
+        <p style="margin: 0; font-size: 44px; font-weight: 700; letter-spacing: -0.03em; line-height: 1">2<span style="font-size: 22px; color: #6e6e73; font-weight: 500"> of 5 sessions</span></p>
+        <div role="img" aria-label="40 percent of this week's sessions done" style="height: 8px; border-radius: 999px; background: #f0f0f2; overflow: hidden"><div style="width: 40%; height: 100%; background: {{accent}}; border-radius: 999px"></div></div>
+        <p style="margin: 0; font-size: 14px; color: #6e6e73">New record: Goblet squat, 20 kg × 8</p>
+      </article>
+
+      <article style="background: #ffffff; border-radius: 28px; padding: 28px; display: flex; flex-direction: column; gap: 14px">
+        <h2 style="margin: 0; font-size: 17px; font-weight: 600">Continue learning</h2>
+        <a href="A-Lesson.dc.html" style="display: flex; gap: 14px; align-items: center">
+          <span role="img" aria-label="Lesson thumbnail placeholder" style="width: 72px; height: 72px; border-radius: 16px; background: #ececf0; flex: none"></span>
+          <span><span style="display: block; font-size: 16px; font-weight: 600">The Cross</span><span style="display: block; font-size: 14px; color: #6e6e73">Boxing · Beginner · 9 min</span></span>
+        </a>
+        <div role="img" aria-label="Lesson 40 percent watched" style="height: 6px; border-radius: 999px; background: #f0f0f2; overflow: hidden"><div style="width: 40%; height: 100%; background: #1d1d1f"></div></div>
+        <a href="#ask" style="margin-top: auto; font-size: 15px; color: {{accent}}">Ask AI about the cross ›</a>
+      </article>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#0B5FFF","options":["#0B5FFF","#1D1D1F","#0A7C66","#C2410C"]},"$preview":{"width":1440,"height":1500}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#0B5FFF' };
+  }
+}
+</script>
+</body>
+</html>
