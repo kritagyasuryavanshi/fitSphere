@@ -20,6 +20,7 @@ Keep newest entries at the top of each section.
 - Node 26.13.0 LTS installed with winget (O-03 done).
 - Build inside the repo, not in a temp folder (owner rejected a scratchpad scaffold).
 - Docker is not installed, so local Supabase (S0-04) needs Docker Desktop or a cloud dev project.
+- Done: S0-02 (c6cdf8f). Next: S0-03 design system in packages/ui. Next.js 16 notes read: fonts via next/font/google (Anton, Inter) in the root layout; Tailwind 4 via @import "tailwindcss" with @theme tokens. gstack /verify needs Bun; use `npm run verify` instead.
 
 ## Session 3f (2026-11-05)
 - Owner approved D1–D6. Done: titles fixed; five key phone screens reviewed from real screenshots and fixed via `phone.py` (2-up photo tiles, collapsed filters and AI history, sticky bars above tabs); coach dashboard, my lessons and clients become cards on phones; 9 new screens for G1–G4, G6 and notifications (`build/pages_gaps.py`). Record: `docs/designs/design-review-2026-11-05.md`; review page with screenshots: https://claude.ai/artifact/DnbZRbQHPG74SwxnUg5Mft. Screenshots in `docs/mockups/screenshots/`.
