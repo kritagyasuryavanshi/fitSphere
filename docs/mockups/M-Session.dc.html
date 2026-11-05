@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FitSphere: Phone: Session player</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+/* Hallmark (applied as a floor on an existing design) · kept by owner choice: inline colours (the canvas editor edits them), grey labels above heads and middle-dot meta lines (the approved Fight Camp voice) */
+a:active,button:active{transform:translateY(1px)}
+button:disabled,a[aria-disabled="true"]{opacity:.4;cursor:not-allowed}
+html,body{overflow-x:clip}
+body{margin:0;background:#111111}
+a{color:#ffffff;text-decoration:none}a:hover{color:#cacacb}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid #D4F000;outline-offset:2px}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; overflow: hidden; position: relative; background: #111111; color: #ffffff; font-family: Inter, Helvetica, Arial, sans-serif; display: flex; flex-direction: column">
+<header style="flex: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px; border-bottom: 1px solid #2b2b2d">
+    <a href="M-Today.dc.html" aria-label="End session" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></a>
+    <div style="text-align: center; min-width: 0"><p style="margin: 0; font-size: 14px; font-weight: 600">Jab &amp; footwork</p><p style="margin: 2px 0 0; font-size: 12px; color: #9e9ea0">Drill 3 of 6 · 14:20</p></div>
+    <a href="P-Help.dc.html" aria-label="Help" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600">?</a>
+  </header>
+  <div role="progressbar" aria-label="Session progress" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="flex: none; height: 4px; background: #2b2b2d"><div style="width: 40%; height: 100%; background: {{accent}}"></div></div>
+  <main style="flex: 1; overflow: hidden; display: flex; flex-direction: column">
+    <div style="position: relative; height: 240px; flex: none; overflow: hidden">
+      <img src="/_blob/6202d7d364f452b3da1e5b4a253a7362" alt="Athlete practising step and jab" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover">
+      <div aria-hidden="true" style="position: absolute; inset: 0; background: rgba(0,0,0,0.35)"></div>
+      <h1 style="position: absolute; left: 16px; right: 16px; bottom: 16px; font-family: Anton, Impact, sans-serif; font-weight: 400; text-transform: uppercase; line-height: 0.9; margin: 0; font-size: 52px">Step and jab</h1>
+    </div>
+    <div style="padding: 20px 16px; display: flex; flex-direction: column; gap: 8px; align-items: center; text-align: center">
+      <p style="margin: 0; font-size: 14px; font-weight: 500; color: {{accent}}">Round 2 of 3 · Work</p>
+      <p role="timer" style="margin: 0; font-family: Anton, Impact, sans-serif; font-size: 128px; line-height: 0.9; font-variant-numeric: tabular-nums">1:24</p>
+      <p style="margin: 0; font-size: 14px; color: #9e9ea0">Step with the lead foot as the jab lands.</p>
+    </div>
+    <div style="margin-top: auto; padding: 0 16px 28px; display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center">
+      <a href="M-Session.dc.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; box-sizing: border-box; font-size: 16px; font-weight: 500; background: transparent; color: #ffffff; padding: 12.5px 26.5px; border-radius: 30px; border: 1.5px solid #ffffff; border-color: #4b4b4d; color: #cacacb; padding: 0 12px; font-size: 14px">Skip rest</a>
+      <button aria-label="Pause" style="width: 72px; height: 72px; border: 0; border-radius: 999px; background: {{accent}}; display: flex; align-items: center; justify-content: center"><svg width="24" height="24" viewBox="0 0 24 24" fill="#111111" aria-hidden="true"><rect x="6" y="5" width="4" height="14"></rect><rect x="14" y="5" width="4" height="14"></rect></svg></button>
+      <a href="T-SessionDone.dc.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; box-sizing: border-box; font-size: 16px; font-weight: 500; background: transparent; color: #ffffff; padding: 12.5px 26.5px; border-radius: 30px; border: 1.5px solid #ffffff; padding: 0 12px; font-size: 14px">Log drill</a>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#D4F000","options":["#D4F000","#FF5A1F","#7CF5D2","#FFFFFF"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#D4F000' };
+  }
+}
+</script>
+</body>
+</html>

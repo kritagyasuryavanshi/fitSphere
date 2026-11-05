@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>FitSphere — Session player</title>
+<title>FitSphere: Session player</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -11,8 +11,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <style>
+/* Hallmark (applied as a floor on an existing design) · kept by owner choice: inline colours (the canvas editor edits them), grey labels above heads and middle-dot meta lines (the approved Fight Camp voice) */
+a:active,button:active{transform:translateY(1px)}
+button:disabled,a[aria-disabled="true"]{opacity:.4;cursor:not-allowed}
+html,body{overflow-x:clip}
 body{margin:0;background:#111111}
 a{color:#ffffff;text-decoration:none}a:hover{color:#cacacb}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid #D4F000;outline-offset:2px}
 </style>
 </helmet>
 <div style="width: 100%; min-height: 100vh; background: #111111; color: #ffffff; font-family: Inter, Helvetica, Arial, sans-serif">
@@ -41,7 +46,7 @@ a{color:#ffffff;text-decoration:none}a:hover{color:#cacacb}
             <p style="margin: 0; font-size: 14px; font-weight: 500; color: #e5e5e5">Now</p>
             <h1 style="margin: 4px 0 0; font-family: Anton, Impact, sans-serif; font-weight: 400; font-size: clamp(56px, 6vw, 96px); line-height: 0.9; text-transform: uppercase">Step and jab</h1>
           </div>
-          <button style="display: flex; align-items: center; gap: 8px; border: 0; font: inherit; font-size: 15px; font-weight: 500; background: #ffffff; color: #111111; padding: 12px 20px; border-radius: 30px"><svg width="14" height="14" viewBox="0 0 24 24" fill="#111111" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg>Watch demo</button>
+          <a href="C-Lesson.dc.html" style="display: flex; align-items: center; gap: 8px; border: 0; font: inherit; font-size: 15px; font-weight: 500; background: #ffffff; color: #111111; padding: 12px 20px; border-radius: 30px"><svg width="14" height="14" viewBox="0 0 24 24" fill="#111111" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg>Watch demo</a>
         </div>
       </section>
 
@@ -107,7 +112,7 @@ a{color:#ffffff;text-decoration:none}a:hover{color:#cacacb}
       <label style="flex: 2 1 320px; display: flex; flex-direction: column; gap: 10px; font-size: 14px; font-weight: 500">Note for your coach
         <textarea rows="2" style="font: inherit; font-size: 15px; border: 1px solid #cacacb; padding: 12px; resize: vertical">Lead foot landing late on round 2. Felt better once I slowed down.</textarea>
       </label>
-      <button style="flex: 1 1 200px; align-self: flex-end; border: 0; font: inherit; font-size: 16px; font-weight: 500; background: #111111; color: #ffffff; padding: 16px 28px; border-radius: 30px">Save and next drill</button>
+      <a href="T-SessionDone.dc.html" style="display: inline-flex; align-items: center; justify-content: center; text-align: center; flex: 1 1 200px; align-self: flex-end; border: 0; font: inherit; font-size: 16px; font-weight: 500; background: #111111; color: #ffffff; padding: 16px 28px; border-radius: 30px">Save and next drill</a>
     </section>
 
     <!-- Up next -->

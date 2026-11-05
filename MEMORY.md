@@ -5,14 +5,21 @@ Every session reads it first and updates it before it ends.
 Keep newest entries at the top of each section.
 
 ## Current state
-- **Phase:** v1 design and visual direction approved. Mockups done. Engineering plan next. No app code exists yet.
+- **Phase:** v1 design approved. Full-site clickable design done (47 linked screens). Engineering plan next. No app code exists yet.
 - **Current milestone:** M1 Foundation, not started.
 - **Next step for the next session:**
-  1. Get the owner's feedback on the 10 Fight Camp screens, or a go-ahead for mobile versions.
+  1. Get the owner's feedback on the full-site design (47 linked screens on the canvas page "Fight Camp · full site").
   2. Settle the stack question: the owner asked for a "Python engineering plan", but the approved stack is Next.js + Supabase. Option on the table: Next.js web app plus a Python (FastAPI) service for the AI assistant. Ask once, then decide.
   3. Write the engineering plan for M1 to M5 in `docs/plans/`. Cover schema, RLS rules, test setup, and the four minor reviewer concerns in the design doc. After approval, build M1 hands-off.
 - **Open owner decisions:** Mobbin install (only unofficial community MCPs exist; needs a paid Mobbin account and a session token; owner must say "install mobbin-mcp").
 - **Owner's parallel task:** meet one boxing coach and one S&C coach (the assignment in the design doc).
+
+## Session 3 (2026-11-05)
+- Owner asked for every site screen as a linked design (UI/UX, not a working app). A half-written prototype app in `docs/prototype/` was deleted unused.
+- Added 37 screens to the canvas and rewired the original 10, so Play from Landing clicks through every flow: public site, learn, sign-up (with under-18 branch), train, account, coach, review, admin, and 3 phone screens.
+- Sources in `docs/mockups/`; generator scripts in `docs/mockups/build/` (Python, writes `.dc.html` from shared header/footer fragments).
+- Installed tools: ponytail plugin, ui-ux-pro-max plugin, hallmark skill (global, via a temporary Node 22 because PC Node is 18.16).
+- Hallmark used as a quality floor only: focus rings, 44px targets, active/disabled states, no invented metrics (removed "24 skills · 96 drills" and "1,284 athletes learning"), no em-dashes in copy. Its Floor rules 48/54/63 conflict with the canvas format and the approved Fight Camp voice, so they stay unmet by owner choice. ui-ux-pro-max style picks (orange, dark neon) rejected; its UX rules used (empty states, inline errors, destructive confirms).
 
 ## Session 2 (2026-11-04, later)
 - Moved the project to `C:\Users\LENOVO\Desktop\Projects\fitSphere`.
@@ -32,6 +39,7 @@ Keep newest entries at the top of each section.
 ## Decisions
 | Date | Decision | Why |
 |---|---|---|
+| 2026-11-05 | Keep Fight Camp look when using Hallmark or ui-ux-pro-max; use them for quality checks, not a new theme. | Owner said the current screens look good and to follow that practice. |
 | 2026-11-04 | Visual direction: "Fight Camp" (Nike-grade): Anton condensed caps + Inter, black/white, volt #D4F000 accent, square imagery, pill buttons. 10 screens in `docs/mockups/` and the canvas https://claude.ai/artifact/YVnwgT8qzwA2SerCSPasBe. | Owner picked C over Studio (Apple) and Coach (Airbnb). |
 | 2026-11-04 | v1 = three pillars: Video Learning Library, AI Instructional Assistant, Coach-Led Training. | Owner wants all three complete from day one and accepts a longer timeline. |
 | 2026-11-04 | Launch sports: Boxing primary, S&C integrated support. Data model stays multi-sport. | Owner's choice. Both suit adults. S&C must not become a generic gym app. |
@@ -52,4 +60,5 @@ Keep newest entries at the top of each section.
 - Demand evidence is zero. Treat pricing and usage assumptions as hypotheses.
 
 ## Lessons learned
+- The `skills` CLI needs Node 22.20+. Run it with `npx -y -p node@22 -p skills skills ...` until Node is upgraded.
 - gstack tools that need Bun fail on this PC until Bun is installed. Codex CLI is not installed, so outside reviews fall back to a Claude subagent.

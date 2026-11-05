@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>FitSphere — Program builder</title>
+<title>FitSphere: Program builder</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -11,8 +11,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <style>
+/* Hallmark (applied as a floor on an existing design) · kept by owner choice: inline colours (the canvas editor edits them), grey labels above heads and middle-dot meta lines (the approved Fight Camp voice) */
+a:active,button:active{transform:translateY(1px)}
+button:disabled,a[aria-disabled="true"]{opacity:.4;cursor:not-allowed}
+html,body{overflow-x:clip}
 body{margin:0;background:#ffffff}
 a{color:#111111;text-decoration:none}a:hover{color:#707072}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid #111111;outline-offset:2px}
 </style>
 </helmet>
 <div style="width: 100%; min-height: 100vh; background: #ffffff; color: #111111; font-family: Inter, Helvetica, Arial, sans-serif">
@@ -20,13 +25,13 @@ a{color:#111111;text-decoration:none}a:hover{color:#707072}
   <header style="border-bottom: 1px solid #e5e5e5">
     <nav aria-label="Coach" style="max-width: 1440px; margin: 0 auto; padding: 0 40px; min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap">
       <a href="C-Landing.dc.html" style="display: flex; align-items: center; gap: 10px"><span style="font-family: Anton, Impact, sans-serif; font-size: 28px; text-transform: uppercase">FitSphere</span><span style="font-size: 12px; font-weight: 600; background: {{accent}}; padding: 4px 10px; border-radius: 30px">Coach</span></a>
-      <div style="display: flex; gap: 28px; font-size: 16px; font-weight: 500; flex-wrap: wrap"><a href="C-CoachDash.dc.html">Athletes</a><a href="#programs" style="text-decoration: underline; text-underline-offset: 6px">Programs</a><a href="#content">My lessons</a><a href="#review">Review queue</a></div>
-      <img src="/_blob/fc8037ecec535b2be1f9befb3d629446" alt="Vikram Rathore, your profile" style="width: 36px; height: 36px; border-radius: 999px; object-fit: cover">
+      <div style="display: flex; gap: 28px; font-size: 16px; font-weight: 500; flex-wrap: wrap"><a href="C-CoachDash.dc.html">Athletes</a><a href="K-Programs.dc.html" style="text-decoration: underline; text-underline-offset: 6px">Programs</a><a href="K-Lessons.dc.html">My lessons</a><a href="R-Queue.dc.html">Review queue</a></div>
+      <a href="P-Coach.dc.html" aria-label="Your public profile"><img src="/_blob/fc8037ecec535b2be1f9befb3d629446" alt="" style="width: 36px; height: 36px; border-radius: 999px; object-fit: cover"></a>
     </nav>
   </header>
 
   <main id="programs" style="max-width: 1440px; margin: 0 auto; padding: 32px 40px 80px">
-    <a href="C-CoachDash.dc.html" style="font-size: 14px; font-weight: 500; color: #707072">← All programs</a>
+    <a href="K-Programs.dc.html" style="display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: 15px; font-weight: 500"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>All programs</a>
     <div style="margin-top: 12px; display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap">
       <div>
         <div style="display: flex; gap: 8px; align-items: center"><span style="font-size: 12px; font-weight: 600; border: 1px solid #111111; padding: 4px 10px; border-radius: 30px">Draft · v2</span><span style="font-size: 12px; font-weight: 500; border: 1px solid #cacacb; padding: 4px 10px; border-radius: 30px">Demo data</span></div>
@@ -34,8 +39,8 @@ a{color:#111111;text-decoration:none}a:hover{color:#707072}
         <p style="margin: 8px 0 0; font-size: 15px; color: #707072">6 weeks · 3 sessions a week · Beginner · Boxing + S&amp;C · 12 athletes enrolled</p>
       </div>
       <div style="display: flex; gap: 8px; flex-wrap: wrap">
-        <button style="border: 1px solid #cacacb; background: #ffffff; font: inherit; font-size: 15px; font-weight: 500; padding: 13px 22px; border-radius: 30px">Preview as athlete</button>
-        <button style="border: 0; background: #111111; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; padding: 14px 24px; border-radius: 30px">Publish changes</button>
+        <a href="P-Program.dc.html" style="display: inline-flex; align-items: center; justify-content: center; text-align: center; border: 1px solid #cacacb; background: #ffffff; font: inherit; font-size: 15px; font-weight: 500; padding: 13px 22px; border-radius: 30px">Preview as athlete</a>
+        <a href="K-Programs.dc.html" style="display: inline-flex; align-items: center; justify-content: center; text-align: center; border: 0; background: #111111; color: #ffffff; font: inherit; font-size: 15px; font-weight: 500; padding: 14px 24px; border-radius: 30px">Publish changes</a>
       </div>
     </div>
 

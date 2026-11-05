@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>FitSphere — AI assistant</title>
+<title>FitSphere: AI assistant</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -11,8 +11,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <style>
+/* Hallmark (applied as a floor on an existing design) · kept by owner choice: inline colours (the canvas editor edits them), grey labels above heads and middle-dot meta lines (the approved Fight Camp voice) */
+a:active,button:active{transform:translateY(1px)}
+button:disabled,a[aria-disabled="true"]{opacity:.4;cursor:not-allowed}
+html,body{overflow-x:clip}
 body{margin:0;background:#ffffff}
 a{color:#111111;text-decoration:none}a:hover{color:#707072}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid #111111;outline-offset:2px}
 </style>
 </helmet>
 <div style="width: 100%; min-height: 100vh; background: #ffffff; color: #111111; font-family: Inter, Helvetica, Arial, sans-serif">
@@ -20,8 +25,8 @@ a{color:#111111;text-decoration:none}a:hover{color:#707072}
   <header style="border-bottom: 1px solid #e5e5e5">
     <nav aria-label="App" style="max-width: 1440px; margin: 0 auto; padding: 0 40px; min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap">
       <a href="C-Landing.dc.html" style="font-family: Anton, Impact, sans-serif; font-size: 28px; text-transform: uppercase">FitSphere</a>
-      <div style="display: flex; gap: 28px; font-size: 16px; font-weight: 500; flex-wrap: wrap"><a href="C-Today.dc.html">Today</a><a href="C-Library.dc.html">Learn</a><a href="C-Progress.dc.html">Progress</a><a href="#ask" style="text-decoration: underline; text-underline-offset: 6px">Ask AI</a></div>
-      <span role="img" aria-label="Kabir, your profile" style="width: 36px; height: 36px; border-radius: 999px; background: #111111; color: #ffffff; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center">K</span>
+      <div style="display: flex; gap: 28px; font-size: 16px; font-weight: 500; flex-wrap: wrap"><a href="C-Today.dc.html">Today</a><a href="C-Library.dc.html">Learn</a><a href="C-Progress.dc.html">Progress</a><a href="C-AI.dc.html" aria-current="page" style="text-decoration: underline; text-underline-offset: 6px">Ask AI</a></div>
+      <a href="T-Account.dc.html" aria-label="Kabir, your account" style="width: 44px; height: 44px; border-radius: 999px; background: #111111; color: #ffffff; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center">K</a>
     </nav>
   </header>
 
@@ -70,7 +75,7 @@ a{color:#111111;text-decoration:none}a:hover{color:#707072}
             <a href="C-Lesson.dc.html" style="display: flex; gap: 12px; align-items: center; border: 1px solid #e5e5e5; padding: 10px"><img src="/_blob/4b009e8b70bea433da647b3525c99506" alt="" style="width: 64px; height: 64px; object-fit: cover"><span><span style="display: block; font-size: 15px; font-weight: 500">Stationary jab</span><span style="display: block; font-size: 13px; color: #707072">3 × 2 min · Coach-verified</span></span></a>
             <a href="C-Lesson.dc.html" style="display: flex; gap: 12px; align-items: center; border: 1px solid #e5e5e5; padding: 10px"><img src="/_blob/bc8a7ce0029375691669e97214bc8eab" alt="" style="width: 64px; height: 64px; object-fit: cover"><span><span style="display: block; font-size: 15px; font-weight: 500">Guard check in the mirror</span><span style="display: block; font-size: 13px; color: #707072">2 min · Coach-verified</span></span></a>
           </div>
-          <button style="margin-top: 12px; border: 1px solid #111111; background: #ffffff; font: inherit; font-size: 14px; font-weight: 500; padding: 10px 18px; border-radius: 30px">Add both to Today</button>
+          <a href="C-Today.dc.html" style="display: inline-flex; align-items: center; justify-content: center; text-align: center; margin-top: 12px; border: 1px solid #111111; background: #ffffff; font: inherit; font-size: 14px; font-weight: 500; padding: 10px 18px; border-radius: 30px">Add both to Today</a>
         </div>
       </article>
 
@@ -82,8 +87,8 @@ a{color:#111111;text-decoration:none}a:hover{color:#707072}
         <span style="align-self: flex-start; font-size: 12px; font-weight: 600; border: 1px solid #111111; padding: 4px 12px; border-radius: 30px">Safety · no diagnosis</span>
         <p style="margin: 0; font-size: 17px; line-height: 1.6">I can't tell what's causing shoulder pain, and I won't guess. Please stop bag work until it settles and see a doctor or physiotherapist if it continues. I've added a note so Vikram can adjust your plan.</p>
         <div style="display: flex; gap: 8px; flex-wrap: wrap">
-          <button style="border: 0; font: inherit; font-size: 14px; font-weight: 500; background: #111111; color: #ffffff; padding: 10px 18px; border-radius: 30px">Message Vikram</button>
-          <button style="border: 1px solid #cacacb; background: #ffffff; font: inherit; font-size: 14px; font-weight: 500; padding: 9px 17px; border-radius: 30px">Pause bag drills this week</button>
+          <a href="T-Feedback.dc.html" style="display: inline-flex; align-items: center; justify-content: center; text-align: center; border: 0; font: inherit; font-size: 14px; font-weight: 500; background: #111111; color: #ffffff; padding: 10px 18px; border-radius: 30px">Message Vikram</a>
+          <a href="C-Today.dc.html" style="display: inline-flex; align-items: center; justify-content: center; text-align: center; border: 1px solid #cacacb; background: #ffffff; font: inherit; font-size: 14px; font-weight: 500; padding: 9px 17px; border-radius: 30px">Pause bag drills this week</a>
         </div>
       </article>
 

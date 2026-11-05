@@ -1,39 +1,701 @@
 {
-  "v": 3,
-  "createdOnFiles": {"v": 1, "at": "2026-11-04T11:15:00Z"},
-  "title": "FitSphere Mockups",
-  "launch": {"view": "canvas", "page": "fightcamp"},
-  "pages": [
-    {"id": "fightcamp", "name": "Fight Camp v1"},
-    {"id": "explore", "name": "First directions"}
-  ],
-  "boards": {
-    "Main.dc.html": {"x": 0, "y": 300, "w": 1440, "h": 2700, "title": "A · Studio — Landing", "expand": "fill", "is_interactive": false, "page": "explore"},
-    "A-Lesson.dc.html": {"x": 1520, "y": 300, "w": 1440, "h": 2100, "title": "A · Studio — Skill lesson (Jab)", "expand": "fill", "page": "explore"},
-    "A-Today.dc.html": {"x": 3040, "y": 300, "w": 1440, "h": 1500, "title": "A · Studio — Today dashboard", "expand": "fill", "page": "explore"},
-    "B-Landing.dc.html": {"x": 0, "y": 3350, "w": 1440, "h": 2700, "title": "B · Coach — Landing", "expand": "fill", "page": "explore"},
-    "B-Lesson.dc.html": {"x": 1520, "y": 3350, "w": 1440, "h": 2100, "title": "B · Coach — Skill lesson (Jab)", "expand": "fill", "page": "explore"},
-    "B-Today.dc.html": {"x": 3040, "y": 3350, "w": 1440, "h": 1500, "title": "B · Coach — Today dashboard", "expand": "fill", "page": "explore"},
-    "C-Landing.dc.html": {"x": 0, "y": 300, "w": 1440, "h": 2900, "title": "1 · Landing", "expand": "fill", "page": "fightcamp"},
-    "C-Library.dc.html": {"x": 1520, "y": 300, "w": 1440, "h": 2200, "title": "2 · Boxing library", "expand": "fill", "page": "fightcamp"},
-    "C-Lesson.dc.html": {"x": 3040, "y": 300, "w": 1440, "h": 2300, "title": "3 · Skill lesson (Jab)", "expand": "fill", "page": "fightcamp"},
-    "C-Today.dc.html": {"x": 0, "y": 3550, "w": 1440, "h": 1600, "title": "4 · Today dashboard", "expand": "fill", "page": "fightcamp"},
-    "C-Session.dc.html": {"x": 1520, "y": 3550, "w": 1440, "h": 1200, "title": "5 · Session player + logging", "expand": "fill", "page": "fightcamp"},
-    "C-Progress.dc.html": {"x": 3040, "y": 3550, "w": 1440, "h": 1500, "title": "6 · Progress", "expand": "fill", "page": "fightcamp"},
-    "C-AI.dc.html": {"x": 0, "y": 5500, "w": 1440, "h": 1300, "title": "7 · AI assistant", "expand": "fill", "page": "fightcamp"},
-    "C-Onboarding.dc.html": {"x": 1520, "y": 5500, "w": 1440, "h": 1100, "title": "8 · Onboarding", "expand": "fill", "page": "fightcamp"},
-    "C-CoachDash.dc.html": {"x": 0, "y": 7150, "w": 1440, "h": 1500, "title": "9 · Coach dashboard", "expand": "fill", "page": "fightcamp"},
-    "C-Builder.dc.html": {"x": 1520, "y": 7150, "w": 1440, "h": 1500, "title": "10 · Coach program builder", "expand": "fill", "page": "fightcamp"}
+ "v": 3,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-11-04T11:15:00Z"
+ },
+ "title": "FitSphere Mockups",
+ "launch": {
+  "view": "canvas",
+  "page": "fightcamp"
+ },
+ "pages": [
+  {
+   "id": "fightcamp",
+   "name": "Fight Camp · full site"
   },
-  "order": ["Main.dc.html", "A-Lesson.dc.html", "A-Today.dc.html", "B-Landing.dc.html", "B-Lesson.dc.html", "B-Today.dc.html", "C-Landing.dc.html", "C-Library.dc.html", "C-Lesson.dc.html", "C-Today.dc.html", "C-Session.dc.html", "C-Progress.dc.html", "C-AI.dc.html", "C-Onboarding.dc.html", "C-CoachDash.dc.html", "C-Builder.dc.html"],
-  "notes": {
-    "titleA": {"x": 0, "y": 0, "text": "A · Studio — calm, precise, Apple-grade", "kind": "title1", "maxW": 4480, "page": "explore"},
-    "titleB": {"x": 0, "y": 3050, "text": "B · Coach — warm, card-led, Airbnb-grade", "kind": "title1", "maxW": 4480, "page": "explore"},
-    "fcRow1": {"x": 0, "y": 0, "text": "Discover and learn", "kind": "title1", "maxW": 4480, "page": "fightcamp"},
-    "fcRow2": {"x": 0, "y": 3250, "text": "Train", "kind": "title1", "maxW": 4480, "page": "fightcamp"},
-    "fcRow3": {"x": 0, "y": 5200, "text": "Ask and get started", "kind": "title1", "maxW": 2960, "page": "fightcamp"},
-    "fcRow4": {"x": 0, "y": 6850, "text": "Coach side", "kind": "title1", "maxW": 2960, "page": "fightcamp"},
-    "fcNote": {"x": 3040, "y": 5500, "w": 520, "text": "Demo content throughout: coaches, athletes and numbers are fictional. Photos from Unsplash (free licence). Real content comes from founding coaches.", "size": "m", "fill": "orange", "page": "fightcamp"}
+  {
+   "id": "explore",
+   "name": "First directions"
+  }
+ ],
+ "boards": {
+  "Main.dc.html": {
+   "x": 0,
+   "y": 300,
+   "w": 1440,
+   "h": 2700,
+   "title": "A · Studio — Landing",
+   "expand": "fill",
+   "is_interactive": false,
+   "page": "explore"
   },
-  "designSystems": []
+  "A-Lesson.dc.html": {
+   "x": 1520,
+   "y": 300,
+   "w": 1440,
+   "h": 2100,
+   "title": "A · Studio — Skill lesson (Jab)",
+   "expand": "fill",
+   "page": "explore"
+  },
+  "A-Today.dc.html": {
+   "x": 3040,
+   "y": 300,
+   "w": 1440,
+   "h": 1500,
+   "title": "A · Studio — Today dashboard",
+   "expand": "fill",
+   "page": "explore"
+  },
+  "B-Landing.dc.html": {
+   "x": 0,
+   "y": 3350,
+   "w": 1440,
+   "h": 2700,
+   "title": "B · Coach — Landing",
+   "expand": "fill",
+   "page": "explore"
+  },
+  "B-Lesson.dc.html": {
+   "x": 1520,
+   "y": 3350,
+   "w": 1440,
+   "h": 2100,
+   "title": "B · Coach — Skill lesson (Jab)",
+   "expand": "fill",
+   "page": "explore"
+  },
+  "B-Today.dc.html": {
+   "x": 3040,
+   "y": 3350,
+   "w": 1440,
+   "h": 1500,
+   "title": "B · Coach — Today dashboard",
+   "expand": "fill",
+   "page": "explore"
+  },
+  "C-Landing.dc.html": {
+   "x": 0,
+   "y": 300,
+   "w": 1440,
+   "h": 2900,
+   "title": "1 · Landing",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "C-Library.dc.html": {
+   "x": 0,
+   "y": 7200,
+   "w": 1440,
+   "h": 2200,
+   "title": "12 · Boxing library",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "C-Lesson.dc.html": {
+   "x": 3040,
+   "y": 7200,
+   "w": 1440,
+   "h": 2300,
+   "title": "14 · Skill lesson (Jab)",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "C-Today.dc.html": {
+   "x": 0,
+   "y": 12000,
+   "w": 1440,
+   "h": 1600,
+   "title": "24 · Today",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "C-Session.dc.html": {
+   "x": 3040,
+   "y": 12000,
+   "w": 1440,
+   "h": 1200,
+   "title": "26 · Boxing session player",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "C-Progress.dc.html": {
+   "x": 7600,
+   "y": 12000,
+   "w": 1440,
+   "h": 1500,
+   "title": "29 · Progress",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "C-AI.dc.html": {
+   "x": 0,
+   "y": 14250,
+   "w": 1440,
+   "h": 1300,
+   "title": "30 · AI guide",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "C-Onboarding.dc.html": {
+   "x": 4560,
+   "y": 10150,
+   "w": 1440,
+   "h": 1100,
+   "title": "20 · Sign-up 2 · Experience",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "C-CoachDash.dc.html": {
+   "x": 0,
+   "y": 16700,
+   "w": 1440,
+   "h": 1500,
+   "title": "35 · Coach dashboard",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "C-Builder.dc.html": {
+   "x": 4560,
+   "y": 16700,
+   "w": 1440,
+   "h": 1500,
+   "title": "38 · Program builder",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "P-Programs.dc.html": {
+   "x": 1520,
+   "y": 300,
+   "w": 1440,
+   "h": 2000,
+   "title": "2 · Programs",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "P-Program.dc.html": {
+   "x": 3040,
+   "y": 300,
+   "w": 1440,
+   "h": 2300,
+   "title": "3 · Program detail",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "P-Coaches.dc.html": {
+   "x": 4560,
+   "y": 300,
+   "w": 1440,
+   "h": 1900,
+   "title": "4 · Coaches",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "P-Coach.dc.html": {
+   "x": 6080,
+   "y": 300,
+   "w": 1440,
+   "h": 2500,
+   "title": "5 · Coach profile",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "P-ForCoaches.dc.html": {
+   "x": 7600,
+   "y": 300,
+   "w": 1440,
+   "h": 3300,
+   "title": "6 · For coaches + apply",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "P-Applied.dc.html": {
+   "x": 9120,
+   "y": 300,
+   "w": 1440,
+   "h": 1100,
+   "title": "7 · Application sent",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "P-About.dc.html": {
+   "x": 0,
+   "y": 4150,
+   "w": 1440,
+   "h": 2400,
+   "title": "8 · About",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "P-Help.dc.html": {
+   "x": 1520,
+   "y": 4150,
+   "w": 1440,
+   "h": 2500,
+   "title": "9 · Help",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "P-Legal.dc.html": {
+   "x": 3040,
+   "y": 4150,
+   "w": 1440,
+   "h": 1900,
+   "title": "10 · Privacy and terms",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "P-NotFound.dc.html": {
+   "x": 4560,
+   "y": 4150,
+   "w": 1440,
+   "h": 1100,
+   "title": "11 · 404",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "P-LibrarySC.dc.html": {
+   "x": 1520,
+   "y": 7200,
+   "w": 1440,
+   "h": 2400,
+   "title": "13 · S&C library",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "P-Drill.dc.html": {
+   "x": 4560,
+   "y": 7200,
+   "w": 1440,
+   "h": 2400,
+   "title": "15 · S&C exercise",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "P-Search.dc.html": {
+   "x": 6080,
+   "y": 7200,
+   "w": 1440,
+   "h": 1700,
+   "title": "16 · Search results",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "A-SignIn.dc.html": {
+   "x": 0,
+   "y": 10150,
+   "w": 1440,
+   "h": 1000,
+   "title": "17 · Log in or join (with email error)",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "A-CheckEmail.dc.html": {
+   "x": 1520,
+   "y": 10150,
+   "w": 1440,
+   "h": 1000,
+   "title": "18 · Check your email",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "A-Onboard1.dc.html": {
+   "x": 3040,
+   "y": 10150,
+   "w": 1440,
+   "h": 1200,
+   "title": "19 · Sign-up 1 · About you",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "A-Ready.dc.html": {
+   "x": 6080,
+   "y": 10150,
+   "w": 1440,
+   "h": 1300,
+   "title": "21 · Sign-up 3 · Ready",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "A-Under18.dc.html": {
+   "x": 7600,
+   "y": 10150,
+   "w": 1440,
+   "h": 1000,
+   "title": "22 · Under-18 block (branch from step 1)",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "A-Invite.dc.html": {
+   "x": 9120,
+   "y": 10150,
+   "w": 1440,
+   "h": 1000,
+   "title": "23 · Coach invite link",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "T-TodayEmpty.dc.html": {
+   "x": 1520,
+   "y": 12000,
+   "w": 1440,
+   "h": 1700,
+   "title": "25 · Today, no program yet",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "T-SessionSC.dc.html": {
+   "x": 4560,
+   "y": 12000,
+   "w": 1440,
+   "h": 1250,
+   "title": "27 · S&C session logging",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "T-SessionDone.dc.html": {
+   "x": 6080,
+   "y": 12000,
+   "w": 1440,
+   "h": 1500,
+   "title": "28 · Session done",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "T-Feedback.dc.html": {
+   "x": 1520,
+   "y": 14250,
+   "w": 1440,
+   "h": 1300,
+   "title": "31 · Coach feedback",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "T-MyPrograms.dc.html": {
+   "x": 3040,
+   "y": 14250,
+   "w": 1440,
+   "h": 1300,
+   "title": "32 · My programs (leave confirm)",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "T-Saved.dc.html": {
+   "x": 4560,
+   "y": 14250,
+   "w": 1440,
+   "h": 1300,
+   "title": "33 · Saved",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "T-Account.dc.html": {
+   "x": 6080,
+   "y": 14250,
+   "w": 1440,
+   "h": 1900,
+   "title": "34 · Account and privacy",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "K-Athlete.dc.html": {
+   "x": 1520,
+   "y": 16700,
+   "w": 1440,
+   "h": 1900,
+   "title": "36 · Athlete detail",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "K-Programs.dc.html": {
+   "x": 3040,
+   "y": 16700,
+   "w": 1440,
+   "h": 1200,
+   "title": "37 · Coach programs",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "K-Invite.dc.html": {
+   "x": 6080,
+   "y": 16700,
+   "w": 1440,
+   "h": 1300,
+   "title": "39 · Invite athletes",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "K-Lessons.dc.html": {
+   "x": 7600,
+   "y": 16700,
+   "w": 1440,
+   "h": 1200,
+   "title": "40 · My lessons",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "K-Editor.dc.html": {
+   "x": 9120,
+   "y": 16700,
+   "w": 1440,
+   "h": 2000,
+   "title": "41 · Lesson editor (with error)",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "R-Queue.dc.html": {
+   "x": 0,
+   "y": 19250,
+   "w": 1440,
+   "h": 1100,
+   "title": "42 · Review queue",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "R-Review.dc.html": {
+   "x": 1520,
+   "y": 19250,
+   "w": 1440,
+   "h": 1800,
+   "title": "43 · Review a lesson",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "R-Roles.dc.html": {
+   "x": 3040,
+   "y": 19250,
+   "w": 1440,
+   "h": 1400,
+   "title": "44 · Admin: people and roles",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "M-Today.dc.html": {
+   "x": 0,
+   "y": 21600,
+   "w": 390,
+   "h": 844,
+   "title": "45 · Phone · Today",
+   "is_interactive": true,
+   "page": "fightcamp"
+  },
+  "M-Lesson.dc.html": {
+   "x": 470,
+   "y": 21600,
+   "w": 390,
+   "h": 844,
+   "title": "46 · Phone · Lesson",
+   "is_interactive": true,
+   "page": "fightcamp"
+  },
+  "M-Session.dc.html": {
+   "x": 940,
+   "y": 21600,
+   "w": 390,
+   "h": 844,
+   "title": "47 · Phone · Session",
+   "is_interactive": true,
+   "page": "fightcamp"
+  }
+ },
+ "order": [
+  "Main.dc.html",
+  "A-Lesson.dc.html",
+  "A-Today.dc.html",
+  "B-Landing.dc.html",
+  "B-Lesson.dc.html",
+  "B-Today.dc.html",
+  "C-Landing.dc.html",
+  "P-Programs.dc.html",
+  "P-Program.dc.html",
+  "P-Coaches.dc.html",
+  "P-Coach.dc.html",
+  "P-ForCoaches.dc.html",
+  "P-Applied.dc.html",
+  "P-About.dc.html",
+  "P-Help.dc.html",
+  "P-Legal.dc.html",
+  "P-NotFound.dc.html",
+  "C-Library.dc.html",
+  "P-LibrarySC.dc.html",
+  "C-Lesson.dc.html",
+  "P-Drill.dc.html",
+  "P-Search.dc.html",
+  "A-SignIn.dc.html",
+  "A-CheckEmail.dc.html",
+  "A-Onboard1.dc.html",
+  "C-Onboarding.dc.html",
+  "A-Ready.dc.html",
+  "A-Under18.dc.html",
+  "A-Invite.dc.html",
+  "C-Today.dc.html",
+  "T-TodayEmpty.dc.html",
+  "C-Session.dc.html",
+  "T-SessionSC.dc.html",
+  "T-SessionDone.dc.html",
+  "C-Progress.dc.html",
+  "C-AI.dc.html",
+  "T-Feedback.dc.html",
+  "T-MyPrograms.dc.html",
+  "T-Saved.dc.html",
+  "T-Account.dc.html",
+  "C-CoachDash.dc.html",
+  "K-Athlete.dc.html",
+  "K-Programs.dc.html",
+  "C-Builder.dc.html",
+  "K-Invite.dc.html",
+  "K-Lessons.dc.html",
+  "K-Editor.dc.html",
+  "R-Queue.dc.html",
+  "R-Review.dc.html",
+  "R-Roles.dc.html",
+  "M-Today.dc.html",
+  "M-Lesson.dc.html",
+  "M-Session.dc.html"
+ ],
+ "notes": {
+  "titleA": {
+   "x": 0,
+   "y": 0,
+   "text": "A · Studio — calm, precise, Apple-grade",
+   "kind": "title1",
+   "maxW": 4480,
+   "page": "explore"
+  },
+  "titleB": {
+   "x": 0,
+   "y": 3050,
+   "text": "B · Coach — warm, card-led, Airbnb-grade",
+   "kind": "title1",
+   "maxW": 4480,
+   "page": "explore"
+  },
+  "fcRow1": {
+   "x": 0,
+   "y": 0,
+   "text": "Public site",
+   "kind": "title1",
+   "maxW": 10560,
+   "page": "fightcamp"
+  },
+  "fcRow2": {
+   "x": 0,
+   "y": 3850,
+   "text": "Company pages",
+   "kind": "title1",
+   "maxW": 6000,
+   "page": "fightcamp"
+  },
+  "fcRow3": {
+   "x": 0,
+   "y": 6900,
+   "text": "Learn",
+   "kind": "title1",
+   "maxW": 7520,
+   "page": "fightcamp"
+  },
+  "fcRow4": {
+   "x": 0,
+   "y": 9850,
+   "text": "Sign up",
+   "kind": "title1",
+   "maxW": 10560,
+   "page": "fightcamp"
+  },
+  "fcRow5": {
+   "x": 0,
+   "y": 11700,
+   "text": "Train",
+   "kind": "title1",
+   "maxW": 9040,
+   "page": "fightcamp"
+  },
+  "fcRow6": {
+   "x": 0,
+   "y": 13950,
+   "text": "Ask and account",
+   "kind": "title1",
+   "maxW": 7520,
+   "page": "fightcamp"
+  },
+  "fcRow7": {
+   "x": 0,
+   "y": 16400,
+   "text": "Coach",
+   "kind": "title1",
+   "maxW": 10560,
+   "page": "fightcamp"
+  },
+  "fcRow8": {
+   "x": 0,
+   "y": 18950,
+   "text": "Review and admin",
+   "kind": "title1",
+   "maxW": 4480,
+   "page": "fightcamp"
+  },
+  "fcRow9": {
+   "x": 0,
+   "y": 21300,
+   "text": "Phone",
+   "kind": "title1",
+   "maxW": 1600,
+   "page": "fightcamp"
+  },
+  "fcNote": {
+   "x": -680,
+   "y": 300,
+   "w": 560,
+   "text": "Press Play on Landing and click through: every link and button opens its screen. Sign-up branch: a date of birth under 18 leads to the Under-18 board. Demo content throughout: people and numbers are fictional; photos from Unsplash.",
+   "size": "m",
+   "fill": "orange",
+   "page": "fightcamp"
+  }
+ },
+ "designSystems": []
 }

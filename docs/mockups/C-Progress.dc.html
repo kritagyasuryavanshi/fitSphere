@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>FitSphere — Progress</title>
+<title>FitSphere: Progress</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -11,8 +11,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <style>
+/* Hallmark (applied as a floor on an existing design) · kept by owner choice: inline colours (the canvas editor edits them), grey labels above heads and middle-dot meta lines (the approved Fight Camp voice) */
+a:active,button:active{transform:translateY(1px)}
+button:disabled,a[aria-disabled="true"]{opacity:.4;cursor:not-allowed}
+html,body{overflow-x:clip}
 body{margin:0;background:#ffffff}
 a{color:#111111;text-decoration:none}a:hover{color:#707072}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid #111111;outline-offset:2px}
 </style>
 </helmet>
 <div style="width: 100%; min-height: 100vh; background: #ffffff; color: #111111; font-family: Inter, Helvetica, Arial, sans-serif">
@@ -20,8 +25,8 @@ a{color:#111111;text-decoration:none}a:hover{color:#707072}
   <header style="border-bottom: 1px solid #e5e5e5">
     <nav aria-label="App" style="max-width: 1440px; margin: 0 auto; padding: 0 40px; min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap">
       <a href="C-Landing.dc.html" style="font-family: Anton, Impact, sans-serif; font-size: 28px; text-transform: uppercase">FitSphere</a>
-      <div style="display: flex; gap: 28px; font-size: 16px; font-weight: 500; flex-wrap: wrap"><a href="C-Today.dc.html">Today</a><a href="C-Library.dc.html">Learn</a><a href="#progress" style="text-decoration: underline; text-underline-offset: 6px">Progress</a><a href="C-AI.dc.html">Ask AI</a></div>
-      <span role="img" aria-label="Kabir, your profile" style="width: 36px; height: 36px; border-radius: 999px; background: #111111; color: #ffffff; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center">K</span>
+      <div style="display: flex; gap: 28px; font-size: 16px; font-weight: 500; flex-wrap: wrap"><a href="C-Today.dc.html">Today</a><a href="C-Library.dc.html">Learn</a><a href="C-Progress.dc.html" aria-current="page" style="text-decoration: underline; text-underline-offset: 6px">Progress</a><a href="C-AI.dc.html">Ask AI</a></div>
+      <a href="T-Account.dc.html" aria-label="Kabir, your account" style="width: 44px; height: 44px; border-radius: 999px; background: #111111; color: #ffffff; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center">K</a>
     </nav>
   </header>
 

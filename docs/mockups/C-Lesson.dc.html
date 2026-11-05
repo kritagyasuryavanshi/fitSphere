@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>FitSphere — Fight Camp lesson: The Jab</title>
+<title>FitSphere: Fight Camp lesson: The Jab</title>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -11,8 +11,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <style>
+/* Hallmark (applied as a floor on an existing design) · kept by owner choice: inline colours (the canvas editor edits them), grey labels above heads and middle-dot meta lines (the approved Fight Camp voice) */
+a:active,button:active{transform:translateY(1px)}
+button:disabled,a[aria-disabled="true"]{opacity:.4;cursor:not-allowed}
+html,body{overflow-x:clip}
 body{margin:0;background:#ffffff}
 a{color:#111111;text-decoration:none}a:hover{color:#707072}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid #111111;outline-offset:2px}
 </style>
 </helmet>
 <div style="width: 100%; min-height: 100vh; background: #ffffff; color: #111111; font-family: Inter, Helvetica, Arial, sans-serif">
@@ -20,8 +25,8 @@ a{color:#111111;text-decoration:none}a:hover{color:#707072}
   <header style="border-bottom: 1px solid #e5e5e5">
     <nav aria-label="App" style="max-width: 1440px; margin: 0 auto; padding: 0 40px; min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap">
       <a href="C-Landing.dc.html" style="font-family: Anton, Impact, sans-serif; font-size: 28px; text-transform: uppercase">FitSphere</a>
-      <div style="display: flex; gap: 28px; font-size: 16px; font-weight: 500"><a href="C-Today.dc.html">Today</a><a href="C-Library.dc.html" style="text-decoration: underline; text-underline-offset: 6px">Learn</a><a href="C-Progress.dc.html">Progress</a><a href="C-AI.dc.html">Ask AI</a></div>
-      <span role="img" aria-label="Kabir, your profile" style="width: 36px; height: 36px; border-radius: 999px; background: #111111; color: #ffffff; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center">K</span>
+      <div style="display: flex; gap: 28px; font-size: 16px; font-weight: 500"><a href="C-Today.dc.html">Today</a><a href="C-Library.dc.html" aria-current="page" style="text-decoration: underline; text-underline-offset: 6px">Learn</a><a href="C-Progress.dc.html">Progress</a><a href="C-AI.dc.html">Ask AI</a></div>
+      <a href="T-Account.dc.html" aria-label="Kabir, your account" style="width: 44px; height: 44px; border-radius: 999px; background: #111111; color: #ffffff; font-size: 14px; font-weight: 600; display: flex; align-items: center; justify-content: center">K</a>
     </nav>
   </header>
 
@@ -54,10 +59,10 @@ a{color:#111111;text-decoration:none}a:hover{color:#707072}
           <span style="font-size: 12px; font-weight: 500; border: 1px solid #cacacb; padding: 5px 12px; border-radius: 30px">Demo content</span>
         </div>
         <p style="margin: 24px 0 0; font-size: 16px; line-height: 1.6; color: #39393b">Your lead hand's straight punch. It finds the distance, sets up every combination and keeps the other boxer honest.</p>
-        <p style="margin: 16px 0 0; font-size: 14px; color: #707072">Taught by Vikram Rathore · Reviewed by Rohan Desai · 1,284 athletes learning</p>
+        <p style="margin: 16px 0 0; font-size: 14px; color: #707072">Taught by <a href="P-Coach.dc.html" style="text-decoration: underline">Vikram Rathore</a> · Reviewed by Rohan Desai</p>
         <div style="margin-top: 28px; display: flex; flex-direction: column; gap: 12px">
-          <button style="border: 0; font: inherit; font-size: 16px; font-weight: 500; background: #111111; color: #ffffff; padding: 18px; border-radius: 30px">Add drills to Today</button>
-          <button style="border: 1px solid #cacacb; font: inherit; font-size: 16px; font-weight: 500; background: #ffffff; color: #111111; padding: 17px; border-radius: 30px">Save lesson</button>
+          <a href="C-Today.dc.html" style="display: inline-flex; align-items: center; justify-content: center; text-align: center; border: 0; font: inherit; font-size: 16px; font-weight: 500; background: #111111; color: #ffffff; padding: 18px; border-radius: 30px">Add drills to Today</a>
+          <a href="T-Saved.dc.html" style="display: inline-flex; align-items: center; justify-content: center; text-align: center; border: 1px solid #cacacb; font: inherit; font-size: 16px; font-weight: 500; background: #ffffff; color: #111111; padding: 17px; border-radius: 30px">Save lesson</a>
         </div>
 
         <div style="margin-top: 32px; border-top: 1px solid #cacacb">
@@ -96,7 +101,7 @@ a{color:#111111;text-decoration:none}a:hover{color:#707072}
         <label style="margin-top: 24px; display: flex; align-items: center; gap: 8px; background: #ffffff; border-radius: 30px; height: 52px; padding: 0 6px 0 20px">
           <span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Your question</span>
           <input placeholder="Ask anything about the jab" style="flex: 1; border: 0; font: inherit; font-size: 16px; outline: none; background: transparent; color: #111111">
-          <button aria-label="Send" style="width: 40px; height: 40px; border: 0; border-radius: 999px; background: {{accent}}; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="2.6" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button>
+          <a href="C-AI.dc.html" aria-label="Send" style="width: 40px; height: 40px; border: 0; border-radius: 999px; background: {{accent}}; display: flex; align-items: center; justify-content: center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#111111" stroke-width="2.6" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
         </label>
       </div>
       <div style="flex: 1 1 340px; min-width: 0; border-left: 1px solid #39393b; padding-left: 40px">
@@ -104,7 +109,7 @@ a{color:#111111;text-decoration:none}a:hover{color:#707072}
         <span style="display: inline-block; margin-top: 16px; font-size: 12px; font-weight: 600; border: 1px solid #9e9ea0; color: #ffffff; padding: 4px 10px; border-radius: 30px">AI explanation</span>
         <p style="margin: 12px 0 0; font-size: 18px; line-height: 1.5">Most slow jabs start with a wind-up. Throw from the guard, relax the shoulder, and think about the snap back, not the reach.</p>
         <p style="margin: 20px 0 8px; font-size: 14px; color: #9e9ea0">Sources</p>
-        <div style="display: flex; gap: 8px; flex-wrap: wrap"><a href="#s1" style="font-size: 14px; color: #ffffff; border: 1px solid #4b4b4d; padding: 6px 14px; border-radius: 30px">The Jab · step 2</a><a href="#s2" style="font-size: 14px; color: #ffffff; border: 1px solid #4b4b4d; padding: 6px 14px; border-radius: 30px">Stationary jab drill</a></div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap"><a href="C-Lesson.dc.html" style="font-size: 14px; color: #ffffff; border: 1px solid #4b4b4d; padding: 6px 14px; border-radius: 30px">The Jab · step 2</a><a href="C-Lesson.dc.html" style="font-size: 14px; color: #ffffff; border: 1px solid #4b4b4d; padding: 6px 14px; border-radius: 30px">Stationary jab drill</a></div>
       </div>
     </section>
   </main>
