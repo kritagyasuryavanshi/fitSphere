@@ -1,0 +1,29 @@
+{
+  "name": "fitsphere",
+  "private": true,
+  "packageManager": "npm@11.20.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev --filter=@fitsphere/web",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "verify": "turbo run typecheck lint test build",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "prettier": "^3",
+    "turbo": "^2",
+    "typescript": "^5"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}

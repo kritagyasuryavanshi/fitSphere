@@ -1,6 +1,6 @@
 # FitSphere v1: Engineering Implementation Plan
 
-Status: **Draft for owner approval** · Written 2026-11-05 · Source of truth for tasks: [`board.json`](board.json) (rendered as the Development Board artifact).
+Status: **Approved 2026-11-05** · Written 2026-11-05 · Source of truth for tasks: [`board.json`](board.json) (rendered as the Development Board artifact).
 
 Read with the analysis in [`docs/architecture/`](../architecture/): product analysis (features, journeys, assets), architecture (routes, components, modules, APIs, entities), and risks and gaps (risks, open questions, missing screens).
 
@@ -10,10 +10,10 @@ This plan turns the approved design (`docs/designs/fitsphere-v1.md`) and the 66 
 
 | Area | Choice | Status |
 |---|---|---|
-| App | Next.js (App Router), TypeScript strict, one codebase. No separate Python service in v1. | **Assumed. Owner to confirm.** |
+| App | Next.js (App Router), TypeScript strict, in a monorepo (npm workspaces + Turborepo): `apps/web`, `packages/core`, `packages/ui`, `packages/db`. No separate Python service in v1. | Approved |
 | Hosting | Vercel, functions in the Mumbai region. Production deploys only with owner approval. | Approved in design |
 | Database, auth, files | Supabase: Postgres with row-level security (RLS), Auth (email magic link + Google), private Storage for credential documents. Region: Mumbai (ap-south-1). | Approved in design |
-| Payments | Razorpay: Orders, Subscriptions, Route for split payouts to coaches. Amounts stored as integer paise. | **Recommended. Owner to confirm.** |
+| Payments | Razorpay: Orders, Subscriptions, Route for split payouts to coaches. Amounts stored as integer paise. | Approved |
 | AI | Claude via the Anthropic API, server-side only. Retrieval uses Postgres full-text search in v1. No embeddings provider, which settles reviewer concern 1. | Approved in design |
 | Email | Supabase Auth for sign-in links. Resend for feedback and payment emails. | Proposed |
 | Video | YouTube embeds through `youtube-nocookie.com`. A daily job flags broken videos. | Approved in design |

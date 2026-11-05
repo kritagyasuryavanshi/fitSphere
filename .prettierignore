@@ -1,0 +1,6 @@
+node_modules
+.next
+.turbo
+docs/mockups
+docs/**/*.html
+package-lock.json

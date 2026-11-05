@@ -1,6 +1,6 @@
 # FitSphere v1: Architecture
 
-Status: **Proposed. Owner approval needed** (board task S0-01). Items marked *Decision* are open; the rest follows from the approved design doc.
+Status: **Approved 2026-11-05** (owner: "use the best stack you recommend; it must scale to more categories and features"). Items marked *Decision* are open; the rest follows from the approved design doc.
 
 ## 1. Shape of the system
 
@@ -8,8 +8,8 @@ One web app, one database. No microservices.
 
 | Layer | Proposal | Why | Decision |
 |---|---|---|---|
-| Frontend | Next.js App Router, React Server Components, TypeScript strict | Pages render on the server (fast on cheap phones); one codebase for UI and server logic | *O-01* |
-| Server logic | Server Actions for user actions; Route Handlers only for webhooks, AI streaming and cron | Fewer moving parts than a separate API service; actions are typed end to end | *O-01* |
+| Frontend | Next.js App Router, React Server Components, TypeScript strict | Pages render on the server (fast on cheap phones); one codebase for UI and server logic | Approved |
+| Server logic | Server Actions for user actions; Route Handlers only for webhooks, AI streaming and cron | Fewer moving parts than a separate API service; actions are typed end to end | Approved |
 | Database | Supabase Postgres with row-level security (RLS) | Access rules live in the database, so a UI bug cannot leak data | Approved |
 | Auth | Supabase Auth: email link and Google | No passwords to store | Approved |
 | Files | Supabase Storage, private buckets (credentials), public bucket (coach photos) | Signed URLs for private files | Proposed |
@@ -184,24 +184,34 @@ The demo users (Kabir for boxing, Neha for gym) are seed data, not special cases
 
 `v_coach_stats` (athletes coached, programs finished, 3-month retention, adherence), `v_athlete_progress`, `v_muscle_volume_week`, `v_coach_earnings`. All screens read numbers from these views. pgTAP tests compare them to hand-computed values.
 
-## 5. Project structure
+## 5. Project structure (monorepo)
+
+One repository, split into workspaces with npm workspaces and Turborepo. Each package builds and tests on its own, and a future phone app or background worker can reuse `core`, `ui` and `db` without a rewrite.
 
 ```
 fitSphere/
-├─ src/
-│  ├─ app/                 routes (groups: (public) (auth) (athlete) (coach) (review) (admin)), route handlers in app/api
-│  ├─ components/          ui · layout · content · training · coaching · marketplace · ai
-│  ├─ server/<module>/     schema.ts · rules.ts · queries.ts · actions.ts
-│  ├─ lib/                 supabase clients, auth guard, dates (Asia/Kolkata), money (paise), env
-│  └─ styles/              tokens.css (Fight Camp)
-├─ supabase/
-│  ├─ migrations/          numbered SQL migrations
-│  ├─ tests/               pgTAP policy and view tests
-│  └─ seed.sql             demo and sample data (is_sample = true)
-├─ tests/e2e/              Playwright journeys J1–J15
+├─ apps/
+│  └─ web/                 Next.js app: routes, server actions, route handlers, pages
+│     └─ src/app/          route groups (public) (auth) (athlete) (coach) (review) (admin), app/api
+├─ packages/
+│  ├─ core/                pure TypeScript business rules: age, dates (Asia/Kolkata), money (paise),
+│  │                       metric types, schedules, records, adherence, fees. No React, no database.
+│  ├─ ui/                  Fight Camp design system: tokens, primitives, layout, domain components
+│  ├─ db/                  Supabase migrations, seed, generated types, pgTAP tests, typed client helpers
+│  └─ config/              shared TypeScript, ESLint and Prettier settings
+├─ tests/e2e/              Playwright journeys J1–J15 (run against apps/web)
 ├─ evals/ai/               AI question set and checker
 └─ docs/                   design, mockups, architecture, plans
 ```
+
+Dependency rule: `apps/web` may import every package; `ui` may import `core`; `db` may import `core`; `core` imports nothing from this repo. A lint rule enforces it.
+
+### 5.1 Built to add categories and features
+
+- **Categories are data.** Boxing, S&C and Gym & Fitness are rows in `categories`. A new sport adds rows and content, not tables or routes (`/learn/[category]` already takes any slug).
+- **Metric types are a registry in `packages/core`.** Each one (rounds, sets × reps × load, time, distance) defines its log fields, validation, record rule and display. A new sport reuses existing types, or registers one new type in one file with its tests.
+- **Features are modules.** A new feature is a new folder in `apps/web/src/server/<module>` plus routes, following the same four files. Modules talk through `core` rules and the database, not by importing each other's internals.
+- **Feature flags** live in one table, so a feature can ship dark and switch on per role or per user.
 
 ## 6. Naming and code conventions
 

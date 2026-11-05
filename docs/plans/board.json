@@ -57,13 +57,14 @@
    "priority": "P0",
    "size": "S",
    "deps": [],
-   "status": "todo",
+   "status": "done",
    "owner": "owner",
    "test": "manual",
    "ac": [
     "Owner confirms or changes the choices in section 1 of the engineering plan",
     "Decision recorded in MEMORY.md"
-   ]
+   ],
+   "done_on": "2026-11-05"
   },
   {
    "id": "O-02",
@@ -89,12 +90,13 @@
    "priority": "P0",
    "size": "S",
    "deps": [],
-   "status": "todo",
+   "status": "done",
    "owner": "owner",
    "test": "manual",
    "ac": [
-    "node --version prints v22 or later"
-   ]
+    "node --version prints v22 or later (installed v26.13.0 LTS)"
+   ],
+   "done_on": "2026-11-05"
   },
   {
    "id": "O-04",
@@ -210,19 +212,20 @@
    "priority": "P0",
    "size": "S",
    "deps": [],
-   "status": "in_progress",
+   "status": "done",
    "owner": "owner",
    "test": "manual",
    "ac": [
     "Owner says the plan is approved, or lists changes",
     "Approved decisions saved to MEMORY.md",
     "Owner has read docs/architecture/ (product analysis, architecture, risks and gaps)"
-   ]
+   ],
+   "done_on": "2026-11-05"
   },
   {
    "id": "S0-02",
    "phase": "S0",
-   "title": "Scaffold the Next.js app (TypeScript strict, App Router, ESLint, Prettier)",
+   "title": "Scaffold the monorepo: apps/web (Next.js, TypeScript strict), packages/core, packages/ui, packages/config, Turborepo",
    "priority": "P0",
    "size": "S",
    "deps": [
@@ -234,9 +237,10 @@
    "owner": "claude",
    "test": "unit",
    "ac": [
-    "npm run dev serves a page",
-    "npm run verify runs typecheck, lint, unit tests and build, and passes",
-    "A sample Vitest test runs",
+    "npm workspaces and Turborepo; npm run verify runs typecheck, lint, unit tests and build across all workspaces and passes",
+    "apps/web serves a page with npm run dev",
+    "packages/core has a sample pure function with a Vitest test; apps/web imports it",
+    "Lint rule blocks core from importing other workspaces",
     "No secrets in the repo; .env.example lists every variable"
    ]
   },

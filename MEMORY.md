@@ -14,6 +14,13 @@ Keep newest entries at the top of each section.
 - **Open owner decisions:** Mobbin install (only unofficial community MCPs exist; needs a paid Mobbin account and a session token; owner must say "install mobbin-mcp").
 - **Owner's parallel task:** meet one boxing coach and one S&C coach (the assignment in the design doc).
 
+## Session 4 (2026-11-05): build starts
+- Owner: "start building with the build board; use the best stack you recommend; keep it scalable, I will add more categories and features later." Plan and stack approved (S0-01, O-01 done).
+- Stack locked: monorepo (npm workspaces + Turborepo): apps/web (Next.js App Router, TS strict), packages/core (pure rules, metric-type registry), packages/ui (Fight Camp design system), packages/db (Supabase migrations, types, pgTAP), packages/config. Supabase Mumbai, Razorpay, Claude. Categories are data; metric types are a registry; features are modules; feature flags table. Details: architecture.md §5.
+- Node 26.13.0 LTS installed with winget (O-03 done).
+- Build inside the repo, not in a temp folder (owner rejected a scratchpad scaffold).
+- Docker is not installed, so local Supabase (S0-04) needs Docker Desktop or a cloud dev project.
+
 ## Session 3f (2026-11-05)
 - Owner approved D1–D6. Done: titles fixed; five key phone screens reviewed from real screenshots and fixed via `phone.py` (2-up photo tiles, collapsed filters and AI history, sticky bars above tabs); coach dashboard, my lessons and clients become cards on phones; 9 new screens for G1–G4, G6 and notifications (`build/pages_gaps.py`). Record: `docs/designs/design-review-2026-11-05.md`; review page with screenshots: https://claude.ai/artifact/DnbZRbQHPG74SwxnUg5Mft. Screenshots in `docs/mockups/screenshots/`.
 - Screenshot tool: playwright-core with the installed Chrome (scratch `shots/shots.js`); it sizes the window to the full page so sticky bars sit at the true bottom.
