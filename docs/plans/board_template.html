@@ -1,0 +1,160 @@
+<title>FitSphere Build Board</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: phase sections stacked, one dense row per task, details on demand. Fight Camp type, black and white, volt marks what is ready. */
+:root{
+  --bg:#ffffff; --fg:#111111; --soft:#f5f5f5; --line:#e2e2e2; --muted:#6b6b6e; --ink-2:#39393b;
+  --volt:#D4F000; --on-volt:#111111; --done:#00653a; --done-bg:#e3f4ec; --block:#a3001a; --block-bg:#fde8eb; --prog-bg:#f6fbcc;
+  --display:Anton, Impact, "Arial Narrow", sans-serif; --body:Inter, Helvetica, Arial, sans-serif; color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0f0f10;--fg:#f2f2f2;--soft:#1b1b1d;--line:#2c2c2f;--muted:#a3a3a7;--ink-2:#cfcfd2;--done:#5fd39b;--done-bg:#12301f;--block:#ff8a96;--block-bg:#3a1418;--prog-bg:#2c3008;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f0f10;--fg:#f2f2f2;--soft:#1b1b1d;--line:#2c2c2f;--muted:#a3a3a7;--ink-2:#cfcfd2;--done:#5fd39b;--done-bg:#12301f;--block:#ff8a96;--block-bg:#3a1418;--prog-bg:#2c3008;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 80px}
+h1,h2{font-family:var(--display);font-weight:400;text-transform:uppercase;line-height:.92;margin:0;text-wrap:balance}
+h1{font-size:clamp(48px,8vw,96px)}
+h2{font-size:clamp(30px,4vw,44px)}
+p{margin:0}
+.muted{color:var(--muted)}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.counts{display:flex;gap:24px;flex-wrap:wrap;margin-top:24px;border-top:2px solid var(--fg);padding-top:16px}
+.counts div{min-width:110px}
+.counts b{display:block;font-family:var(--display);font-size:44px;font-weight:400;line-height:1;font-variant-numeric:tabular-nums}
+.bar{height:8px;background:var(--soft);margin-top:10px}
+.bar > i{display:block;height:100%;background:var(--fg)}
+.ready{margin-top:32px;background:var(--fg);color:var(--bg);padding:24px;display:flex;flex-direction:column;gap:12px}
+.ready h2{font-size:28px}
+.ready ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.ready li a{display:inline-flex;gap:8px;align-items:center;min-height:44px;padding:0 16px;border-radius:30px;background:var(--volt);color:var(--on-volt);font-weight:600;text-decoration:none}
+.filters{margin-top:32px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chip{border:1px solid var(--line);background:var(--bg);color:var(--fg);font:inherit;font-size:14px;font-weight:500;min-height:40px;padding:0 14px;border-radius:30px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+select,input[type=search]{font:inherit;font-size:14px;min-height:40px;border:1px solid var(--line);border-radius:30px;padding:0 14px;background:var(--bg);color:var(--fg)}
+input[type=search]{min-width:0;flex:1 1 180px}
+:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+section.phase{margin-top:48px}
+.phead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;border-bottom:2px solid var(--fg);padding-bottom:12px}
+.phead .goal{max-width:62ch;color:var(--ink-2);margin-top:8px}
+.phead .pct{font-variant-numeric:tabular-nums;font-weight:600}
+.task{border-bottom:1px solid var(--line)}
+.task summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:110px 64px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 4px;min-height:52px}
+.task summary::-webkit-details-marker{display:none}
+.task summary:hover{background:var(--soft)}
+.st{display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;padding:4px 10px;border-radius:30px;white-space:nowrap}
+.st.todo{border:1px solid var(--line);color:var(--muted)}
+.st.in_progress{background:var(--volt);color:var(--on-volt)}
+.st.blocked{background:var(--block-bg);color:var(--block)}
+.st.done{background:var(--done-bg);color:var(--done)}
+.id{font-weight:600;font-variant-numeric:tabular-nums}
+.title{min-width:0}
+.title .rdy{display:inline-block;margin-left:8px;font-size:11px;font-weight:700;background:var(--volt);color:var(--on-volt);padding:2px 8px;border-radius:30px;vertical-align:2px}
+.meta{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.tag{font-size:12px;font-weight:600;border:1px solid var(--line);padding:3px 9px;border-radius:30px;white-space:nowrap}
+.tag.p0{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.tag.own{border-style:dashed}
+.body{padding:4px 4px 20px 186px;display:grid;gap:12px}
+.body h3{margin:0;font-size:13px;font-weight:600;color:var(--muted)}
+.body ul{margin:4px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:4px;max-width:78ch}
+.deps a{color:inherit;font-weight:600}
+.empty{padding:20px 4px;color:var(--muted)}
+@media (max-width:720px){
+  .task summary{grid-template-columns:auto minmax(0,1fr);grid-template-areas:"st id" "title title" "meta meta"}
+  .task summary .st{grid-area:st;justify-self:start}.task summary .id{grid-area:id}.task summary .title{grid-area:title}.task summary .meta{grid-area:meta;justify-content:flex-start}
+  .body{padding-left:4px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <p class="muted" id="sub"></p>
+      <h1>Build board</h1>
+    </div>
+    <p class="muted" style="max-width:44ch">One task at a time: tests first, then code, then verify. A task is ready when every task it depends on is done.</p>
+  </header>
+  <div class="counts" id="counts"></div>
+  <div class="bar" aria-hidden="true"><i id="overall"></i></div>
+  <section class="ready" aria-labelledby="readyh">
+    <h2 id="readyh">Ready to start</h2>
+    <ul id="readylist"></ul>
+  </section>
+  <div class="filters" role="group" aria-label="Filters">
+    <div id="phasechips" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+    <label><span class="sr" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Status</span><select id="fstatus"><option value="">Any status</option><option value="todo">To do</option><option value="in_progress">In progress</option><option value="blocked">Blocked</option><option value="done">Done</option><option value="ready">Ready now</option></select></label>
+    <label><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Priority</span><select id="fprio"><option value="">Any priority</option><option>P0</option><option>P1</option><option>P2</option></select></label>
+    <label><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Owner</span><select id="fowner"><option value="">Anyone</option><option value="claude">Claude</option><option value="owner">Owner</option></select></label>
+    <input type="search" id="fq" placeholder="Search tasks" aria-label="Search tasks">
+  </div>
+  <div id="phases"></div>
+</div>
+
+<script>
+const BOARD = /*__DATA__*/null;
+const LABEL = {todo:'To do', in_progress:'In progress', blocked:'Blocked', done:'Done'};
+const byId = Object.fromEntries(BOARD.tasks.map(t => [t.id, t]));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let state = {phase:'', status:'', prio:'', owner:'', q:''};
+try { state = Object.assign(state, JSON.parse(localStorage.getItem('fs-board') || '{}')); } catch (e) {}
+const save = () => { try { localStorage.setItem('fs-board', JSON.stringify(state)); } catch (e) {} };
+
+function counts() {
+  const n = s => BOARD.tasks.filter(t => t.status === s).length;
+  const total = BOARD.tasks.length, done = n('done');
+  document.getElementById('sub').textContent = `${BOARD.project} · updated ${BOARD.updated}`;
+  document.getElementById('counts').innerHTML = [['Tasks', total], ['Done', done], ['In progress', n('in_progress')], ['Blocked', n('blocked')], ['Ready now', BOARD.tasks.filter(t => t.ready).length]]
+    .map(([k, v]) => `<div><b>${v}</b><span class="muted">${k}</span></div>`).join('');
+  document.getElementById('overall').style.width = (total ? done * 100 / total : 0) + '%';
+  const ready = BOARD.tasks.filter(t => t.ready || t.status === 'in_progress');
+  document.getElementById('readylist').innerHTML = ready.length ? ready.map(t => `<li><a href="#t-${t.id}">${t.status === 'in_progress' ? 'Now: ' : ''}${esc(t.id)} · ${esc(t.title)}</a></li>`).join('') : '<li>Nothing is ready. Check blocked tasks.</li>';
+}
+
+function chips() {
+  const el = document.getElementById('phasechips');
+  el.innerHTML = [{id:'', name:'All phases'}].concat(BOARD.phases).map(p => `<button class="chip" data-phase="${p.id}" aria-pressed="${state.phase === p.id}">${p.id ? esc(p.id) + ' ' : ''}${esc(p.name)}</button>`).join('');
+  el.onclick = e => { const b = e.target.closest('button'); if (!b) return; state.phase = b.dataset.phase; save(); chips(); render(); };
+}
+
+function match(t) {
+  if (state.phase && t.phase !== state.phase) return false;
+  if (state.status === 'ready' ? !t.ready : state.status && t.status !== state.status) return false;
+  if (state.prio && t.priority !== state.prio) return false;
+  if (state.owner && t.owner !== state.owner) return false;
+  if (state.q) { const q = state.q.toLowerCase(); if (!(t.id + ' ' + t.title + ' ' + t.ac.join(' ')).toLowerCase().includes(q)) return false; }
+  return true;
+}
+
+function row(t) {
+  const deps = t.deps.length ? t.deps.map(d => `<a href="#t-${d}">${esc(d)}</a> <span class="muted">(${LABEL[byId[d].status]})</span>`).join(', ') : 'None';
+  const screens = t.screens ? `<div><h3>Screens on the canvas</h3><p>${t.screens.map(esc).join(', ')}</p></div>` : '';
+  const doneLine = t.status === 'done' ? `<div><h3>Finished</h3><p>${esc(t.done_on || '')}${t.commit ? ' · commit ' + esc(t.commit) : ''}</p></div>` : '';
+  return `<details class="task" id="t-${t.id}">
+    <summary><span class="st ${t.status}">${LABEL[t.status]}</span><span class="id">${esc(t.id)}</span><span class="title">${esc(t.title)}${t.ready ? '<span class="rdy">Ready</span>' : ''}</span>
+      <span class="meta"><span class="tag ${t.priority === 'P0' ? 'p0' : ''}">${t.priority}</span><span class="tag">${t.size === 'S' ? 'Small' : 'Medium'}</span><span class="tag ${t.owner === 'owner' ? 'own' : ''}">${t.owner === 'owner' ? 'Owner' : 'Claude'}</span><span class="tag">${esc(t.test)}</span></span></summary>
+    <div class="body"><div><h3>Acceptance criteria</h3><ul>${t.ac.map(a => `<li>${esc(a)}</li>`).join('')}</ul></div>
+      <div class="deps"><h3>Depends on</h3><p>${deps}</p></div>${screens}${doneLine}</div></details>`;
+}
+
+function render() {
+  document.getElementById('phases').innerHTML = BOARD.phases.map(p => {
+    const all = BOARD.tasks.filter(t => t.phase === p.id);
+    if (state.phase && state.phase !== p.id) return '';
+    const shown = all.filter(match);
+    const done = all.filter(t => t.status === 'done').length;
+    return `<section class="phase" aria-labelledby="ph-${p.id}"><div class="phead"><div><h2 id="ph-${p.id}">${esc(p.id)} · ${esc(p.name)}</h2><p class="goal">${esc(p.goal)}</p></div><span class="pct">${done} / ${all.length} done</span></div>
+      <div class="bar" aria-hidden="true"><i style="width:${all.length ? done * 100 / all.length : 0}%"></i></div>
+      ${shown.length ? shown.map(row).join('') : '<p class="empty">No tasks match these filters.</p>'}</section>`;
+  }).join('');
+}
+
+for (const [id, key] of [['fstatus', 'status'], ['fprio', 'prio'], ['fowner', 'owner']]) {
+  const el = document.getElementById(id); el.value = state[key]; el.onchange = () => { state[key] = el.value; save(); render(); };
+}
+const fq = document.getElementById('fq'); fq.value = state.q; fq.oninput = () => { state.q = fq.value; save(); render(); };
+document.addEventListener('click', e => { const a = e.target.closest('a[href^="#t-"]'); if (!a) return; const d = document.querySelector(a.getAttribute('href')); if (d) { if (state.phase && !d) return; d.open = true; } });
+counts(); chips(); render();
+</script>

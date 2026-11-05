@@ -6,13 +6,20 @@ Keep newest entries at the top of each section.
 
 ## Current state
 - **Phase:** v1 design approved. Full-site clickable design done: 54 desktop + 55 phone screens, Boxing, S&C, and Gym & Fitness. Engineering plan next. No app code exists yet.
-- **Current milestone:** M1 Foundation, not started.
+- **Current milestone:** S0 Setup. Task S0-01 (owner approves the plan) is in progress. Nothing is built yet.
 - **Next step for the next session:**
   1. Get the owner's feedback on the full-site design (canvas pages "Fight Camp · full site" and "Phone · full site").
   2. Settle the stack question: the owner asked for a "Python engineering plan", but the approved stack is Next.js + Supabase. Option on the table: Next.js web app plus a Python (FastAPI) service for the AI assistant. Ask once, then decide.
-  3. Write the engineering plan for M1 to M5 in `docs/plans/`. Cover schema, RLS rules, test setup, and the four minor reviewer concerns in the design doc. After approval, build M1 hands-off.
+  3. Write the engineering plan for M1 to M6 (M4 = Coach Marketplace) in `docs/plans/`. Cover schema, RLS rules, test setup, and the four minor reviewer concerns in the design doc. After approval, build M1 hands-off.
 - **Open owner decisions:** Mobbin install (only unofficial community MCPs exist; needs a paid Mobbin account and a session token; owner must say "install mobbin-mcp").
 - **Owner's parallel task:** meet one boxing coach and one S&C coach (the assignment in the design doc).
+
+## Session 3d (2026-11-05)
+- Coach Marketplace moved into v1 as M4 (owner decision). AI is M5, launch M6.
+- Engineering plan: `docs/plans/engineering-plan.md`. Build board: `docs/plans/board.json` (source of truth), rendered by `python docs/plans/build_board.py` to `board.html`, published at https://claude.ai/artifact/BPCG8ghatzZkV7v1haJ1z1. Republish after every task.
+- Working loop: one task in progress at a time; tests first; `npm run verify` plus the task's end-to-end test; mark done with date and commit; re-render and republish the board. Codex review at the end of each milestone for auth, RLS, payments, migrations.
+- Plan assumes Next.js only + Supabase (Mumbai) + Razorpay + Postgres full-text retrieval for AI. Waiting for owner approval (board task S0-01).
+- Walkthrough page: https://claude.ai/artifact/217yXiVPoycExyuUg6haex.
 
 ## Session 3c (2026-11-05)
 - Added Gym & Fitness as a third category (S&C kept as its own): gym library `G-Library` by goal and muscle group, bench press exercise page with rep ranges per goal, Muscle Builder program, gym Today (persona Neha), workout player with last-time numbers and overload target, workout done, gym progress (sets per muscle, body weight, records), sign-up gym-goal step (sign-up is now 4 steps). Landing gets a gym section.
@@ -49,7 +56,7 @@ Keep newest entries at the top of each section.
 ## Decisions
 | Date | Decision | Why |
 |---|---|---|
-| 2026-11-05 | Coach Marketplace designed as Phase 2 (discover, compare, shortlist, hire, pay, verified reviews, coach clients/profile/earnings, admin credential checks). v1 build scope unchanged until the owner decides. | Owner pasted a marketplace spec. Marketplace and payments were out of v1; building them early risks an empty shelf and a large payments milestone. |
+| 2026-11-05 | Coach Marketplace is in v1 as milestone M4 (discover, compare, shortlist, hire, chat, pay, payouts, verified reviews, coach clients and earnings, admin credential checks). AI becomes M5, launch M6. Payment provider recommended: Razorpay with Route (owner to confirm). | Owner: "add marketplace in v1". Risks recorded: empty marketplace before about 20 coaches, payments milestone size, credential checks, client-story consent. |
 | 2026-11-05 | Three categories, each with its own library: Boxing, Strength & Conditioning (S&C for boxers, unchanged), Gym & Fitness (build muscle, lose fat, get stronger, get fitter). Gym is a full category, not boxing support. | Owner asked for gym training (weight loss, muscle building, hypertrophy), then asked to keep S&C as its own category too. |
 | 2026-11-05 | No meal plans or calorie targets in v1. Body weight optional, consent-gated for AI. | Nutrition advice is out of v1 scope and is health data. Open question for the owner. |
 | 2026-11-05 | Keep Fight Camp look when using Hallmark or ui-ux-pro-max; use them for quality checks, not a new theme. | Owner said the current screens look good and to follow that practice. |

@@ -113,7 +113,7 @@
    "x": 4560,
    "y": 300,
    "w": 1440,
-   "h": 1962,
+   "h": 1935,
    "title": "4 · Find a coach",
    "is_interactive": true,
    "page": "fightcamp",
@@ -673,7 +673,7 @@
    "x": 0,
    "y": 22722,
    "w": 1440,
-   "h": 1313,
+   "h": 1286,
    "title": "60 · Coach: Clients and requests",
    "is_interactive": true,
    "page": "fightcamp",
@@ -779,7 +779,7 @@
    "x": 1800,
    "y": 300,
    "w": 390,
-   "h": 4102,
+   "h": 4075,
    "title": "5 · Find a coach",
    "is_interactive": true,
    "page": "phone"
@@ -788,7 +788,7 @@
    "x": 2250,
    "y": 300,
    "w": 390,
-   "h": 5351,
+   "h": 5340,
    "title": "6 · Coach: Vikram Rathore",
    "is_interactive": true,
    "page": "phone"
@@ -1283,7 +1283,7 @@
    "x": 0,
    "y": 39459,
    "w": 390,
-   "h": 2145,
+   "h": 2118,
    "title": "61 · Coach: Clients and requests",
    "is_interactive": true,
    "page": "phone"
@@ -1310,7 +1310,7 @@
    "x": 1350,
    "y": 39459,
    "w": 390,
-   "h": 1202,
+   "h": 1175,
    "title": "64 · Admin: Credential checks",
    "is_interactive": true,
    "page": "phone"
@@ -1568,7 +1568,7 @@
   "fightcampRow9": {
    "x": 0,
    "y": 20755,
-   "text": "Hire a coach (Phase 2)",
+   "text": "Hire a coach",
    "kind": "title1",
    "maxW": 10560,
    "page": "fightcamp"
@@ -1576,7 +1576,7 @@
   "fightcampRow10": {
    "x": 0,
    "y": 22422,
-   "text": "Coach business (Phase 2)",
+   "text": "Coach business",
    "kind": "title1",
    "maxW": 6000,
    "page": "fightcamp"
@@ -1656,7 +1656,7 @@
   "phoneRow9": {
    "x": 0,
    "y": 37114,
-   "text": "Hire a coach (Phase 2)",
+   "text": "Hire a coach",
    "kind": "title1",
    "maxW": 3090,
    "page": "phone"
@@ -1664,7 +1664,7 @@
   "phoneRow10": {
    "x": 0,
    "y": 39159,
-   "text": "Coach business (Phase 2)",
+   "text": "Coach business",
    "kind": "title1",
    "maxW": 1740,
    "page": "phone"

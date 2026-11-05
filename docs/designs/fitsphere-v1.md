@@ -33,8 +33,8 @@ None yet. The founder answered "No evidence yet" to the demand question. Every v
 ## Change, 2026-11-05: three categories
 The owner added general gym fitness: weight loss, muscle building (hypertrophy), strength and general fitness. There are now three categories, each with its own library: Boxing, Strength & Conditioning (S&C for boxers, unchanged), and Gym & Fitness (new). Gym logging uses sets × reps × load, shows last time's numbers, and suggests the next small increase. Body weight and height are optional, self-reported, and reach the AI only with separate consent. Meal plans and calorie targets stay out of v1 (nutrition advice); open question for the owner.
 
-## Phase 2 design, 2026-11-05: Coach Marketplace
-The owner asked for a Coach Marketplace: discover, compare, shortlist and hire coaches, with packages, payment, verified reviews and a coach business dashboard. It is designed (canvas rows "Hire a coach" and "Coach business", tagged Phase 2). The v1 build plan (M1 to M5) is unchanged until the owner decides. Build risks: an empty marketplace before about 20 coaches, payments with split payouts and refunds in India, credential checks by an admin, and written consent for client stories. Rules in the design: client statistics come only from FitSphere records; only clients with a paid, finished engagement can review; coaches cannot pay to rank higher; payments stay on FitSphere.
+## Change, 2026-11-05: Coach Marketplace is in v1
+The owner asked for a Coach Marketplace: discover, compare, shortlist and hire coaches, with packages, payment, verified reviews and a coach business dashboard. It is designed (canvas rows "Hire a coach" and "Coach business") and the owner moved it into v1 as milestone M4. AI moves to M5, launch to M6. Build risks: an empty marketplace before about 20 coaches, payments with split payouts and refunds in India, credential checks by an admin, and written consent for client stories. Rules in the design: client statistics come only from FitSphere records; only clients with a paid, finished engagement can review; coaches cannot pay to rank higher; payments stay on FitSphere.
 
 ## Premises
 1. **Content and cold start are the main risks, not code.** Coaches solve both: they bring reviewed content, athletes, and willingness to pay. (Revised after the second opinion.)
@@ -98,7 +98,7 @@ The founder expanded Approach A so v1 ships three complete, connected pillars.
 - Tests: unit and database-policy tests in CI; end-to-end tests for each journey below; an AI evaluation set.
 
 ### Explicitly out of v1
-Payments, subscriptions, UPI, marketplace and booking, coach credential verification, academies, minors, phone OTP, Hindi, native apps, 3D, live classes, community, paid video hosting.
+Meal plans and calorie targets, academies, minors, phone OTP, Hindi, native apps, 3D, live classes, community, paid video hosting.
 
 ## Milestones (each with a Verify line)
 1. **M1 Foundation.** App skeleton, Supabase schema for the multi-sport content graph and training, RLS, auth, roles, 18+ onboarding (sport, level, goals, equipment, availability, limitations), CI, Vercel preview deploys.
@@ -114,7 +114,18 @@ Payments, subscriptions, UPI, marketplace and booking, coach credential verifica
    **Verify:** an end-to-end test browses Boxing > Technical Boxing > Jab > lesson, filters drills by equipment, saves a lesson and marks it complete, and both persist after reload. A draft lesson returns 404 publicly. A search for "jab" returns the jab skill and its drills. A sample item shows "Sample", never "Coach-verified".
 3. **M3 Coach-Led Training.** Coach profile, program builder, invite link, Today dashboard, session screen, sport-specific logging, coach feedback, basic progress.
    **Verify:** an end-to-end test has a coach build a program with one boxing and one S&C session. An athlete joins by link. Today shows both sessions. The athlete logs rounds for boxing and sets × reps × load for S&C. The coach sees the logs and leaves feedback, and the athlete sees it. Progress numbers equal the logged data.
-4. **M4 AI Instructional Assistant.** Retrieval index built from published content only, cited answers, labels, learning paths, personalisation, safety rules, rate limit.
+4. **M4 Coach Marketplace.** Coach discovery with filters, full coach profiles (credentials, packages, slots, portfolio), compare, shortlist, hire request, chat between client and coach, checkout (UPI, card, net banking), split payouts to coaches, monthly renewal and cancel, refunds, verified reviews, coach clients and earnings pages, admin credential checks.
+   **Verify:** `npm test` and an end-to-end test prove:
+   - an athlete hires a coach: request, accept, pay in test mode, and the coach's program appears in Today;
+   - the payment webhook rejects a bad signature, and a repeated webhook does not create a second engagement (idempotency);
+   - a refund marks the engagement refunded and the coach payout reverses;
+   - payout = price minus the fee, exact to the paisa, for 3 sample prices;
+   - only a client with a paid, finished engagement can post a review; a coach cannot edit or delete one;
+   - chat is readable only by its client and coach; coach A cannot see coach B's clients or earnings;
+   - profile statistics equal values computed from engagement and log tables, never coach input;
+   - a credential shows "Credentials checked" only after an admin marks it.
+   The payments go-live checklist (20 items) is run and Codex reviews the final diff before live mode.
+5. **M5 AI Instructional Assistant.** Retrieval index built from published content only, cited answers, labels, learning paths, personalisation, safety rules, rate limit.
    **Verify:** `npm run eval:ai` runs a set of at least 30 questions (boxing, S&C, beginner concepts, injury, unsafe requests, off-topic, no-match) 3 times.
    - **Code-checked:**
      - every cited ID exists, is published and is not sample;
@@ -126,7 +137,7 @@ Payments, subscriptions, UPI, marketplace and booking, coach credential verifica
    - **Judged:** an LLM judge with a written rubric grades clarity and correctness.
    - **Pass bar:** 100% on code-checked rules in all 3 runs and an average judge score of at least 90%.
    A unit test proves the daily limit blocks the next question.
-5. **M5 Launch readiness.** Landing and about pages, privacy policy and terms, empty, loading and error states on every page, PWA install, performance on low-end Android.
+6. **M6 Launch readiness.** Landing and about pages, privacy policy and terms, empty, loading and error states on every page, PWA install, performance on low-end Android.
    **Verify:** Lighthouse mobile performance ≥ 80 on the landing, library and Today pages. A route audit finds no placeholder page or dead button. A `/qa` pass shows no high-severity bugs.
 
 ## Open Questions
@@ -147,6 +158,7 @@ Payments, subscriptions, UPI, marketplace and booking, coach credential verifica
 Web service on Vercel, installable as a PWA. Each pull request gets a preview deploy. GitHub Actions runs typecheck, lint and tests. Production deploys from `main` only after the owner approves.
 
 ## Dependencies
+- For M4: a registered business with GST registration (payment provider KYC), a coach agreement (fee, payouts, refunds, cancellations), the fee percentage, and the payment provider account (recommended: Razorpay with Route for split payouts).
 - Founding coaches: one boxing coach and one S&C coach.
 - Accounts: Supabase, Vercel, Anthropic API, and a Google OAuth client.
 - Bun installed locally to restore the gstack tooling (not a product dependency).
