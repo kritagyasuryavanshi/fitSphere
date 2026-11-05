@@ -171,13 +171,14 @@ sequenceDiagram
     <h2 id="build">From design to a working product</h2>
     <p class="lede" style="margin-top:16px">The design is done and clickable. Nothing is built yet. Each milestone below ships something you can test, and each has its own pass checks in the design doc.</p>
     <ol class="track">
-      <li><span class="k">Design</span><span class="st done">Done</span><span class="d">55 desktop and 56 phone screens, all linked. Boxing, S&amp;C and Gym &amp; Fitness.</span></li>
-      <li><span class="k">Plan</span><span class="st next">Next</span><span class="d">Engineering plan for M1 to M5: database tables, access rules, tests. Needs the stack decision first.</span></li>
+      <li><span class="k">Design</span><span class="st done">Done</span><span class="d">66 desktop and 67 phone screens, all linked. Boxing, S&amp;C, Gym &amp; Fitness and the Coach Marketplace.</span></li>
+      <li><span class="k">Plan</span><span class="st next">Waiting for approval</span><span class="d">Engineering plan and a 79-task build board for setup plus M1 to M6. Needs the stack confirmed.</span></li>
       <li><span class="k">M1</span><span class="st later">Foundation</span><span class="d">Sign-up with email link and Google, the 18+ check, the four roles, all access rules, and tests that prove them.</span></li>
       <li><span class="k">M2</span><span class="st later">Library</span><span class="d">Boxing, S&amp;C and gym lessons with YouTube video, search and filters, save and complete, and the write, review, publish flow.</span></li>
       <li><span class="k">M3</span><span class="st later">Training</span><span class="d">Program builder, invite links, Today, session and workout logging, coach dashboard, feedback, progress.</span></li>
-      <li><span class="k">M4</span><span class="st later">AI guide</span><span class="d">Answers from published lessons with links, safety rules, a daily question limit, and a 30-question test set it must pass.</span></li>
-      <li><span class="k">M5</span><span class="st later">Launch</span><span class="d">Landing, privacy and terms after legal review, phone install, speed on cheap Android phones, a full bug sweep.</span></li>
+      <li><span class="k">M4</span><span class="st later">Marketplace</span><span class="d">Find, compare, shortlist and hire coaches. Chat, payments by UPI or card, monthly renewal, refunds, coach payouts, verified reviews, credential checks.</span></li>
+      <li><span class="k">M5</span><span class="st later">AI guide</span><span class="d">Answers from published lessons with links, safety rules, a daily question limit, and a 30-question test set it must pass.</span></li>
+      <li><span class="k">M6</span><span class="st later">Launch</span><span class="d">Landing, privacy and terms after legal review, phone install, speed on cheap Android phones, a full bug sweep.</span></li>
     </ol>
     <div class="asks">
       <h3>What I need from you</h3>
@@ -186,6 +187,7 @@ sequenceDiagram
         <li>The stack decision. My recommendation is Next.js only. Add a Python service later only if needed.</li>
         <li>Nutrition: are meal plans or calorie targets in or out? They are out for now.</li>
         <li>Accounts before M1: Supabase, Vercel, Anthropic API, Google sign-in.</li>
+        <li>Before M4: payment provider account (Razorpay recommended), business and GST registration, fee %, refund terms, coach agreement.</li>
         <li>One boxing coach and one gym or S&amp;C coach to test with. Their real feedback shapes M2 and M3.</li>
       </ul>
       <p class="small">All people and numbers on the canvas are demo data.</p>
