@@ -1,182 +1,1757 @@
 {
  "project": "FitSphere v1",
  "updated": "2026-11-05",
- "status_values": ["todo", "in_progress", "blocked", "done"],
+ "status_values": [
+  "todo",
+  "in_progress",
+  "blocked",
+  "done"
+ ],
  "phases": [
-  {"id": "O", "name": "Owner", "goal": "Decisions, accounts and people only the owner can provide."},
-  {"id": "S0", "name": "Setup", "goal": "An empty app that builds, tests and deploys a preview on every pull request."},
-  {"id": "M1", "name": "Foundation", "goal": "Sign-in, 18+ sign-up, roles, app shells, account and consent, with access rules proven by tests."},
-  {"id": "M2", "name": "Library", "goal": "Boxing, S&C and Gym lessons people can browse, search, save and complete, with author, review and publish."},
-  {"id": "M3", "name": "Training", "goal": "Coaches build and share programs; athletes train, log and see progress; coaches see logs and give feedback."},
-  {"id": "M4", "name": "Marketplace", "goal": "Athletes find, compare, hire and pay coaches; coaches earn; reviews are verified."},
-  {"id": "M5", "name": "AI guide", "goal": "Cited, safe answers from published lessons, with a daily limit and a passing eval set."},
-  {"id": "M6", "name": "Launch", "goal": "Public pages, legal, every state, PWA, speed, accessibility, security, QA, then production."}
+  {
+   "id": "O",
+   "name": "Owner",
+   "goal": "Decisions, accounts and people only the owner can provide."
+  },
+  {
+   "id": "S0",
+   "name": "Setup",
+   "goal": "An empty app that builds, tests and deploys a preview on every pull request."
+  },
+  {
+   "id": "M1",
+   "name": "Foundation",
+   "goal": "Sign-in, 18+ sign-up, roles, app shells, account and consent, with access rules proven by tests."
+  },
+  {
+   "id": "M2",
+   "name": "Library",
+   "goal": "Boxing, S&C and Gym lessons people can browse, search, save and complete, with author, review and publish."
+  },
+  {
+   "id": "M3",
+   "name": "Training",
+   "goal": "Coaches build and share programs; athletes train, log and see progress; coaches see logs and give feedback."
+  },
+  {
+   "id": "M4",
+   "name": "Marketplace",
+   "goal": "Athletes find, compare, hire and pay coaches; coaches earn; reviews are verified."
+  },
+  {
+   "id": "M5",
+   "name": "AI guide",
+   "goal": "Cited, safe answers from published lessons, with a daily limit and a passing eval set."
+  },
+  {
+   "id": "M6",
+   "name": "Launch",
+   "goal": "Public pages, legal, every state, PWA, speed, accessibility, security, QA, then production."
+  }
  ],
  "tasks": [
-  {"id": "O-01", "phase": "O", "title": "Confirm the stack: Next.js only, Supabase, Razorpay", "priority": "P0", "size": "S", "deps": [], "status": "todo", "owner": "owner", "test": "manual",
-   "ac": ["Owner confirms or changes the choices in section 1 of the engineering plan", "Decision recorded in MEMORY.md"]},
-  {"id": "O-02", "phase": "O", "title": "Create Supabase (Mumbai), Vercel, Anthropic API and Google OAuth accounts", "priority": "P0", "size": "S", "deps": ["O-01"], "status": "todo", "owner": "owner", "test": "manual",
-   "ac": ["Keys shared through a password manager or Vercel and GitHub secrets, never in chat or the repo", "Google OAuth client has the preview and production callback URLs"]},
-  {"id": "O-03", "phase": "O", "title": "Upgrade this PC to Node 22 LTS", "priority": "P0", "size": "S", "deps": [], "status": "todo", "owner": "owner", "test": "manual",
-   "ac": ["node --version prints v22 or later"]},
-  {"id": "O-04", "phase": "O", "title": "Payment provider account, KYC, business and GST registration", "priority": "P0", "size": "M", "deps": ["O-01"], "status": "todo", "owner": "owner", "test": "manual",
-   "ac": ["Test-mode keys available before M4-09", "Route (split payouts) enabled before M4-12", "Live mode stays off until M4-16 passes"]},
-  {"id": "O-05", "phase": "O", "title": "Set the platform fee %, refund and cancel terms, and the coach agreement", "priority": "P0", "size": "S", "deps": [], "status": "todo", "owner": "owner", "test": "manual",
-   "ac": ["Fee %, refund window and cancel rule written in MEMORY.md", "Coach agreement text ready for M4-02"]},
-  {"id": "O-06", "phase": "O", "title": "Sign founding coaches: one boxing, one S&C or gym", "priority": "P0", "size": "M", "deps": [], "status": "todo", "owner": "owner", "test": "manual",
-   "ac": ["Each coach lists the first 20 skills or exercises a beginner needs", "Each records at least 5 lessons on YouTube before M6"]},
-  {"id": "O-07", "phase": "O", "title": "Legal review of privacy policy and terms (DPDP, marketplace)", "priority": "P0", "size": "M", "deps": [], "status": "todo", "owner": "owner", "test": "manual",
-   "ac": ["Signed-off text available before M6-02"]},
-  {"id": "O-08", "phase": "O", "title": "Decide on nutrition (meal plans or calorie targets)", "priority": "P2", "size": "S", "deps": [], "status": "todo", "owner": "owner", "test": "manual",
-   "ac": ["Decision in MEMORY.md; out of v1 unless stated"]},
-
-  {"id": "S0-01", "phase": "S0", "title": "Owner approves this plan and board", "priority": "P0", "size": "S", "deps": [], "status": "in_progress", "owner": "owner", "test": "manual",
-   "ac": ["Owner says the plan is approved, or lists changes", "Approved decisions saved to MEMORY.md"]},
-  {"id": "S0-02", "phase": "S0", "title": "Scaffold the Next.js app (TypeScript strict, App Router, ESLint, Prettier)", "priority": "P0", "size": "S", "deps": ["S0-01", "O-01", "O-03"], "status": "todo", "owner": "claude", "test": "unit",
-   "ac": ["npm run dev serves a page", "npm run verify runs typecheck, lint, unit tests and build, and passes", "A sample Vitest test runs", "No secrets in the repo; .env.example lists every variable"]},
-  {"id": "S0-03", "phase": "S0", "title": "Fight Camp design tokens and base components", "priority": "P0", "size": "M", "deps": ["S0-02"], "status": "todo", "owner": "claude", "test": "unit", "screens": ["All"],
-   "ac": ["Tokens match the mockups: Anton + Inter, #111111 / #FFFFFF / #D4F000, pill buttons", "Button (ink, light, grey, volt, ghost, small), Tag, Input with label and inline error, Checkbox, Radio card, Tabs, Dialog", "Every control has a visible focus ring and a 44 px touch target", "Component tests cover each variant; axe finds no serious issue on a dev-only /styleguide page"]},
-  {"id": "S0-04", "phase": "S0", "title": "Local Supabase, migrations folder and pgTAP test harness", "priority": "P0", "size": "S", "deps": ["S0-02", "O-02"], "status": "todo", "owner": "claude", "test": "db",
-   "ac": ["supabase start runs locally", "npm run test:db runs a sample pgTAP test", "Migrations apply from scratch with no errors", "Typed database client generated into the app"]},
-  {"id": "S0-05", "phase": "S0", "title": "CI on GitHub Actions", "priority": "P0", "size": "S", "deps": ["S0-04"], "status": "todo", "owner": "claude", "test": "manual",
-   "ac": ["Every pull request runs typecheck, lint, unit, database tests and build", "A failing test blocks the merge", "Main branch is protected"]},
-  {"id": "S0-06", "phase": "S0", "title": "Vercel preview deploys and environment variables", "priority": "P0", "size": "S", "deps": ["S0-05", "O-02"], "status": "todo", "owner": "claude", "test": "manual",
-   "ac": ["Each pull request gets a preview URL", "Preview uses a separate Supabase project from production", "Production deploy needs the owner's approval"]},
-  {"id": "S0-07", "phase": "S0", "title": "Playwright end-to-end harness with seeded test users", "priority": "P0", "size": "S", "deps": ["S0-04"], "status": "todo", "owner": "claude", "test": "e2e",
-   "ac": ["Seed creates one athlete, two coaches, one reviewer, one admin", "A sample end-to-end test passes locally and in CI", "Tests run at 390 px (phone) and 1440 px (desktop)"]},
-
-  {"id": "M1-01", "phase": "M1", "title": "Identity schema: profiles, user_roles, consents, audit_log, with RLS", "priority": "P0", "size": "M", "deps": ["S0-04"], "status": "todo", "owner": "claude", "test": "db",
-   "ac": ["pgTAP: a user reads and edits only their own profile", "pgTAP: no user can insert or change a role row; only the admin function can", "pgTAP: a user cannot change their own role, even as admin", "Every role change writes an audit_log row"]},
-  {"id": "M1-02", "phase": "M1", "title": "Sign in with email link or Google", "priority": "P0", "size": "M", "deps": ["M1-01", "S0-03", "S0-07"], "status": "todo", "owner": "claude", "test": "e2e", "screens": ["A-SignIn", "A-CheckEmail"],
-   "ac": ["End-to-end: email link from the local inbox signs the user in", "A malformed email shows the inline error from the mockup", "Resend is disabled for 60 seconds", "Google button starts the OAuth flow (manual check on preview)"]},
-  {"id": "M1-03", "phase": "M1", "title": "Sign-up step 1: name, date of birth with server-side 18+ check, sports", "priority": "P0", "size": "M", "deps": ["M1-02"], "status": "todo", "owner": "claude", "test": "unit+e2e", "screens": ["A-Onboard1", "A-Under18"],
-   "ac": ["Unit: age rule passes for exactly 18 today, fails for 18 tomorrow, handles 29 February", "End-to-end: under 18 shows the block screen and no profile data is stored", "Check runs on the server; the browser value is not trusted"]},
-  {"id": "M1-04", "phase": "M1", "title": "Sign-up steps 2 to 4: boxing experience, gym goals, summary", "priority": "P0", "size": "M", "deps": ["M1-03"], "status": "todo", "owner": "claude", "test": "e2e", "screens": ["C-Onboarding", "A-OnboardGym", "A-Ready"],
-   "ac": ["End-to-end: full sign-up saves athlete_prefs", "AI use of injury notes and body weight is stored as its own consent row with an explicit yes or no", "Body weight and height are optional", "Summary shows the saved answers and links back to edit"]},
-  {"id": "M1-05", "phase": "M1", "title": "App shells and route guards by role", "priority": "P0", "size": "M", "deps": ["M1-02"], "status": "todo", "owner": "claude", "test": "e2e", "screens": ["All headers", "M-Menu"],
-   "ac": ["Guest, athlete, coach and admin headers match the mockups", "Phone shows bottom tabs (athlete and coach) and the visitor menu", "End-to-end: a guest opening /today goes to sign-in; an athlete opening /coach sees a not-allowed page", "The guard runs on the server for every protected route"]},
-  {"id": "M1-06", "phase": "M1", "title": "Admin: people and roles", "priority": "P0", "size": "S", "deps": ["M1-01", "M1-05"], "status": "todo", "owner": "claude", "test": "db+e2e", "screens": ["R-Roles"],
-   "ac": ["Only an admin sees the page", "Changing a role calls the admin function and writes audit_log", "An admin cannot change their own role (blocked in the database)"]},
-  {"id": "M1-07", "phase": "M1", "title": "Coach applications: apply, review, make coach or decline", "priority": "P1", "size": "M", "deps": ["M1-06"], "status": "todo", "owner": "claude", "test": "e2e", "screens": ["P-ForCoaches", "P-Applied", "R-Roles"],
-   "ac": ["End-to-end: an applicant submits; the admin makes them a coach; their next page load shows the coach header", "Experience is labelled self-reported", "The applicant gets an email with the decision"]},
-  {"id": "M1-08", "phase": "M1", "title": "Account: profile, consent switches, data download, delete account", "priority": "P0", "size": "M", "deps": ["M1-04"], "status": "todo", "owner": "claude", "test": "db+e2e", "screens": ["T-Account", "T-ConfirmDelete"],
-   "ac": ["Turning a consent off takes effect at once and is logged", "Download gives a JSON file of the user's own data", "Delete needs the confirm screen, then removes profile, logs and saves; pgTAP checks nothing personal remains"]},
-  {"id": "M1-09", "phase": "M1", "title": "Milestone check M1", "priority": "P0", "size": "S", "deps": ["M1-01", "M1-02", "M1-03", "M1-04", "M1-05", "M1-06", "M1-08"], "status": "todo", "owner": "claude", "test": "all",
-   "ac": ["npm run verify green in CI", "Codex review of auth and RLS changes; findings fixed or rejected with evidence", "Board and MEMORY.md updated"]},
-
-  {"id": "M2-01", "phase": "M2", "title": "Content schema: categories, disciplines, items, steps, links, muscles, workflow, RLS", "priority": "P0", "size": "M", "deps": ["M1-09"], "status": "todo", "owner": "claude", "test": "db",
-   "ac": ["Three categories: boxing, sc, gym", "pgTAP: anonymous users read only published items; a draft read returns nothing", "pgTAP: an author cannot set status to published", "pgTAP: a reviewer cannot publish an item they wrote", "S&C items carry supports tags; gym items carry muscle links"]},
-  {"id": "M2-02", "phase": "M2", "title": "Seed sample content for all three categories", "priority": "P0", "size": "S", "deps": ["M2-01"], "status": "todo", "owner": "claude", "test": "db",
-   "ac": ["Seed is idempotent", "Every seeded item has is_sample = true", "At least 10 boxing skills, 8 S&C and 10 gym exercises"]},
-  {"id": "M2-03", "phase": "M2", "title": "Library pages: Boxing, S&C, Gym & Fitness with filters", "priority": "P0", "size": "M", "deps": ["M2-02", "M1-05"], "status": "todo", "owner": "claude", "test": "e2e", "screens": ["C-Library", "P-LibrarySC", "G-Library"],
-   "ac": ["Filters match the mockups for each category", "Filters live in the URL, so back and share keep them", "End-to-end: filtering boxing drills by equipment shows only matching items", "Counts shown are real counts, never fixed numbers"]},
-  {"id": "M2-04", "phase": "M2", "title": "Lesson and exercise pages", "priority": "P0", "size": "M", "deps": ["M2-02"], "status": "todo", "owner": "claude", "test": "e2e", "screens": ["C-Lesson", "P-Drill", "G-Exercise"],
-   "ac": ["YouTube embed through youtube-nocookie, loaded only on tap", "Steps, mistakes, safety, prerequisites and practice items from the database", "Gym page shows the rep-range table per goal", "End-to-end: a draft URL returns 404; a sample item shows Sample, never Coach-verified"]},
-  {"id": "M2-05", "phase": "M2", "title": "Search with Postgres full-text", "priority": "P1", "size": "S", "deps": ["M2-02"], "status": "todo", "owner": "claude", "test": "db+e2e", "screens": ["P-Search"],
-   "ac": ["Searching jab returns the jab skill first and its drills", "Results filter by type", "Unpublished items never appear"]},
-  {"id": "M2-06", "phase": "M2", "title": "Save and mark complete; Saved page", "priority": "P0", "size": "S", "deps": ["M2-04", "M1-04"], "status": "todo", "owner": "claude", "test": "e2e", "screens": ["T-Saved"],
-   "ac": ["End-to-end: save and complete a lesson, reload, both persist", "Guests are asked to sign in first"]},
-  {"id": "M2-07", "phase": "M2", "title": "Boxing skill path with progress", "priority": "P2", "size": "S", "deps": ["M2-06"], "status": "todo", "owner": "claude", "test": "unit", "screens": ["C-Library"],
-   "ac": ["Path order comes from prerequisite links", "Unit: status per skill is done, in progress or not started, from completions"]},
-  {"id": "M2-08", "phase": "M2", "title": "Coach lesson editor and My lessons", "priority": "P0", "size": "M", "deps": ["M2-01", "M1-05"], "status": "todo", "owner": "claude", "test": "unit+e2e", "screens": ["K-Lessons", "K-Editor"],
-   "ac": ["Unit: Submit stays disabled until there is a public video, 3 steps, mistakes and safety", "Inline errors match the mockup", "Status chips: draft, in review, needs changes, live", "End-to-end: a coach drafts and submits a lesson"]},
-  {"id": "M2-09", "phase": "M2", "title": "Review queue and review page", "priority": "P0", "size": "M", "deps": ["M2-08"], "status": "todo", "owner": "claude", "test": "db+e2e", "screens": ["R-Queue", "R-Review"],
-   "ac": ["Approve stays disabled until every check is ticked", "Send back needs a note, which the author sees", "Own items show the 'another reviewer approves it' message, and the database also blocks it", "End-to-end: submit, review, publish, then the lesson is public"]},
-  {"id": "M2-10", "phase": "M2", "title": "Daily check for broken YouTube videos", "priority": "P1", "size": "S", "deps": ["M2-04"], "status": "todo", "owner": "claude", "test": "unit",
-   "ac": ["Unit with a mocked response: a removed or private video sets a broken flag", "The author sees the flag in My lessons", "Runs once a day"]},
-  {"id": "M2-11", "phase": "M2", "title": "Milestone check M2", "priority": "P0", "size": "S", "deps": ["M2-03", "M2-04", "M2-05", "M2-06", "M2-08", "M2-09"], "status": "todo", "owner": "claude", "test": "all",
-   "ac": ["The design doc's M2 Verify list passes", "Visual check of library and lesson pages against the canvas at 390 and 1440 px", "Board and MEMORY.md updated"]},
-
-  {"id": "M3-01", "phase": "M3", "title": "Program schema: programs, weeks, sessions, typed items, versions, RLS", "priority": "P0", "size": "M", "deps": ["M2-11"], "status": "todo", "owner": "claude", "test": "db",
-   "ac": ["Prescription types: rounds × work/rest, time, sets × reps × load", "Only published library items can be added", "pgTAP: only the owning coach edits a program", "Publishing creates a new version; enrolled athletes see it from the next day"]},
-  {"id": "M3-02", "phase": "M3", "title": "Program builder", "priority": "P0", "size": "M", "deps": ["M3-01"], "status": "todo", "owner": "claude", "test": "e2e", "screens": ["K-Programs", "C-Builder"],
-   "ac": ["Weeks, sessions, add from library, edit prescription and cue, reorder, publish", "End-to-end: a coach builds one boxing and one S&C session and publishes"]},
-  {"id": "M3-03", "phase": "M3", "title": "Invite links: per program, reset, joined list", "priority": "P0", "size": "S", "deps": ["M3-01"], "status": "todo", "owner": "claude", "test": "e2e", "screens": ["K-Invite", "K-ConfirmReset", "A-Invite"],
-   "ac": ["Link codes are random and unguessable", "Joining needs sign-in and a finished 18+ sign-up", "After reset the old link shows 'no longer active'", "The coach sees each person who joined"]},
-  {"id": "M3-04", "phase": "M3", "title": "Enrollments and the coach access rule", "priority": "P0", "size": "M", "deps": ["M3-03"], "status": "todo", "owner": "claude", "test": "db+e2e", "screens": ["T-MyPrograms", "K-ConfirmRemove"],
-   "ac": ["pgTAP: coach A cannot read coach B's athletes", "pgTAP: a coach loses access the moment the athlete leaves or is removed", "Past feedback stays visible to the athlete", "Leave and remove both use confirm screens"]},
-  {"id": "M3-05", "phase": "M3", "title": "Schedule: map program days to dates in Asia/Kolkata", "priority": "P0", "size": "S", "deps": ["M3-01"], "status": "todo", "owner": "claude", "test": "unit",
-   "ac": ["Unit: correct day for joins late at night, across week boundaries and month ends", "Several programs merge into one day list"]},
-  {"id": "M3-06", "phase": "M3", "title": "Today: merged sessions, empty state, coach note", "priority": "P0", "size": "M", "deps": ["M3-04", "M3-05"], "status": "todo", "owner": "claude", "test": "e2e", "screens": ["C-Today", "G-Today", "T-TodayEmpty", "M-Today"],
-   "ac": ["End-to-end: an athlete in two programs sees both sessions today", "With no program, the empty state offers an invite link and lessons", "The latest coach feedback shows with a reply link"]},
-  {"id": "M3-07", "phase": "M3", "title": "Boxing session player: round timer and logging", "priority": "P0", "size": "M", "deps": ["M3-06"], "status": "todo", "owner": "claude", "test": "unit+e2e", "screens": ["C-Session", "M-Session"],
-   "ac": ["Unit: timer moves work → rest → next round → done; pause and skip behave", "Logs rounds done, technique feel 1–5, effort 1–10 and a note", "Screen stays awake while the timer runs where the browser allows", "End-to-end: log a full session"]},
-  {"id": "M3-08", "phase": "M3", "title": "Set logger for S&C and gym, with last-time numbers and next target", "priority": "P0", "size": "M", "deps": ["M3-06"], "status": "todo", "owner": "claude", "test": "unit+e2e", "screens": ["T-SessionSC", "G-Workout"],
-   "ac": ["Each set logs reps × kg; rest timer starts after each set", "Shows last time's sets for the same exercise", "Unit: if every set hit the top of the rep range, suggest +2.5 kg; otherwise keep the weight", "End-to-end: log a gym workout"]},
-  {"id": "M3-09", "phase": "M3", "title": "Session and workout done summaries", "priority": "P1", "size": "S", "deps": ["M3-07", "M3-08"], "status": "todo", "owner": "claude", "test": "unit", "screens": ["T-SessionDone", "G-WorkoutDone"],
-   "ac": ["Unit: totals equal the saved logs exactly", "A note to the coach saves with the session"]},
-  {"id": "M3-10", "phase": "M3", "title": "Metrics: records, adherence, sets per muscle, skill rating", "priority": "P0", "size": "M", "deps": ["M3-07", "M3-08"], "status": "todo", "owner": "claude", "test": "unit+db",
-   "ac": ["Record rule per metric type is written down and tested with exact values", "Adherence = sessions completed ÷ sessions scheduled up to today", "Sets per muscle count only hard sets from gym logs", "Skill rating = average of the last 5 technique logs"]},
-  {"id": "M3-11", "phase": "M3", "title": "Progress pages (boxing and gym) and body weight log", "priority": "P0", "size": "M", "deps": ["M3-10"], "status": "todo", "owner": "claude", "test": "e2e", "screens": ["C-Progress", "G-Progress"],
-   "ac": ["Every number traces to M3-10 functions", "Body weight shows only to the athlete and their current coach", "End-to-end: progress numbers equal the logged data"]},
-  {"id": "M3-12", "phase": "M3", "title": "Coach dashboard: adherence board and flags", "priority": "P0", "size": "M", "deps": ["M3-10"], "status": "todo", "owner": "claude", "test": "unit+e2e", "screens": ["C-CoachDash"],
-   "ac": ["Unit: flags for reported pain, 3 missed sessions in a row, effort 9+ in the last two sessions", "Board shows only the coach's own active athletes", "End-to-end: a logged session appears on the board"]},
-  {"id": "M3-13", "phase": "M3", "title": "Athlete detail, feedback and replies", "priority": "P0", "size": "M", "deps": ["M3-12"], "status": "todo", "owner": "claude", "test": "e2e", "screens": ["K-Athlete", "T-Feedback"],
-   "ac": ["Coach sees logs and sign-up answers for an enrolled athlete only", "End-to-end: coach sends feedback; athlete sees it in Today and Coach feedback and replies; coach sees the reply"]},
-  {"id": "M3-14", "phase": "M3", "title": "Email when a coach leaves feedback", "priority": "P1", "size": "S", "deps": ["M3-13"], "status": "todo", "owner": "claude", "test": "unit",
-   "ac": ["Unit with a mocked sender: one email per note", "No email when the athlete turned the setting off"]},
-  {"id": "M3-15", "phase": "M3", "title": "Milestone check M3", "priority": "P0", "size": "S", "deps": ["M3-02", "M3-04", "M3-06", "M3-07", "M3-08", "M3-11", "M3-12", "M3-13"], "status": "todo", "owner": "claude", "test": "all",
-   "ac": ["The design doc's M3 Verify list passes, plus a gym workout path", "Codex review of RLS changes", "/qa pass on preview: no high-severity bugs", "Board and MEMORY.md updated"]},
-
-  {"id": "M4-01", "phase": "M4", "title": "Marketplace schema: coach profiles, packages, slots, credentials, RLS", "priority": "P0", "size": "M", "deps": ["M3-15"], "status": "todo", "owner": "claude", "test": "db",
-   "ac": ["Prices stored as integer paise", "Credential files in a private bucket readable only by the coach and admins", "pgTAP: a coach edits only their own profile, packages and slots"]},
-  {"id": "M4-02", "phase": "M4", "title": "Coach marketplace profile editor", "priority": "P0", "size": "M", "deps": ["M4-01", "O-05"], "status": "todo", "owner": "claude", "test": "e2e", "screens": ["X-CoachProfile"],
-   "ac": ["Headline, philosophy, specialties, languages, formats, city", "Packages with price and live switch; client limit; weekly slots", "Coach accepts the coach agreement before going live", "End-to-end: edits show on the public profile"]},
-  {"id": "M4-03", "phase": "M4", "title": "Credential upload and admin checks", "priority": "P0", "size": "M", "deps": ["M4-01"], "status": "todo", "owner": "claude", "test": "db+e2e", "screens": ["X-Verify"],
-   "ac": ["Badge shows 'Credentials checked' only after an admin marks it", "Reject needs a note the coach sees", "Every decision is logged with the admin and date"]},
-  {"id": "M4-04", "phase": "M4", "title": "Find a coach: discovery, filters and sort", "priority": "P0", "size": "M", "deps": ["M4-02"], "status": "todo", "owner": "claude", "test": "e2e", "screens": ["P-Coaches"],
-   "ac": ["Filters: specialty, format, city, price, rating, experience, credentials, language", "Sort never uses payment or paid placement", "End-to-end: price filter shows only coaches in range"]},
-  {"id": "M4-05", "phase": "M4", "title": "Public coach profile with computed stats", "priority": "P0", "size": "M", "deps": ["M4-04", "M4-03"], "status": "todo", "owner": "claude", "test": "db+e2e", "screens": ["P-Coach"],
-   "ac": ["Stats come from SQL views over engagements and logs; pgTAP compares them to hand-computed values", "Packages, slots, portfolio and reviews from the database", "Shows 'self-reported' for anything not checked"]},
-  {"id": "M4-06", "phase": "M4", "title": "Shortlist and compare (up to 3)", "priority": "P1", "size": "S", "deps": ["M4-05"], "status": "todo", "owner": "claude", "test": "e2e", "screens": ["X-Shortlist", "X-Compare"],
-   "ac": ["Shortlist is private to the athlete", "Compare shows the same rows as the mockup for up to 3 coaches", "End-to-end: shortlist two coaches, then compare"]},
-  {"id": "M4-07", "phase": "M4", "title": "Hire request, accept and decline, client limit", "priority": "P0", "size": "M", "deps": ["M4-05"], "status": "todo", "owner": "claude", "test": "db+e2e", "screens": ["X-Hire", "X-CoachRequests"],
-   "ac": ["Request saves package, start date, goals and data-sharing consent", "Requests pause automatically when the coach hits the client limit", "End-to-end: athlete requests; coach accepts; athlete sees Pay"]},
-  {"id": "M4-08", "phase": "M4", "title": "Messages between client and coach", "priority": "P0", "size": "M", "deps": ["M4-07"], "status": "todo", "owner": "claude", "test": "db+e2e", "screens": ["X-Chat"],
-   "ac": ["pgTAP: only the two people in a conversation can read it", "New messages appear within 10 seconds", "Shows the warning about paying outside FitSphere"]},
-  {"id": "M4-09", "phase": "M4", "title": "Checkout and payment webhook", "priority": "P0", "size": "M", "deps": ["M4-07", "O-04"], "status": "todo", "owner": "claude", "test": "unit+e2e", "screens": ["X-Checkout", "X-Hired"],
-   "ac": ["The server sets the amount from the package; the browser cannot change it", "Webhook rejects a bad signature", "A repeated webhook creates no second engagement (idempotency key)", "End-to-end in test mode: pay, and the engagement becomes active"]},
-  {"id": "M4-10", "phase": "M4", "title": "Engagement starts coaching access", "priority": "P0", "size": "S", "deps": ["M4-09", "M3-04"], "status": "todo", "owner": "claude", "test": "db",
-   "ac": ["An active engagement gives the coach the same access as an enrollment", "Access ends when the engagement ends or is refunded", "The coach can assign a program to the client"]},
-  {"id": "M4-11", "phase": "M4", "title": "Monthly renewal, cancel and failed payments", "priority": "P0", "size": "M", "deps": ["M4-09"], "status": "todo", "owner": "claude", "test": "unit+e2e",
-   "ac": ["Cancel in My programs stops the next renewal and keeps access to the end of the paid month", "A failed renewal retries per the provider's rules, then ends the engagement", "Athlete and coach get an email for each change"]},
-  {"id": "M4-12", "phase": "M4", "title": "Refunds and payout reversal", "priority": "P0", "size": "M", "deps": ["M4-09", "O-05"], "status": "todo", "owner": "claude", "test": "unit+e2e",
-   "ac": ["Refund follows the owner's written terms", "A refund ends the engagement and reverses the coach's share", "Every refund is logged"]},
-  {"id": "M4-13", "phase": "M4", "title": "Split payouts and the earnings page", "priority": "P0", "size": "M", "deps": ["M4-09", "O-04"], "status": "todo", "owner": "claude", "test": "unit+e2e", "screens": ["X-Earnings"],
-   "ac": ["Unit: coach share = price − fee, exact to the paisa, for 3 sample prices", "Earnings page totals equal the payments table", "pgTAP: a coach sees only their own payouts"]},
-  {"id": "M4-14", "phase": "M4", "title": "Verified reviews and coach replies", "priority": "P0", "size": "M", "deps": ["M4-10"], "status": "todo", "owner": "claude", "test": "db+e2e", "screens": ["X-Review", "P-Coach"],
-   "ac": ["pgTAP: only a client with a paid, finished engagement can review, once per engagement", "pgTAP: a coach cannot edit or delete a review", "A coach can post one public reply", "Rating on the profile equals the average of reviews"]},
-  {"id": "M4-15", "phase": "M4", "title": "Client stories with written consent", "priority": "P2", "size": "S", "deps": ["M4-14"], "status": "todo", "owner": "claude", "test": "db",
-   "ac": ["A story shows only after the client approves the exact text in the app", "Body photos need a second, separate consent", "The client can withdraw consent and the story disappears"]},
-  {"id": "M4-16", "phase": "M4", "title": "Payments go-live checklist and milestone check M4", "priority": "P0", "size": "M", "deps": ["M4-09", "M4-10", "M4-11", "M4-12", "M4-13", "M4-14"], "status": "todo", "owner": "claude", "test": "all",
-   "ac": ["All 20 checklist items audited against the code: webhook signatures, failed payments, refunds, upgrades, idempotency, server-side gating, status sync, test clocks, billing page, receipts, event logging, expired cards, tax, trials, duplicate charges, currency, cancel flow, retries, failed-webhook alerts, full test as a customer", "The design doc's M4 Verify list passes", "Codex final-diff review; findings fixed or rejected with evidence", "Live mode only after the owner approves"]},
-
-  {"id": "M5-01", "phase": "M5", "title": "Retrieval over published, non-sample content", "priority": "P0", "size": "M", "deps": ["M2-11"], "status": "todo", "owner": "claude", "test": "db",
-   "ac": ["Ranked full-text search returns item ids for citation", "pgTAP: draft, in-review and sample items are never returned"]},
-  {"id": "M5-02", "phase": "M5", "title": "Answer service: Claude call, citations, labels, safety", "priority": "P0", "size": "M", "deps": ["M5-01", "M1-08"], "status": "todo", "owner": "claude", "test": "unit",
-   "ac": ["Every answer carries the 'AI explanation' label", "Unit: every cited id exists and is published", "No-match answers say 'no library source' and contain no sets, reps or loads", "Injury questions get a referral and no diagnosis; unsafe requests are refused", "Personal data sent: sport, level, goals; health fields only with consent; never name or contact details"]},
-  {"id": "M5-03", "phase": "M5", "title": "Daily question limit and usage log", "priority": "P0", "size": "S", "deps": ["M5-02"], "status": "todo", "owner": "claude", "test": "unit",
-   "ac": ["Unit: the 11th question of the day is blocked with a clear message", "Each question logs user, tokens and cost"]},
-  {"id": "M5-04", "phase": "M5", "title": "Ask AI screen with history and actions", "priority": "P0", "size": "M", "deps": ["M5-03"], "status": "todo", "owner": "claude", "test": "e2e", "screens": ["C-AI"],
-   "ac": ["Citations link to lessons; 'Add to Today' works", "A pain report creates a flag on the coach dashboard", "End-to-end: ask, get a cited answer, open the cited lesson"]},
-  {"id": "M5-05", "phase": "M5", "title": "AI eval set and milestone check M5", "priority": "P0", "size": "M", "deps": ["M5-04"], "status": "todo", "owner": "claude", "test": "eval",
-   "ac": ["npm run eval:ai runs at least 30 questions (boxing, S&C, gym, beginner, injury, unsafe, off-topic, no-match) 3 times", "100% on code-checked rules in all 3 runs", "Judge average at least 90%"]},
-
-  {"id": "M6-01", "phase": "M6", "title": "Public pages: landing, programs, about, help, for coaches", "priority": "P0", "size": "M", "deps": ["M4-16"], "status": "todo", "owner": "claude", "test": "e2e", "screens": ["C-Landing", "P-Programs", "P-Program", "G-Program", "P-About", "P-Help"],
-   "ac": ["Match the canvas at 390 and 1440 px", "No invented numbers; every count comes from the database"]},
-  {"id": "M6-02", "phase": "M6", "title": "Privacy policy and terms", "priority": "P0", "size": "S", "deps": ["O-07"], "status": "todo", "owner": "claude", "test": "manual", "screens": ["P-Legal"],
-   "ac": ["Uses the owner's signed-off text", "Names Anthropic and the payment provider as processors"]},
-  {"id": "M6-03", "phase": "M6", "title": "Empty, loading and error states on every route; 404", "priority": "P0", "size": "M", "deps": ["M6-01"], "status": "todo", "owner": "claude", "test": "e2e", "screens": ["P-NotFound"],
-   "ac": ["A route audit script lists every route and finds no dead button or placeholder", "Each data screen has a designed empty state"]},
-  {"id": "M6-04", "phase": "M6", "title": "Installable PWA", "priority": "P1", "size": "S", "deps": ["M6-01"], "status": "todo", "owner": "claude", "test": "manual",
-   "ac": ["Manifest, icons and an offline fallback page", "Installs on Android Chrome and iOS Safari"]},
-  {"id": "M6-05", "phase": "M6", "title": "Speed on low-end Android", "priority": "P0", "size": "M", "deps": ["M6-01"], "status": "todo", "owner": "claude", "test": "manual",
-   "ac": ["Lighthouse mobile performance at least 80 on landing, library and Today", "Images served in modern formats at the right size"]},
-  {"id": "M6-06", "phase": "M6", "title": "Accessibility audit", "priority": "P0", "size": "S", "deps": ["M6-03"], "status": "todo", "owner": "claude", "test": "e2e",
-   "ac": ["axe finds no serious or critical issue on any route", "Keyboard-only path through sign-up, a session and checkout"]},
-  {"id": "M6-07", "phase": "M6", "title": "Security review and rate limits", "priority": "P0", "size": "M", "deps": ["M6-03"], "status": "todo", "owner": "claude", "test": "all",
-   "ac": ["Rate limits on sign-in, AI and payment routes", "/security-review and a Codex review of the full app; findings resolved", "No secrets in the repo or client bundle"]},
-  {"id": "M6-08", "phase": "M6", "title": "Final QA and production launch", "priority": "P0", "size": "M", "deps": ["M6-02", "M6-04", "M6-05", "M6-06", "M6-07", "M5-05"], "status": "todo", "owner": "claude", "test": "all",
-   "ac": ["/qa on the production candidate finds no high-severity bugs", "Design doc M6 Verify list passes", "Owner approves the production deploy"]}
+  {
+   "id": "O-01",
+   "phase": "O",
+   "title": "Confirm the stack: Next.js only, Supabase, Razorpay",
+   "priority": "P0",
+   "size": "S",
+   "deps": [],
+   "status": "todo",
+   "owner": "owner",
+   "test": "manual",
+   "ac": [
+    "Owner confirms or changes the choices in section 1 of the engineering plan",
+    "Decision recorded in MEMORY.md"
+   ]
+  },
+  {
+   "id": "O-02",
+   "phase": "O",
+   "title": "Create Supabase (Mumbai), Vercel, Anthropic API and Google OAuth accounts",
+   "priority": "P0",
+   "size": "S",
+   "deps": [
+    "O-01"
+   ],
+   "status": "todo",
+   "owner": "owner",
+   "test": "manual",
+   "ac": [
+    "Keys shared through a password manager or Vercel and GitHub secrets, never in chat or the repo",
+    "Google OAuth client has the preview and production callback URLs"
+   ]
+  },
+  {
+   "id": "O-03",
+   "phase": "O",
+   "title": "Upgrade this PC to Node 22 LTS",
+   "priority": "P0",
+   "size": "S",
+   "deps": [],
+   "status": "todo",
+   "owner": "owner",
+   "test": "manual",
+   "ac": [
+    "node --version prints v22 or later"
+   ]
+  },
+  {
+   "id": "O-04",
+   "phase": "O",
+   "title": "Payment provider account, KYC, business and GST registration",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "O-01"
+   ],
+   "status": "todo",
+   "owner": "owner",
+   "test": "manual",
+   "ac": [
+    "Test-mode keys available before M4-09",
+    "Route (split payouts) enabled before M4-12",
+    "Live mode stays off until M4-16 passes"
+   ]
+  },
+  {
+   "id": "O-05",
+   "phase": "O",
+   "title": "Set the platform fee %, refund and cancel terms, and the coach agreement",
+   "priority": "P0",
+   "size": "S",
+   "deps": [],
+   "status": "todo",
+   "owner": "owner",
+   "test": "manual",
+   "ac": [
+    "Fee %, refund window and cancel rule written in MEMORY.md",
+    "Coach agreement text ready for M4-02"
+   ]
+  },
+  {
+   "id": "O-06",
+   "phase": "O",
+   "title": "Sign founding coaches: one boxing, one S&C or gym",
+   "priority": "P0",
+   "size": "M",
+   "deps": [],
+   "status": "todo",
+   "owner": "owner",
+   "test": "manual",
+   "ac": [
+    "Each coach lists the first 20 skills or exercises a beginner needs",
+    "Each records at least 5 lessons on YouTube before M6"
+   ]
+  },
+  {
+   "id": "O-07",
+   "phase": "O",
+   "title": "Legal review of privacy policy and terms (DPDP, marketplace)",
+   "priority": "P0",
+   "size": "M",
+   "deps": [],
+   "status": "todo",
+   "owner": "owner",
+   "test": "manual",
+   "ac": [
+    "Signed-off text available before M6-02"
+   ]
+  },
+  {
+   "id": "O-08",
+   "phase": "O",
+   "title": "Decide on nutrition (meal plans or calorie targets)",
+   "priority": "P2",
+   "size": "S",
+   "deps": [],
+   "status": "todo",
+   "owner": "owner",
+   "test": "manual",
+   "ac": [
+    "Decision in MEMORY.md; out of v1 unless stated"
+   ]
+  },
+  {
+   "id": "O-09",
+   "phase": "O",
+   "title": "Answer the missing requirements Q-01 to Q-15",
+   "priority": "P0",
+   "size": "S",
+   "deps": [],
+   "status": "todo",
+   "owner": "owner",
+   "test": "manual",
+   "ac": [
+    "Each question in docs/architecture/risks-and-gaps.md has an answer or accepts the stated default",
+    "Answers recorded in MEMORY.md decisions"
+   ]
+  },
+  {
+   "id": "O-10",
+   "phase": "O",
+   "title": "Review design observations D1 to D6 and the key phone screens",
+   "priority": "P1",
+   "size": "S",
+   "deps": [],
+   "status": "todo",
+   "owner": "owner",
+   "test": "manual",
+   "ac": [
+    "Each item in product-analysis.md section 6 is approved, changed or rejected",
+    "No design file is edited without this approval"
+   ]
+  },
+  {
+   "id": "S0-01",
+   "phase": "S0",
+   "title": "Owner approves this plan and board",
+   "priority": "P0",
+   "size": "S",
+   "deps": [],
+   "status": "in_progress",
+   "owner": "owner",
+   "test": "manual",
+   "ac": [
+    "Owner says the plan is approved, or lists changes",
+    "Approved decisions saved to MEMORY.md",
+    "Owner has read docs/architecture/ (product analysis, architecture, risks and gaps)"
+   ]
+  },
+  {
+   "id": "S0-02",
+   "phase": "S0",
+   "title": "Scaffold the Next.js app (TypeScript strict, App Router, ESLint, Prettier)",
+   "priority": "P0",
+   "size": "S",
+   "deps": [
+    "S0-01",
+    "O-01",
+    "O-03"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "unit",
+   "ac": [
+    "npm run dev serves a page",
+    "npm run verify runs typecheck, lint, unit tests and build, and passes",
+    "A sample Vitest test runs",
+    "No secrets in the repo; .env.example lists every variable"
+   ]
+  },
+  {
+   "id": "S0-03",
+   "phase": "S0",
+   "title": "Fight Camp design tokens and base components",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "S0-02"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "unit",
+   "screens": [
+    "All"
+   ],
+   "ac": [
+    "Tokens match the mockups: Anton + Inter, #111111 / #FFFFFF / #D4F000, pill buttons",
+    "Button (ink, light, grey, volt, ghost, small), Tag, Input with label and inline error, Checkbox, Radio card, Tabs, Dialog",
+    "Every control has a visible focus ring and a 44 px touch target",
+    "Component tests cover each variant; axe finds no serious issue on a dev-only /styleguide page"
+   ]
+  },
+  {
+   "id": "S0-04",
+   "phase": "S0",
+   "title": "Local Supabase, migrations folder and pgTAP test harness",
+   "priority": "P0",
+   "size": "S",
+   "deps": [
+    "S0-02",
+    "O-02"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "db",
+   "ac": [
+    "supabase start runs locally",
+    "npm run test:db runs a sample pgTAP test",
+    "Migrations apply from scratch with no errors",
+    "Typed database client generated into the app"
+   ]
+  },
+  {
+   "id": "S0-05",
+   "phase": "S0",
+   "title": "CI on GitHub Actions",
+   "priority": "P0",
+   "size": "S",
+   "deps": [
+    "S0-04"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "manual",
+   "ac": [
+    "Every pull request runs typecheck, lint, unit, database tests and build",
+    "A failing test blocks the merge",
+    "Main branch is protected"
+   ]
+  },
+  {
+   "id": "S0-06",
+   "phase": "S0",
+   "title": "Vercel preview deploys and environment variables",
+   "priority": "P0",
+   "size": "S",
+   "deps": [
+    "S0-05",
+    "O-02"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "manual",
+   "ac": [
+    "Each pull request gets a preview URL",
+    "Preview uses a separate Supabase project from production",
+    "Production deploy needs the owner's approval"
+   ]
+  },
+  {
+   "id": "S0-07",
+   "phase": "S0",
+   "title": "Playwright end-to-end harness with seeded test users",
+   "priority": "P0",
+   "size": "S",
+   "deps": [
+    "S0-04"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "e2e",
+   "ac": [
+    "Seed creates one athlete, two coaches, one reviewer, one admin",
+    "A sample end-to-end test passes locally and in CI",
+    "Tests run at 390 px (phone) and 1440 px (desktop)"
+   ]
+  },
+  {
+   "id": "S0-08",
+   "phase": "S0",
+   "title": "Error tracking and product analytics",
+   "priority": "P1",
+   "size": "S",
+   "deps": [
+    "S0-06",
+    "O-09"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "manual",
+   "ac": [
+    "Tools chosen per Q-12",
+    "Server and browser errors reach the tracker with no personal data",
+    "Events for sign-up, session logged and hire are recorded, so weekly-return numbers can be measured"
+   ]
+  },
+  {
+   "id": "M1-01",
+   "phase": "M1",
+   "title": "Identity schema: profiles, user_roles, consents, audit_log, with RLS",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "S0-04"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "db",
+   "ac": [
+    "pgTAP: a user reads and edits only their own profile",
+    "pgTAP: no user can insert or change a role row; only the admin function can",
+    "pgTAP: a user cannot change their own role, even as admin",
+    "Every role change writes an audit_log row"
+   ]
+  },
+  {
+   "id": "M1-02",
+   "phase": "M1",
+   "title": "Sign in with email link or Google",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M1-01",
+    "S0-03",
+    "S0-07"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "e2e",
+   "screens": [
+    "A-SignIn",
+    "A-CheckEmail"
+   ],
+   "ac": [
+    "End-to-end: email link from the local inbox signs the user in",
+    "A malformed email shows the inline error from the mockup",
+    "Resend is disabled for 60 seconds",
+    "Google button starts the OAuth flow (manual check on preview)"
+   ]
+  },
+  {
+   "id": "M1-03",
+   "phase": "M1",
+   "title": "Sign-up step 1: name, date of birth with server-side 18+ check, sports",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M1-02"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "unit+e2e",
+   "screens": [
+    "A-Onboard1",
+    "A-Under18"
+   ],
+   "ac": [
+    "Unit: age rule passes for exactly 18 today, fails for 18 tomorrow, handles 29 February",
+    "End-to-end: under 18 shows the block screen and no profile data is stored",
+    "Check runs on the server; the browser value is not trusted"
+   ]
+  },
+  {
+   "id": "M1-04",
+   "phase": "M1",
+   "title": "Sign-up steps 2 to 4: boxing experience, gym goals, summary",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M1-03"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "e2e",
+   "screens": [
+    "C-Onboarding",
+    "A-OnboardGym",
+    "A-Ready"
+   ],
+   "ac": [
+    "End-to-end: full sign-up saves athlete_prefs",
+    "AI use of injury notes and body weight is stored as its own consent row with an explicit yes or no",
+    "Body weight and height are optional",
+    "Summary shows the saved answers and links back to edit"
+   ]
+  },
+  {
+   "id": "M1-05",
+   "phase": "M1",
+   "title": "App shells and route guards by role",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M1-02"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "e2e",
+   "screens": [
+    "All headers",
+    "M-Menu"
+   ],
+   "ac": [
+    "Guest, athlete, coach and admin headers match the mockups",
+    "Phone shows bottom tabs (athlete and coach) and the visitor menu",
+    "End-to-end: a guest opening /today goes to sign-in; an athlete opening /coach sees a not-allowed page",
+    "The guard runs on the server for every protected route"
+   ]
+  },
+  {
+   "id": "M1-06",
+   "phase": "M1",
+   "title": "Admin: people and roles",
+   "priority": "P0",
+   "size": "S",
+   "deps": [
+    "M1-01",
+    "M1-05"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "db+e2e",
+   "screens": [
+    "R-Roles"
+   ],
+   "ac": [
+    "Only an admin sees the page",
+    "Changing a role calls the admin function and writes audit_log",
+    "An admin cannot change their own role (blocked in the database)"
+   ]
+  },
+  {
+   "id": "M1-07",
+   "phase": "M1",
+   "title": "Coach applications: apply, review, make coach or decline",
+   "priority": "P1",
+   "size": "M",
+   "deps": [
+    "M1-06"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "e2e",
+   "screens": [
+    "P-ForCoaches",
+    "P-Applied",
+    "R-Roles"
+   ],
+   "ac": [
+    "End-to-end: an applicant submits; the admin makes them a coach; their next page load shows the coach header",
+    "Experience is labelled self-reported",
+    "The applicant gets an email with the decision"
+   ]
+  },
+  {
+   "id": "M1-08",
+   "phase": "M1",
+   "title": "Account: profile, consent switches, data download, delete account",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M1-04"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "db+e2e",
+   "screens": [
+    "T-Account",
+    "T-ConfirmDelete"
+   ],
+   "ac": [
+    "Turning a consent off takes effect at once and is logged",
+    "Download gives a JSON file of the user's own data",
+    "Delete needs the confirm screen, then removes profile, logs and saves; pgTAP checks nothing personal remains"
+   ]
+  },
+  {
+   "id": "M1-09",
+   "phase": "M1",
+   "title": "Milestone check M1",
+   "priority": "P0",
+   "size": "S",
+   "deps": [
+    "M1-01",
+    "M1-02",
+    "M1-03",
+    "M1-04",
+    "M1-05",
+    "M1-06",
+    "M1-08"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "all",
+   "ac": [
+    "npm run verify green in CI",
+    "Codex review of auth and RLS changes; findings fixed or rejected with evidence",
+    "Board and MEMORY.md updated"
+   ]
+  },
+  {
+   "id": "M2-01",
+   "phase": "M2",
+   "title": "Content schema: categories, disciplines, items, steps, links, muscles, workflow, RLS",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M1-09"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "db",
+   "ac": [
+    "Three categories: boxing, sc, gym",
+    "pgTAP: anonymous users read only published items; a draft read returns nothing",
+    "pgTAP: an author cannot set status to published",
+    "pgTAP: a reviewer cannot publish an item they wrote",
+    "S&C items carry supports tags; gym items carry muscle links"
+   ]
+  },
+  {
+   "id": "M2-02",
+   "phase": "M2",
+   "title": "Seed sample content for all three categories",
+   "priority": "P0",
+   "size": "S",
+   "deps": [
+    "M2-01"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "db",
+   "ac": [
+    "Seed is idempotent",
+    "Every seeded item has is_sample = true",
+    "At least 10 boxing skills, 8 S&C and 10 gym exercises"
+   ]
+  },
+  {
+   "id": "M2-03",
+   "phase": "M2",
+   "title": "Library pages: Boxing, S&C, Gym & Fitness with filters",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M2-02",
+    "M1-05"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "e2e",
+   "screens": [
+    "C-Library",
+    "P-LibrarySC",
+    "G-Library"
+   ],
+   "ac": [
+    "Filters match the mockups for each category",
+    "Filters live in the URL, so back and share keep them",
+    "End-to-end: filtering boxing drills by equipment shows only matching items",
+    "Counts shown are real counts, never fixed numbers"
+   ]
+  },
+  {
+   "id": "M2-04",
+   "phase": "M2",
+   "title": "Lesson and exercise pages",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M2-02"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "e2e",
+   "screens": [
+    "C-Lesson",
+    "P-Drill",
+    "G-Exercise"
+   ],
+   "ac": [
+    "YouTube embed through youtube-nocookie, loaded only on tap",
+    "Steps, mistakes, safety, prerequisites and practice items from the database",
+    "Gym page shows the rep-range table per goal",
+    "End-to-end: a draft URL returns 404; a sample item shows Sample, never Coach-verified"
+   ]
+  },
+  {
+   "id": "M2-05",
+   "phase": "M2",
+   "title": "Search with Postgres full-text",
+   "priority": "P1",
+   "size": "S",
+   "deps": [
+    "M2-02"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "db+e2e",
+   "screens": [
+    "P-Search"
+   ],
+   "ac": [
+    "Searching jab returns the jab skill first and its drills",
+    "Results filter by type",
+    "Unpublished items never appear"
+   ]
+  },
+  {
+   "id": "M2-06",
+   "phase": "M2",
+   "title": "Save and mark complete; Saved page",
+   "priority": "P0",
+   "size": "S",
+   "deps": [
+    "M2-04",
+    "M1-04"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "e2e",
+   "screens": [
+    "T-Saved"
+   ],
+   "ac": [
+    "End-to-end: save and complete a lesson, reload, both persist",
+    "Guests are asked to sign in first"
+   ]
+  },
+  {
+   "id": "M2-07",
+   "phase": "M2",
+   "title": "Boxing skill path with progress",
+   "priority": "P2",
+   "size": "S",
+   "deps": [
+    "M2-06"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "unit",
+   "screens": [
+    "C-Library"
+   ],
+   "ac": [
+    "Path order comes from prerequisite links",
+    "Unit: status per skill is done, in progress or not started, from completions"
+   ]
+  },
+  {
+   "id": "M2-08",
+   "phase": "M2",
+   "title": "Coach lesson editor and My lessons",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M2-01",
+    "M1-05"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "unit+e2e",
+   "screens": [
+    "K-Lessons",
+    "K-Editor"
+   ],
+   "ac": [
+    "Unit: Submit stays disabled until there is a public video, 3 steps, mistakes and safety",
+    "Inline errors match the mockup",
+    "Status chips: draft, in review, needs changes, live",
+    "End-to-end: a coach drafts and submits a lesson"
+   ]
+  },
+  {
+   "id": "M2-09",
+   "phase": "M2",
+   "title": "Review queue and review page",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M2-08"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "db+e2e",
+   "screens": [
+    "R-Queue",
+    "R-Review"
+   ],
+   "ac": [
+    "Approve stays disabled until every check is ticked",
+    "Send back needs a note, which the author sees",
+    "Own items show the 'another reviewer approves it' message, and the database also blocks it",
+    "End-to-end: submit, review, publish, then the lesson is public"
+   ]
+  },
+  {
+   "id": "M2-10",
+   "phase": "M2",
+   "title": "Daily check for broken YouTube videos",
+   "priority": "P1",
+   "size": "S",
+   "deps": [
+    "M2-04"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "unit",
+   "ac": [
+    "Unit with a mocked response: a removed or private video sets a broken flag",
+    "The author sees the flag in My lessons",
+    "Runs once a day"
+   ]
+  },
+  {
+   "id": "M2-11",
+   "phase": "M2",
+   "title": "Milestone check M2",
+   "priority": "P0",
+   "size": "S",
+   "deps": [
+    "M2-03",
+    "M2-04",
+    "M2-05",
+    "M2-06",
+    "M2-08",
+    "M2-09"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "all",
+   "ac": [
+    "The design doc's M2 Verify list passes",
+    "Visual check of library and lesson pages against the canvas at 390 and 1440 px",
+    "Board and MEMORY.md updated"
+   ]
+  },
+  {
+   "id": "M3-01",
+   "phase": "M3",
+   "title": "Program schema: programs, weeks, sessions, typed items, versions, RLS",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M2-11"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "db",
+   "ac": [
+    "Prescription types: rounds × work/rest, time, sets × reps × load",
+    "Only published library items can be added",
+    "pgTAP: only the owning coach edits a program",
+    "Publishing creates a new version; enrolled athletes see it from the next day"
+   ]
+  },
+  {
+   "id": "M3-02",
+   "phase": "M3",
+   "title": "Program builder",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M3-01"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "e2e",
+   "screens": [
+    "K-Programs",
+    "C-Builder"
+   ],
+   "ac": [
+    "Weeks, sessions, add from library, edit prescription and cue, reorder, publish",
+    "End-to-end: a coach builds one boxing and one S&C session and publishes"
+   ]
+  },
+  {
+   "id": "M3-03",
+   "phase": "M3",
+   "title": "Invite links: per program, reset, joined list",
+   "priority": "P0",
+   "size": "S",
+   "deps": [
+    "M3-01"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "e2e",
+   "screens": [
+    "K-Invite",
+    "K-ConfirmReset",
+    "A-Invite"
+   ],
+   "ac": [
+    "Link codes are random and unguessable",
+    "Joining needs sign-in and a finished 18+ sign-up",
+    "After reset the old link shows 'no longer active'",
+    "The coach sees each person who joined"
+   ]
+  },
+  {
+   "id": "M3-04",
+   "phase": "M3",
+   "title": "Enrollments and the coach access rule",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M3-03"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "db+e2e",
+   "screens": [
+    "T-MyPrograms",
+    "K-ConfirmRemove"
+   ],
+   "ac": [
+    "pgTAP: coach A cannot read coach B's athletes",
+    "pgTAP: a coach loses access the moment the athlete leaves or is removed",
+    "Past feedback stays visible to the athlete",
+    "Leave and remove both use confirm screens"
+   ]
+  },
+  {
+   "id": "M3-05",
+   "phase": "M3",
+   "title": "Schedule: map program days to dates in Asia/Kolkata",
+   "priority": "P0",
+   "size": "S",
+   "deps": [
+    "M3-01"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "unit",
+   "ac": [
+    "Unit: correct day for joins late at night, across week boundaries and month ends",
+    "Several programs merge into one day list"
+   ]
+  },
+  {
+   "id": "M3-06",
+   "phase": "M3",
+   "title": "Today: merged sessions, empty state, coach note",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M3-04",
+    "M3-05"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "e2e",
+   "screens": [
+    "C-Today",
+    "G-Today",
+    "T-TodayEmpty",
+    "M-Today"
+   ],
+   "ac": [
+    "End-to-end: an athlete in two programs sees both sessions today",
+    "With no program, the empty state offers an invite link and lessons",
+    "The latest coach feedback shows with a reply link"
+   ]
+  },
+  {
+   "id": "M3-07",
+   "phase": "M3",
+   "title": "Boxing session player: round timer and logging",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M3-06"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "unit+e2e",
+   "screens": [
+    "C-Session",
+    "M-Session"
+   ],
+   "ac": [
+    "Unit: timer moves work → rest → next round → done; pause and skip behave",
+    "Logs rounds done, technique feel 1–5, effort 1–10 and a note",
+    "Screen stays awake while the timer runs where the browser allows",
+    "End-to-end: log a full session"
+   ]
+  },
+  {
+   "id": "M3-08",
+   "phase": "M3",
+   "title": "Set logger for S&C and gym, with last-time numbers and next target",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M3-06"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "unit+e2e",
+   "screens": [
+    "T-SessionSC",
+    "G-Workout"
+   ],
+   "ac": [
+    "Each set logs reps × kg; rest timer starts after each set",
+    "Shows last time's sets for the same exercise",
+    "Unit: if every set hit the top of the rep range, suggest +2.5 kg; otherwise keep the weight",
+    "End-to-end: log a gym workout"
+   ]
+  },
+  {
+   "id": "M3-09",
+   "phase": "M3",
+   "title": "Session and workout done summaries",
+   "priority": "P1",
+   "size": "S",
+   "deps": [
+    "M3-07",
+    "M3-08"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "unit",
+   "screens": [
+    "T-SessionDone",
+    "G-WorkoutDone"
+   ],
+   "ac": [
+    "Unit: totals equal the saved logs exactly",
+    "A note to the coach saves with the session"
+   ]
+  },
+  {
+   "id": "M3-10",
+   "phase": "M3",
+   "title": "Metrics: records, adherence, sets per muscle, skill rating",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M3-07",
+    "M3-08"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "unit+db",
+   "ac": [
+    "Record rule per metric type is written down and tested with exact values",
+    "Adherence = sessions completed ÷ sessions scheduled up to today",
+    "Sets per muscle count only hard sets from gym logs",
+    "Skill rating = average of the last 5 technique logs"
+   ]
+  },
+  {
+   "id": "M3-11",
+   "phase": "M3",
+   "title": "Progress pages (boxing and gym) and body weight log",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M3-10"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "e2e",
+   "screens": [
+    "C-Progress",
+    "G-Progress"
+   ],
+   "ac": [
+    "Every number traces to M3-10 functions",
+    "Body weight shows only to the athlete and their current coach",
+    "End-to-end: progress numbers equal the logged data"
+   ]
+  },
+  {
+   "id": "M3-12",
+   "phase": "M3",
+   "title": "Coach dashboard: adherence board and flags",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M3-10"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "unit+e2e",
+   "screens": [
+    "C-CoachDash"
+   ],
+   "ac": [
+    "Unit: flags for reported pain, 3 missed sessions in a row, effort 9+ in the last two sessions",
+    "Board shows only the coach's own active athletes",
+    "End-to-end: a logged session appears on the board"
+   ]
+  },
+  {
+   "id": "M3-13",
+   "phase": "M3",
+   "title": "Athlete detail, feedback and replies",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M3-12"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "e2e",
+   "screens": [
+    "K-Athlete",
+    "T-Feedback"
+   ],
+   "ac": [
+    "Coach sees logs and sign-up answers for an enrolled athlete only",
+    "End-to-end: coach sends feedback; athlete sees it in Today and Coach feedback and replies; coach sees the reply"
+   ]
+  },
+  {
+   "id": "M3-14",
+   "phase": "M3",
+   "title": "Email when a coach leaves feedback",
+   "priority": "P1",
+   "size": "S",
+   "deps": [
+    "M3-13"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "unit",
+   "ac": [
+    "Unit with a mocked sender: one email per note",
+    "No email when the athlete turned the setting off"
+   ]
+  },
+  {
+   "id": "M3-15",
+   "phase": "M3",
+   "title": "Milestone check M3",
+   "priority": "P0",
+   "size": "S",
+   "deps": [
+    "M3-02",
+    "M3-04",
+    "M3-06",
+    "M3-07",
+    "M3-08",
+    "M3-11",
+    "M3-12",
+    "M3-13"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "all",
+   "ac": [
+    "The design doc's M3 Verify list passes, plus a gym workout path",
+    "Codex review of RLS changes",
+    "/qa pass on preview: no high-severity bugs",
+    "Board and MEMORY.md updated"
+   ]
+  },
+  {
+   "id": "M4-01",
+   "phase": "M4",
+   "title": "Marketplace schema: coach profiles, packages, slots, credentials, RLS",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M3-15"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "db",
+   "ac": [
+    "Prices stored as integer paise",
+    "Credential files in a private bucket readable only by the coach and admins",
+    "pgTAP: a coach edits only their own profile, packages and slots"
+   ]
+  },
+  {
+   "id": "M4-02",
+   "phase": "M4",
+   "title": "Coach marketplace profile editor",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M4-01",
+    "O-05"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "e2e",
+   "screens": [
+    "X-CoachProfile"
+   ],
+   "ac": [
+    "Headline, philosophy, specialties, languages, formats, city",
+    "Packages with price and live switch; client limit; weekly slots",
+    "Coach accepts the coach agreement before going live",
+    "End-to-end: edits show on the public profile"
+   ]
+  },
+  {
+   "id": "M4-03",
+   "phase": "M4",
+   "title": "Credential upload and admin checks",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M4-01"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "db+e2e",
+   "screens": [
+    "X-Verify"
+   ],
+   "ac": [
+    "Badge shows 'Credentials checked' only after an admin marks it",
+    "Reject needs a note the coach sees",
+    "Every decision is logged with the admin and date"
+   ]
+  },
+  {
+   "id": "M4-04",
+   "phase": "M4",
+   "title": "Find a coach: discovery, filters and sort",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M4-02"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "e2e",
+   "screens": [
+    "P-Coaches"
+   ],
+   "ac": [
+    "Filters: specialty, format, city, price, rating, experience, credentials, language",
+    "Sort never uses payment or paid placement",
+    "End-to-end: price filter shows only coaches in range"
+   ]
+  },
+  {
+   "id": "M4-05",
+   "phase": "M4",
+   "title": "Public coach profile with computed stats",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M4-04",
+    "M4-03"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "db+e2e",
+   "screens": [
+    "P-Coach"
+   ],
+   "ac": [
+    "Stats come from SQL views over engagements and logs; pgTAP compares them to hand-computed values",
+    "Packages, slots, portfolio and reviews from the database",
+    "Shows 'self-reported' for anything not checked"
+   ]
+  },
+  {
+   "id": "M4-06",
+   "phase": "M4",
+   "title": "Shortlist and compare (up to 3)",
+   "priority": "P1",
+   "size": "S",
+   "deps": [
+    "M4-05"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "e2e",
+   "screens": [
+    "X-Shortlist",
+    "X-Compare"
+   ],
+   "ac": [
+    "Shortlist is private to the athlete",
+    "Compare shows the same rows as the mockup for up to 3 coaches",
+    "End-to-end: shortlist two coaches, then compare"
+   ]
+  },
+  {
+   "id": "M4-07",
+   "phase": "M4",
+   "title": "Hire request, accept and decline, client limit",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M4-05"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "db+e2e",
+   "screens": [
+    "X-Hire",
+    "X-CoachRequests"
+   ],
+   "ac": [
+    "Request saves package, start date, goals and data-sharing consent",
+    "Requests pause automatically when the coach hits the client limit",
+    "End-to-end: athlete requests; coach accepts; athlete sees Pay"
+   ]
+  },
+  {
+   "id": "M4-08",
+   "phase": "M4",
+   "title": "Messages between client and coach",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M4-07"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "db+e2e",
+   "screens": [
+    "X-Chat"
+   ],
+   "ac": [
+    "pgTAP: only the two people in a conversation can read it",
+    "New messages appear within 10 seconds",
+    "Shows the warning about paying outside FitSphere"
+   ]
+  },
+  {
+   "id": "M4-09",
+   "phase": "M4",
+   "title": "Checkout and payment webhook",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M4-07",
+    "O-04"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "unit+e2e",
+   "screens": [
+    "X-Checkout",
+    "X-Hired"
+   ],
+   "ac": [
+    "The server sets the amount from the package; the browser cannot change it",
+    "Webhook rejects a bad signature",
+    "A repeated webhook creates no second engagement (idempotency key)",
+    "End-to-end in test mode: pay, and the engagement becomes active"
+   ]
+  },
+  {
+   "id": "M4-10",
+   "phase": "M4",
+   "title": "Engagement starts coaching access",
+   "priority": "P0",
+   "size": "S",
+   "deps": [
+    "M4-09",
+    "M3-04"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "db",
+   "ac": [
+    "An active engagement gives the coach the same access as an enrollment",
+    "Access ends when the engagement ends or is refunded",
+    "The coach can assign a program to the client"
+   ]
+  },
+  {
+   "id": "M4-11",
+   "phase": "M4",
+   "title": "Monthly renewal, cancel and failed payments",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M4-09"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "unit+e2e",
+   "ac": [
+    "Cancel in My programs stops the next renewal and keeps access to the end of the paid month",
+    "A failed renewal retries per the provider's rules, then ends the engagement",
+    "Athlete and coach get an email for each change",
+    "Cancel and renewal screen (gap G2) designed and approved first"
+   ]
+  },
+  {
+   "id": "M4-12",
+   "phase": "M4",
+   "title": "Refunds and payout reversal",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M4-09",
+    "O-05"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "unit+e2e",
+   "ac": [
+    "Refund follows the owner's written terms",
+    "A refund ends the engagement and reverses the coach's share",
+    "Every refund is logged"
+   ]
+  },
+  {
+   "id": "M4-13",
+   "phase": "M4",
+   "title": "Split payouts and the earnings page",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M4-09",
+    "O-04"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "unit+e2e",
+   "screens": [
+    "X-Earnings"
+   ],
+   "ac": [
+    "Unit: coach share = price − fee, exact to the paisa, for 3 sample prices",
+    "Earnings page totals equal the payments table",
+    "pgTAP: a coach sees only their own payouts"
+   ]
+  },
+  {
+   "id": "M4-14",
+   "phase": "M4",
+   "title": "Verified reviews and coach replies",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M4-10"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "db+e2e",
+   "screens": [
+    "X-Review",
+    "P-Coach"
+   ],
+   "ac": [
+    "pgTAP: only a client with a paid, finished engagement can review, once per engagement",
+    "pgTAP: a coach cannot edit or delete a review",
+    "A coach can post one public reply",
+    "Rating on the profile equals the average of reviews"
+   ]
+  },
+  {
+   "id": "M4-15",
+   "phase": "M4",
+   "title": "Client stories with written consent",
+   "priority": "P2",
+   "size": "S",
+   "deps": [
+    "M4-14"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "db",
+   "ac": [
+    "A story shows only after the client approves the exact text in the app",
+    "Body photos need a second, separate consent",
+    "The client can withdraw consent and the story disappears"
+   ]
+  },
+  {
+   "id": "M4-17",
+   "phase": "M4",
+   "title": "Book a single 1:1 session",
+   "priority": "P1",
+   "size": "M",
+   "deps": [
+    "M4-09",
+    "O-09",
+    "O-10"
+   ],
+   "status": "blocked",
+   "blocked_reason": "No design yet (gap G1, question Q-05)",
+   "owner": "claude",
+   "test": "unit+e2e",
+   "ac": [
+    "Design G1 approved first",
+    "A slot can be booked once; a second booking of the same slot fails (database constraint test)",
+    "Booking needs payment; cancel follows the refund terms"
+   ]
+  },
+  {
+   "id": "M4-18",
+   "phase": "M4",
+   "title": "Reports, suspension and admin report queue",
+   "priority": "P1",
+   "size": "M",
+   "deps": [
+    "M4-08",
+    "M4-14",
+    "O-09",
+    "O-10"
+   ],
+   "status": "blocked",
+   "blocked_reason": "No design yet (gap G4, questions Q-08 and Q-15)",
+   "owner": "claude",
+   "test": "db+e2e",
+   "ac": [
+    "Design G4 approved first",
+    "Any user can report a review, message or coach",
+    "Admin can read only reported messages, hide content and suspend a user; every action is logged"
+   ]
+  },
+  {
+   "id": "M4-16",
+   "phase": "M4",
+   "title": "Payments go-live checklist and milestone check M4",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M4-09",
+    "M4-10",
+    "M4-11",
+    "M4-12",
+    "M4-13",
+    "M4-14"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "all",
+   "ac": [
+    "All 20 checklist items audited against the code: webhook signatures, failed payments, refunds, upgrades, idempotency, server-side gating, status sync, test clocks, billing page, receipts, event logging, expired cards, tax, trials, duplicate charges, currency, cancel flow, retries, failed-webhook alerts, full test as a customer",
+    "The design doc's M4 Verify list passes",
+    "Codex final-diff review; findings fixed or rejected with evidence",
+    "Live mode only after the owner approves"
+   ]
+  },
+  {
+   "id": "M5-01",
+   "phase": "M5",
+   "title": "Retrieval over published, non-sample content",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M2-11"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "db",
+   "ac": [
+    "Ranked full-text search returns item ids for citation",
+    "pgTAP: draft, in-review and sample items are never returned"
+   ]
+  },
+  {
+   "id": "M5-02",
+   "phase": "M5",
+   "title": "Answer service: Claude call, citations, labels, safety",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M5-01",
+    "M1-08"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "unit",
+   "ac": [
+    "Every answer carries the 'AI explanation' label",
+    "Unit: every cited id exists and is published",
+    "No-match answers say 'no library source' and contain no sets, reps or loads",
+    "Injury questions get a referral and no diagnosis; unsafe requests are refused",
+    "Personal data sent: sport, level, goals; health fields only with consent; never name or contact details"
+   ]
+  },
+  {
+   "id": "M5-03",
+   "phase": "M5",
+   "title": "Daily question limit and usage log",
+   "priority": "P0",
+   "size": "S",
+   "deps": [
+    "M5-02"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "unit",
+   "ac": [
+    "Unit: the 11th question of the day is blocked with a clear message",
+    "Each question logs user, tokens and cost"
+   ]
+  },
+  {
+   "id": "M5-04",
+   "phase": "M5",
+   "title": "Ask AI screen with history and actions",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M5-03"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "e2e",
+   "screens": [
+    "C-AI"
+   ],
+   "ac": [
+    "Citations link to lessons; 'Add to Today' works",
+    "A pain report creates a flag on the coach dashboard",
+    "End-to-end: ask, get a cited answer, open the cited lesson"
+   ]
+  },
+  {
+   "id": "M5-05",
+   "phase": "M5",
+   "title": "AI eval set and milestone check M5",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M5-04"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "eval",
+   "ac": [
+    "npm run eval:ai runs at least 30 questions (boxing, S&C, gym, beginner, injury, unsafe, off-topic, no-match) 3 times",
+    "100% on code-checked rules in all 3 runs",
+    "Judge average at least 90%"
+   ]
+  },
+  {
+   "id": "M6-01",
+   "phase": "M6",
+   "title": "Public pages: landing, programs, about, help, for coaches",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M4-16"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "e2e",
+   "screens": [
+    "C-Landing",
+    "P-Programs",
+    "P-Program",
+    "G-Program",
+    "P-About",
+    "P-Help"
+   ],
+   "ac": [
+    "Match the canvas at 390 and 1440 px",
+    "No invented numbers; every count comes from the database"
+   ]
+  },
+  {
+   "id": "M6-02",
+   "phase": "M6",
+   "title": "Privacy policy and terms",
+   "priority": "P0",
+   "size": "S",
+   "deps": [
+    "O-07"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "manual",
+   "screens": [
+    "P-Legal"
+   ],
+   "ac": [
+    "Uses the owner's signed-off text",
+    "Names Anthropic and the payment provider as processors"
+   ]
+  },
+  {
+   "id": "M6-03",
+   "phase": "M6",
+   "title": "Empty, loading and error states on every route; 404",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M6-01"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "e2e",
+   "screens": [
+    "P-NotFound"
+   ],
+   "ac": [
+    "A route audit script lists every route and finds no dead button or placeholder",
+    "Each data screen has a designed empty state",
+    "Empty states for coach screens (gap G3) designed and approved first"
+   ]
+  },
+  {
+   "id": "M6-04",
+   "phase": "M6",
+   "title": "Installable PWA",
+   "priority": "P1",
+   "size": "S",
+   "deps": [
+    "M6-01"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "manual",
+   "ac": [
+    "Manifest, icons and an offline fallback page",
+    "Installs on Android Chrome and iOS Safari"
+   ]
+  },
+  {
+   "id": "M6-05",
+   "phase": "M6",
+   "title": "Speed on low-end Android",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M6-01"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "manual",
+   "ac": [
+    "Lighthouse mobile performance at least 80 on landing, library and Today",
+    "Images served in modern formats at the right size"
+   ]
+  },
+  {
+   "id": "M6-06",
+   "phase": "M6",
+   "title": "Accessibility audit",
+   "priority": "P0",
+   "size": "S",
+   "deps": [
+    "M6-03"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "e2e",
+   "ac": [
+    "axe finds no serious or critical issue on any route",
+    "Keyboard-only path through sign-up, a session and checkout"
+   ]
+  },
+  {
+   "id": "M6-07",
+   "phase": "M6",
+   "title": "Security review and rate limits",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M6-03"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "all",
+   "ac": [
+    "Rate limits on sign-in, AI and payment routes",
+    "/security-review and a Codex review of the full app; findings resolved",
+    "No secrets in the repo or client bundle"
+   ]
+  },
+  {
+   "id": "M6-08",
+   "phase": "M6",
+   "title": "Final QA and production launch",
+   "priority": "P0",
+   "size": "M",
+   "deps": [
+    "M6-02",
+    "M6-04",
+    "M6-05",
+    "M6-06",
+    "M6-07",
+    "M5-05"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "all",
+   "ac": [
+    "/qa on the production candidate finds no high-severity bugs",
+    "Design doc M6 Verify list passes",
+    "Owner approves the production deploy"
+   ]
+  }
  ]
 }

@@ -14,6 +14,11 @@ Keep newest entries at the top of each section.
 - **Open owner decisions:** Mobbin install (only unofficial community MCPs exist; needs a paid Mobbin account and a session token; owner must say "install mobbin-mcp").
 - **Owner's parallel task:** meet one boxing coach and one S&C coach (the assignment in the design doc).
 
+## Session 3e (2026-11-05)
+- Pre-implementation analysis saved in `docs/architecture/`: product-analysis.md (roles, 12 feature areas, journeys J1–J15, assets, design observations D1–D6), architecture.md (route map, components, backend modules, endpoints, ERD, conventions), risks-and-gaps.md (risks R1–R16, questions Q-01–Q-15, missing screens G1–G8). Rendered page: https://claude.ai/artifact/NuWTJNJ1GZsYCznVN8CDWk (rebuild with `python docs/architecture/build_page.py`).
+- Board now 84 tasks: added O-09 (answer Q-01–Q-15), O-10 (approve D1–D6), S0-08 (analytics and errors), M4-17 (1:1 booking, blocked: no design), M4-18 (reports and moderation, blocked: no design).
+- Rule: no design edits without owner approval (O-10). Nothing implemented.
+
 ## Session 3d (2026-11-05)
 - Coach Marketplace moved into v1 as M4 (owner decision). AI is M5, launch M6.
 - Engineering plan: `docs/plans/engineering-plan.md`. Build board: `docs/plans/board.json` (source of truth), rendered by `python docs/plans/build_board.py` to `board.html`, published at https://claude.ai/artifact/BPCG8ghatzZkV7v1haJ1z1. Republish after every task.

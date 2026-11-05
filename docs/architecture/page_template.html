@@ -1,0 +1,64 @@
+<title>FitSphere Architecture Review</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<style>
+/* Layout: tabbed reading column for three docs; Fight Camp heads, quiet tables that scroll in their own box on phones. */
+:root{--bg:#ffffff;--fg:#111111;--soft:#f5f5f5;--line:#e2e2e2;--muted:#6b6b6e;--ink-2:#39393b;--volt:#D4F000;--on-volt:#111111;
+  --display:Anton, Impact, "Arial Narrow", sans-serif;--body:Inter, Helvetica, Arial, sans-serif;--mono:ui-monospace, Consolas, monospace;color-scheme:light}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0f0f10;--fg:#f2f2f2;--soft:#1b1b1d;--line:#2c2c2f;--muted:#a3a3a7;--ink-2:#cfcfd2;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f0f10;--fg:#f2f2f2;--soft:#1b1b1d;--line:#2c2c2f;--muted:#a3a3a7;--ink-2:#cfcfd2;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 80px}
+.title{font-family:var(--display);font-weight:400;text-transform:uppercase;font-size:clamp(44px,8vw,88px);line-height:.92;margin:8px 0 0}
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:6px;flex-wrap:wrap;padding-block:16px;border-bottom:2px solid var(--fg);margin-top:24px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.tabs button{font:inherit;font-size:14px;font-weight:600;min-height:44px;padding:0 18px;border-radius:30px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.tabs button:focus-visible,a:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.doc h1{display:none}
+.doc h2{font-family:var(--display);font-weight:400;text-transform:uppercase;font-size:clamp(30px,4.5vw,44px);line-height:1;margin:48px 0 12px;text-wrap:balance}
+.doc h3{font-size:18px;margin:28px 0 8px}
+.doc p,.doc li{max-width:72ch;color:var(--ink-2)}
+.doc strong{color:var(--fg)}
+.doc a{color:var(--fg)}
+.doc code{font-family:var(--mono);font-size:.9em;background:var(--soft);padding:1px 5px}
+.doc pre{background:var(--soft);padding:16px;overflow-x:auto;font-size:13px;line-height:1.45}
+.doc pre code{background:none;padding:0}
+.tbl{overflow-x:auto;margin:12px 0}
+.doc table{border-collapse:collapse;width:100%;min-width:640px;font-size:14px}
+.doc th{text-align:left;font-weight:600;color:var(--muted);font-size:13px;padding:8px 12px 8px 0;border-bottom:2px solid var(--fg);white-space:nowrap}
+.doc td{padding:10px 12px 10px 0;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink-2)}
+.note{margin-top:16px;color:var(--muted);font-size:14px}
+</style>
+
+<div class="wrap">
+  <p class="note" style="margin:0">FitSphere v1 · before implementation · nothing built yet</p>
+  <h1 class="title">Architecture review</h1>
+  <div class="tabs" role="tablist" aria-label="Documents" id="tabs"></div>
+  <article class="doc" id="doc" aria-live="polite"></article>
+  <p class="note">Source files: docs/architecture/*.md in the repo. Build tasks: the FitSphere Build Board.</p>
+</div>
+
+<script>
+const DOCS = /*__DOCS__*/null;
+let cur = (location.hash || '').slice(1);
+if (!DOCS.some(d => d.id === cur)) cur = DOCS[0].id;
+function show(id) {
+  cur = id;
+  const d = DOCS.find(x => x.id === id);
+  const html = (window.marked ? marked.parse(d.md) : '<pre>' + d.md.replace(/</g, '&lt;') + '</pre>')
+    .replace(/<table>/g, '<div class="tbl"><table>').replace(/<\/table>/g, '</table></div>')
+    .replace(/<pre><code class="language-mermaid">([\s\S]*?)<\/code><\/pre>/g, '<pre class="mermaid">$1</pre>');
+  document.getElementById('doc').innerHTML = html;
+  document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.id === id));
+  if (location.hash !== '#' + id) history.replaceState(null, '', '#' + id);
+}
+document.getElementById('tabs').innerHTML = DOCS.map(d => `<button role="tab" data-id="${d.id}">${d.name}</button>`).join('');
+document.getElementById('tabs').onclick = e => { const b = e.target.closest('button'); if (b) { show(b.dataset.id); window.scrollTo(0, 0); } };
+window.addEventListener('hashchange', () => { const id = location.hash.slice(1); if (DOCS.some(d => d.id === id) && id !== cur) show(id); });
+show(cur);
+</script>

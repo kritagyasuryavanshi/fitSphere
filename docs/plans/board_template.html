@@ -131,12 +131,13 @@ function match(t) {
 function row(t) {
   const deps = t.deps.length ? t.deps.map(d => `<a href="#t-${d}">${esc(d)}</a> <span class="muted">(${LABEL[byId[d].status]})</span>`).join(', ') : 'None';
   const screens = t.screens ? `<div><h3>Screens on the canvas</h3><p>${t.screens.map(esc).join(', ')}</p></div>` : '';
+  const why = t.blocked_reason ? `<div><h3>Why blocked</h3><p>${esc(t.blocked_reason)}</p></div>` : '';
   const doneLine = t.status === 'done' ? `<div><h3>Finished</h3><p>${esc(t.done_on || '')}${t.commit ? ' · commit ' + esc(t.commit) : ''}</p></div>` : '';
   return `<details class="task" id="t-${t.id}">
     <summary><span class="st ${t.status}">${LABEL[t.status]}</span><span class="id">${esc(t.id)}</span><span class="title">${esc(t.title)}${t.ready ? '<span class="rdy">Ready</span>' : ''}</span>
       <span class="meta"><span class="tag ${t.priority === 'P0' ? 'p0' : ''}">${t.priority}</span><span class="tag">${t.size === 'S' ? 'Small' : 'Medium'}</span><span class="tag ${t.owner === 'owner' ? 'own' : ''}">${t.owner === 'owner' ? 'Owner' : 'Claude'}</span><span class="tag">${esc(t.test)}</span></span></summary>
     <div class="body"><div><h3>Acceptance criteria</h3><ul>${t.ac.map(a => `<li>${esc(a)}</li>`).join('')}</ul></div>
-      <div class="deps"><h3>Depends on</h3><p>${deps}</p></div>${screens}${doneLine}</div></details>`;
+      <div class="deps"><h3>Depends on</h3><p>${deps}</p></div>${why}${screens}${doneLine}</div></details>`;
 }
 
 function render() {

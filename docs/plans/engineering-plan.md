@@ -2,6 +2,8 @@
 
 Status: **Draft for owner approval** · Written 2026-11-05 · Source of truth for tasks: [`board.json`](board.json) (rendered as the Development Board artifact).
 
+Read with the analysis in [`docs/architecture/`](../architecture/): product analysis (features, journeys, assets), architecture (routes, components, modules, APIs, entities), and risks and gaps (risks, open questions, missing screens).
+
 This plan turns the approved design (`docs/designs/fitsphere-v1.md`) and the 66 desktop + 67 phone screens (`docs/mockups/`) into small tasks. Each task is built, tested and verified before the next one starts.
 
 ## 1. Decisions this plan assumes
@@ -101,6 +103,8 @@ Stop rules: if a task fails twice, stop patching, reproduce the failure, get an 
 | Founding coaches and their first lessons | M2 real content, M6 launch | O-06 |
 | Legal review (DPDP privacy policy, terms) | M6-02 | O-07 |
 | Nutrition: in or out | Nothing in v1 (out by default) | O-08 |
+| Answers to missing requirements Q-01 to Q-15 | S0-08, M4-17, M4-18 and defaults elsewhere | O-09 |
+| Approval of design observations D1 to D6 | Any design edit | O-10 |
 
 ## 7. Keeping the plan current
 
