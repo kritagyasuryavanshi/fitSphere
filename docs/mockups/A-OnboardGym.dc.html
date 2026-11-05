@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FitSphere: Sign-up step 3: Gym goals</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+/* Hallmark (applied as a floor on an existing design) · kept by owner choice: inline colours (the canvas editor edits them), grey labels above heads and middle-dot meta lines (the approved Fight Camp voice) */
+a:active,button:active{transform:translateY(1px)}
+button:disabled,a[aria-disabled="true"]{opacity:.4;cursor:not-allowed}
+html,body{overflow-x:clip}
+body{margin:0;background:#ffffff}
+a{color:#111111;text-decoration:none}a:hover{color:#707072}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid #111111;outline-offset:2px}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #ffffff; color: #111111; font-family: Inter, Helvetica, Arial, sans-serif">
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh">
+  <section style="flex: 1 1 480px; min-height: 520px; position: relative; overflow: hidden; background: #111111">
+    <img src="/_blob/8c6f8a8aff5eaa8dcc7428235c4ea5c7" alt="Woman with a barbell on her back" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover">
+    <div aria-hidden="true" style="position: absolute; inset: 0; background: rgba(0,0,0,0.35)"></div>
+    <a href="C-Landing.dc.html" style="position: absolute; top: 32px; left: 40px; font-family: Anton, Impact, sans-serif; font-size: 28px; text-transform: uppercase; color: #ffffff">FitSphere</a>
+    <p aria-hidden="true" style="position: absolute; left: 40px; right: 40px; bottom: 48px; font-family: Anton, Impact, sans-serif; font-weight: 400; text-transform: uppercase; line-height: 0.9; margin: 0; font-size: clamp(56px, 6vw, 104px); color: #ffffff">Train with a reason.</p>
+  </section>
+  <main style="flex: 1 1 560px; min-width: 0; padding: 40px 56px 56px; box-sizing: border-box">
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px"><a href="C-Onboarding.dc.html" style="display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: 15px; font-weight: 500"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>Back</a><span style="font-size: 14px; font-weight: 500; color: #707072">Step 3 of 4</span></div>
+    <div role="progressbar" aria-label="Sign-up progress" aria-valuenow="3" aria-valuemin="0" aria-valuemax="4" style="margin-top: 12px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px"><span style="height: 4px; background: #111111"></span><span style="height: 4px; background: #111111"></span><span style="height: 4px; background: #111111"></span><span style="height: 4px; background: #e5e5e5"></span></div>
+    <form style="margin-top: 40px; display: flex; flex-direction: column; gap: 32px; max-width: 640px">
+      <fieldset style="border: 0; margin: 0; padding: 0">
+        <legend style="font-family: Anton, Impact, sans-serif; font-size: 40px; line-height: 0.95; text-transform: uppercase; padding: 0 0 6px">Your gym goal</legend>
+        <p style="margin: 0 0 16px; font-size: 15px; color: #707072">We suggest programs and rep ranges that fit it. Change it any time.</p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 8px">
+          <label style="display: flex; gap: 12px; align-items: flex-start; border: 2px solid #111111; padding: 15px; cursor: pointer"><input type="radio" name="goal" checked="checked" style="margin-top: 3px; accent-color: #111111"><span><span style="display: block; font-size: 16px; font-weight: 500">Build muscle</span><span style="display: block; font-size: 14px; color: #707072">Get bigger and more defined</span></span></label><label style="display: flex; gap: 12px; align-items: flex-start; border: 1px solid #cacacb; padding: 16px; cursor: pointer"><input type="radio" name="goal" style="margin-top: 3px; accent-color: #111111"><span><span style="display: block; font-size: 16px; font-weight: 500">Lose fat</span><span style="display: block; font-size: 14px; color: #707072">Drop weight, keep muscle</span></span></label><label style="display: flex; gap: 12px; align-items: flex-start; border: 1px solid #cacacb; padding: 16px; cursor: pointer"><input type="radio" name="goal" style="margin-top: 3px; accent-color: #111111"><span><span style="display: block; font-size: 16px; font-weight: 500">Get stronger</span><span style="display: block; font-size: 14px; color: #707072">Lift heavier</span></span></label><label style="display: flex; gap: 12px; align-items: flex-start; border: 1px solid #cacacb; padding: 16px; cursor: pointer"><input type="radio" name="goal" style="margin-top: 3px; accent-color: #111111"><span><span style="display: block; font-size: 16px; font-weight: 500">Get fitter</span><span style="display: block; font-size: 14px; color: #707072">More energy and stamina</span></span></label>
+        </div>
+      </fieldset>
+      <fieldset style="border: 0; margin: 0; padding: 0"><legend style="font-size: 18px; font-weight: 500; padding: 0 0 12px">Where do you train?</legend>
+        <div role="radiogroup" style="display: flex; gap: 8px; flex-wrap: wrap"><button type="button" role="radio" aria-checked="true" style="background: #111111; color: #ffffff; border: 1px solid #111111; font: inherit; font-size: 15px; font-weight: 500; min-height: 44px; padding: 0 18px; border-radius: 30px">Full gym</button><button type="button" role="radio" aria-checked="false" style="border: 1px solid #cacacb; font: inherit; font-size: 15px; font-weight: 500; min-height: 44px; padding: 0 18px; border-radius: 30px">Home, with dumbbells</button><button type="button" role="radio" aria-checked="false" style="border: 1px solid #cacacb; font: inherit; font-size: 15px; font-weight: 500; min-height: 44px; padding: 0 18px; border-radius: 30px">Bodyweight only</button></div></fieldset>
+      <fieldset style="border: 0; margin: 0; padding: 0"><legend style="font-size: 18px; font-weight: 500; padding: 0 0 12px">Lifting experience</legend>
+        <div role="radiogroup" style="display: flex; gap: 8px; flex-wrap: wrap"><button type="button" role="radio" aria-checked="false" style="border: 1px solid #cacacb; font: inherit; font-size: 15px; font-weight: 500; min-height: 44px; padding: 0 18px; border-radius: 30px">New to it</button><button type="button" role="radio" aria-checked="true" style="background: #111111; color: #ffffff; border: 1px solid #111111; font: inherit; font-size: 15px; font-weight: 500; min-height: 44px; padding: 0 18px; border-radius: 30px">Under 1 year</button><button type="button" role="radio" aria-checked="false" style="border: 1px solid #cacacb; font: inherit; font-size: 15px; font-weight: 500; min-height: 44px; padding: 0 18px; border-radius: 30px">1 to 3 years</button><button type="button" role="radio" aria-checked="false" style="border: 1px solid #cacacb; font: inherit; font-size: 15px; font-weight: 500; min-height: 44px; padding: 0 18px; border-radius: 30px">3+ years</button></div></fieldset>
+      <div style="background: #f5f5f5; padding: 20px; display: flex; flex-direction: column; gap: 14px">
+        <p style="margin: 0; font-size: 15px; font-weight: 500">Track body weight? <span style="font-weight: 400; color: #707072">Optional</span></p>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; max-width: 360px">
+          <label style="display: flex; flex-direction: column; gap: 8px; font-size: 15px; font-weight: 500; font-size: 13px; color: #707072">Weight (kg)<input inputmode="decimal" placeholder="e.g. 72" style="font: inherit; font-size: 16px; font-weight: 400; border: 1px solid #cacacb; padding: 12px 14px; min-height: 48px; box-sizing: border-box; background: #ffffff; color: #111111; width: 100%"></label>
+          <label style="display: flex; flex-direction: column; gap: 8px; font-size: 15px; font-weight: 500; font-size: 13px; color: #707072">Height (cm)<input inputmode="numeric" placeholder="e.g. 168" style="font: inherit; font-size: 16px; font-weight: 400; border: 1px solid #cacacb; padding: 12px 14px; min-height: 48px; box-sizing: border-box; background: #ffffff; color: #111111; width: 100%"></label>
+        </div>
+        <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #39393b">Only you and your coach see these. They never go to the AI guide unless you turn that on in Account.</p>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap"><span style="font-size: 13px; color: #707072">No meal plans in this version.</span><a href="A-Ready.dc.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; box-sizing: border-box; font-size: 16px; font-weight: 500; background: #111111; color: #ffffff; padding: 14px 28px; border-radius: 30px; border: 0; padding-left: 40px; padding-right: 40px">Continue</a></div>
+    </form>
+  </main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#D4F000","options":["#D4F000","#FF5A1F","#7CF5D2","#FFFFFF"]},"$preview":{"width":1440,"height":956}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#D4F000' };
+  }
+}
+</script>
+</body>
+</html>

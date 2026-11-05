@@ -25,5 +25,15 @@ Each file maps to its Unsplash photo ID.
 | muaythai.jpg | photo-1773289336885-8402d69f7f68 |
 | sparring.jpg | photo-1773289337835-7703c1f03d59 |
 | pushup.jpg | photo-1765302907822-33032f78eb2c |
+| gym-floor.jpg | photo-1534438327276-14e5300c3a48 |
+| trainer.jpg | photo-1571019614242-c5c5dee9f50b |
+| curl.jpg | photo-1581009146145-b5ef050c2e1e |
+| barbell-floor.jpg | photo-1517963879433-6ad2b056d712 |
+| gym-room.jpg | photo-1540497077202-7c8a3999166f |
+| squat-bw.jpg | photo-1574680096145-d05b474e2155 |
+| outdoor.jpg | photo-1599058945522-28d584b6f0ff |
+| dark-lift.jpg | photo-1605296867304-46d5465a13f1 |
+| rack.jpg | photo-1576678927484-cc907957088c |
+| home-kit.jpg | photo-1584735935682-2f2b69dff9d2 |
 
 People shown are not FitSphere coaches. Coach names in the mockups are fictional demo data.

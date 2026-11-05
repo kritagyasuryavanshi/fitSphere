@@ -7,6 +7,7 @@
 - [ ] Owner: meet one boxing coach and one S&C coach this week (the assignment in the design doc).
 
 ## Next
+- [ ] Owner: decide on nutrition for fat-loss users (meal plans or calorie targets are out of v1 for now).
 - [ ] Owner: create Supabase, Vercel, Anthropic API and Google OAuth accounts.
 - [ ] Build M1 Foundation once the plan is approved.
 - [ ] Add the toolchain commands to `.claude/settings.json` once the stack is installed.
@@ -17,6 +18,7 @@
 - [ ] Owner: decide on Mobbin (optional).
 
 ## Done
+- [x] 2026-11-05: Gym & Fitness category designed (7 new screens, desktop and phone).
 - [x] 2026-11-05: Phone versions of all screens (48) and the review fixes.
 - [x] 2026-11-05: Full-site linked design, 47 screens (`docs/mockups/`).
 - [x] 2026-11-04: Fight Camp mockups, 10 screens with demo data (`docs/mockups/`).

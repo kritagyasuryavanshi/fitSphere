@@ -30,6 +30,9 @@ None yet. The founder answered "No evidence yet" to the demand question. Every v
 - YouTube embeds for video in v1. No paid video hosting yet.
 - Founder accepts a longer timeline in exchange for three complete pillars.
 
+## Change, 2026-11-05: three categories
+The owner added general gym fitness: weight loss, muscle building (hypertrophy), strength and general fitness. There are now three categories, each with its own library: Boxing, Strength & Conditioning (S&C for boxers, unchanged), and Gym & Fitness (new). Gym logging uses sets × reps × load, shows last time's numbers, and suggests the next small increase. Body weight and height are optional, self-reported, and reach the AI only with separate consent. Meal plans and calorie targets stay out of v1 (nutrition advice); open question for the owner.
+
 ## Premises
 1. **Content and cold start are the main risks, not code.** Coaches solve both: they bring reviewed content, athletes, and willingness to pay. (Revised after the second opinion.)
 2. **Two connected categories at launch:** Boxing (primary) and S&C (supporting, integrated, not a generic gym app). The data model stays multi-sport so cricket, football and MMA slot in later without a rebuild.

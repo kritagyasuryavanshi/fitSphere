@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FitSphere: Exercise: Barbell bench press</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+/* Hallmark (applied as a floor on an existing design) · kept by owner choice: inline colours (the canvas editor edits them), grey labels above heads and middle-dot meta lines (the approved Fight Camp voice) */
+a:active,button:active{transform:translateY(1px)}
+button:disabled,a[aria-disabled="true"]{opacity:.4;cursor:not-allowed}
+html,body{overflow-x:clip}
+body{margin:0;background:#ffffff}
+a{color:#111111;text-decoration:none}a:hover{color:#707072}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid #111111;outline-offset:2px}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #ffffff; color: #111111; font-family: Inter, Helvetica, Arial, sans-serif">
+<header style="border-bottom: 1px solid #e5e5e5; background: #ffffff">
+    <nav aria-label="App" style="max-width: 1440px; margin: 0 auto; padding-left: 40px; padding-right: 40px; box-sizing: border-box; min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 12px 20px; flex-wrap: wrap; padding-top: 10px; padding-bottom: 10px">
+      <a href="C-Landing.dc.html" style="font-family: Anton, Impact, sans-serif; font-size: 28px; text-transform: uppercase">FitSphere</a>
+      <div style="display: flex; gap: 28px; font-size: 16px; font-weight: 500; flex-wrap: wrap"><a href="C-Today.dc.html">Today</a><a href="C-Library.dc.html" aria-current="page" style="text-decoration: underline; text-underline-offset: 6px">Learn</a><a href="C-Progress.dc.html">Progress</a><a href="C-AI.dc.html">Ask AI</a></div>
+      <div style="display: flex; gap: 12px; align-items: center"><a href="P-Search.dc.html" aria-label="Search lessons and drills" style="width: 44px; height: 44px; border-radius: 999px; background: #f5f5f5; color: #111111; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg></a><a href="T-Account.dc.html" aria-label="Kabir, your account" style="width: 44px; height: 44px; border-radius: 999px; background: #111111; color: #ffffff; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center">K</a></div>
+    </nav>
+  </header>
+  <main style="max-width: 1440px; margin: 0 auto; padding-left: 40px; padding-right: 40px; box-sizing: border-box; padding-top: 24px; padding-bottom: 96px">
+    <a href="G-Library.dc.html" style="display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: 15px; font-weight: 500"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>Gym &amp; Fitness</a>
+    <div style="margin-top: 16px; display: flex; flex-wrap: wrap; gap: 48px; align-items: flex-start">
+      <div style="flex: 3 1 560px; min-width: 0; aspect-ratio: 1 / 1; max-width: 100%; background: #f5f5f5; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden">
+        <img src="/_blob/83446155c44caff750be057e2c4b883f" alt="Bench and racks in a bright gym" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover">
+        <button aria-label="Play video" style="position: relative; width: 80px; height: 80px; border: 0; border-radius: 999px; background: #111111; color: #ffffff; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"></path></svg></button>
+        <span style="position: absolute; left: 20px; bottom: 20px; background: #ffffff; padding: 8px 16px; border-radius: 30px; font-size: 14px; font-weight: 500">YouTube video · 7:15</span>
+      </div>
+      <div style="flex: 2 1 380px; min-width: 0; max-width: 540px; display: flex; flex-direction: column; gap: 16px">
+        <p style="margin: 0; font-size: 16px; font-weight: 500; color: #707072">Gym &amp; Fitness · Chest</p>
+        <h1 style="font-family: Anton, Impact, sans-serif; font-weight: 400; text-transform: uppercase; line-height: 0.9; margin: 0; font-size: clamp(64px, 7vw, 112px); overflow-wrap: break-word">Barbell bench press</h1>
+        <p style="margin: 0; font-size: 16px; font-weight: 500">Some experience · Barbell, bench, rack</p>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap"><span style="display: inline-flex; align-items: center; font-size: 12px; font-weight: 600; background: {{accent}}; color: #111111; padding: 6px 12px; border-radius: 30px; white-space: nowrap">Chest</span><span style="display: inline-flex; align-items: center; font-size: 12px; font-weight: 500; border: 1px solid #cacacb; color: #111111; padding: 5px 12px; border-radius: 30px; white-space: nowrap">Front shoulders</span><span style="display: inline-flex; align-items: center; font-size: 12px; font-weight: 500; border: 1px solid #cacacb; color: #111111; padding: 5px 12px; border-radius: 30px; white-space: nowrap">Triceps</span><span style="display: inline-flex; align-items: center; font-size: 12px; font-weight: 500; border: 1px solid #cacacb; color: #111111; padding: 5px 12px; border-radius: 30px; white-space: nowrap">Coach-verified</span></div>
+        <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #39393b; max-width: 62ch">The main upper-body push. Press the bar from your chest to straight arms while your back stays tight on the bench.</p>
+        <p style="margin: 0; font-size: 13px; color: #707072">Taught by <a href="P-Coach.dc.html" style="text-decoration: underline">Ananya Iyer</a> · Reviewed by Rohan Desai</p>
+        <div style="display: flex; flex-direction: column; gap: 12px"><a href="G-Today.dc.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; box-sizing: border-box; font-size: 16px; font-weight: 500; background: #111111; color: #ffffff; padding: 14px 28px; border-radius: 30px; border: 0">Add to Today</a><a href="T-Saved.dc.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; box-sizing: border-box; font-size: 16px; font-weight: 500; background: #ffffff; color: #111111; padding: 13px 27px; border-radius: 30px; border: 1px solid #cacacb">Save exercise</a></div>
+        <div style="border-top: 1px solid #cacacb">
+          <details open="open" style="border-bottom: 1px solid #cacacb; padding: 22px 0"><summary style="font-size: 18px; font-weight: 500; cursor: pointer">Step by step</summary><ol style="margin: 14px 0 0; padding-left: 20px; font-size: 16px; line-height: 1.7; color: #39393b"><li>Eyes under the bar, feet flat, shoulder blades pulled together.</li><li>Grip a little wider than your shoulders.</li><li>Lower the bar to the middle of your chest, elbows at about 45 degrees.</li><li>Press up and slightly back until your arms are straight.</li></ol></details>
+          <details style="border-bottom: 1px solid #cacacb; padding: 22px 0"><summary style="font-size: 18px; font-weight: 500; cursor: pointer">Common mistakes</summary><p style="margin: 12px 0 0; font-size: 16px; color: #39393b">Bouncing the bar off the chest. Elbows flared wide. Hips lifting off the bench.</p></details>
+          <details open="open" style="border-bottom: 1px solid #cacacb; padding: 22px 0"><summary style="font-size: 18px; font-weight: 500; cursor: pointer">Safety</summary><p style="margin: 12px 0 0; font-size: 16px; color: #39393b">Set the safety arms in the rack, or train with a spotter. Never use a thumbless grip.</p></details>
+        </div>
+      </div>
+    </div>
+    <section aria-labelledby="dose" style="margin-top: 72px">
+      <h2 id="dose" style="font-family: Anton, Impact, sans-serif; font-weight: 400; text-transform: uppercase; line-height: 0.9; margin: 0; font-size: 56px">How to dose it for your goal</h2>
+      <div style="overflow-x: auto; margin-top: 20px"><table style="width: 100%; min-width: 640px; border-collapse: collapse; font-size: 15px">
+        <thead><tr><th scope="col" style="text-align: left; font-size: 13px; font-weight: 500; color: #707072; padding: 0 12px 12px 0; white-space: nowrap; padding-left: 12px">Goal</th><th scope="col" style="text-align: left; font-size: 13px; font-weight: 500; color: #707072; padding: 0 12px 12px 0; white-space: nowrap; padding-left: 12px">Reps</th><th scope="col" style="text-align: left; font-size: 13px; font-weight: 500; color: #707072; padding: 0 12px 12px 0; white-space: nowrap; padding-left: 12px">Sets</th><th scope="col" style="text-align: left; font-size: 13px; font-weight: 500; color: #707072; padding: 0 12px 12px 0; white-space: nowrap; padding-left: 12px">Rest</th><th scope="col" style="text-align: left; font-size: 13px; font-weight: 500; color: #707072; padding: 0 12px 12px 0; white-space: nowrap; padding-left: 12px">How hard</th></tr></thead>
+        <tbody>
+          <tr style="background: #111111; color: #ffffff"><th scope="row" style="text-align: left; padding: 14px 12px; font-size: 15px; font-weight: 600; border-top: 1px solid #cacacb">Build muscle (your goal)</th><td style="padding: 14px 12px; border-top: 1px solid #cacacb; font-variant-numeric: tabular-nums">8–12</td><td style="padding: 14px 12px; border-top: 1px solid #cacacb">3–4</td><td style="padding: 14px 12px; border-top: 1px solid #cacacb">90 s</td><td style="padding: 14px 12px; border-top: 1px solid #cacacb; color: #cacacb">Stop 1–2 reps before failure</td></tr>
+          <tr style=""><th scope="row" style="text-align: left; padding: 14px 12px; font-size: 15px; font-weight: 600; border-top: 1px solid #cacacb">Get stronger</th><td style="padding: 14px 12px; border-top: 1px solid #cacacb; font-variant-numeric: tabular-nums">3–6</td><td style="padding: 14px 12px; border-top: 1px solid #cacacb">3–5</td><td style="padding: 14px 12px; border-top: 1px solid #cacacb">2–3 min</td><td style="padding: 14px 12px; border-top: 1px solid #cacacb; color: #707072">Heavy, with clean form</td></tr>
+          <tr style=""><th scope="row" style="text-align: left; padding: 14px 12px; font-size: 15px; font-weight: 600; border-top: 1px solid #cacacb">Lose fat</th><td style="padding: 14px 12px; border-top: 1px solid #cacacb; font-variant-numeric: tabular-nums">10–15</td><td style="padding: 14px 12px; border-top: 1px solid #cacacb">3</td><td style="padding: 14px 12px; border-top: 1px solid #cacacb">60 s</td><td style="padding: 14px 12px; border-top: 1px solid #cacacb; color: #707072">Pair with conditioning</td></tr>
+        </tbody>
+      </table></div>
+      <p style="margin: 0; font-size: 13px; color: #707072; margin-top: 12px">General guidance from the lesson. Your coach’s program sets your exact dose.</p>
+    </section>
+    <section aria-labelledby="alt" style="margin-top: 72px">
+      <h2 id="alt" style="margin: 0; font-size: 32px; font-weight: 500; letter-spacing: -0.01em">No bench free? Try these</h2>
+      <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: 32px 8px">
+        <a href="G-Exercise.dc.html" style="display: flex; flex-direction: column; gap: 4px; min-width: 0"><img src="/_blob/c1331ac4827a73969782cd3d6fcc3fb2" alt="Dumbbells" style="width: 100%; aspect-ratio: 4 / 5; max-width: 100%; object-fit: cover; background: #f5f5f5"><span style="margin-top: 10px; font-size: 13px; font-weight: 600; color: #707072">Coach-verified</span><span style="font-size: 16px; font-weight: 500">Dumbbell bench press</span><span style="font-size: 15px; color: #707072">New to lifting · Dumbbells</span></a>
+        <a href="P-Drill.dc.html" style="display: flex; flex-direction: column; gap: 4px; min-width: 0"><img src="/_blob/0f728def42a89fa02dfd603653eae130" alt="Push-up" style="width: 100%; aspect-ratio: 4 / 5; max-width: 100%; object-fit: cover; background: #f5f5f5"><span style="margin-top: 10px; font-size: 13px; font-weight: 600; color: #707072">Coach-verified</span><span style="font-size: 16px; font-weight: 500">Push-up</span><span style="font-size: 15px; color: #707072">New to lifting · Bodyweight</span></a>
+        <a href="G-Exercise.dc.html" style="display: flex; flex-direction: column; gap: 4px; min-width: 0"><img src="/_blob/2020967d5b4477d2dfda21d36727a0f2" alt="Cable machine" style="width: 100%; aspect-ratio: 4 / 5; max-width: 100%; object-fit: cover; background: #f5f5f5"><span style="margin-top: 10px; font-size: 13px; font-weight: 600; color: #707072">Coach-verified</span><span style="font-size: 16px; font-weight: 500">Cable fly</span><span style="font-size: 15px; color: #707072">New to lifting · Cable machine</span></a>
+      </div>
+    </section>
+  </main>
+  <footer style="border-top: 1px solid #cacacb">
+    <div style="max-width: 1440px; margin: 0 auto; padding-left: 40px; padding-right: 40px; box-sizing: border-box; padding-top: 40px; padding-bottom: 40px">
+      <div style="display: flex; flex-wrap: wrap; gap: 48px; font-size: 14px; font-weight: 500">
+        <div style="display: flex; flex-direction: column; gap: 12px"><span>Learn</span><a href="C-Library.dc.html" style="color: #707072">Boxing</a><a href="P-LibrarySC.dc.html" style="color: #707072">Strength &amp; Conditioning</a><a href="G-Library.dc.html" style="color: #707072">Gym &amp; Fitness</a><a href="P-Programs.dc.html" style="color: #707072">Programs</a></div>
+        <div style="display: flex; flex-direction: column; gap: 12px"><span>Coaches</span><a href="P-Coaches.dc.html" style="color: #707072">Find a coach</a><a href="P-ForCoaches.dc.html" style="color: #707072">Coach with FitSphere</a><a href="P-Help.dc.html" style="color: #707072">How lessons are reviewed</a></div>
+        <div style="display: flex; flex-direction: column; gap: 12px"><span>Company</span><a href="P-About.dc.html" style="color: #707072">About</a><a href="P-Help.dc.html" style="color: #707072">Help</a><a href="P-Legal.dc.html" style="color: #707072">Privacy and terms</a></div>
+      </div>
+      <p style="margin: 32px 0 0; font-size: 12px; color: #707072">© 2026 FitSphere. For adults 18 and over. Demo content; photos from Unsplash.</p>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#D4F000","options":["#D4F000","#FF5A1F","#7CF5D2","#FFFFFF"]},"$preview":{"width":1440,"height":2319}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#D4F000' };
+  }
+}
+</script>
+</body>
+</html>

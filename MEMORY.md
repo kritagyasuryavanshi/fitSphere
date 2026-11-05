@@ -5,7 +5,7 @@ Every session reads it first and updates it before it ends.
 Keep newest entries at the top of each section.
 
 ## Current state
-- **Phase:** v1 design approved. Full-site clickable design done: 47 desktop + 48 phone screens. Engineering plan next. No app code exists yet.
+- **Phase:** v1 design approved. Full-site clickable design done: 54 desktop + 55 phone screens, Boxing, S&C, and Gym & Fitness. Engineering plan next. No app code exists yet.
 - **Current milestone:** M1 Foundation, not started.
 - **Next step for the next session:**
   1. Get the owner's feedback on the full-site design (canvas pages "Fight Camp · full site" and "Phone · full site").
@@ -13,6 +13,10 @@ Keep newest entries at the top of each section.
   3. Write the engineering plan for M1 to M5 in `docs/plans/`. Cover schema, RLS rules, test setup, and the four minor reviewer concerns in the design doc. After approval, build M1 hands-off.
 - **Open owner decisions:** Mobbin install (only unofficial community MCPs exist; needs a paid Mobbin account and a session token; owner must say "install mobbin-mcp").
 - **Owner's parallel task:** meet one boxing coach and one S&C coach (the assignment in the design doc).
+
+## Session 3c (2026-11-05)
+- Added Gym & Fitness as a third category (S&C kept as its own): gym library `G-Library` by goal and muscle group, bench press exercise page with rep ranges per goal, Muscle Builder program, gym Today (persona Neha), workout player with last-time numbers and overload target, workout done, gym progress (sets per muscle, body weight, records), sign-up gym-goal step (sign-up is now 4 steps). Landing gets a gym section.
+- 10 new gym photos from Unsplash in `docs/mockups/images/` (credits updated). Unsplash search API refuses scripts; download by known photo ID from images.unsplash.com works.
 
 ## Session 3b (2026-11-05)
 - Applied the ponytail review fixes: build runs from the repo (`python docs/mockups/build/build.py`), one-off patch block removed, real disabled buttons, confirm screens for delete account / reset invite / remove athlete, proper list markup.
@@ -45,6 +49,8 @@ Keep newest entries at the top of each section.
 ## Decisions
 | Date | Decision | Why |
 |---|---|---|
+| 2026-11-05 | Three categories, each with its own library: Boxing, Strength & Conditioning (S&C for boxers, unchanged), Gym & Fitness (build muscle, lose fat, get stronger, get fitter). Gym is a full category, not boxing support. | Owner asked for gym training (weight loss, muscle building, hypertrophy), then asked to keep S&C as its own category too. |
+| 2026-11-05 | No meal plans or calorie targets in v1. Body weight optional, consent-gated for AI. | Nutrition advice is out of v1 scope and is health data. Open question for the owner. |
 | 2026-11-05 | Keep Fight Camp look when using Hallmark or ui-ux-pro-max; use them for quality checks, not a new theme. | Owner said the current screens look good and to follow that practice. |
 | 2026-11-04 | Visual direction: "Fight Camp" (Nike-grade): Anton condensed caps + Inter, black/white, volt #D4F000 accent, square imagery, pill buttons. 10 screens in `docs/mockups/` and the canvas https://claude.ai/artifact/YVnwgT8qzwA2SerCSPasBe. | Owner picked C over Studio (Apple) and Coach (Airbnb). |
 | 2026-11-04 | v1 = three pillars: Video Learning Library, AI Instructional Assistant, Coach-Led Training. | Owner wants all three complete from day one and accepts a longer timeline. |
