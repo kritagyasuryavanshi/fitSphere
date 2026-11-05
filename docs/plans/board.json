@@ -233,7 +233,7 @@
     "O-01",
     "O-03"
    ],
-   "status": "todo",
+   "status": "done",
    "owner": "claude",
    "test": "unit",
    "ac": [
@@ -242,7 +242,9 @@
     "packages/core has a sample pure function with a Vitest test; apps/web imports it",
     "Lint rule blocks core from importing other workspaces",
     "No secrets in the repo; .env.example lists every variable"
-   ]
+   ],
+   "done_on": "2026-11-05",
+   "commit": "c6cdf8f"
   },
   {
    "id": "S0-03",
