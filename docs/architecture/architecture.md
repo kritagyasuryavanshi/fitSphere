@@ -176,7 +176,11 @@ erDiagram
 
 Access is decided by two link types: an **active enrollment** (free program via invite) or an **active engagement** (paid coaching). A coach's read access to an athlete's logs, sign-up answers and body metrics exists only while one of these is active. One SQL function, `coach_can_read(athlete_id)`, holds this rule, and every related policy calls it.
 
-### 4.3 Views for honest numbers
+### 4.3 One data model for every user and sport (decision D5)
+
+The demo users (Kabir for boxing, Neha for gym) are seed data, not special cases. One `profiles` row per person; a person can hold several roles. Sports are data: `categories` (boxing, sc, gym) and `disciplines` are rows, and preferences per sport live in `athlete_prefs` rows keyed by user and category. Adding cricket later means new rows and content, not new tables or code paths. Every screen reads the same tables whatever the sport.
+
+### 4.4 Views for honest numbers
 
 `v_coach_stats` (athletes coached, programs finished, 3-month retention, adherence), `v_athlete_progress`, `v_muscle_volume_week`, `v_coach_earnings`. All screens read numbers from these views. pgTAP tests compare them to hand-computed values.
 

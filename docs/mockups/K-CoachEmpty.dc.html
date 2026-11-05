@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FitSphere: Coach: first run</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+/* Hallmark (applied as a floor on an existing design) · kept by owner choice: inline colours (the canvas editor edits them), grey labels above heads and middle-dot meta lines (the approved Fight Camp voice) */
+a:active,button:active{transform:translateY(1px)}
+button:disabled,a[aria-disabled="true"]{opacity:.4;cursor:not-allowed}
+html,body{overflow-x:clip}
+body{margin:0;background:#ffffff}
+a{color:#111111;text-decoration:none}a:hover{color:#707072}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid #111111;outline-offset:2px}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #ffffff; color: #111111; font-family: Inter, Helvetica, Arial, sans-serif">
+<header style="border-bottom: 1px solid #e5e5e5; background: #ffffff">
+    <nav aria-label="Coach" style="max-width: 1440px; margin: 0 auto; padding-left: 40px; padding-right: 40px; box-sizing: border-box; min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 12px 20px; flex-wrap: wrap; padding-top: 10px; padding-bottom: 10px">
+      <a href="C-CoachDash.dc.html" style="display: flex; align-items: center; gap: 10px"><span style="font-family: Anton, Impact, sans-serif; font-size: 28px; text-transform: uppercase">FitSphere</span><span style="display: inline-flex; align-items: center; font-size: 12px; font-weight: 600; background: #111111; color: #ffffff; padding: 6px 12px; border-radius: 30px; white-space: nowrap">Coach</span></a>
+      <div style="display: flex; gap: 28px; font-size: 16px; font-weight: 500; flex-wrap: wrap; align-items: center"><a href="C-CoachDash.dc.html" aria-current="page" style="text-decoration: underline; text-underline-offset: 6px">Athletes</a><a href="X-CoachRequests.dc.html">Clients</a><a href="K-Programs.dc.html">Programs</a><a href="K-Lessons.dc.html">My lessons</a></div>
+      <div style="display: flex; gap: 12px; align-items: center"><a href="C-Library.dc.html" style="font-size: 14px; font-weight: 500; text-decoration: underline; text-underline-offset: 4px">Athlete site</a><a href="X-CoachProfile.dc.html" aria-label="Meera Pillai, your profile" style="width: 44px; height: 44px; border-radius: 999px; background: #111111; color: #ffffff; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center">M</a></div>
+    </nav>
+  </header>
+  <main style="max-width: 1440px; margin: 0 auto; padding-left: 40px; padding-right: 40px; box-sizing: border-box; padding-top: 40px; padding-bottom: 96px">
+    <p style="margin: 0; font-size: 16px; font-weight: 500; color: #707072">Welcome, Meera · your coach tools are on</p>
+    <h1 style="font-family: Anton, Impact, sans-serif; font-weight: 400; text-transform: uppercase; line-height: 0.9; margin: 0; font-size: clamp(64px, 8vw, 120px); margin-top: 4px">Set up your camp</h1>
+    <div style="margin-top: 32px; display: flex; flex-wrap: wrap; gap: 48px; align-items: flex-start">
+      <section aria-labelledby="steps" style="flex: 3 1 560px; min-width: 0">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px"><h2 id="steps" style="margin: 0; font-size: 32px; font-weight: 500; letter-spacing: -0.01em; font-size: 22px">Four steps to your first athlete</h2><span style="font-size: 14px; font-weight: 600">1 of 4 done</span></div>
+        <div role="progressbar" aria-label="Setup progress" aria-valuenow="1" aria-valuemin="0" aria-valuemax="4" style="margin-top: 12px; height: 6px; background: #f5f5f5"><div style="width: 25%; height: 100%; background: #111111"></div></div>
+        <ol style="margin: 8px 0 0; padding: 0; list-style: none">
+          <li style="display: flex; gap: 16px; align-items: center; padding: 18px 0; border-bottom: 1px solid #e5e5e5"><span style="display: flex"><span style="width: 40px; height: 40px; border-radius: 999px; background: {{accent}}; display: flex; align-items: center; justify-content: center; flex: none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span></span><span style="flex: 1; min-width: 0"><span style="display: block; font-size: 17px; font-weight: 600">Fill in your profile</span><span style="display: block; font-size: 14px; color: #707072">Photo, headline, how you coach</span></span><span style="font-size: 14px; color: #00653a; font-weight: 600">Done</span></li>
+          <li style="display: flex; gap: 16px; align-items: center; padding: 18px 0; border-bottom: 1px solid #e5e5e5"><span style="display: flex"><span style="width: 40px; height: 40px; border-radius: 999px; border: 1.5px solid #111111; display: flex; align-items: center; justify-content: center; font-family: Anton, Impact, sans-serif; font-size: 20px; flex: none">2</span></span><span style="flex: 1; min-width: 0"><span style="display: block; font-size: 17px; font-weight: 600">Set your packages and prices</span><span style="display: block; font-size: 14px; color: #707072">Athletes can hire you once one package is live</span></span><a href="X-CoachProfile.dc.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; box-sizing: border-box; font-size: 14px; font-weight: 500; background: #111111; color: #ffffff; padding: 0 18px; border-radius: 30px; border: 0">Start</a></li>
+          <li style="display: flex; gap: 16px; align-items: center; padding: 18px 0; border-bottom: 1px solid #e5e5e5"><span style="display: flex"><span style="width: 40px; height: 40px; border-radius: 999px; border: 1.5px solid #111111; display: flex; align-items: center; justify-content: center; font-family: Anton, Impact, sans-serif; font-size: 20px; flex: none">3</span></span><span style="flex: 1; min-width: 0"><span style="display: block; font-size: 17px; font-weight: 600">Build your first program</span><span style="display: block; font-size: 14px; color: #707072">Weeks, sessions, drills from the library</span></span><a href="C-Builder.dc.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; box-sizing: border-box; font-size: 14px; font-weight: 500; background: #111111; color: #ffffff; padding: 0 18px; border-radius: 30px; border: 0">Start</a></li>
+          <li style="display: flex; gap: 16px; align-items: center; padding: 18px 0; border-bottom: 1px solid #e5e5e5"><span style="display: flex"><span style="width: 40px; height: 40px; border-radius: 999px; border: 1.5px solid #111111; display: flex; align-items: center; justify-content: center; font-family: Anton, Impact, sans-serif; font-size: 20px; flex: none">4</span></span><span style="flex: 1; min-width: 0"><span style="display: block; font-size: 17px; font-weight: 600">Invite your first athlete</span><span style="display: block; font-size: 14px; color: #707072">Share one link on WhatsApp</span></span><a href="K-Invite.dc.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; box-sizing: border-box; font-size: 14px; font-weight: 500; background: #111111; color: #ffffff; padding: 0 18px; border-radius: 30px; border: 0">Start</a></li>
+        </ol>
+      </section>
+      <aside style="flex: 1 1 300px; min-width: 0; background: #111111; color: #ffffff; padding: 28px; display: flex; flex-direction: column; gap: 12px">
+        <h2 style="font-family: Anton, Impact, sans-serif; font-weight: 400; text-transform: uppercase; line-height: 0.9; margin: 0; font-size: 36px">Got lessons on YouTube?</h2>
+        <p style="margin: 0; font-size: 15px; line-height: 1.5; color: #cacacb">Add them to the library. A second coach reviews each one, then it goes live with your name.</p>
+        <a href="K-Editor.dc.html" style="align-self: flex-start; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; box-sizing: border-box; font-size: 16px; font-weight: 500; background: {{accent}}; color: #111111; padding: 14px 28px; border-radius: 30px; border: 0">Write a lesson</a>
+      </aside>
+    </div>
+    <div style="margin-top: 48px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 8px">
+      <section style="border: 1px dashed #cacacb; padding: 32px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; min-width: 0"><h3 style="margin: 0; font-size: 18px; font-weight: 600">No athletes yet</h3><p style="margin: 0; font-size: 15px; line-height: 1.5; color: #39393b">Athletes you invite, and clients who hire you, show up here with their training each week.</p><a href="K-Invite.dc.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; box-sizing: border-box; font-size: 14px; font-weight: 500; background: #ffffff; color: #111111; padding: 0 18px; border-radius: 30px; border: 1px solid #cacacb; margin-top: 4px">Get an invite link</a></section>
+      <section style="border: 1px dashed #cacacb; padding: 32px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; min-width: 0"><h3 style="margin: 0; font-size: 18px; font-weight: 600">No requests yet</h3><p style="margin: 0; font-size: 15px; line-height: 1.5; color: #39393b">Requests appear once your profile has a live package. You choose who to accept.</p><a href="X-CoachProfile.dc.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; box-sizing: border-box; font-size: 14px; font-weight: 500; background: #ffffff; color: #111111; padding: 0 18px; border-radius: 30px; border: 1px solid #cacacb; margin-top: 4px">Add a package</a></section>
+      <section style="border: 1px dashed #cacacb; padding: 32px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; min-width: 0"><h3 style="margin: 0; font-size: 18px; font-weight: 600">No lessons yet</h3><p style="margin: 0; font-size: 15px; line-height: 1.5; color: #39393b">Your lessons and their review status appear here.</p><a href="K-Editor.dc.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; box-sizing: border-box; font-size: 14px; font-weight: 500; background: #ffffff; color: #111111; padding: 0 18px; border-radius: 30px; border: 1px solid #cacacb; margin-top: 4px">Write a lesson</a></section>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#D4F000","options":["#D4F000","#FF5A1F","#7CF5D2","#FFFFFF"]},"$preview":{"width":1440,"height":980}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#D4F000' };
+  }
+}
+</script>
+</body>
+</html>

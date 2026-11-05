@@ -35,7 +35,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
       <fieldset style="border: 0; margin: 0; padding: 0">
         <legend style="font-family: Anton, Impact, sans-serif; font-size: 40px; line-height: 0.95; text-transform: uppercase; padding: 0 0 6px">Your gym goal</legend>
         <p style="margin: 0 0 16px; font-size: 15px; color: #707072">We suggest programs and rep ranges that fit it. Change it any time.</p>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 8px">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: 8px">
           <label style="display: flex; gap: 12px; align-items: flex-start; border: 2px solid #111111; padding: 15px; cursor: pointer"><input type="radio" name="goal" checked="checked" style="margin-top: 3px; accent-color: #111111"><span><span style="display: block; font-size: 16px; font-weight: 500">Build muscle</span><span style="display: block; font-size: 14px; color: #707072">Get bigger and more defined</span></span></label><label style="display: flex; gap: 12px; align-items: flex-start; border: 1px solid #cacacb; padding: 16px; cursor: pointer"><input type="radio" name="goal" style="margin-top: 3px; accent-color: #111111"><span><span style="display: block; font-size: 16px; font-weight: 500">Lose fat</span><span style="display: block; font-size: 14px; color: #707072">Drop weight, keep muscle</span></span></label><label style="display: flex; gap: 12px; align-items: flex-start; border: 1px solid #cacacb; padding: 16px; cursor: pointer"><input type="radio" name="goal" style="margin-top: 3px; accent-color: #111111"><span><span style="display: block; font-size: 16px; font-weight: 500">Get stronger</span><span style="display: block; font-size: 14px; color: #707072">Lift heavier</span></span></label><label style="display: flex; gap: 12px; align-items: flex-start; border: 1px solid #cacacb; padding: 16px; cursor: pointer"><input type="radio" name="goal" style="margin-top: 3px; accent-color: #111111"><span><span style="display: block; font-size: 16px; font-weight: 500">Get fitter</span><span style="display: block; font-size: 14px; color: #707072">More energy and stamina</span></span></label>
         </div>
       </fieldset>
@@ -57,7 +57,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#D4F000","options":["#D4F000","#FF5A1F","#7CF5D2","#FFFFFF"]},"$preview":{"width":390,"height":1472}}'>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#D4F000","options":["#D4F000","#FF5A1F","#7CF5D2","#FFFFFF"]},"$preview":{"width":390,"height":1348}}'>
 class Component extends DCLogic {
   renderVals() {
     return { accent: this.props.accent ?? '#D4F000' };

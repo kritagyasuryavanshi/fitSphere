@@ -58,7 +58,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 
     <div style="margin-top: 40px; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start">
       <!-- Filters -->
-      <aside aria-label="Filters" style="flex: 1 1 220px; max-width: none; min-width: 200px">
+      <details style="flex: 1 1 100%; width: 100%; box-sizing: border-box; border: 1px solid #cacacb; padding: 0 16px; margin-bottom: 8px"><summary style="min-height: 48px; display: flex; align-items: center; justify-content: space-between; font-size: 15px; font-weight: 600; cursor: pointer">Filters<span aria-hidden="true">+</span></summary><div style="padding-bottom: 16px">
         <fieldset style="border: 0; margin: 0; padding: 0 0 20px; border-bottom: 1px solid #e5e5e5">
           <legend style="font-size: 16px; font-weight: 500; padding: 0 0 12px">Discipline</legend>
           <label style="display: flex; gap: 10px; align-items: center; font-size: 15px; padding: 6px 0"><input type="checkbox" checked="checked" style="width: 18px; height: 18px; accent-color: #111111">Technical boxing</label>
@@ -85,7 +85,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
           <label style="display: flex; gap: 10px; align-items: center; font-size: 15px; padding: 6px 0"><input type="checkbox" style="width: 18px; height: 18px; accent-color: #111111">Mobility</label>
           <label style="display: flex; gap: 10px; align-items: center; font-size: 15px; padding: 6px 0"><input type="checkbox" style="width: 18px; height: 18px; accent-color: #111111">Recovery</label>
         </fieldset>
-      </aside>
+      </div></details>
 
       <!-- Results -->
       <section aria-label="Lessons" style="flex: 999 1 640px; min-width: 0">
@@ -97,7 +97,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
           <label style="font-size: 14px; font-weight: 500; display: flex; gap: 8px; align-items: center">Sort by <select style="font: inherit; font-size: 14px; border: 1px solid #cacacb; border-radius: 30px; padding: 7px 12px; background: #ffffff"><option>Skill path order</option><option>Newest</option><option>Shortest</option></select></label>
         </div>
         <p style="margin: 16px 0 0; font-size: 14px; color: #707072">9 lessons</p>
-        <div style="margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 20px 8px">
+        <div style="margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 160px), 1fr)); gap: 20px 8px">
           <a href="M-Lesson.dc.html" style="display: flex; flex-direction: column; gap: 4px"><img src="/_blob/bc8a7ce0029375691669e97214bc8eab" alt="Stance and guard lesson" style="width: 100%; aspect-ratio: 4 / 5; object-fit: cover; background: #f5f5f5"><span style="margin-top: 10px; font-size: 13px; font-weight: 600; color: #007d48">Completed</span><span style="font-size: 16px; font-weight: 500">Stance &amp; guard</span><span style="font-size: 15px; color: #707072">Beginner · 6 min · Vikram Rathore</span></a>
           <a href="M-Lesson.dc.html" style="display: flex; flex-direction: column; gap: 4px"><img src="/_blob/4b009e8b70bea433da647b3525c99506" alt="The jab lesson" style="width: 100%; aspect-ratio: 4 / 5; object-fit: cover; background: #f5f5f5"><span style="margin-top: 10px; font-size: 13px; font-weight: 600; color: #111111">In progress · 40%</span><span style="font-size: 16px; font-weight: 500">The Jab</span><span style="font-size: 15px; color: #707072">Beginner · 8 min · Vikram Rathore</span></a>
           <a href="M-Lesson.dc.html" style="display: flex; flex-direction: column; gap: 4px"><img src="/_blob/137ed4dcd9c6e0496864e2c33c3d3781" alt="The cross lesson" style="width: 100%; aspect-ratio: 4 / 5; object-fit: cover; background: #f5f5f5"><span style="margin-top: 10px; font-size: 13px; font-weight: 600; color: #707072">Coach-verified</span><span style="font-size: 16px; font-weight: 500">The Cross</span><span style="font-size: 15px; color: #707072">Beginner · 9 min · Vikram Rathore</span></a>
@@ -115,7 +115,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 <nav aria-label="App" style="position: sticky; bottom: 0; z-index: 5; display: flex; border-top: 1px solid #e5e5e5; background: #ffffff; padding: 4px 8px 20px"><a href="M-Today.dc.html" style="flex: 1; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 12px; font-weight: 500; color: #707072"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="1"></rect><path d="M4 10h16M9 3v4M15 3v4"></path></svg>Today</a><a href="M-C-Library.dc.html" aria-current="page" style="flex: 1; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 12px; font-weight: 600; color: #111111"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="13" rx="1"></rect><path d="M10 9v5l4-2.5z"></path></svg>Learn</a><a href="M-C-Progress.dc.html" style="flex: 1; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 12px; font-weight: 500; color: #707072"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 20V12M12 20V5M19 20v-9"></path></svg>Progress</a><a href="M-C-AI.dc.html" style="flex: 1; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; font-size: 12px; font-weight: 500; color: #707072"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"></path></svg>Ask AI</a></nav>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#D4F000","options":["#D4F000","#FF5A1F","#7CF5D2","#FFFFFF"]},"$preview":{"width":390,"height":6839}}'>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#D4F000","options":["#D4F000","#FF5A1F","#7CF5D2","#FFFFFF"]},"$preview":{"width":390,"height":2835}}'>
 class Component extends DCLogic {
   renderVals() {
     return { accent: this.props.accent ?? '#D4F000' };

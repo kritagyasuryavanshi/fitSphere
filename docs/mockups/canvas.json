@@ -123,7 +123,7 @@
    "x": 6080,
    "y": 300,
    "w": 1440,
-   "h": 3227,
+   "h": 3383,
    "title": "5 · Coach: Vikram Rathore",
    "is_interactive": true,
    "page": "fightcamp",
@@ -264,7 +264,7 @@
    "y": 10763,
    "w": 1440,
    "h": 900,
-   "title": "19 · Sign up step 1: About you",
+   "title": "19 · Sign-up step 1: About you",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
@@ -274,7 +274,7 @@
    "y": 10763,
    "w": 1440,
    "h": 1190,
-   "title": "20 · Onboarding",
+   "title": "20 · Sign-up step 2: Experience",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
@@ -294,7 +294,7 @@
    "y": 10763,
    "w": 1440,
    "h": 900,
-   "title": "22 · Sign up step 3: Ready",
+   "title": "22 · Sign-up step 4: Ready",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
@@ -499,102 +499,122 @@
    "page": "fightcamp",
    "expand": "fill"
   },
-  "T-ConfirmDelete.dc.html": {
+  "T-Notifications.dc.html": {
    "x": 7600,
    "y": 17270,
    "w": 1440,
    "h": 900,
-   "title": "43 · Confirm: delete account",
+   "title": "43 · Notifications",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "T-ConfirmDelete.dc.html": {
+   "x": 9120,
+   "y": 17270,
+   "w": 1440,
+   "h": 900,
+   "title": "44 · Confirm: delete account",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "K-CoachEmpty.dc.html": {
+   "x": 0,
+   "y": 19154,
+   "w": 1440,
+   "h": 980,
+   "title": "45 · Coach: first run",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
   },
   "C-CoachDash.dc.html": {
-   "x": 0,
+   "x": 1520,
    "y": 19154,
    "w": 1440,
    "h": 1230,
-   "title": "44 · Coach dashboard",
+   "title": "46 · Coach dashboard",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
   },
   "K-Athlete.dc.html": {
-   "x": 1520,
+   "x": 3040,
    "y": 19154,
    "w": 1440,
    "h": 1302,
-   "title": "45 · Coach: Kabir Malhotra",
+   "title": "47 · Coach: Kabir Malhotra",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
   },
   "K-ConfirmRemove.dc.html": {
-   "x": 3040,
+   "x": 4560,
    "y": 19154,
    "w": 1440,
    "h": 900,
-   "title": "46 · Confirm: remove athlete",
+   "title": "48 · Confirm: remove athlete",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
   },
   "K-Programs.dc.html": {
-   "x": 4560,
+   "x": 6080,
    "y": 19154,
    "w": 1440,
    "h": 900,
-   "title": "47 · Coach: Programs",
+   "title": "49 · Coach: Programs",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
   },
   "C-Builder.dc.html": {
-   "x": 6080,
+   "x": 7600,
    "y": 19154,
    "w": 1440,
    "h": 1214,
-   "title": "48 · Program builder",
+   "title": "50 · Program builder",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
   },
   "K-Invite.dc.html": {
-   "x": 7600,
+   "x": 9120,
    "y": 19154,
    "w": 1440,
    "h": 998,
-   "title": "49 · Coach: Invite athletes",
+   "title": "51 · Coach: Invite athletes",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
   },
   "K-ConfirmReset.dc.html": {
-   "x": 9120,
+   "x": 10640,
    "y": 19154,
    "w": 1440,
    "h": 900,
-   "title": "50 · Confirm: reset invite link",
+   "title": "52 · Confirm: reset invite link",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
   },
   "K-Lessons.dc.html": {
-   "x": 10640,
+   "x": 12160,
    "y": 19154,
    "w": 1440,
    "h": 900,
-   "title": "51 · Coach: My lessons",
+   "title": "53 · Coach: My lessons",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
   },
   "K-Editor.dc.html": {
-   "x": 12160,
+   "x": 13680,
    "y": 19154,
    "w": 1440,
    "h": 1351,
-   "title": "52 · Coach: Lesson editor",
+   "title": "54 · Coach: Lesson editor",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
@@ -604,7 +624,7 @@
    "y": 21055,
    "w": 1440,
    "h": 1117,
-   "title": "53 · Compare coaches",
+   "title": "55 · Compare coaches",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
@@ -614,7 +634,7 @@
    "y": 21055,
    "w": 1440,
    "h": 900,
-   "title": "54 · Shortlisted coaches",
+   "title": "56 · Shortlisted coaches",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
@@ -624,7 +644,7 @@
    "y": 21055,
    "w": 1440,
    "h": 1068,
-   "title": "55 · Hire Vikram: choose a package",
+   "title": "57 · Hire Vikram: choose a package",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
@@ -634,7 +654,7 @@
    "y": 21055,
    "w": 1440,
    "h": 900,
-   "title": "56 · Messages: Vikram",
+   "title": "58 · Messages: Vikram",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
@@ -644,7 +664,7 @@
    "y": 21055,
    "w": 1440,
    "h": 900,
-   "title": "57 · Checkout",
+   "title": "59 · Checkout",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
@@ -654,17 +674,77 @@
    "y": 21055,
    "w": 1440,
    "h": 900,
-   "title": "58 · Coaching starts",
+   "title": "60 · Coaching starts",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "X-Book.dc.html": {
+   "x": 9120,
+   "y": 21055,
+   "w": 1440,
+   "h": 900,
+   "title": "61 · Book a 1:1 session",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "X-Booked.dc.html": {
+   "x": 10640,
+   "y": 21055,
+   "w": 1440,
+   "h": 900,
+   "title": "62 · Session booked",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "X-ManageCoaching.dc.html": {
+   "x": 12160,
+   "y": 21055,
+   "w": 1440,
+   "h": 900,
+   "title": "63 · Coaching and payments",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "X-CancelCoaching.dc.html": {
+   "x": 13680,
+   "y": 21055,
+   "w": 1440,
+   "h": 900,
+   "title": "64 · Confirm: cancel coaching",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
   },
   "X-Review.dc.html": {
-   "x": 9120,
+   "x": 15200,
    "y": 21055,
    "w": 1440,
    "h": 900,
-   "title": "59 · Review your coach",
+   "title": "65 · Review your coach",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "X-Report.dc.html": {
+   "x": 16720,
+   "y": 21055,
+   "w": 1440,
+   "h": 919,
+   "title": "66 · Report",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "X-ReportSent.dc.html": {
+   "x": 18240,
+   "y": 21055,
+   "w": 1440,
+   "h": 900,
+   "title": "67 · Report sent",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
@@ -674,7 +754,7 @@
    "y": 22722,
    "w": 1440,
    "h": 1286,
-   "title": "60 · Coach: Clients and requests",
+   "title": "68 · Coach: Clients and requests",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
@@ -684,7 +764,7 @@
    "y": 22722,
    "w": 1440,
    "h": 1599,
-   "title": "61 · Coach: Edit marketplace profile",
+   "title": "69 · Coach: Edit marketplace profile",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
@@ -694,7 +774,7 @@
    "y": 22722,
    "w": 1440,
    "h": 1143,
-   "title": "62 · Coach: Earnings",
+   "title": "70 · Coach: Earnings",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
@@ -704,7 +784,7 @@
    "y": 22722,
    "w": 1440,
    "h": 900,
-   "title": "63 · Admin: Credential checks",
+   "title": "71 · Admin: Credential checks",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
@@ -714,7 +794,7 @@
    "y": 24871,
    "w": 1440,
    "h": 900,
-   "title": "64 · Reviewer: Review queue",
+   "title": "72 · Reviewer: Review queue",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
@@ -724,7 +804,7 @@
    "y": 24871,
    "w": 1440,
    "h": 1248,
-   "title": "65 · Reviewer: Catching the jab",
+   "title": "73 · Reviewer: Catching the jab",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
@@ -734,7 +814,17 @@
    "y": 24871,
    "w": 1440,
    "h": 1216,
-   "title": "66 · Admin: People and roles",
+   "title": "74 · Admin: People and roles",
+   "is_interactive": true,
+   "page": "fightcamp",
+   "expand": "fill"
+  },
+  "R-Reports.dc.html": {
+   "x": 4560,
+   "y": 24871,
+   "w": 1440,
+   "h": 982,
+   "title": "75 · Admin: Reports",
    "is_interactive": true,
    "page": "fightcamp",
    "expand": "fill"
@@ -752,7 +842,7 @@
    "x": 450,
    "y": 300,
    "w": 390,
-   "h": 9223,
+   "h": 5729,
    "title": "2 · Landing",
    "is_interactive": true,
    "page": "phone"
@@ -761,7 +851,7 @@
    "x": 900,
    "y": 300,
    "w": 390,
-   "h": 3150,
+   "h": 3097,
    "title": "3 · Programs",
    "is_interactive": true,
    "page": "phone"
@@ -779,7 +869,7 @@
    "x": 1800,
    "y": 300,
    "w": 390,
-   "h": 4075,
+   "h": 3175,
    "title": "5 · Find a coach",
    "is_interactive": true,
    "page": "phone"
@@ -788,7 +878,7 @@
    "x": 2250,
    "y": 300,
    "w": 390,
-   "h": 5340,
+   "h": 5061,
    "title": "6 · Coach: Vikram Rathore",
    "is_interactive": true,
    "page": "phone"
@@ -797,7 +887,7 @@
    "x": 2700,
    "y": 300,
    "w": 390,
-   "h": 3018,
+   "h": 2733,
    "title": "7 · For coaches",
    "is_interactive": true,
    "page": "phone"
@@ -813,7 +903,7 @@
   },
   "M-P-About.dc.html": {
    "x": 0,
-   "y": 10073,
+   "y": 6579,
    "w": 390,
    "h": 2052,
    "title": "9 · About",
@@ -822,7 +912,7 @@
   },
   "M-P-Help.dc.html": {
    "x": 450,
-   "y": 10073,
+   "y": 6579,
    "w": 390,
    "h": 2061,
    "title": "10 · Help",
@@ -831,7 +921,7 @@
   },
   "M-P-Legal.dc.html": {
    "x": 900,
-   "y": 10073,
+   "y": 6579,
    "w": 390,
    "h": 1488,
    "title": "11 · Privacy and terms",
@@ -840,7 +930,7 @@
   },
   "M-P-NotFound.dc.html": {
    "x": 1350,
-   "y": 10073,
+   "y": 6579,
    "w": 390,
    "h": 844,
    "title": "12 · Page not found",
@@ -849,25 +939,25 @@
   },
   "M-C-Library.dc.html": {
    "x": 0,
-   "y": 12684,
+   "y": 9190,
    "w": 390,
-   "h": 6839,
+   "h": 2835,
    "title": "13 · Boxing library",
    "is_interactive": true,
    "page": "phone"
   },
   "M-P-LibrarySC.dc.html": {
    "x": 450,
-   "y": 12684,
+   "y": 9190,
    "w": 390,
-   "h": 3290,
+   "h": 2219,
    "title": "14 · S&C library",
    "is_interactive": true,
    "page": "phone"
   },
   "M-Lesson.dc.html": {
    "x": 900,
-   "y": 12684,
+   "y": 9190,
    "w": 390,
    "h": 844,
    "title": "15 · Phone: Lesson",
@@ -876,16 +966,16 @@
   },
   "M-P-Drill.dc.html": {
    "x": 1350,
-   "y": 12684,
+   "y": 9190,
    "w": 390,
-   "h": 4006,
+   "h": 3016,
    "title": "16 · Exercise: Kettlebell swing",
    "is_interactive": true,
    "page": "phone"
   },
   "M-P-Search.dc.html": {
    "x": 1800,
-   "y": 12684,
+   "y": 9190,
    "w": 390,
    "h": 1911,
    "title": "17 · Search: jab",
@@ -894,7 +984,7 @@
   },
   "M-A-SignIn.dc.html": {
    "x": 0,
-   "y": 20073,
+   "y": 12756,
    "w": 390,
    "h": 969,
    "title": "18 · Log in or join",
@@ -903,7 +993,7 @@
   },
   "M-A-CheckEmail.dc.html": {
    "x": 450,
-   "y": 20073,
+   "y": 12756,
    "w": 390,
    "h": 926,
    "title": "19 · Check your email",
@@ -912,43 +1002,43 @@
   },
   "M-A-Onboard1.dc.html": {
    "x": 900,
-   "y": 20073,
+   "y": 12756,
    "w": 390,
-   "h": 1176,
-   "title": "20 · Sign up step 1: About you",
+   "h": 1092,
+   "title": "20 · Sign-up step 1: About you",
    "is_interactive": true,
    "page": "phone"
   },
   "M-C-Onboarding.dc.html": {
    "x": 1350,
-   "y": 20073,
+   "y": 12756,
    "w": 390,
    "h": 1869,
-   "title": "21 · Onboarding",
+   "title": "21 · Sign-up step 2: Experience",
    "is_interactive": true,
    "page": "phone"
   },
   "M-A-OnboardGym.dc.html": {
    "x": 1800,
-   "y": 20073,
+   "y": 12756,
    "w": 390,
-   "h": 1472,
+   "h": 1348,
    "title": "22 · Sign-up step 3: Gym goals",
    "is_interactive": true,
    "page": "phone"
   },
   "M-A-Ready.dc.html": {
    "x": 2250,
-   "y": 20073,
+   "y": 12756,
    "w": 390,
-   "h": 1128,
-   "title": "23 · Sign up step 3: Ready",
+   "h": 1081,
+   "title": "23 · Sign-up step 4: Ready",
    "is_interactive": true,
    "page": "phone"
   },
   "M-A-Under18.dc.html": {
    "x": 2700,
-   "y": 20073,
+   "y": 12756,
    "w": 390,
    "h": 906,
    "title": "24 · Under 18",
@@ -957,7 +1047,7 @@
   },
   "M-A-Invite.dc.html": {
    "x": 3150,
-   "y": 20073,
+   "y": 12756,
    "w": 390,
    "h": 1042,
    "title": "25 · Invite: Boxing Fundamentals",
@@ -966,34 +1056,34 @@
   },
   "M-G-Library.dc.html": {
    "x": 0,
-   "y": 22492,
+   "y": 15175,
    "w": 390,
-   "h": 3489,
+   "h": 2405,
    "title": "26 · Gym & Fitness library",
    "is_interactive": true,
    "page": "phone"
   },
   "M-G-Program.dc.html": {
    "x": 450,
-   "y": 22492,
+   "y": 15175,
    "w": 390,
-   "h": 3350,
+   "h": 3079,
    "title": "27 · Program: Muscle Builder",
    "is_interactive": true,
    "page": "phone"
   },
   "M-G-Today.dc.html": {
    "x": 900,
-   "y": 22492,
+   "y": 15175,
    "w": 390,
-   "h": 1866,
+   "h": 1806,
    "title": "28 · Today: gym member",
    "is_interactive": true,
    "page": "phone"
   },
   "M-G-Workout.dc.html": {
    "x": 1350,
-   "y": 22492,
+   "y": 15175,
    "w": 390,
    "h": 1523,
    "title": "29 · Gym workout: Upper A",
@@ -1002,34 +1092,34 @@
   },
   "M-G-WorkoutDone.dc.html": {
    "x": 1800,
-   "y": 22492,
+   "y": 15175,
    "w": 390,
-   "h": 1313,
+   "h": 1298,
    "title": "30 · Workout complete",
    "is_interactive": true,
    "page": "phone"
   },
   "M-G-Progress.dc.html": {
    "x": 2250,
-   "y": 22492,
+   "y": 15175,
    "w": 390,
-   "h": 2009,
+   "h": 2021,
    "title": "31 · Progress: gym",
    "is_interactive": true,
    "page": "phone"
   },
   "M-G-Exercise.dc.html": {
    "x": 2700,
-   "y": 22492,
+   "y": 15175,
    "w": 390,
-   "h": 4126,
+   "h": 3162,
    "title": "32 · Exercise: Barbell bench press",
    "is_interactive": true,
    "page": "phone"
   },
   "M-Today.dc.html": {
    "x": 0,
-   "y": 27168,
+   "y": 18887,
    "w": 390,
    "h": 844,
    "title": "33 · Phone: Today",
@@ -1038,16 +1128,16 @@
   },
   "M-T-TodayEmpty.dc.html": {
    "x": 450,
-   "y": 27168,
+   "y": 18887,
    "w": 390,
-   "h": 3201,
+   "h": 1655,
    "title": "34 · Today: no program yet",
    "is_interactive": true,
    "page": "phone"
   },
   "M-Session.dc.html": {
    "x": 900,
-   "y": 27168,
+   "y": 18887,
    "w": 390,
    "h": 844,
    "title": "35 · Phone: Session player",
@@ -1056,7 +1146,7 @@
   },
   "M-T-SessionSC.dc.html": {
    "x": 1350,
-   "y": 27168,
+   "y": 18887,
    "w": 390,
    "h": 1424,
    "title": "36 · S&C session: Goblet squat",
@@ -1065,16 +1155,16 @@
   },
   "M-T-SessionDone.dc.html": {
    "x": 1800,
-   "y": 27168,
+   "y": 18887,
    "w": 390,
-   "h": 1673,
+   "h": 1527,
    "title": "37 · Session complete",
    "is_interactive": true,
    "page": "phone"
   },
   "M-C-Progress.dc.html": {
    "x": 2250,
-   "y": 27168,
+   "y": 18887,
    "w": 390,
    "h": 2524,
    "title": "38 · Progress",
@@ -1083,262 +1173,343 @@
   },
   "M-C-AI.dc.html": {
    "x": 0,
-   "y": 30919,
+   "y": 21961,
    "w": 390,
-   "h": 2335,
+   "h": 1924,
    "title": "39 · AI assistant",
    "is_interactive": true,
    "page": "phone"
   },
   "M-T-Feedback.dc.html": {
    "x": 450,
-   "y": 30919,
+   "y": 21961,
    "w": 390,
-   "h": 1418,
+   "h": 1514,
    "title": "40 · Coach feedback",
    "is_interactive": true,
    "page": "phone"
   },
   "M-T-MyPrograms.dc.html": {
    "x": 900,
-   "y": 30919,
+   "y": 21961,
    "w": 390,
-   "h": 1925,
+   "h": 2021,
    "title": "41 · My programs",
    "is_interactive": true,
    "page": "phone"
   },
   "M-T-Saved.dc.html": {
    "x": 1350,
-   "y": 30919,
+   "y": 21961,
    "w": 390,
-   "h": 2837,
+   "h": 1387,
    "title": "42 · Saved",
    "is_interactive": true,
    "page": "phone"
   },
   "M-T-Account.dc.html": {
    "x": 1800,
-   "y": 30919,
+   "y": 21961,
    "w": 390,
-   "h": 2104,
+   "h": 1998,
    "title": "43 · Account",
    "is_interactive": true,
    "page": "phone"
   },
-  "M-T-ConfirmDelete.dc.html": {
+  "M-T-Notifications.dc.html": {
    "x": 2250,
-   "y": 30919,
+   "y": 21961,
+   "w": 390,
+   "h": 1483,
+   "title": "44 · Notifications",
+   "is_interactive": true,
+   "page": "phone"
+  },
+  "M-T-ConfirmDelete.dc.html": {
+   "x": 2700,
+   "y": 21961,
    "w": 390,
    "h": 844,
-   "title": "44 · Confirm: delete account",
+   "title": "45 · Confirm: delete account",
+   "is_interactive": true,
+   "page": "phone"
+  },
+  "M-K-CoachEmpty.dc.html": {
+   "x": 0,
+   "y": 24532,
+   "w": 390,
+   "h": 1731,
+   "title": "46 · Coach: first run",
    "is_interactive": true,
    "page": "phone"
   },
   "M-C-CoachDash.dc.html": {
-   "x": 0,
-   "y": 34306,
+   "x": 450,
+   "y": 24532,
    "w": 390,
-   "h": 2121,
-   "title": "45 · Coach dashboard",
+   "h": 3016,
+   "title": "47 · Coach dashboard",
    "is_interactive": true,
    "page": "phone"
   },
   "M-K-Athlete.dc.html": {
-   "x": 450,
-   "y": 34306,
+   "x": 900,
+   "y": 24532,
    "w": 390,
-   "h": 2244,
-   "title": "46 · Coach: Kabir Malhotra",
+   "h": 2090,
+   "title": "48 · Coach: Kabir Malhotra",
    "is_interactive": true,
    "page": "phone"
   },
   "M-K-ConfirmRemove.dc.html": {
-   "x": 900,
-   "y": 34306,
+   "x": 1350,
+   "y": 24532,
    "w": 390,
    "h": 844,
-   "title": "47 · Confirm: remove athlete",
+   "title": "49 · Confirm: remove athlete",
    "is_interactive": true,
    "page": "phone"
   },
   "M-K-Programs.dc.html": {
-   "x": 1350,
-   "y": 34306,
+   "x": 1800,
+   "y": 24532,
    "w": 390,
    "h": 1492,
-   "title": "48 · Coach: Programs",
+   "title": "50 · Coach: Programs",
    "is_interactive": true,
    "page": "phone"
   },
   "M-C-Builder.dc.html": {
-   "x": 1800,
-   "y": 34306,
+   "x": 2250,
+   "y": 24532,
    "w": 390,
-   "h": 2558,
-   "title": "49 · Program builder",
+   "h": 2567,
+   "title": "51 · Program builder",
    "is_interactive": true,
    "page": "phone"
   },
   "M-K-Invite.dc.html": {
-   "x": 2250,
-   "y": 34306,
+   "x": 2700,
+   "y": 24532,
    "w": 390,
    "h": 1285,
-   "title": "50 · Coach: Invite athletes",
+   "title": "52 · Coach: Invite athletes",
    "is_interactive": true,
    "page": "phone"
   },
   "M-K-ConfirmReset.dc.html": {
-   "x": 2700,
-   "y": 34306,
+   "x": 3150,
+   "y": 24532,
    "w": 390,
    "h": 844,
-   "title": "51 · Confirm: reset invite link",
+   "title": "53 · Confirm: reset invite link",
    "is_interactive": true,
    "page": "phone"
   },
   "M-K-Lessons.dc.html": {
-   "x": 3150,
-   "y": 34306,
+   "x": 3600,
+   "y": 24532,
    "w": 390,
-   "h": 963,
-   "title": "52 · Coach: My lessons",
+   "h": 1768,
+   "title": "54 · Coach: My lessons",
    "is_interactive": true,
    "page": "phone"
   },
   "M-K-Editor.dc.html": {
-   "x": 3600,
-   "y": 34306,
+   "x": 4050,
+   "y": 24532,
    "w": 390,
-   "h": 1980,
-   "title": "53 · Coach: Lesson editor",
+   "h": 1889,
+   "title": "55 · Coach: Lesson editor",
    "is_interactive": true,
    "page": "phone"
   },
   "M-X-Compare.dc.html": {
    "x": 0,
-   "y": 37414,
+   "y": 28098,
    "w": 390,
    "h": 1122,
-   "title": "54 · Compare coaches",
+   "title": "56 · Compare coaches",
    "is_interactive": true,
    "page": "phone"
   },
   "M-X-Shortlist.dc.html": {
    "x": 450,
-   "y": 37414,
+   "y": 28098,
    "w": 390,
    "h": 996,
-   "title": "55 · Shortlisted coaches",
+   "title": "57 · Shortlisted coaches",
    "is_interactive": true,
    "page": "phone"
   },
   "M-X-Hire.dc.html": {
    "x": 900,
-   "y": 37414,
+   "y": 28098,
    "w": 390,
-   "h": 1495,
-   "title": "56 · Hire Vikram: choose a package",
+   "h": 1404,
+   "title": "58 · Hire Vikram: choose a package",
    "is_interactive": true,
    "page": "phone"
   },
   "M-X-Chat.dc.html": {
    "x": 1350,
-   "y": 37414,
+   "y": 28098,
    "w": 390,
-   "h": 1114,
-   "title": "57 · Messages: Vikram",
+   "h": 1148,
+   "title": "59 · Messages: Vikram",
    "is_interactive": true,
    "page": "phone"
   },
   "M-X-Checkout.dc.html": {
    "x": 1800,
-   "y": 37414,
+   "y": 28098,
    "w": 390,
    "h": 1279,
-   "title": "58 · Checkout",
+   "title": "60 · Checkout",
    "is_interactive": true,
    "page": "phone"
   },
   "M-X-Hired.dc.html": {
    "x": 2250,
-   "y": 37414,
+   "y": 28098,
    "w": 390,
    "h": 891,
-   "title": "59 · Coaching starts",
+   "title": "61 · Coaching starts",
+   "is_interactive": true,
+   "page": "phone"
+  },
+  "M-X-Book.dc.html": {
+   "x": 2700,
+   "y": 28098,
+   "w": 390,
+   "h": 1324,
+   "title": "62 · Book a 1:1 session",
+   "is_interactive": true,
+   "page": "phone"
+  },
+  "M-X-Booked.dc.html": {
+   "x": 3150,
+   "y": 28098,
+   "w": 390,
+   "h": 844,
+   "title": "63 · Session booked",
+   "is_interactive": true,
+   "page": "phone"
+  },
+  "M-X-ManageCoaching.dc.html": {
+   "x": 3600,
+   "y": 28098,
+   "w": 390,
+   "h": 1239,
+   "title": "64 · Coaching and payments",
+   "is_interactive": true,
+   "page": "phone"
+  },
+  "M-X-CancelCoaching.dc.html": {
+   "x": 4050,
+   "y": 28098,
+   "w": 390,
+   "h": 844,
+   "title": "65 · Confirm: cancel coaching",
    "is_interactive": true,
    "page": "phone"
   },
   "M-X-Review.dc.html": {
-   "x": 2700,
-   "y": 37414,
+   "x": 4500,
+   "y": 28098,
    "w": 390,
-   "h": 1081,
-   "title": "60 · Review your coach",
+   "h": 990,
+   "title": "66 · Review your coach",
+   "is_interactive": true,
+   "page": "phone"
+  },
+  "M-X-Report.dc.html": {
+   "x": 4950,
+   "y": 28098,
+   "w": 390,
+   "h": 1075,
+   "title": "67 · Report",
+   "is_interactive": true,
+   "page": "phone"
+  },
+  "M-X-ReportSent.dc.html": {
+   "x": 5400,
+   "y": 28098,
+   "w": 390,
+   "h": 844,
+   "title": "68 · Report sent",
    "is_interactive": true,
    "page": "phone"
   },
   "M-X-CoachRequests.dc.html": {
    "x": 0,
-   "y": 39459,
+   "y": 30052,
    "w": 390,
-   "h": 2118,
-   "title": "61 · Coach: Clients and requests",
+   "h": 2316,
+   "title": "69 · Coach: Clients and requests",
    "is_interactive": true,
    "page": "phone"
   },
   "M-X-CoachProfile.dc.html": {
    "x": 450,
-   "y": 39459,
+   "y": 30052,
    "w": 390,
-   "h": 2318,
-   "title": "62 · Coach: Edit marketplace profile",
+   "h": 2243,
+   "title": "70 · Coach: Edit marketplace profile",
    "is_interactive": true,
    "page": "phone"
   },
   "M-X-Earnings.dc.html": {
    "x": 900,
-   "y": 39459,
+   "y": 30052,
    "w": 390,
-   "h": 1638,
-   "title": "63 · Coach: Earnings",
+   "h": 1535,
+   "title": "71 · Coach: Earnings",
    "is_interactive": true,
    "page": "phone"
   },
   "M-X-Verify.dc.html": {
    "x": 1350,
-   "y": 39459,
+   "y": 30052,
    "w": 390,
    "h": 1175,
-   "title": "64 · Admin: Credential checks",
+   "title": "72 · Admin: Credential checks",
    "is_interactive": true,
    "page": "phone"
   },
   "M-R-Queue.dc.html": {
    "x": 0,
-   "y": 42327,
+   "y": 32918,
    "w": 390,
    "h": 1318,
-   "title": "65 · Reviewer: Review queue",
+   "title": "73 · Reviewer: Review queue",
    "is_interactive": true,
    "page": "phone"
   },
   "M-R-Review.dc.html": {
    "x": 450,
-   "y": 42327,
+   "y": 32918,
    "w": 390,
    "h": 1734,
-   "title": "66 · Reviewer: Catching the jab",
+   "title": "74 · Reviewer: Catching the jab",
    "is_interactive": true,
    "page": "phone"
   },
   "M-R-Roles.dc.html": {
    "x": 900,
-   "y": 42327,
+   "y": 32918,
    "w": 390,
-   "h": 1407,
-   "title": "67 · Admin: People and roles",
+   "h": 1459,
+   "title": "75 · Admin: People and roles",
+   "is_interactive": true,
+   "page": "phone"
+  },
+  "M-R-Reports.dc.html": {
+   "x": 1350,
+   "y": 32918,
+   "w": 390,
+   "h": 1184,
+   "title": "76 · Admin: Reports",
    "is_interactive": true,
    "page": "phone"
   }
@@ -1392,7 +1563,9 @@
   "T-MyPrograms.dc.html",
   "T-Saved.dc.html",
   "T-Account.dc.html",
+  "T-Notifications.dc.html",
   "T-ConfirmDelete.dc.html",
+  "K-CoachEmpty.dc.html",
   "C-CoachDash.dc.html",
   "K-Athlete.dc.html",
   "K-ConfirmRemove.dc.html",
@@ -1408,7 +1581,13 @@
   "X-Chat.dc.html",
   "X-Checkout.dc.html",
   "X-Hired.dc.html",
+  "X-Book.dc.html",
+  "X-Booked.dc.html",
+  "X-ManageCoaching.dc.html",
+  "X-CancelCoaching.dc.html",
   "X-Review.dc.html",
+  "X-Report.dc.html",
+  "X-ReportSent.dc.html",
   "X-CoachRequests.dc.html",
   "X-CoachProfile.dc.html",
   "X-Earnings.dc.html",
@@ -1416,6 +1595,7 @@
   "R-Queue.dc.html",
   "R-Review.dc.html",
   "R-Roles.dc.html",
+  "R-Reports.dc.html",
   "M-Menu.dc.html",
   "M-C-Landing.dc.html",
   "M-P-Programs.dc.html",
@@ -1459,7 +1639,9 @@
   "M-T-MyPrograms.dc.html",
   "M-T-Saved.dc.html",
   "M-T-Account.dc.html",
+  "M-T-Notifications.dc.html",
   "M-T-ConfirmDelete.dc.html",
+  "M-K-CoachEmpty.dc.html",
   "M-C-CoachDash.dc.html",
   "M-K-Athlete.dc.html",
   "M-K-ConfirmRemove.dc.html",
@@ -1475,14 +1657,21 @@
   "M-X-Chat.dc.html",
   "M-X-Checkout.dc.html",
   "M-X-Hired.dc.html",
+  "M-X-Book.dc.html",
+  "M-X-Booked.dc.html",
+  "M-X-ManageCoaching.dc.html",
+  "M-X-CancelCoaching.dc.html",
   "M-X-Review.dc.html",
+  "M-X-Report.dc.html",
+  "M-X-ReportSent.dc.html",
   "M-X-CoachRequests.dc.html",
   "M-X-CoachProfile.dc.html",
   "M-X-Earnings.dc.html",
   "M-X-Verify.dc.html",
   "M-R-Queue.dc.html",
   "M-R-Review.dc.html",
-  "M-R-Roles.dc.html"
+  "M-R-Roles.dc.html",
+  "M-R-Reports.dc.html"
  ],
  "notes": {
   "titleA": {
@@ -1554,7 +1743,7 @@
    "y": 16970,
    "text": "Ask and account",
    "kind": "title1",
-   "maxW": 9040,
+   "maxW": 10560,
    "page": "fightcamp"
   },
   "fightcampRow8": {
@@ -1562,7 +1751,7 @@
    "y": 18854,
    "text": "Coach",
    "kind": "title1",
-   "maxW": 13600,
+   "maxW": 15120,
    "page": "fightcamp"
   },
   "fightcampRow9": {
@@ -1570,7 +1759,7 @@
    "y": 20755,
    "text": "Hire a coach",
    "kind": "title1",
-   "maxW": 10560,
+   "maxW": 19680,
    "page": "fightcamp"
   },
   "fightcampRow10": {
@@ -1586,7 +1775,7 @@
    "y": 24571,
    "text": "Review and admin",
    "kind": "title1",
-   "maxW": 4480,
+   "maxW": 6000,
    "page": "fightcamp"
   },
   "phoneRow1": {
@@ -1599,7 +1788,7 @@
   },
   "phoneRow2": {
    "x": 0,
-   "y": 9773,
+   "y": 6279,
    "text": "Company pages",
    "kind": "title1",
    "maxW": 1740,
@@ -1607,7 +1796,7 @@
   },
   "phoneRow3": {
    "x": 0,
-   "y": 12384,
+   "y": 8890,
    "text": "Learn",
    "kind": "title1",
    "maxW": 2190,
@@ -1615,7 +1804,7 @@
   },
   "phoneRow4": {
    "x": 0,
-   "y": 19773,
+   "y": 12456,
    "text": "Sign up",
    "kind": "title1",
    "maxW": 3540,
@@ -1623,7 +1812,7 @@
   },
   "phoneRow5": {
    "x": 0,
-   "y": 22192,
+   "y": 14875,
    "text": "Gym & Fitness",
    "kind": "title1",
    "maxW": 3090,
@@ -1631,7 +1820,7 @@
   },
   "phoneRow6": {
    "x": 0,
-   "y": 26868,
+   "y": 18587,
    "text": "Train",
    "kind": "title1",
    "maxW": 2640,
@@ -1639,31 +1828,31 @@
   },
   "phoneRow7": {
    "x": 0,
-   "y": 30619,
+   "y": 21661,
    "text": "Ask and account",
-   "kind": "title1",
-   "maxW": 2640,
-   "page": "phone"
-  },
-  "phoneRow8": {
-   "x": 0,
-   "y": 34006,
-   "text": "Coach",
-   "kind": "title1",
-   "maxW": 3990,
-   "page": "phone"
-  },
-  "phoneRow9": {
-   "x": 0,
-   "y": 37114,
-   "text": "Hire a coach",
    "kind": "title1",
    "maxW": 3090,
    "page": "phone"
   },
+  "phoneRow8": {
+   "x": 0,
+   "y": 24232,
+   "text": "Coach",
+   "kind": "title1",
+   "maxW": 4440,
+   "page": "phone"
+  },
+  "phoneRow9": {
+   "x": 0,
+   "y": 27798,
+   "text": "Hire a coach",
+   "kind": "title1",
+   "maxW": 5790,
+   "page": "phone"
+  },
   "phoneRow10": {
    "x": 0,
-   "y": 39159,
+   "y": 29752,
    "text": "Coach business",
    "kind": "title1",
    "maxW": 1740,
@@ -1671,10 +1860,10 @@
   },
   "phoneRow11": {
    "x": 0,
-   "y": 42027,
+   "y": 32618,
    "text": "Review and admin",
    "kind": "title1",
-   "maxW": 1290,
+   "maxW": 1740,
    "page": "phone"
   },
   "fcNote": {

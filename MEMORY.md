@@ -14,6 +14,12 @@ Keep newest entries at the top of each section.
 - **Open owner decisions:** Mobbin install (only unofficial community MCPs exist; needs a paid Mobbin account and a session token; owner must say "install mobbin-mcp").
 - **Owner's parallel task:** meet one boxing coach and one S&C coach (the assignment in the design doc).
 
+## Session 3f (2026-11-05)
+- Owner approved D1–D6. Done: titles fixed; five key phone screens reviewed from real screenshots and fixed via `phone.py` (2-up photo tiles, collapsed filters and AI history, sticky bars above tabs); coach dashboard, my lessons and clients become cards on phones; 9 new screens for G1–G4, G6 and notifications (`build/pages_gaps.py`). Record: `docs/designs/design-review-2026-11-05.md`; review page with screenshots: https://claude.ai/artifact/DnbZRbQHPG74SwxnUg5Mft. Screenshots in `docs/mockups/screenshots/`.
+- Screenshot tool: playwright-core with the installed Chrome (scratch `shots/shots.js`); it sizes the window to the full page so sticky bars sit at the true bottom.
+- Board 85 tasks: O-10 done; M4-17 and M4-18 unblocked; new M3-16 (in-app notifications). Still open: G5 invoices, G7 email templates, G8 offline page.
+- M1 does not start until the owner reviews these design changes.
+
 ## Session 3e (2026-11-05)
 - Pre-implementation analysis saved in `docs/architecture/`: product-analysis.md (roles, 12 feature areas, journeys J1–J15, assets, design observations D1–D6), architecture.md (route map, components, backend modules, endpoints, ERD, conventions), risks-and-gaps.md (risks R1–R16, questions Q-01–Q-15, missing screens G1–G8). Rendered page: https://claude.ai/artifact/NuWTJNJ1GZsYCznVN8CDWk (rebuild with `python docs/architecture/build_page.py`).
 - Board now 84 tasks: added O-09 (answer Q-01–Q-15), O-10 (approve D1–D6), S0-08 (analytics and errors), M4-17 (1:1 booking, blocked: no design), M4-18 (reports and moderation, blocked: no design).

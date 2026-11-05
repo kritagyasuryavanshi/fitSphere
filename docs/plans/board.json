@@ -194,13 +194,14 @@
    "priority": "P1",
    "size": "S",
    "deps": [],
-   "status": "todo",
+   "status": "done",
    "owner": "owner",
    "test": "manual",
    "ac": [
     "Each item in product-analysis.md section 6 is approved, changed or rejected",
     "No design file is edited without this approval"
-   ]
+   ],
+   "done_on": "2026-11-05"
   },
   {
    "id": "S0-01",
@@ -442,7 +443,8 @@
     "End-to-end: full sign-up saves athlete_prefs",
     "AI use of injury notes and body weight is stored as its own consent row with an explicit yes or no",
     "Body weight and height are optional",
-    "Summary shows the saved answers and links back to edit"
+    "Summary shows the saved answers and links back to edit",
+    "Preferences are stored per sport category as rows (decision D5), so a new sport needs no schema change"
    ]
   },
   {
@@ -505,12 +507,14 @@
    "screens": [
     "P-ForCoaches",
     "P-Applied",
-    "R-Roles"
+    "R-Roles",
+    "K-CoachEmpty"
    ],
    "ac": [
     "End-to-end: an applicant submits; the admin makes them a coach; their next page load shows the coach header",
     "Experience is labelled self-reported",
-    "The applicant gets an email with the decision"
+    "The applicant gets an email with the decision",
+    "After approval the new coach lands on the first-run screen K-CoachEmpty"
    ]
   },
   {
@@ -576,7 +580,8 @@
     "pgTAP: anonymous users read only published items; a draft read returns nothing",
     "pgTAP: an author cannot set status to published",
     "pgTAP: a reviewer cannot publish an item they wrote",
-    "S&C items carry supports tags; gym items carry muscle links"
+    "S&C items carry supports tags; gym items carry muscle links",
+    "Categories are data, not code: a test adds a fourth category with rows only and the library lists it (decision D5)"
    ]
   },
   {
@@ -619,7 +624,8 @@
     "Filters match the mockups for each category",
     "Filters live in the URL, so back and share keep them",
     "End-to-end: filtering boxing drills by equipment shows only matching items",
-    "Counts shown are real counts, never fixed numbers"
+    "Counts shown are real counts, never fixed numbers",
+    "Phone layout matches the reviewed phone board at 390 px (decision D2)"
    ]
   },
   {
@@ -729,7 +735,8 @@
     "Unit: Submit stays disabled until there is a public video, 3 steps, mistakes and safety",
     "Inline errors match the mockup",
     "Status chips: draft, in review, needs changes, live",
-    "End-to-end: a coach drafts and submits a lesson"
+    "End-to-end: a coach drafts and submits a lesson",
+    "On phones My lessons shows stacked cards, as in M-K-Lessons (decision D3)"
    ]
   },
   {
@@ -922,7 +929,8 @@
    "ac": [
     "End-to-end: an athlete in two programs sees both sessions today",
     "With no program, the empty state offers an invite link and lessons",
-    "The latest coach feedback shows with a reply link"
+    "The latest coach feedback shows with a reply link",
+    "Phone layout matches the reviewed phone board at 390 px (decision D2)"
    ]
   },
   {
@@ -1053,7 +1061,9 @@
    "ac": [
     "Unit: flags for reported pain, 3 missed sessions in a row, effort 9+ in the last two sessions",
     "Board shows only the coach's own active athletes",
-    "End-to-end: a logged session appears on the board"
+    "End-to-end: a logged session appears on the board",
+    "Phone layout matches the reviewed phone board at 390 px (decision D2)",
+    "On phones the adherence board shows stacked cards, as in M-C-CoachDash (decision D3)"
    ]
   },
   {
@@ -1092,6 +1102,28 @@
    "ac": [
     "Unit with a mocked sender: one email per note",
     "No email when the athlete turned the setting off"
+   ]
+  },
+  {
+   "id": "M3-16",
+   "phase": "M3",
+   "title": "In-app notifications and email preferences",
+   "priority": "P1",
+   "size": "M",
+   "deps": [
+    "M3-14"
+   ],
+   "status": "todo",
+   "owner": "claude",
+   "test": "db+e2e",
+   "screens": [
+    "T-Notifications"
+   ],
+   "ac": [
+    "Events: coach feedback, request accepted, session reminder, payment due, new lesson from my coaches",
+    "Each event shows in the list; unread items are marked; Mark all as read works",
+    "Email per event follows the user's switches; payment receipts always go by email",
+    "pgTAP: a user reads only their own notifications"
    ]
   },
   {
@@ -1266,7 +1298,8 @@
    "ac": [
     "Request saves package, start date, goals and data-sharing consent",
     "Requests pause automatically when the coach hits the client limit",
-    "End-to-end: athlete requests; coach accepts; athlete sees Pay"
+    "End-to-end: athlete requests; coach accepts; athlete sees Pay",
+    "On phones Clients shows stacked cards, as in M-X-CoachRequests (decision D3)"
    ]
   },
   {
@@ -1349,7 +1382,11 @@
     "Cancel in My programs stops the next renewal and keeps access to the end of the paid month",
     "A failed renewal retries per the provider's rules, then ends the engagement",
     "Athlete and coach get an email for each change",
-    "Cancel and renewal screen (gap G2) designed and approved first"
+    "Follows the approved design X-ManageCoaching and X-CancelCoaching"
+   ],
+   "screens": [
+    "X-ManageCoaching",
+    "X-CancelCoaching"
    ]
   },
   {
@@ -1445,14 +1482,17 @@
     "O-09",
     "O-10"
    ],
-   "status": "blocked",
-   "blocked_reason": "No design yet (gap G1, question Q-05)",
+   "status": "todo",
    "owner": "claude",
    "test": "unit+e2e",
    "ac": [
-    "Design G1 approved first",
+    "Follows the approved design X-Book and X-Booked",
     "A slot can be booked once; a second booking of the same slot fails (database constraint test)",
     "Booking needs payment; cancel follows the refund terms"
+   ],
+   "screens": [
+    "X-Book",
+    "X-Booked"
    ]
   },
   {
@@ -1467,14 +1507,18 @@
     "O-09",
     "O-10"
    ],
-   "status": "blocked",
-   "blocked_reason": "No design yet (gap G4, questions Q-08 and Q-15)",
+   "status": "todo",
    "owner": "claude",
    "test": "db+e2e",
    "ac": [
-    "Design G4 approved first",
+    "Follows the approved design X-Report, X-ReportSent and R-Reports",
     "Any user can report a review, message or coach",
     "Admin can read only reported messages, hide content and suspend a user; every action is logged"
+   ],
+   "screens": [
+    "X-Report",
+    "X-ReportSent",
+    "R-Reports"
    ]
   },
   {
@@ -1574,7 +1618,8 @@
    "ac": [
     "Citations link to lessons; 'Add to Today' works",
     "A pain report creates a flag on the coach dashboard",
-    "End-to-end: ask, get a cited answer, open the cited lesson"
+    "End-to-end: ask, get a cited answer, open the cited lesson",
+    "Phone layout matches the reviewed phone board at 390 px (decision D2)"
    ]
   },
   {
@@ -1659,7 +1704,7 @@
    "ac": [
     "A route audit script lists every route and finds no dead button or placeholder",
     "Each data screen has a designed empty state",
-    "Empty states for coach screens (gap G3) designed and approved first"
+    "Coach empty states follow the approved design K-CoachEmpty"
    ]
   },
   {

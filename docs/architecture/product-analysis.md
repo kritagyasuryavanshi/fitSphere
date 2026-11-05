@@ -70,13 +70,13 @@ Each journey lists its screens in order. These become the end-to-end tests.
 
 ## 6. Design observations for owner approval
 
-These are inconsistencies found during analysis. None was changed. Each needs your yes before anyone edits the design.
+Status 2026-11-05: **all six approved and resolved.** Details, screenshots and checks: `docs/designs/design-review-2026-11-05.md`.
 
-| ID | Observation | Suggested fix |
+| ID | Observation | Resolution |
 |---|---|---|
-| D1 | Page titles are stale on two screens: "Sign up step 3: Ready" is now step 4, and "Onboarding" has no step number | Rename the titles only |
-| D2 | The 67 phone screens were generated from desktop layouts by a script and have not been reviewed by eye | Review the five most-used phone screens before M1 |
-| D3 | Wide tables (coach dashboard, my lessons, clients) scroll sideways on phones | Accept, or design a stacked card layout for phones |
-| D4 | The prototype cannot reach the Under-18 screen by clicking; it is a branch from step 1 | Accept (it is a server-side branch) |
-| D5 | Today, Progress and Gym Today show two different demo users (Kabir for boxing, Neha for gym) | Accept as demo data; the build uses one data model |
-| D6 | Some screens are missing; see section 5 of `risks-and-gaps.md` (1:1 session booking, cancel paid coaching, notifications, coach empty states, report abuse) | Design them before their board tasks start |
+| D1 | Page titles are stale on two screens: "Sign up step 3: Ready" is now step 4, and "Onboarding" has no step number | Done: titles renamed |
+| D2 | The 67 phone screens were generated from desktop layouts by a script and have not been reviewed by eye | Done: reviewed from screenshots; 4 fixes applied to all phone screens |
+| D3 | Wide tables (coach dashboard, my lessons, clients) scroll sideways on phones | Done: stacked cards on phones for coach dashboard, my lessons, clients |
+| D4 | The prototype cannot reach the Under-18 screen by clicking; it is a branch from step 1 | Kept as a server-side branch |
+| D5 | Today, Progress and Gym Today show two different demo users (Kabir for boxing, Neha for gym) | Kept; one data model documented (architecture §4.3) |
+| D6 | Some screens are missing; see section 5 of `risks-and-gaps.md` (1:1 session booking, cancel paid coaching, notifications, coach empty states, report abuse) | Done: 9 new screens; G5, G7, G8 still open |
