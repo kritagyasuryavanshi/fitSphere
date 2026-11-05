@@ -1,0 +1,194 @@
+<title>FitSphere Walkthrough</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: one reading column, Fight Camp type (Anton caps heads, Inter body), black and white with one volt signal. */
+:root{
+  --bg:#ffffff; --fg:#111111; --soft:#f5f5f5; --line:#e2e2e2; --muted:#6b6b6e; --ink-2:#39393b;
+  --volt:#D4F000; --on-volt:#111111; --panel:#111111; --on-panel:#ffffff; --panel-muted:#b9b9bb; --panel-line:#333335;
+  --done:#00653a; --next:#8a4600;
+  --display:Anton, Impact, "Arial Narrow", sans-serif; --body:Inter, Helvetica, Arial, sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f0f10; --fg:#f2f2f2; --soft:#1b1b1d; --line:#2c2c2f; --muted:#a3a3a7; --ink-2:#cfcfd2;
+  --panel:#1b1b1d; --on-panel:#f2f2f2; --panel-muted:#a3a3a7; --panel-line:#333336; --done:#5fd39b; --next:#f0a75a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f0f10; --fg:#f2f2f2; --soft:#1b1b1d; --line:#2c2c2f; --muted:#a3a3a7; --ink-2:#cfcfd2;
+  --panel:#1b1b1d; --on-panel:#f2f2f2; --panel-muted:#a3a3a7; --panel-line:#333336; --done:#5fd39b; --next:#f0a75a; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+a:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);font-weight:400;text-transform:uppercase;line-height:.92;margin:0;text-wrap:balance}
+h1{font-size:clamp(56px,10vw,120px)}
+h2{font-size:clamp(40px,6vw,64px)}
+h3{font-size:28px;line-height:1}
+p{margin:0}
+.lede{font-size:20px;line-height:1.5;color:var(--ink-2);max-width:60ch}
+.small{font-size:14px;color:var(--muted)}
+section{padding-block:56px;border-top:1px solid var(--line)}
+.hero{padding-block:64px 48px;border-top:0;display:flex;flex-direction:column;gap:20px}
+.hero a.cta{align-self:flex-start;display:inline-flex;align-items:center;min-height:48px;padding:0 26px;border-radius:30px;background:var(--volt);color:var(--on-volt);font-weight:600;text-decoration:none}
+.stack{display:flex;flex-direction:column;gap:20px}
+.roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:8px;margin-top:28px}
+.role{background:var(--soft);padding:24px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.role.main{background:var(--panel);color:var(--on-panel)}
+.role.main .small{color:var(--panel-muted)}
+.role dt{font-size:13px;font-weight:600;color:var(--muted);margin-top:6px}
+.role.main dt{color:var(--panel-muted)}
+.role dd{margin:2px 0 0;font-size:15px;line-height:1.5}
+.tag{display:inline-flex;align-self:flex-start;font-size:12px;font-weight:600;padding:5px 11px;border-radius:30px;background:var(--volt);color:var(--on-volt)}
+ol.steps{list-style:none;margin:28px 0 0;padding:0;border-top:2px solid var(--fg)}
+ol.steps li{display:grid;grid-template-columns:56px minmax(0,1fr);gap:4px 16px;padding:20px 0;border-bottom:1px solid var(--line)}
+ol.steps .n{font-family:var(--display);font-size:40px;line-height:1;grid-row:span 3}
+ol.steps .t{font-weight:600;font-size:18px}
+ol.steps .d{color:var(--ink-2);font-size:16px;line-height:1.55;max-width:62ch}
+ol.steps .s{font-size:13px;color:var(--muted)}
+.meet{margin-top:28px;background:var(--soft);padding:24px;overflow-x:auto}
+.rules{list-style:none;margin:28px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:8px}
+.rules li{border:1px solid var(--line);padding:20px;font-size:16px;line-height:1.5}
+.rules strong{display:block;margin-bottom:4px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:8px;margin-top:28px}
+.two > div{background:var(--soft);padding:24px;display:flex;flex-direction:column;gap:8px}
+.track{list-style:none;margin:28px 0 0;padding:0;border-top:2px solid var(--fg)}
+.track li{display:grid;grid-template-columns:120px minmax(0,1fr);gap:4px 20px;padding:18px 0;border-bottom:1px solid var(--line)}
+.track .k{font-family:var(--display);font-size:24px;line-height:1.1;text-transform:uppercase}
+.track .st{font-size:13px;font-weight:600}
+.st.done{color:var(--done)} .st.next{color:var(--next)} .st.later{color:var(--muted)}
+.track .d{color:var(--ink-2);font-size:16px;line-height:1.55}
+.asks{margin-top:28px;background:var(--panel);color:var(--on-panel);padding:28px;display:flex;flex-direction:column;gap:12px}
+.asks ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
+.asks .small{color:var(--panel-muted)}
+@media (max-width:560px){.track li{grid-template-columns:1fr}ol.steps li{grid-template-columns:44px minmax(0,1fr)}ol.steps .n{font-size:32px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="hero">
+    <p class="small">FitSphere · 5 November 2026 · design stage</p>
+    <h1>One site. Two doors.</h1>
+    <p class="lede">Athletes and trainers use the same website and the same login. What each person sees depends on their role. This page walks through both journeys, then the path from this design to a working product.</p>
+    <a class="cta" href="https://claude.ai/artifact/YVnwgT8qzwA2SerCSPasBe">Open the design canvas</a>
+  </header>
+
+  <section aria-labelledby="roles">
+    <h2 id="roles">Who uses it</h2>
+    <p class="lede" style="margin-top:16px">Four roles. Everyone starts as an athlete. Only an admin can give the other roles.</p>
+    <div class="roles">
+      <dl class="role main" style="margin:0"><span class="tag">Most people</span><h3>Athlete</h3>
+        <dt>How they get in</dt><dd>Join free with an email link or Google. Adults 18+ only.</dd>
+        <dt>What they see</dt><dd>Today, Learn, Progress, Ask AI. Account settings behind their initials.</dd></dl>
+      <dl class="role" style="margin:0"><h3>Trainer (coach)</h3>
+        <dt>How they get in</dt><dd>Apply on the For coaches page. An admin turns on coach tools.</dd>
+        <dt>What they see</dt><dd>A Coach header: Athletes, Programs, My lessons. A link back to the athlete site.</dd></dl>
+      <dl class="role" style="margin:0"><h3>Reviewer</h3>
+        <dt>How they get in</dt><dd>An experienced coach that an admin also makes a reviewer.</dd>
+        <dt>What they see</dt><dd>Coach tools plus a Review queue for other coaches’ lessons.</dd></dl>
+      <dl class="role" style="margin:0"><h3>Admin</h3>
+        <dt>How they get in</dt><dd>You, the founder.</dd>
+        <dt>What they see</dt><dd>People and roles, coach applications, the review queue.</dd></dl>
+    </div>
+  </section>
+
+  <section aria-labelledby="athlete">
+    <h2 id="athlete">The athlete’s journey</h2>
+    <p class="lede" style="margin-top:16px">Kabir trains boxing. Neha trains in the gym. Both follow the same path.</p>
+    <ol class="steps">
+      <li><span class="n">1</span><span class="t">Discover, no account needed</span><span class="d">The landing page shows boxing, S&amp;C and gym. Anyone can watch lessons, browse programs and read coach profiles for free.</span><span class="s">Screens: Landing, Boxing / S&amp;C / Gym libraries, Lesson, Programs, Coaches, Search</span></li>
+      <li><span class="n">2</span><span class="t">Join free</span><span class="d">Enter an email and open the sign-in link, or use Google. No password. The same link creates the account.</span><span class="s">Screens: Log in or join, Check your email</span></li>
+      <li><span class="n">3</span><span class="t">Sign up in four steps</span><span class="d">About you, with an 18+ check. Boxing experience. Gym goal: build muscle, lose fat, get stronger or get fitter. Then a summary. Injury notes and body weight are optional, and the AI uses them only with a separate yes.</span><span class="s">Screens: Sign-up 1 to 4, Under-18 block</span></li>
+      <li><span class="n">4</span><span class="t">Join a coach, or start alone</span><span class="d">A coach sends a program link on WhatsApp. The athlete opens it and taps Join. Without a coach, the athlete starts from lessons and adds drills to Today.</span><span class="s">Screens: Coach invite link, Today with no program yet</span></li>
+      <li><span class="n">5</span><span class="t">Open Today</span><span class="d">One view merges the day’s sessions from every program: boxing, S&amp;C and gym together, plus the latest note from the coach.</span><span class="s">Screens: Today, Gym Today</span></li>
+      <li><span class="n">6</span><span class="t">Train and log</span><span class="d">Boxing uses a round timer and logs rounds, technique feel and effort. Gym shows last week’s numbers and suggests a small increase. Each set is logged as reps × kilograms.</span><span class="s">Screens: Boxing session, S&amp;C session, Gym workout, Session done, Workout done</span></li>
+      <li><span class="n">7</span><span class="t">See progress</span><span class="d">Sessions done against planned, records, skill ratings. Gym adds sets per muscle and an optional body-weight trend. Every number comes from the athlete’s own logs.</span><span class="s">Screens: Progress, Gym progress</span></li>
+      <li><span class="n">8</span><span class="t">Ask the AI guide</span><span class="d">It answers from coach-reviewed lessons and links them. With no matching lesson, it explains the idea only and says so. It never diagnoses pain. It suggests a doctor and tells the coach.</span><span class="s">Screen: AI guide</span></li>
+      <li><span class="n">9</span><span class="t">Hear from the coach</span><span class="d">Coach notes arrive in Coach feedback. The athlete replies there. Programs, saved lessons and privacy settings live in Account.</span><span class="s">Screens: Coach feedback, My programs, Saved, Account</span></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="coach">
+    <h2 id="coach">The trainer’s journey</h2>
+    <p class="lede" style="margin-top:16px">Vikram coaches boxing. Ananya coaches S&amp;C and gym. Rohan also reviews lessons.</p>
+    <ol class="steps">
+      <li><span class="n">1</span><span class="t">Apply</span><span class="d">On For coaches, the trainer gives name, sport, city, years coaching and a link to their work. Experience shows as self-reported.</span><span class="s">Screens: For coaches, Application sent</span></li>
+      <li><span class="n">2</span><span class="t">Get approved</span><span class="d">The admin reviews the application and turns on the coach role. The same login now shows the Coach header.</span><span class="s">Screen: Admin people and roles</span></li>
+      <li><span class="n">3</span><span class="t">Add lessons</span><span class="d">The coach writes a lesson and links their YouTube video. The editor blocks Submit until steps and safety are there.</span><span class="s">Screens: My lessons, Lesson editor</span></li>
+      <li><span class="n">4</span><span class="t">A second coach reviews it</span><span class="d">A reviewer checks technique, safety and the video, then publishes it or sends it back with a note. Nobody approves their own lesson. Only published lessons reach athletes and the AI.</span><span class="s">Screens: Review queue, Review a lesson</span></li>
+      <li><span class="n">5</span><span class="t">Build a program</span><span class="d">Weeks, then sessions, then exercises with sets, reps, rest and a cue. Boxing, S&amp;C and gym work mix in one plan.</span><span class="s">Screens: Programs, Program builder</span></li>
+      <li><span class="n">6</span><span class="t">Invite athletes</span><span class="d">One link per program, shared on WhatsApp. The coach sees who joined and can reset the link.</span><span class="s">Screens: Invite athletes, Reset confirm</span></li>
+      <li><span class="n">7</span><span class="t">Watch and respond</span><span class="d">The dashboard shows who trained this week and flags pain reports, missed sessions and very hard efforts. The coach opens an athlete, reads the logs and sends feedback.</span><span class="s">Screens: Coach dashboard, Athlete detail</span></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="meet">
+    <h2 id="meet">Where they meet</h2>
+    <p class="lede" style="margin-top:16px">Athlete and trainer connect at three points: the invite link, the session log, and feedback.</p>
+    <div class="meet">
+<pre class="mermaid">
+sequenceDiagram
+    participant C as Trainer
+    participant F as FitSphere
+    participant A as Athlete
+    C->>F: Builds a program
+    C->>A: Sends the invite link on WhatsApp
+    A->>F: Signs up (18+) and joins
+    F-->>A: Sessions appear in Today
+    A->>F: Trains and logs sets, rounds, effort
+    F-->>C: Dashboard shows the log and any flags
+    C->>F: Writes feedback
+    F-->>A: Note appears in Today and Coach feedback
+    A->>F: Leaves the program (any time)
+    F-->>C: Access to that athlete's data ends at once
+</pre>
+    </div>
+  </section>
+
+  <section aria-labelledby="rules">
+    <h2 id="rules">The access rules</h2>
+    <ul class="rules">
+      <li><strong>One login, roles decide the view</strong>A trainer who also trains can switch with the “Athlete site” link.</li>
+      <li><strong>Coaches see only their own athletes</strong>Only while that athlete is in one of their programs. Leaving ends access at once.</li>
+      <li><strong>Two coaches per lesson</strong>One writes, another publishes. Nobody approves their own work.</li>
+      <li><strong>Only an admin gives roles</strong>Coach and reviewer roles never come from self sign-up.</li>
+      <li><strong>Health data needs a separate yes</strong>Injury notes and body weight reach the AI only if the athlete turns that on.</li>
+      <li><strong>Adults only in v1</strong>Under-18 sign-ups stop at a block screen and nothing is saved.</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="devices">
+    <h2 id="devices">Phone and computer</h2>
+    <div class="two">
+      <div><h3>Phone</h3><p>The main way people will use it. Athletes get bottom tabs: Today, Learn, Progress, Ask AI. Coaches get Athletes, Programs, Lessons and Review. Visitors get a menu screen.</p><p class="small">Installable as a home-screen app. No app store in v1.</p></div>
+      <div><h3>Computer</h3><p>The same site with a top navigation bar. Coaches will likely build programs and write lessons here, because the builder and editor are easier on a big screen.</p></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="build">
+    <h2 id="build">From design to a working product</h2>
+    <p class="lede" style="margin-top:16px">The design is done and clickable. Nothing is built yet. Each milestone below ships something you can test, and each has its own pass checks in the design doc.</p>
+    <ol class="track">
+      <li><span class="k">Design</span><span class="st done">Done</span><span class="d">55 desktop and 56 phone screens, all linked. Boxing, S&amp;C and Gym &amp; Fitness.</span></li>
+      <li><span class="k">Plan</span><span class="st next">Next</span><span class="d">Engineering plan for M1 to M5: database tables, access rules, tests. Needs the stack decision first.</span></li>
+      <li><span class="k">M1</span><span class="st later">Foundation</span><span class="d">Sign-up with email link and Google, the 18+ check, the four roles, all access rules, and tests that prove them.</span></li>
+      <li><span class="k">M2</span><span class="st later">Library</span><span class="d">Boxing, S&amp;C and gym lessons with YouTube video, search and filters, save and complete, and the write, review, publish flow.</span></li>
+      <li><span class="k">M3</span><span class="st later">Training</span><span class="d">Program builder, invite links, Today, session and workout logging, coach dashboard, feedback, progress.</span></li>
+      <li><span class="k">M4</span><span class="st later">AI guide</span><span class="d">Answers from published lessons with links, safety rules, a daily question limit, and a 30-question test set it must pass.</span></li>
+      <li><span class="k">M5</span><span class="st later">Launch</span><span class="d">Landing, privacy and terms after legal review, phone install, speed on cheap Android phones, a full bug sweep.</span></li>
+    </ol>
+    <div class="asks">
+      <h3>What I need from you</h3>
+      <ul>
+        <li>Your feedback on the canvas, desktop and phone pages.</li>
+        <li>The stack decision. My recommendation is Next.js only. Add a Python service later only if needed.</li>
+        <li>Nutrition: are meal plans or calorie targets in or out? They are out for now.</li>
+        <li>Accounts before M1: Supabase, Vercel, Anthropic API, Google sign-in.</li>
+        <li>One boxing coach and one gym or S&amp;C coach to test with. Their real feedback shapes M2 and M3.</li>
+      </ul>
+      <p class="small">All people and numbers on the canvas are demo data.</p>
+    </div>
+  </section>
+</div>
