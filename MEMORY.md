@@ -5,14 +5,20 @@ Every session reads it first and updates it before it ends.
 Keep newest entries at the top of each section.
 
 ## Current state
-- **Phase:** v1 design approved. Full-site clickable design done (47 linked screens). Engineering plan next. No app code exists yet.
+- **Phase:** v1 design approved. Full-site clickable design done: 47 desktop + 48 phone screens. Engineering plan next. No app code exists yet.
 - **Current milestone:** M1 Foundation, not started.
 - **Next step for the next session:**
-  1. Get the owner's feedback on the full-site design (47 linked screens on the canvas page "Fight Camp · full site").
+  1. Get the owner's feedback on the full-site design (canvas pages "Fight Camp · full site" and "Phone · full site").
   2. Settle the stack question: the owner asked for a "Python engineering plan", but the approved stack is Next.js + Supabase. Option on the table: Next.js web app plus a Python (FastAPI) service for the AI assistant. Ask once, then decide.
   3. Write the engineering plan for M1 to M5 in `docs/plans/`. Cover schema, RLS rules, test setup, and the four minor reviewer concerns in the design doc. After approval, build M1 hands-off.
 - **Open owner decisions:** Mobbin install (only unofficial community MCPs exist; needs a paid Mobbin account and a session token; owner must say "install mobbin-mcp").
 - **Owner's parallel task:** meet one boxing coach and one S&C coach (the assignment in the design doc).
+
+## Session 3b (2026-11-05)
+- Applied the ponytail review fixes: build runs from the repo (`python docs/mockups/build/build.py`), one-off patch block removed, real disabled buttons, confirm screens for delete account / reset invite / remove athlete, proper list markup.
+- Added phone versions of every screen (`M-*.dc.html`, 390 px) on a new canvas page "Phone · full site". `phone.py` converts each desktop board: phone headers, bottom tabs (athlete: Today/Learn/Progress/Ask AI; coach: Athletes/Programs/Lessons/Review), a visitor menu screen, phone-to-phone links.
+- Board heights are measured in headless Chrome during the build. Note: headless Chrome cannot go below 500 px wide, so overflow checks need the fixed 390 px root.
+- Rule: canvas edits win. Before a rebuild, compare the canvas version and port hand edits into the sources.
 
 ## Session 3 (2026-11-05)
 - Owner asked for every site screen as a linked design (UI/UX, not a working app). A half-written prototype app in `docs/prototype/` was deleted unused.

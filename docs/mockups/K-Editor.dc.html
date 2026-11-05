@@ -62,7 +62,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
             <li style="display: flex; gap: 8px; align-items: center; color: #a3001a"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg><span style="color: #111111">Safety guidance</span></li>
           </ul>
         </section>
-        <a href="K-Lessons.dc.html" aria-disabled="true" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; box-sizing: border-box; font-size: 16px; font-weight: 500; background: #111111; color: #ffffff; padding: 14px 28px; border-radius: 30px; border: 0; opacity: 0.4; cursor: not-allowed">Submit for review</a>
+        <button disabled="disabled" aria-describedby="safety-err" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; box-sizing: border-box; font-size: 16px; font-weight: 500; background: #111111; color: #ffffff; padding: 14px 28px; border-radius: 30px; border: 0; opacity: 0.4; cursor: not-allowed">Submit for review</button>
         <a href="K-Lessons.dc.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; box-sizing: border-box; font-size: 16px; font-weight: 500; background: #ffffff; color: #111111; padding: 13px 27px; border-radius: 30px; border: 1px solid #cacacb">Save draft</a>
         <p style="margin: 0; font-size: 13px; color: #707072; line-height: 1.5">Rohan Desai or another reviewer checks it. You get an email when it is live or needs changes.</p>
       </aside>
@@ -70,7 +70,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   </main>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#D4F000","options":["#D4F000","#FF5A1F","#7CF5D2","#FFFFFF"]},"$preview":{"width":1440,"height":2000}}'>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#D4F000","options":["#D4F000","#FF5A1F","#7CF5D2","#FFFFFF"]},"$preview":{"width":1440,"height":1351}}'>
 class Component extends DCLogic {
   renderVals() {
     return { accent: this.props.accent ?? '#D4F000' };

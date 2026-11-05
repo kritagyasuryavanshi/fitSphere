@@ -34,10 +34,10 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
       <div style="flex: 999 1 640px; min-width: 0">
         <h1 style="font-family: Anton, Impact, sans-serif; font-weight: 400; text-transform: uppercase; line-height: 0.9; margin: 0; font-size: clamp(56px, 7vw, 96px)">Coach feedback</h1>
         <div style="margin-top: 32px; display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch">
-          <div role="list" style="flex: 1 1 240px; max-width: 320px; min-width: 0; display: flex; flex-direction: column; gap: 4px">
-            <a role="listitem" href="T-Feedback.dc.html" aria-current="true" style="display: flex; gap: 12px; padding: 14px; background: #f5f5f5; border-left: 3px solid #111111"><img src="/_blob/fc8037ecec535b2be1f9befb3d629446" alt="" style="width: 40px; height: 40px; border-radius: 999px; object-fit: cover; flex: none"><span style="min-width: 0"><span style="display: block; font-size: 15px; font-weight: 600">Vikram Rathore</span><span style="display: block; font-size: 13px; color: #707072">On Monday’s session · new</span></span></a>
-            <a role="listitem" href="T-Feedback.dc.html" style="display: flex; gap: 12px; padding: 14px"><img src="/_blob/64d21478014b48c030965fb741a312ab" alt="" style="width: 40px; height: 40px; border-radius: 999px; object-fit: cover; flex: none"><span style="min-width: 0"><span style="display: block; font-size: 15px; font-weight: 500">Ananya Iyer</span><span style="display: block; font-size: 13px; color: #707072">Ring Engine, week 1</span></span></a>
-          </div>
+          <ul aria-label="Coaches" style="margin: 0; padding: 0; list-style: none; flex: 1 1 240px; max-width: 320px; min-width: 0; display: flex; flex-direction: column; gap: 4px">
+            <li><a href="T-Feedback.dc.html" aria-current="true" style="display: flex; gap: 12px; padding: 14px; background: #f5f5f5; border-left: 3px solid #111111"><img src="/_blob/fc8037ecec535b2be1f9befb3d629446" alt="" style="width: 40px; height: 40px; border-radius: 999px; object-fit: cover; flex: none"><span style="min-width: 0"><span style="display: block; font-size: 15px; font-weight: 600">Vikram Rathore</span><span style="display: block; font-size: 13px; color: #707072">On Monday’s session · new</span></span></a></li>
+            <li><a href="T-Feedback.dc.html" style="display: flex; gap: 12px; padding: 14px"><img src="/_blob/64d21478014b48c030965fb741a312ab" alt="" style="width: 40px; height: 40px; border-radius: 999px; object-fit: cover; flex: none"><span style="min-width: 0"><span style="display: block; font-size: 15px; font-weight: 500">Ananya Iyer</span><span style="display: block; font-size: 13px; color: #707072">Ring Engine, week 1</span></span></a></li>
+          </ul>
           <section aria-label="Conversation with Vikram" style="flex: 3 1 420px; min-width: 0; border: 1px solid #e5e5e5; padding: 32px; display: flex; flex-direction: column; gap: 24px">
             <div style="display: flex; gap: 12px; align-items: center"><img src="/_blob/fc8037ecec535b2be1f9befb3d629446" alt="" style="width: 48px; height: 48px; border-radius: 999px; object-fit: cover"><div><p style="margin: 0; font-size: 16px; font-weight: 500">Vikram Rathore</p><p style="margin: 0; font-size: 14px; color: #707072">On Jab &amp; footwork, Monday 2 November</p></div></div>
             <p style="margin: 0; font-size: 20px; line-height: 1.5; max-width: 46ch">“Good rhythm on the step and jab. Round three, your rear hand drifted. Keep it glued to your cheek.”</p>
@@ -52,7 +52,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   </main>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#D4F000","options":["#D4F000","#FF5A1F","#7CF5D2","#FFFFFF"]},"$preview":{"width":1440,"height":1300}}'>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#D4F000","options":["#D4F000","#FF5A1F","#7CF5D2","#FFFFFF"]},"$preview":{"width":1440,"height":900}}'>
 class Component extends DCLogic {
   renderVals() {
     return { accent: this.props.accent ?? '#D4F000' };

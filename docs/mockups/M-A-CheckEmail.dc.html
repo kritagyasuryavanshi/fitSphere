@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FitSphere phone: Check your email</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+/* Hallmark (applied as a floor on an existing design) · kept by owner choice: inline colours (the canvas editor edits them), grey labels above heads and middle-dot meta lines (the approved Fight Camp voice) */
+a:active,button:active{transform:translateY(1px)}
+button:disabled,a[aria-disabled="true"]{opacity:.4;cursor:not-allowed}
+html,body{overflow-x:clip}
+body{margin:0;background:#ffffff}
+a{color:#111111;text-decoration:none}a:hover{color:#707072}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid #111111;outline-offset:2px}
+</style>
+</helmet>
+<div style="width: 390px; min-height: 523px; background: #ffffff; color: #111111; font-family: Inter, Helvetica, Arial, sans-serif">
+<div style="display: flex; flex-wrap: wrap; min-height: 100vh">
+  <section style="flex: 1 1 480px; min-height: 322px; position: relative; overflow: hidden; background: #111111">
+    <img src="/_blob/497ef77b5675b2940aa345dc7313057e" alt="Black boxing gloves hanging in a gym" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover">
+    <div aria-hidden="true" style="position: absolute; inset: 0; background: rgba(0,0,0,0.4)"></div>
+    <a href="M-C-Landing.dc.html" style="position: absolute; top: 32px; left: 40px; font-family: Anton, Impact, sans-serif; font-size: 28px; text-transform: uppercase; color: #ffffff">FitSphere</a>
+    <p style="position: absolute; left: 40px; right: 40px; bottom: 48px; font-family: Anton, Impact, sans-serif; font-weight: 400; text-transform: uppercase; line-height: 0.9; margin: 0; font-size: clamp(56px, 6vw, 104px); color: #ffffff" aria-hidden="true">Glove up.</p>
+  </section>
+  <main style="flex: 1 1 560px; min-width: 0; padding: 16px 20px 20px; box-sizing: border-box; display: flex; flex-direction: column">
+    <a href="M-A-SignIn.dc.html" style="display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: 15px; font-weight: 500"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>Use a different email</a>
+    <div style="margin-top: auto; margin-bottom: auto; padding-top: 20px; display: flex; flex-direction: column; gap: 24px; max-width: 480px">
+      <span style="width: 64px; height: 64px; border-radius: 999px; background: {{accent}}; color: #111111; display: flex; align-items: center; justify-content: center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>
+      <h1 style="font-family: Anton, Impact, sans-serif; font-weight: 400; text-transform: uppercase; line-height: 0.9; margin: 0; font-size: 64px">Check your email</h1>
+      <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #39393b; max-width: 62ch">We sent a sign-in link to <strong style="color: #111111">kabir@example.com</strong>. It works for 15 minutes. Open it on this phone or computer.</p>
+      <a href="M-A-Onboard1.dc.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; box-sizing: border-box; font-size: 16px; font-weight: 500; background: #111111; color: #ffffff; padding: 14px 28px; border-radius: 30px; border: 0">I opened the link</a>
+      <button disabled="disabled" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; box-sizing: border-box; font-size: 16px; font-weight: 500; background: #ffffff; color: #111111; padding: 13px 27px; border-radius: 30px; border: 1px solid #cacacb; color: #707072; cursor: not-allowed">Resend link in 0:42</button>
+      <p style="margin: 0; font-size: 13px; color: #707072">Nothing yet? Check spam, or the Promotions tab in Gmail.</p>
+    </div>
+  </main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#D4F000","options":["#D4F000","#FF5A1F","#7CF5D2","#FFFFFF"]},"$preview":{"width":390,"height":926}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#D4F000' };
+  }
+}
+</script>
+</body>
+</html>
