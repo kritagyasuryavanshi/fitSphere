@@ -49,6 +49,7 @@ Keep newest entries at the top of each section.
 ## Decisions
 | Date | Decision | Why |
 |---|---|---|
+| 2026-11-05 | Coach Marketplace designed as Phase 2 (discover, compare, shortlist, hire, pay, verified reviews, coach clients/profile/earnings, admin credential checks). v1 build scope unchanged until the owner decides. | Owner pasted a marketplace spec. Marketplace and payments were out of v1; building them early risks an empty shelf and a large payments milestone. |
 | 2026-11-05 | Three categories, each with its own library: Boxing, Strength & Conditioning (S&C for boxers, unchanged), Gym & Fitness (build muscle, lose fat, get stronger, get fitter). Gym is a full category, not boxing support. | Owner asked for gym training (weight loss, muscle building, hypertrophy), then asked to keep S&C as its own category too. |
 | 2026-11-05 | No meal plans or calorie targets in v1. Body weight optional, consent-gated for AI. | Nutrition advice is out of v1 scope and is health data. Open question for the owner. |
 | 2026-11-05 | Keep Fight Camp look when using Hallmark or ui-ux-pro-max; use them for quality checks, not a new theme. | Owner said the current screens look good and to follow that practice. |

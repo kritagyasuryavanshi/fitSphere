@@ -33,6 +33,9 @@ None yet. The founder answered "No evidence yet" to the demand question. Every v
 ## Change, 2026-11-05: three categories
 The owner added general gym fitness: weight loss, muscle building (hypertrophy), strength and general fitness. There are now three categories, each with its own library: Boxing, Strength & Conditioning (S&C for boxers, unchanged), and Gym & Fitness (new). Gym logging uses sets × reps × load, shows last time's numbers, and suggests the next small increase. Body weight and height are optional, self-reported, and reach the AI only with separate consent. Meal plans and calorie targets stay out of v1 (nutrition advice); open question for the owner.
 
+## Phase 2 design, 2026-11-05: Coach Marketplace
+The owner asked for a Coach Marketplace: discover, compare, shortlist and hire coaches, with packages, payment, verified reviews and a coach business dashboard. It is designed (canvas rows "Hire a coach" and "Coach business", tagged Phase 2). The v1 build plan (M1 to M5) is unchanged until the owner decides. Build risks: an empty marketplace before about 20 coaches, payments with split payouts and refunds in India, credential checks by an admin, and written consent for client stories. Rules in the design: client statistics come only from FitSphere records; only clients with a paid, finished engagement can review; coaches cannot pay to rank higher; payments stay on FitSphere.
+
 ## Premises
 1. **Content and cold start are the main risks, not code.** Coaches solve both: they bring reviewed content, athletes, and willingness to pay. (Revised after the second opinion.)
 2. **Two connected categories at launch:** Boxing (primary) and S&C (supporting, integrated, not a generic gym app). The data model stays multi-sport so cricket, football and MMA slot in later without a rebuild.

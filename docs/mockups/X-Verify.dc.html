@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>FitSphere: Admin: Credential checks</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+/* Hallmark (applied as a floor on an existing design) · kept by owner choice: inline colours (the canvas editor edits them), grey labels above heads and middle-dot meta lines (the approved Fight Camp voice) */
+a:active,button:active{transform:translateY(1px)}
+button:disabled,a[aria-disabled="true"]{opacity:.4;cursor:not-allowed}
+html,body{overflow-x:clip}
+body{margin:0;background:#ffffff}
+a{color:#111111;text-decoration:none}a:hover{color:#707072}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid #111111;outline-offset:2px}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100vh; background: #ffffff; color: #111111; font-family: Inter, Helvetica, Arial, sans-serif">
+<header style="border-bottom: 1px solid #e5e5e5; background: #ffffff">
+    <nav aria-label="Coach" style="max-width: 1440px; margin: 0 auto; padding-left: 40px; padding-right: 40px; box-sizing: border-box; min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 12px 20px; flex-wrap: wrap; padding-top: 10px; padding-bottom: 10px">
+      <a href="C-CoachDash.dc.html" style="display: flex; align-items: center; gap: 10px"><span style="font-family: Anton, Impact, sans-serif; font-size: 28px; text-transform: uppercase">FitSphere</span><span style="display: inline-flex; align-items: center; font-size: 12px; font-weight: 600; background: #111111; color: #ffffff; padding: 6px 12px; border-radius: 30px; white-space: nowrap">Coach</span></a>
+      <div style="display: flex; gap: 28px; font-size: 16px; font-weight: 500; flex-wrap: wrap; align-items: center"><a href="C-CoachDash.dc.html">Athletes</a><a href="X-CoachRequests.dc.html">Clients</a><a href="K-Programs.dc.html">Programs</a><a href="K-Lessons.dc.html">My lessons</a><a href="R-Queue.dc.html">Review queue <span style="display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: {{accent}}; color: #111111; font-size: 12px; font-weight: 600; margin-left: 4px">2</span></a><a href="R-Roles.dc.html" aria-current="page" style="text-decoration: underline; text-underline-offset: 6px">People</a></div>
+      <div style="display: flex; gap: 12px; align-items: center"><a href="C-Library.dc.html" style="font-size: 14px; font-weight: 500; text-decoration: underline; text-underline-offset: 4px">Athlete site</a><a href="T-Account.dc.html" aria-label="Admin account" style="width: 44px; height: 44px; border-radius: 999px; background: #111111; color: #ffffff; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center">A</a></div>
+    </nav>
+  </header>
+  <main style="max-width: 1440px; margin: 0 auto; padding-left: 40px; padding-right: 40px; box-sizing: border-box; padding-top: 40px; padding-bottom: 96px">
+    <div style="display: flex; flex-direction: column; gap: 12px"><div><span style="display: inline-flex; align-items: center; font-size: 12px; font-weight: 600; background: #111111; color: #ffffff; padding: 6px 12px; border-radius: 30px; white-space: nowrap">Phase 2 design</span></div><h1 style="font-family: Anton, Impact, sans-serif; font-weight: 400; text-transform: uppercase; line-height: 0.9; margin: 0; font-size: clamp(64px, 8vw, 120px)">Credential checks</h1></div>
+    <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #39393b; max-width: 62ch; margin-top: 16px">Check each document against the issuer before the profile shows “Credentials checked”. Never approve from a photo alone when the issuer offers a lookup.</p>
+    <div style="margin-top: 32px; border-top: 2px solid #111111">
+      <article style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center; padding: 20px 0; border-bottom: 1px solid #cacacb"><div style="flex: 1 1 360px; min-width: 0"><p style="margin: 0; font-size: 17px; font-weight: 600">Vikram Rathore</p><p style="margin: 4px 0 0; font-size: 15px">Nutrition course certificate</p><p style="margin: 2px 0 0; font-size: 14px; color: #707072">Issuer: [ISSUER] · uploaded 3 Nov</p></div><div style="display: flex; gap: 8px; flex-wrap: wrap"><a href="X-Verify.dc.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; box-sizing: border-box; font-size: 14px; font-weight: 500; background: #ffffff; color: #111111; padding: 0 18px; border-radius: 30px; border: 1px solid #cacacb">Open document</a><a href="X-Verify.dc.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; box-sizing: border-box; font-size: 14px; font-weight: 500; background: #111111; color: #ffffff; padding: 0 18px; border-radius: 30px; border: 0">Mark checked</a><a href="X-Verify.dc.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; box-sizing: border-box; font-size: 14px; font-weight: 500; background: #ffffff; color: #111111; padding: 0 18px; border-radius: 30px; border: 1px solid #cacacb">Reject with note</a></div></article>
+      <article style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center; padding: 20px 0; border-bottom: 1px solid #cacacb"><div style="flex: 1 1 360px; min-width: 0"><p style="margin: 0; font-size: 17px; font-weight: 600">Arjun Sethi</p><p style="margin: 4px 0 0; font-size: 15px">Personal trainer certification</p><p style="margin: 2px 0 0; font-size: 14px; color: #707072">Issuer: [ISSUER] · ID number given · uploaded 2 Nov</p></div><div style="display: flex; gap: 8px; flex-wrap: wrap"><a href="X-Verify.dc.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; box-sizing: border-box; font-size: 14px; font-weight: 500; background: #ffffff; color: #111111; padding: 0 18px; border-radius: 30px; border: 1px solid #cacacb">Open document</a><a href="X-Verify.dc.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; box-sizing: border-box; font-size: 14px; font-weight: 500; background: #111111; color: #ffffff; padding: 0 18px; border-radius: 30px; border: 0">Mark checked</a><a href="X-Verify.dc.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; box-sizing: border-box; font-size: 14px; font-weight: 500; background: #ffffff; color: #111111; padding: 0 18px; border-radius: 30px; border: 1px solid #cacacb">Reject with note</a></div></article>
+      <article style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center; padding: 20px 0; border-bottom: 1px solid #cacacb"><div style="flex: 1 1 360px; min-width: 0"><p style="margin: 0; font-size: 17px; font-weight: 600">Samuel D’Souza</p><p style="margin: 4px 0 0; font-size: 15px">Strength coach certificate</p><p style="margin: 2px 0 0; font-size: 14px; color: #707072">Issuer: [ISSUER] · uploaded 30 Oct</p></div><div style="display: flex; gap: 8px; flex-wrap: wrap"><a href="X-Verify.dc.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; box-sizing: border-box; font-size: 14px; font-weight: 500; background: #ffffff; color: #111111; padding: 0 18px; border-radius: 30px; border: 1px solid #cacacb">Open document</a><a href="X-Verify.dc.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; box-sizing: border-box; font-size: 14px; font-weight: 500; background: #111111; color: #ffffff; padding: 0 18px; border-radius: 30px; border: 0">Mark checked</a><a href="X-Verify.dc.html" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; box-sizing: border-box; font-size: 14px; font-weight: 500; background: #ffffff; color: #111111; padding: 0 18px; border-radius: 30px; border: 1px solid #cacacb">Reject with note</a></div></article>
+    </div>
+    <p style="margin: 0; font-size: 13px; color: #707072; margin-top: 16px">Each decision is logged with the admin’s name and date.</p>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#D4F000","options":["#D4F000","#FF5A1F","#7CF5D2","#FFFFFF"]},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#D4F000' };
+  }
+}
+</script>
+</body>
+</html>
