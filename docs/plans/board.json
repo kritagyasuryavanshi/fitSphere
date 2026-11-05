@@ -1617,7 +1617,8 @@
    ],
    "ac": [
     "Match the canvas at 390 and 1440 px",
-    "No invented numbers; every count comes from the database"
+    "No invented numbers; every count comes from the database",
+    "Re-enable the claude-seo plugin (claude plugin enable claude-seo@agricidaniel-claude-seo) and fix every critical finding from /seo audit on public pages"
    ]
   },
   {

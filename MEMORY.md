@@ -85,5 +85,6 @@ Keep newest entries at the top of each section.
 - Demand evidence is zero. Treat pricing and usage assumptions as hypotheses.
 
 ## Lessons learned
+- SEO plugins (2026-11-05): claude-seo is installed but disabled until launch (board M6-01 re-enables it). OpenSEO is enabled; it uses a paid hosted service (app.openseo.so) and needs sign-in on first use.
 - The `skills` CLI needs Node 22.20+. Run it with `npx -y -p node@22 -p skills skills ...` until Node is upgraded.
 - gstack tools that need Bun fail on this PC until Bun is installed. Codex CLI is not installed, so outside reviews fall back to a Claude subagent.
