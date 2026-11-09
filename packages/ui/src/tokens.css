@@ -1,0 +1,47 @@
+/* Fight Camp design tokens. Values come from docs/mockups; tokens.test.ts holds them to it. */
+@theme {
+  --color-ink: #111111;
+  --color-ink-soft: #39393b;
+  --color-paper: #ffffff;
+  --color-mist: #f5f5f5;
+  --color-line: #e5e5e5;
+  --color-line-strong: #cacacb;
+  --color-muted: #707072;
+  --color-faint: #9e9ea0;
+  --color-volt: #d4f000;
+  --color-success: #00653a;
+  --color-success-soft: #e3f4ec;
+  --color-warning: #8a4600;
+  --color-warning-soft: #fff1e0;
+  --color-danger: #a3001a;
+  --color-danger-soft: #fde8eb;
+
+  --radius-pill: 30px;
+
+  /* --font-anton and --font-inter are set by next/font in the root layout. */
+  --font-display: var(--font-anton), Impact, sans-serif;
+  --font-body: var(--font-inter), Helvetica, Arial, sans-serif;
+}
+
+@layer base {
+  html,
+  body {
+    overflow-x: clip;
+  }
+
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+  }
+
+  a:hover {
+    color: var(--color-muted);
+  }
+
+  /* The ring for anything interactive that does not set its own. */
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 2px;
+  }
+}
