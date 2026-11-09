@@ -5,14 +5,20 @@ Every session reads it first and updates it before it ends.
 Keep newest entries at the top of each section.
 
 ## Current state
-- **Phase:** v1 design approved. Full-site clickable design done: 54 desktop + 55 phone screens, Boxing, S&C, and Gym & Fitness. Engineering plan next. No app code exists yet.
-- **Current milestone:** S0 Setup. Task S0-01 (owner approves the plan) is in progress. Nothing is built yet.
-- **Next step for the next session:**
-  1. Get the owner's feedback on the full-site design (canvas pages "Fight Camp · full site" and "Phone · full site").
-  2. Settle the stack question: the owner asked for a "Python engineering plan", but the approved stack is Next.js + Supabase. Option on the table: Next.js web app plus a Python (FastAPI) service for the AI assistant. Ask once, then decide.
-  3. Write the engineering plan for M1 to M6 (M4 = Coach Marketplace) in `docs/plans/`. Cover schema, RLS rules, test setup, and the four minor reviewer concerns in the design doc. After approval, build M1 hands-off.
-- **Open owner decisions:** Mobbin install (only unofficial community MCPs exist; needs a paid Mobbin account and a session token; owner must say "install mobbin-mcp").
+- **Phase:** building. Plan and stack approved. Design system done.
+- **Current milestone:** S0 Setup. S0-02 and S0-03 are done.
+- **Next step for the next session:** S0-04 (local Supabase, migrations, pgTAP) is the next build task. The board makes it depend on O-02 (owner accounts), but its acceptance criteria only need local Supabase, which runs on Docker with no cloud account. That dependency was added when the old PC had no Docker. Ask the owner whether to drop it. O-02 is still needed for S0-06 and for Google sign-in.
+- **Open owner decisions:** O-02 accounts (blocks S0-04 onward), O-09 (answer Q-01 to Q-15 or accept the defaults). Also O-04 to O-08. Mobbin install (only unofficial community MCPs exist; needs a paid Mobbin account and a session token; owner must say "install mobbin-mcp").
 - **Owner's parallel task:** meet one boxing coach and one S&C coach (the assignment in the design doc).
+
+## Session 5 (2026-11-09): new PC, S0-03
+- Owner moved to a second PC: repo cloned to `C:\Users\WELCOME\fitSphere`. Session transcripts stay on the old PC; repo docs and artifacts carried the context. This PC has Node 22.19, npm 11.6 and Docker 29, so local Supabase is possible here. `gh` installed with winget, at `C:\Program Files\GitHub CLI\gh.exe`, logged in as `kritagyasuryavanshi`. Bun and Codex CLI were not checked here.
+- S0-03 done: `packages/ui` with tokens, Button, Tag, Input, Checkbox, RadioCard, Tabs, Dialog. Link buttons use `buttonClass()` with `next/link`. Tailwind reads the package through `@source` in `apps/web/src/app/globals.css`.
+- Added beyond the board's list: a `danger` Button, because the confirm screens use it, and a Dialog `alert` mode that keeps focus off the destructive button.
+- Checkbox cards from A-Onboard1 are not built yet; add them in M1-03, where they are first used. Pill-style category links (C-Library) are links rather than tabs; build them in M2-03.
+- The real-browser check (axe with contrast, measured sizes, focus rings, dialog keyboard behaviour at 390 and 1440 px) ran as a one-off script, so nothing in CI runs it yet. Move it into Playwright at S0-07. It found one bug jsdom could not: default buttons were 52 px, not 48 px.
+- Vitest upgraded to 5 across the workspace; that cleared the two critical audit advisories. Moderate advisories remain through typescript-eslint and eslint-config-next (dev only). Not fixed: the suggested fix is breaking.
+- Mockup typo, left alone: the confirm screens' warning icon path reads `M12 3l10 28H2z`, and the correct shape, used in `packages/ui`, is `M12 3l10 18H2z`.
 
 ## Session 4 (2026-11-05): build starts
 - Owner: "start building with the build board; use the best stack you recommend; keep it scalable, I will add more categories and features later." Plan and stack approved (S0-01, O-01 done).

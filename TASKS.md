@@ -3,24 +3,23 @@
 Build tasks live on the board: `docs/plans/board.json` (rendered at https://claude.ai/artifact/BPCG8ghatzZkV7v1haJ1z1). This file keeps owner-level items only.
 
 ## Now
-- [ ] Owner: review the full-site design, desktop and phone (press Play on Landing on each canvas page).
-- [ ] Owner: confirm stack: Next.js only, or Next.js plus a Python (FastAPI) AI service.
-- [ ] Owner: approve the engineering plan and board (`docs/plans/`), and confirm the stack.
+- [ ] Owner: create Supabase, Vercel, Anthropic API and Google OAuth accounts (O-02). This blocks S0-04, the next build task.
+- [ ] Owner: answer Q-01 to Q-15 in `docs/architecture/risks-and-gaps.md`, or accept the defaults (O-09).
 - [ ] Owner: meet one boxing coach and one S&C coach this week (the assignment in the design doc).
 
 ## Next
 - [ ] Owner, before M4 (marketplace): confirm the payment provider (recommended Razorpay), set the fee %, refund and cancel terms, register the business and GST, and sign a coach agreement.
 - [ ] Owner: decide on nutrition for fat-loss users (meal plans or calorie targets are out of v1 for now).
-- [ ] Owner: create Supabase, Vercel, Anthropic API and Google OAuth accounts.
-- [ ] Build M1 Foundation once the plan is approved.
+- [ ] Build M1 Foundation after the S0 setup tasks.
 - [ ] Add the toolchain commands to `.claude/settings.json` once the stack is installed.
 - [ ] Owner: install Bun to restore the gstack tooling.
 
 ## Next (design)
-- [ ] Owner: upgrade Node to 22+ (needed by the skills CLI and Hallmark's lint).
 - [ ] Owner: decide on Mobbin (optional).
 
 ## Done
+- [x] 2026-11-09: Design tokens and base components in `packages/ui` (S0-03).
+- [x] 2026-11-05: Owner approved the plan, board and stack; Node upgraded.
 - [x] 2026-11-05: Engineering plan and 79-task build board (setup plus M1 to M6).
 - [x] 2026-11-05: Coach Marketplace designed, Phase 2 (11 new screens plus new Coaches and Coach profile, desktop and phone).
 - [x] 2026-11-05: Gym & Fitness category designed (7 new screens, desktop and phone).

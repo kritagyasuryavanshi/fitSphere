@@ -10,8 +10,8 @@
 - Update `TASKS.md` with what is done and what is next.
 
 ## Folder rule
-All project files live in this folder: `C:\Users\LENOVO\Desktop\Projects\fitSphere`.
-Do not write project files anywhere else.
+All project files live in this repo. The owner works from more than one PC, so the path varies: `C:\Users\LENOVO\Desktop\Projects\fitSphere` and `C:\Users\WELCOME\fitSphere`.
+Do not write project files outside the repo.
 Project memory lives in `MEMORY.md` here, not only in Claude's auto-memory.
 
 ## File map
@@ -28,7 +28,7 @@ Next.js + Vercel + Supabase + Claude API. See `PROJECT.md` and `docs/designs/fit
 
 ## Verification
 Each milestone in `PROJECT.md` has its own Verify line.
-Add the test, lint, and build commands here once the stack is chosen.
+Run `npm run verify` (typecheck, lint, tests, build across all workspaces) before marking a task done.
 
 ## Allowed without asking
 Routine git add, commit, and push to `origin main`.
