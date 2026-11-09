@@ -7,8 +7,7 @@ Keep newest entries at the top of each section.
 ## Current state
 - **Phase:** building. Plan and stack approved. Design system done.
 - **Current milestone:** S0 Setup. S0-02 and S0-03 are done.
-- **Next step for the next session:** finish S0-04 (local Supabase, migrations, pgTAP). Owner approved dropping its O-02 dependency on 2026-11-09. It is blocked because this PC has no WSL, so Docker Desktop's engine cannot run; the owner must run `wsl --install` as admin and restart. Then open Docker Desktop and run `npm run db:start`, `npm run db:reset` and `npm run test:db`, generate the typed client, add the Supabase variables to `.env.example`, and commit. O-02 is still needed for S0-06 and for Google sign-in.
-- **Uncommitted on the WELCOME PC:** `packages/db` (Supabase project, first migration and pgTAP test) plus root `package.json` and lockfile changes. Not committed because the SQL has never run, and merged migrations must not be edited.
+- **Next step for the next session:** S0-05 (CI on GitHub Actions) and S0-07 (Playwright harness) and M1-01 (identity schema) are all unblocked. Do S0-05 first, so later work is checked on every pull request. O-02 is still needed for S0-06 and for Google sign-in.
 - **Open owner decisions:** O-02 accounts (blocks S0-04 onward), O-09 (answer Q-01 to Q-15 or accept the defaults). Also O-04 to O-08. Mobbin install (only unofficial community MCPs exist; needs a paid Mobbin account and a session token; owner must say "install mobbin-mcp").
 - **Owner's parallel task:** meet one boxing coach and one S&C coach (the assignment in the design doc).
 
@@ -19,6 +18,10 @@ Keep newest entries at the top of each section.
 - Checkbox cards from A-Onboard1 are not built yet; add them in M1-03, where they are first used. Pill-style category links (C-Library) are links rather than tabs; build them in M2-03.
 - The real-browser check (axe with contrast, measured sizes, focus rings, dialog keyboard behaviour at 390 and 1440 px) ran as a one-off script, so nothing in CI runs it yet. Move it into Playwright at S0-07. It found one bug jsdom could not: default buttons were 52 px, not 48 px.
 - Vitest upgraded to 5 across the workspace; that cleared the two critical audit advisories. Moderate advisories remain through typescript-eslint and eslint-config-next (dev only). Not fixed: the suggested fix is breaking.
+- S0-04 done: `packages/db` holds the Supabase project, migrations, pgTAP tests, generated types (`npm run db:types`) and `createDbClient`. Commands from the repo root: `db:start`, `db:stop`, `db:reset`, `test:db`. Studio is at http://127.0.0.1:54323. `apps/web/.env.local` holds the local keys and is git-ignored; recreate it from `npx supabase status` in `packages/db`.
+- O-02 is no longer a dependency of S0-04 (owner approved 2026-11-09): local Supabase needs Docker, not a cloud account.
+- Analytics is off in `supabase/config.toml`: nothing uses it, and it took 559 MB on this 8 GB PC. Its log shipper, vector, also restart-looped here.
+- WELCOME PC setup, hard won: C: has little space, so Docker's storage is on `D:\Docker`, and npm's cache was cleared to fit WSL. If WSL install fails with 1603, check disk space in the installer log. If Docker shows "exec format error" after a first `supabase start`, images unpacked with empty programs during the parallel pull: remove the Supabase images and `docker pull` them one at a time. Docker Desktop does not always start on its own after a restart.
 - Mockup typo, left alone: the confirm screens' warning icon path reads `M12 3l10 28H2z`, and the correct shape, used in `packages/ui`, is `M12 3l10 18H2z`.
 
 ## Session 4 (2026-11-05): build starts

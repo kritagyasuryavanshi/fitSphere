@@ -3,7 +3,7 @@
 Build tasks live on the board: `docs/plans/board.json` (rendered at https://claude.ai/artifact/BPCG8ghatzZkV7v1haJ1z1). This file keeps owner-level items only.
 
 ## Now
-- [ ] Owner: create Supabase, Vercel, Anthropic API and Google OAuth accounts (O-02). This blocks S0-04, the next build task.
+- [ ] Owner: create Supabase, Vercel, Anthropic API and Google OAuth accounts (O-02). This blocks preview deploys (S0-06) and Google sign-in.
 - [ ] Owner: answer Q-01 to Q-15 in `docs/architecture/risks-and-gaps.md`, or accept the defaults (O-09).
 - [ ] Owner: meet one boxing coach and one S&C coach this week (the assignment in the design doc).
 
@@ -18,6 +18,7 @@ Build tasks live on the board: `docs/plans/board.json` (rendered at https://clau
 - [ ] Owner: decide on Mobbin (optional).
 
 ## Done
+- [x] 2026-11-09: Local Supabase, migrations, pgTAP and typed client in `packages/db` (S0-04).
 - [x] 2026-11-09: Design tokens and base components in `packages/ui` (S0-03).
 - [x] 2026-11-05: Owner approved the plan, board and stack; Node upgraded.
 - [x] 2026-11-05: Engineering plan and 79-task build board (setup plus M1 to M6).

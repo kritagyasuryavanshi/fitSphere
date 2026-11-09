@@ -29,6 +29,7 @@ Next.js + Vercel + Supabase + Claude API. See `PROJECT.md` and `docs/designs/fit
 ## Verification
 Each milestone in `PROJECT.md` has its own Verify line.
 Run `npm run verify` (typecheck, lint, tests, build across all workspaces) before marking a task done.
+For database changes, with Docker running: `npm run db:start`, `npm run db:reset`, `npm run test:db`, then `npm run db:types`.
 
 ## Allowed without asking
 Routine git add, commit, and push to `origin main`.
