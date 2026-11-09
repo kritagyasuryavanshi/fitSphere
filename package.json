@@ -16,7 +16,12 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "verify": "turbo run typecheck lint test build",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test:db": "npm run test:db -w @fitsphere/db",
+    "db:start": "npm run db:start -w @fitsphere/db",
+    "db:stop": "npm run db:stop -w @fitsphere/db",
+    "db:reset": "npm run db:reset -w @fitsphere/db",
+    "db:types": "npm run db:types -w @fitsphere/db"
   },
   "devDependencies": {
     "prettier": "^3",
@@ -24,6 +29,7 @@
     "typescript": "^5"
   },
   "allowScripts": {
-    "esbuild@0.28.2": true
+    "esbuild@0.28.2": true,
+    "supabase@3.0.0": true
   }
 }
