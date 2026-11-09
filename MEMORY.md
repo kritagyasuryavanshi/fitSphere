@@ -7,7 +7,8 @@ Keep newest entries at the top of each section.
 ## Current state
 - **Phase:** building. Plan and stack approved. Design system done.
 - **Current milestone:** S0 Setup. S0-02 and S0-03 are done.
-- **Next step for the next session:** S0-04 (local Supabase, migrations, pgTAP) is the next build task. The board makes it depend on O-02 (owner accounts), but its acceptance criteria only need local Supabase, which runs on Docker with no cloud account. That dependency was added when the old PC had no Docker. Ask the owner whether to drop it. O-02 is still needed for S0-06 and for Google sign-in.
+- **Next step for the next session:** finish S0-04 (local Supabase, migrations, pgTAP). Owner approved dropping its O-02 dependency on 2026-11-09. It is blocked because this PC has no WSL, so Docker Desktop's engine cannot run; the owner must run `wsl --install` as admin and restart. Then open Docker Desktop and run `npm run db:start`, `npm run db:reset` and `npm run test:db`, generate the typed client, add the Supabase variables to `.env.example`, and commit. O-02 is still needed for S0-06 and for Google sign-in.
+- **Uncommitted on the WELCOME PC:** `packages/db` (Supabase project, first migration and pgTAP test) plus root `package.json` and lockfile changes. Not committed because the SQL has never run, and merged migrations must not be edited.
 - **Open owner decisions:** O-02 accounts (blocks S0-04 onward), O-09 (answer Q-01 to Q-15 or accept the defaults). Also O-04 to O-08. Mobbin install (only unofficial community MCPs exist; needs a paid Mobbin account and a session token; owner must say "install mobbin-mcp").
 - **Owner's parallel task:** meet one boxing coach and one S&C coach (the assignment in the design doc).
 

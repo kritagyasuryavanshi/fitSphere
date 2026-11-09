@@ -277,10 +277,9 @@
       "priority": "P0",
       "size": "S",
       "deps": [
-        "S0-02",
-        "O-02"
+        "S0-02"
       ],
-      "status": "todo",
+      "status": "blocked",
       "owner": "claude",
       "test": "db",
       "ac": [
@@ -288,7 +287,8 @@
         "npm run test:db runs a sample pgTAP test",
         "Migrations apply from scratch with no errors",
         "Typed database client generated into the app"
-      ]
+      ],
+      "blocked_reason": "Needs Docker running. This PC has no WSL, so the owner must run wsl --install as admin and restart. No cloud account is needed: the O-02 dependency was removed on 2026-11-09."
     },
     {
       "id": "S0-05",
