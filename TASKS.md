@@ -13,7 +13,7 @@ Build tasks live on the board: `docs/plans/board.json` (rendered at https://clau
 - [ ] Owner: meet one boxing coach and one S&C coach this week (the assignment in the design doc).
 
 ## Next
-- [ ] Release gate, before sign-in goes live: turn on "Confirm email" in the hosted Supabase project, set custom SMTP, add Turnstile CAPTCHA to sign-in, set `NEXT_PUBLIC_SITE_URL`, and list only our own domains in the redirect allow-list (M1-02 review).
+- [ ] Release gate, before sign-in goes live: turn on "Confirm email" in the hosted Supabase project, set custom SMTP, add Turnstile CAPTCHA to sign-in, set `NEXT_PUBLIC_SITE_URL`, list only our own domains in the redirect allow-list, and set auth rate limits in the dashboard (local config raises them for tests).
 - [ ] Owner, before M4 (marketplace): confirm the payment provider (recommended Razorpay), set the fee %, refund and cancel terms, register the business and GST, and sign a coach agreement.
 - [ ] Owner: decide on nutrition for fat-loss users (meal plans or calorie targets are out of v1 for now).
 - [ ] Build M1 Foundation after the S0 setup tasks.

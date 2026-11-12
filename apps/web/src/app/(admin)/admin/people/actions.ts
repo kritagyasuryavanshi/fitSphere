@@ -41,3 +41,15 @@ export async function saveRoles(_prev: SaveRolesState, formData: FormData): Prom
   const saved = changed.length - errors.length;
   return { message: saved ? `Saved role changes for ${saved} ${saved === 1 ? 'person' : 'people'}.` : undefined, errors };
 }
+
+/** Make coach or Decline on one application. The database grants the role, audits it and queues the email. */
+export async function decideApplication(formData: FormData): Promise<void> {
+  await requireRole('admin');
+  const id = String(formData.get('application') ?? '');
+  const decision = String(formData.get('decision') ?? '');
+  if (!UUID.test(id) || !['approve', 'decline'].includes(decision)) return;
+  const { error } = await (await supabaseServer()).rpc('decide_coach_application', { application: id, approve: decision === 'approve' });
+  // Another admin may have decided first; the list then shows that, so it is not an error here.
+  if (error && error.message !== 'already_decided') throw new Error(`Could not save the decision: ${error.message}`);
+  revalidatePath('/admin/people');
+}

@@ -2,6 +2,7 @@
 
 import { Button, Checkbox } from '@fitsphere/ui';
 import { useActionState } from 'react';
+import { useHydrated } from '@/lib/use-hydrated';
 import { saveRoles } from './actions';
 
 export type Person = { id: string; name: string; email: string; roles: string[]; joined: string; self: boolean };
@@ -15,6 +16,7 @@ const ROLES = [
 
 export function PeopleTable({ people }: { people: Person[] }) {
   const [state, action, pending] = useActionState(saveRoles, {});
+  const hydrated = useHydrated();
 
   return (
     // Keyed on the saved roles, so after a save the boxes show what the database now holds.
@@ -62,7 +64,7 @@ export function PeopleTable({ people }: { people: Person[] }) {
       {people.length === 0 ? <p className="m-0 text-[15px] text-muted">Nobody matches that search.</p> : null}
 
       <div className="flex flex-wrap items-center gap-4">
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" disabled={pending || !hydrated}>
           {pending ? 'Saving…' : 'Save role changes'}
         </Button>
         <span className="text-[14px] text-muted">A person cannot change their own role.</span>

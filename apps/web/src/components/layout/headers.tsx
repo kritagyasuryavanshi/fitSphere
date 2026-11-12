@@ -113,7 +113,18 @@ export function PublicHeader() {
 
 async function AthleteAvatar() {
   const viewer = await getViewer();
-  return viewer ? <Avatar viewer={viewer} label={`${viewer.name || 'You'}, your account`} /> : avatarSlot;
+  if (!viewer) return avatarSlot;
+  return (
+    <>
+      {/* Coaches who also train get a way back to their coach tools. */}
+      {viewer.roles.includes('coach') ? (
+        <Link href="/coach" className="hidden text-[14px] font-medium underline underline-offset-4 md:inline">
+          Coach tools
+        </Link>
+      ) : null}
+      <Avatar viewer={viewer} label={`${viewer.name || 'You'}, your account`} />
+    </>
+  );
 }
 
 /** Athletes: Today, Learn, Progress, Ask AI. Phones get the same links as bottom tabs. */

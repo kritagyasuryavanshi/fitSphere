@@ -78,7 +78,7 @@ test('an admin-only user lands on People and is offered no coach pages', async (
 test('a coach lands on the coach dashboard with the coach header', async ({ page }, testInfo) => {
   await signInAs(page, ['coach']);
   await expect(page).toHaveURL('/coach');
-  await expect(page.getByRole('heading', { name: 'Athletes' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Set up your camp' })).toBeVisible();
   const nav = page.getByRole('navigation', { name: 'Coach' });
   await expect(nav.first().getByText('Coach', { exact: true })).toBeVisible();
   if (isPhone(testInfo.project.name)) {

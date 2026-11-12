@@ -1,16 +1,76 @@
+import { buttonClass } from '@fitsphere/ui';
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { Suspense } from 'react';
 import { requireRole } from '@/lib/viewer';
 
-export const metadata: Metadata = { title: 'Athletes · FitSphere Coach' };
+export const metadata: Metadata = { title: 'Set up your camp · FitSphere Coach' };
 
-async function Athletes() {
-  await requireRole('coach');
-  // shortcut: the coach dashboard (C-CoachDash) arrives in M3; this proves the shell and guard.
+// K-CoachEmpty: the first-run screen a new coach lands on. The dashboard with athletes (C-CoachDash) replaces it in M3.
+const steps = [
+  ['Fill in your profile', 'Photo, headline, how you coach', '/coach/profile'],
+  ['Set your packages and prices', 'Athletes can hire you once one package is live', '/coach/profile'],
+  ['Build your first program', 'Weeks, sessions, drills from the library', '/coach/programs'],
+  ['Invite your first athlete', 'Share one link on WhatsApp', '/coach/programs'],
+];
+
+const empties = [
+  ['No athletes yet', 'Athletes you invite, and clients who hire you, show up here with their training each week.', 'Get an invite link', '/coach/programs'],
+  ['No requests yet', 'Requests appear once your profile has a live package. You choose who to accept.', 'Add a package', '/coach/profile'],
+  ['No lessons yet', 'Your lessons and their review status appear here.', 'Write a lesson', '/coach/lessons'],
+];
+
+async function FirstRun() {
+  const viewer = await requireRole('coach');
   return (
-    <main className="mx-auto flex max-w-[1440px] flex-col gap-4 px-4 py-10 md:px-10">
-      <h1 className="m-0 font-display text-[48px] font-normal uppercase leading-[0.95] md:text-[64px]">Athletes</h1>
-      <p className="m-0 text-[16px] text-ink-soft">Your athletes will show here.</p>
+    <main className="mx-auto flex max-w-[1440px] flex-col gap-8 px-4 py-10 md:px-10">
+      <div className="flex flex-col gap-2">
+        <p className="m-0 text-[15px] font-medium text-muted">Welcome, {viewer.name}. Your coach tools are on.</p>
+        <h1 className="m-0 font-display text-[48px] font-normal uppercase leading-[0.95] md:text-[64px]">Set up your camp</h1>
+      </div>
+      <div className="grid gap-6 md:grid-cols-[2fr_1fr]">
+        <section aria-labelledby="steps" className="flex flex-col gap-4 border border-line-strong p-5">
+          <div className="flex items-baseline justify-between gap-4">
+            <h2 id="steps" className="m-0 text-[20px] font-medium">
+              Four steps to your first athlete
+            </h2>
+            {/* shortcut: progress counts once profiles, packages and programs exist (M3, M4); today none is done. */}
+            <span className="text-[14px] text-muted">0 of 4 done</span>
+          </div>
+          <ol className="m-0 flex list-none flex-col p-0">
+            {steps.map(([title, hint, href], i) => (
+              <li key={title} className="flex items-center gap-4 border-t border-line py-3">
+                <span className="flex size-8 flex-none items-center justify-center rounded-full border border-line-strong text-[14px] font-semibold">{i + 1}</span>
+                <span className="flex flex-1 flex-col">
+                  <span className="text-[16px] font-medium">{title}</span>
+                  <span className="text-[14px] text-muted">{hint}</span>
+                </span>
+                <Link href={href} className={buttonClass({ variant: 'light', size: 'small' })}>
+                  Start
+                </Link>
+              </li>
+            ))}
+          </ol>
+        </section>
+        <aside className="flex flex-col gap-3 bg-mist p-5">
+          <h2 className="m-0 text-[20px] font-medium">Got lessons on YouTube?</h2>
+          <p className="m-0 text-[15px] text-ink-soft">Add them to the library. A second coach reviews each one, then it goes live with your name.</p>
+          <Link href="/coach/lessons" className={`${buttonClass({ size: 'small' })} self-start`}>
+            Write a lesson
+          </Link>
+        </aside>
+      </div>
+      <div className="grid gap-4 md:grid-cols-3">
+        {empties.map(([title, text, cta, href]) => (
+          <section key={title} className="flex flex-col gap-2 border border-dashed border-line-strong p-5">
+            <h3 className="m-0 text-[17px] font-medium">{title}</h3>
+            <p className="m-0 text-[14px] text-ink-soft">{text}</p>
+            <Link href={href} className="text-[14px] font-medium underline">
+              {cta}
+            </Link>
+          </section>
+        ))}
+      </div>
     </main>
   );
 }
@@ -18,7 +78,7 @@ async function Athletes() {
 export default function CoachHomePage() {
   return (
     <Suspense fallback={null}>
-      <Athletes />
+      <FirstRun />
     </Suspense>
   );
 }

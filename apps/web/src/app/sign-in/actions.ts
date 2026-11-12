@@ -5,7 +5,8 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { supabaseServer } from '@/lib/supabase/server';
 
-export type SendLinkState = { error?: string };
+// The typed email goes back with the error, so the field keeps it (also when the form was sent before the script loaded).
+export type SendLinkState = { email?: string; error?: string };
 
 const INVALID_EMAIL = 'Enter a full email address, like kabir@example.com';
 
@@ -23,10 +24,11 @@ async function sendLink(email: string): Promise<string | undefined> {
 }
 
 export async function requestLink(_prev: SendLinkState, formData: FormData): Promise<SendLinkState> {
-  const email = normaliseEmail(String(formData.get('email') ?? ''));
-  if (!email) return { error: INVALID_EMAIL };
+  const typed = String(formData.get('email') ?? '');
+  const email = normaliseEmail(typed);
+  if (!email) return { email: typed, error: INVALID_EMAIL };
   const error = await sendLink(email);
-  if (error) return { error };
+  if (error) return { email: typed, error };
   redirect(`/check-email?email=${encodeURIComponent(email)}`);
 }
 
