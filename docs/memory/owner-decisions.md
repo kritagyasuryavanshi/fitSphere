@@ -12,4 +12,4 @@ updated: 2026-11-12
 - Before M4: payment provider, fee %, refund and cancel terms, business and GST registration, coach agreement ([[marketplace]]).
 - Nutrition for fat-loss users ([[decision-no-nutrition]]).
 - Mobbin: only unofficial MCPs exist; needs a paid account. The owner must say "install mobbin-mcp".
-- Setup on [[env-lenovo-pc]] ([[tooling]]): apply the project permission allow list, run `codex login`, install the Codex Claude plugin, install WSL and Docker Desktop (admin and a restart).
+- Restart the LENOVO PC to finish the WSL and Docker install, then open Docker Desktop once ([[env-lenovo-pc]]).

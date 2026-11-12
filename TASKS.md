@@ -3,7 +3,7 @@
 Build tasks live on the board: `docs/plans/board.json` (rendered at https://claude.ai/artifact/BPCG8ghatzZkV7v1haJ1z1). This file keeps owner-level items only.
 
 ## Now
-- [ ] Owner: apply the project permission allow list, run `codex login`, and install WSL and Docker Desktop on the LENOVO PC. Details: `docs/memory/tooling.md`.
+- [ ] Owner: restart the LENOVO PC, then open Docker Desktop once and accept its terms.
 - [ ] Owner: merge PR #1, then PR #2.
 - [ ] Owner: create Supabase, Vercel, Anthropic API and Google OAuth accounts (O-02). This blocks preview deploys (S0-06) and Google sign-in.
 - [ ] Owner: answer Q-01 to Q-15 in `docs/architecture/risks-and-gaps.md`, or accept the defaults (O-09).
