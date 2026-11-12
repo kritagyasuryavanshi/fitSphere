@@ -6,10 +6,16 @@ Keep newest entries at the top of each section.
 
 ## Current state
 - **Phase:** building. Plan and stack approved. Design system done.
-- **Current milestone:** S0 Setup. S0-02 and S0-03 are done.
-- **Next step for the next session:** S0-05 (CI on GitHub Actions) and S0-07 (Playwright harness) and M1-01 (identity schema) are all unblocked. Do S0-05 first, so later work is checked on every pull request. O-02 is still needed for S0-06 and for Google sign-in.
-- **Open owner decisions:** O-02 accounts (blocks S0-04 onward), O-09 (answer Q-01 to Q-15 or accept the defaults). Also O-04 to O-08. Mobbin install (only unofficial community MCPs exist; needs a paid Mobbin account and a session token; owner must say "install mobbin-mcp").
+- **Current milestone:** S0 Setup. S0-01 to S0-05 are done.
+- **Next step for the next session:** S0-07 (Playwright harness) or M1-01 (identity schema). Both are unblocked. O-02 is still needed for S0-06 and for Google sign-in.
+- **Open owner decisions:** branch protection for `main` (needs GitHub Pro or a public repo; until then merge only on green CI), O-02 accounts (blocks S0-06), O-09 (answer Q-01 to Q-15 or accept the defaults). Also O-04 to O-08. Mobbin install (only unofficial community MCPs exist; needs a paid Mobbin account and a session token; owner must say "install mobbin-mcp").
 - **Owner's parallel task:** meet one boxing coach and one S&C coach (the assignment in the design doc).
+
+## Session 6 (2026-11-12): back on the LENOVO PC, S0-05
+- This PC: Node 26.13, npm 11.20, git, WSL, `gh` logged in. No Docker, so `db:start` and `test:db` do not run here; the CI `db` job covers them. `node_modules` was stale after the pull; run `npm ci` after pulling on a PC that has been idle.
+- S0-05 done: `.github/workflows/ci.yml` runs `verify` (typecheck, lint, test, build) and `db` (Supabase start, pgTAP, generated-types check) on every PR and push to main. First run green on PR #1.
+- Pushing workflow files needs the `workflow` scope: `gh auth refresh -h github.com -s workflow`, then `gh auth setup-git` so git uses the gh token, not Git Credential Manager.
+- GitHub Free cannot protect branches on a private repo (API 403). Auto mode blocks Claude from merging PRs itself; the owner merges.
 
 ## Session 5 (2026-11-09): new PC, S0-03
 - Owner moved to a second PC: repo cloned to `C:\Users\WELCOME\fitSphere`. Session transcripts stay on the old PC; repo docs and artifacts carried the context. This PC has Node 22.19, npm 11.6 and Docker 29, so local Supabase is possible here. `gh` installed with winget, at `C:\Program Files\GitHub CLI\gh.exe`, logged in as `kritagyasuryavanshi`. Bun and Codex CLI were not checked here.

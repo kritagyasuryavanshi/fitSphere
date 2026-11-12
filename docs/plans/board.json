@@ -300,14 +300,17 @@
       "deps": [
         "S0-04"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
-      "test": "manual",
+      "test": "ci",
       "ac": [
         "Every pull request runs typecheck, lint, unit, database tests and build",
         "A failing test blocks the merge",
         "Main branch is protected"
-      ]
+      ],
+      "done_on": "2026-11-12",
+      "commit": "5eb789a",
+      "note": "Branch protection needs GitHub Pro or a public repo (owner decision). Until then, merge only on a green CI run."
     },
     {
       "id": "S0-06",
