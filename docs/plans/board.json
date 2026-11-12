@@ -379,7 +379,7 @@
       "deps": [
         "S0-04"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "db",
       "ac": [
@@ -387,7 +387,9 @@
         "pgTAP: no user can insert or change a role row; only the admin function can",
         "pgTAP: a user cannot change their own role, even as admin",
         "Every role change writes an audit_log row"
-      ]
+      ],
+      "done_on": "2026-11-12",
+      "commit": "6cab5f7"
     },
     {
       "id": "M1-02",
