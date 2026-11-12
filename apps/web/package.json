@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run --passWithNoTests",
     "test:e2e": "playwright test"
   },
@@ -15,6 +15,7 @@
     "@fitsphere/core": "*",
     "@fitsphere/db": "*",
     "@fitsphere/ui": "*",
+    "@supabase/ssr": "^0.12.7",
     "next": "16.4.5",
     "react": "19.3.0",
     "react-dom": "19.3.0"

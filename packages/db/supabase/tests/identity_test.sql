@@ -3,10 +3,10 @@ begin;
 select plan(35);
 
 -- Users A and B are athletes; M is an admin. The sign-up trigger creates their profiles.
-insert into auth.users (id, email) values
-  ('a0000000-0000-0000-0000-00000000000a', 'a@t.test'),
-  ('b0000000-0000-0000-0000-00000000000b', 'b@t.test'),
-  ('c0000000-0000-0000-0000-00000000000c', 'm@t.test');
+insert into auth.users (id, email, email_confirmed_at) values
+  ('a0000000-0000-0000-0000-00000000000a', 'a@t.test', now()),
+  ('b0000000-0000-0000-0000-00000000000b', 'b@t.test', now()),
+  ('c0000000-0000-0000-0000-00000000000c', 'm@t.test', now());
 insert into public.user_roles (user_id, role) values ('c0000000-0000-0000-0000-00000000000c', 'admin');
 
 select is((select count(*)::int from public.profiles where id = 'a0000000-0000-0000-0000-00000000000a'), 1, 'sign-up creates a profile');
@@ -60,7 +60,7 @@ select is((select count(*)::int from public.audit_log where target_id = 'b000000
 delete from auth.users where id = 'c0000000-0000-0000-0000-00000000000c';
 select is((select count(*)::int from public.audit_log where target_id = 'b0000000-0000-0000-0000-00000000000b'), 4, 'deleting the granting admin writes no false audit rows');
 
-insert into auth.users (id, email, raw_user_meta_data) values ('d0000000-0000-0000-0000-00000000000d', 'long@t.test', jsonb_build_object('full_name', repeat('x', 200)));
+insert into auth.users (id, email, email_confirmed_at, raw_user_meta_data) values ('d0000000-0000-0000-0000-00000000000d', 'long@t.test', now(), jsonb_build_object('full_name', repeat('x', 200)));
 select is((select char_length(display_name) from public.profiles where id = 'd0000000-0000-0000-0000-00000000000d'), 80, 'a long sign-up name is trimmed, not rejected');
 
 -- A role update audits the revoke before the grant, and each row has its own time.

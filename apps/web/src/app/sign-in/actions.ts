@@ -1,0 +1,42 @@
+'use server';
+
+import { normaliseEmail } from '@fitsphere/core';
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { supabaseServer } from '@/lib/supabase/server';
+
+export type SendLinkState = { error?: string };
+
+const INVALID_EMAIL = 'Enter a full email address, like kabir@example.com';
+
+// The Supabase redirect allow-list rejects any origin we do not own, so a forged Origin header goes nowhere.
+async function callbackUrl() {
+  const origin = (await headers()).get('origin') ?? process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+  return `${origin}/auth/callback`;
+}
+
+async function sendLink(email: string): Promise<string | undefined> {
+  const supabase = await supabaseServer();
+  const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: await callbackUrl() } });
+  if (!error) return undefined;
+  return error.status === 429 ? 'Wait a minute before you ask for another link.' : 'We could not send the link. Try again.';
+}
+
+export async function requestLink(_prev: SendLinkState, formData: FormData): Promise<SendLinkState> {
+  const email = normaliseEmail(String(formData.get('email') ?? ''));
+  if (!email) return { error: INVALID_EMAIL };
+  const error = await sendLink(email);
+  if (error) return { error };
+  redirect(`/check-email?email=${encodeURIComponent(email)}`);
+}
+
+export async function resendLink(email: string): Promise<string | undefined> {
+  const valid = normaliseEmail(email);
+  return valid ? sendLink(valid) : INVALID_EMAIL;
+}
+
+export async function signInWithGoogle() {
+  const supabase = await supabaseServer();
+  const { data, error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: await callbackUrl() } });
+  redirect(error || !data.url ? '/sign-in?error=google' : data.url);
+}
