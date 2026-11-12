@@ -1,6 +1,6 @@
 -- M1-07: coach applications (apply, review, make coach or decline) and the email outbox.
 begin;
-select plan(23);
+select plan(24);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('a0000000-0000-0000-0000-00000000000a', 'meerazq@t.test', now()),
@@ -60,6 +60,13 @@ select lives_ok($$ select public.submit_coach_application('Meera Pillai', 'boxin
 select throws_ok($$ select * from public.admin_list_applications() $$, '42501', null, 'only an admin lists applications');
 select set_config('request.jwt.claims', '{"sub":"c0000000-0000-0000-0000-00000000000c","role":"authenticated"}', true);
 select is((select email from public.admin_list_applications() where full_name = 'Meera Pillai'), 'samzq@t.test', 'the admin sees the real account email');
+
+-- An admin who applies cannot decide their own application, even by calling the function directly.
+reset role;
+insert into public.coach_applications (user_id, full_name, category_id, city, years_coaching) values ('c0000000-0000-0000-0000-00000000000c', 'Admin', 'boxing', 'Goa', 5);
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"c0000000-0000-0000-0000-00000000000c","role":"authenticated"}', true);
+select throws_ok($$ select public.decide_coach_application((select id from public.coach_applications where user_id = 'c0000000-0000-0000-0000-00000000000c'), true) $$, '42501', 'own_application', 'an admin cannot approve their own application');
 
 select * from finish();
 rollback;

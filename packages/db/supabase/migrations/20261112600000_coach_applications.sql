@@ -104,6 +104,10 @@ begin
   if app.status <> 'pending' then
     raise exception 'already_decided' using errcode = '22023';
   end if;
+  -- Another admin decides an admin's own application. grant_role would refuse a self-grant too; this says so plainly.
+  if app.user_id = auth.uid() then
+    raise exception 'own_application' using errcode = '42501';
+  end if;
 
   update public.coach_applications
   set status = case when approve then 'approved'::public.application_status else 'declined'::public.application_status end,
