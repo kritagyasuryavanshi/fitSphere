@@ -21,7 +21,8 @@
     "db:start": "npm run db:start -w @fitsphere/db",
     "db:stop": "npm run db:stop -w @fitsphere/db",
     "db:reset": "npm run db:reset -w @fitsphere/db",
-    "db:types": "npm run db:types -w @fitsphere/db"
+    "db:types": "npm run db:types -w @fitsphere/db",
+    "test:e2e": "npm run test:e2e -w @fitsphere/web"
   },
   "devDependencies": {
     "prettier": "^3",
