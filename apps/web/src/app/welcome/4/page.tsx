@@ -44,12 +44,12 @@ async function Summary() {
       </Link>
       <h2 className="m-0 mt-4 text-[20px] font-medium">How do you want to start?</h2>
       <div className="grid gap-2 sm:grid-cols-2">
-        {/* shortcut: invites arrive in M3 and Today in M2; until then both cards go home. */}
+        {/* shortcut: invite links arrive in M3; until then that card goes to Today too. */}
         {[
           ['I have a coach’s invite link', 'Join their program'],
           ['Start on my own', 'Lessons and drills, no coach yet'],
         ].map(([title, hint]) => (
-          <Link key={title} href="/" className="flex flex-col gap-1 border border-line-strong p-4 hover:border-ink">
+          <Link key={title} href="/today" className="flex flex-col gap-1 border border-line-strong p-4 hover:border-ink">
             <span className="text-[16px] font-medium">{title}</span>
             <span className="text-[14px] text-muted">{hint}</span>
           </Link>

@@ -69,3 +69,27 @@ export async function choose(page: Page, label: string) {
   // Next keeps the previous step mounted but hidden, so only visible labels count.
   await page.locator('label').filter({ hasText: new RegExp(`^${label}$`), visible: true }).click();
 }
+
+type Role = 'athlete' | 'coach' | 'reviewer' | 'admin';
+
+/**
+ * Creates a confirmed user with exactly these roles and signs them in through /auth/confirm.
+ * It uses the admin API, so no email is sent and the 60-second resend limit never applies.
+ */
+export async function signInAs(page: Page, roles: Role[], { signedUp = true, name = 'Kabir' } = {}) {
+  const db = admin();
+  const email = `e2e-${roles.join('-') || 'none'}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}@test.fitsphere`;
+  const { data: created, error } = await db.auth.admin.createUser({ email, email_confirm: true });
+  expect(error).toBeNull();
+  const id = created.user!.id;
+  if (signedUp) await db.from('profiles').update({ display_name: name, date_of_birth: '1998-06-12' }).eq('id', id);
+  // The sign-up trigger gave the athlete role; make the roles match exactly.
+  await db.from('user_roles').delete().eq('user_id', id).not('role', 'in', `(${roles.join(',') || 'none'})`);
+  const extra = roles.filter((r) => r !== 'athlete');
+  if (extra.length) await db.from('user_roles').insert(extra.map((role) => ({ user_id: id, role })));
+
+  const { data: link, error: linkError } = await db.auth.admin.generateLink({ type: 'magiclink', email });
+  expect(linkError).toBeNull();
+  await page.goto(`/auth/confirm?token_hash=${link.properties!.hashed_token}&type=magiclink`);
+  return email;
+}
