@@ -23,16 +23,98 @@ export type Database = {
           }
         },"public": {
           Tables: {
-            [_ in never]: never
+            "audit_log": {
+                  Row: {
+                    "action": string,"actor_id": string | null,"created_at": string,"details": NonNullable<Json>,"id": number,"target_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "action": string,"actor_id"?: string | null,"created_at"?: string,"details"?: NonNullable<Json>,"id"?: never,"target_id"?: string | null
+                  }
+                  Update: {
+                    "action"?: string,"actor_id"?: string | null,"created_at"?: string,"details"?: NonNullable<Json>,"id"?: never,"target_id"?: string | null
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"consents": {
+                  Row: {
+                    "created_at": string,"granted": boolean,"id": string,"purpose": Database["public"]['Enums']["consent_purpose"],"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"granted": boolean,"id"?: string,"purpose": Database["public"]['Enums']["consent_purpose"],"user_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"granted"?: boolean,"id"?: string,"purpose"?: Database["public"]['Enums']["consent_purpose"],"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "consents_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"profiles": {
+                  Row: {
+                    "created_at": string,"date_of_birth": string | null,"display_name": string,"id": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"date_of_birth"?: string | null,"display_name"?: string,"id": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"date_of_birth"?: string | null,"display_name"?: string,"id"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"user_roles": {
+                  Row: {
+                    "created_at": string,"granted_by": string | null,"role": Database["public"]['Enums']["app_role"],"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"granted_by"?: string | null,"role": Database["public"]['Enums']["app_role"],"user_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"granted_by"?: string | null,"role"?: Database["public"]['Enums']["app_role"],"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "user_roles_granted_by_fkey"
+      columns: ["granted_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "user_roles_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
+                }
           }
           Views: {
             [_ in never]: never
           }
           Functions: {
-            [_ in never]: never
+            "grant_role":
+{ Args: { "new_role": Database["public"]['Enums']["app_role"],"target": string }; Returns: undefined
+                           },
+"is_admin":
+{ Args: Record<PropertyKey, never>; Returns: boolean
+                           },
+"revoke_role":
+{ Args: { "old_role": Database["public"]['Enums']["app_role"],"target": string }; Returns: undefined
+                           }
           }
           Enums: {
-            [_ in never]: never
+            "app_role": "athlete"|"coach"|"reviewer"|"admin","consent_purpose": "ai_health_personalisation"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -152,7 +234,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            
+            "app_role": ["athlete", "coach", "reviewer", "admin"],"consent_purpose": ["ai_health_personalisation"]
           }
         }
 } as const

@@ -1,5 +1,5 @@
 -- Local and CI test users. All share the password "password123". Never run this against production.
--- The role sits in user metadata until M1-01 adds the user_roles table.
+-- The sign-up trigger gives each user a profile and the athlete role; extra roles are added below.
 with seed(id, email, role) as (
   values
     ('00000000-0000-0000-0000-000000000001'::uuid, 'athlete@test.fitsphere', 'athlete'),
@@ -17,7 +17,7 @@ with seed(id, email, role) as (
   select
     '00000000-0000-0000-0000-000000000000', id, 'authenticated', 'authenticated', email,
     extensions.crypt('password123', extensions.gen_salt('bf')), now(),
-    '{"provider":"email","providers":["email"]}', jsonb_build_object('role', role), now(), now(),
+    '{"provider":"email","providers":["email"]}', '{}', now(), now(),
     '', '', '', ''
   from seed
   returning id, email
@@ -26,3 +26,9 @@ insert into auth.identities (id, user_id, provider_id, provider, identity_data, 
 select gen_random_uuid(), id, id::text, 'email',
   jsonb_build_object('sub', id::text, 'email', email, 'email_verified', true), now(), now(), now()
 from users;
+
+insert into public.user_roles (user_id, role) values
+  ('00000000-0000-0000-0000-000000000002', 'coach'),
+  ('00000000-0000-0000-0000-000000000003', 'coach'),
+  ('00000000-0000-0000-0000-000000000004', 'reviewer'),
+  ('00000000-0000-0000-0000-000000000005', 'admin');
