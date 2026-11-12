@@ -51,3 +51,14 @@ export async function signUp(page: Page, email: string) {
   await page.goto(await signInLink(email));
   await expect(page).toHaveURL('/welcome/1');
 }
+
+/** Fills sign-up step 1 and presses Continue. `dob` is YYYY-MM-DD. */
+export async function fillAboutYou(page: Page, name: string, dob: string, sports: string[]) {
+  const [year, month, day] = dob.split('-') as [string, string, string];
+  await page.getByLabel('First name').fill(name);
+  await page.getByLabel('Day').fill(day);
+  await page.getByLabel('Month').fill(month);
+  await page.getByLabel('Year').fill(year);
+  for (const sport of sports) await page.getByRole('checkbox', { name: new RegExp(sport) }).check();
+  await page.getByRole('button', { name: 'Continue' }).click();
+}

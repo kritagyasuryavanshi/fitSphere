@@ -23,16 +23,36 @@ export type Database = {
           }
         },"public": {
           Tables: {
-            "athlete_prefs": {
+            "athlete_basics": {
                   Row: {
-                    "category_id": string,"created_at": string,"user_id": string
+                    "days_per_week": number,"equipment": (string)[],"injury_notes": string,"updated_at": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "category_id": string,"created_at"?: string,"user_id": string
+                    "days_per_week": number,"equipment"?: (string)[],"injury_notes"?: string,"updated_at"?: string,"user_id": string
                   }
                   Update: {
-                    "category_id"?: string,"created_at"?: string,"user_id"?: string
+                    "days_per_week"?: number,"equipment"?: (string)[],"injury_notes"?: string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "athlete_basics_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: true
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"athlete_prefs": {
+                  Row: {
+                    "answers": NonNullable<Json>,"category_id": string,"created_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "answers"?: NonNullable<Json>,"category_id": string,"created_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "answers"?: NonNullable<Json>,"category_id"?: string,"created_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     {
@@ -62,6 +82,26 @@ isOneToOne: false
                   }
                   Relationships: [
                     
+                  ]
+                },"body_metrics": {
+                  Row: {
+                    "height_cm": number | null,"id": string,"measured_at": string,"user_id": string,"weight_kg": number | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "height_cm"?: number | null,"id"?: string,"measured_at"?: string,"user_id": string,"weight_kg"?: number | null
+                  }
+                  Update: {
+                    "height_cm"?: number | null,"id"?: string,"measured_at"?: string,"user_id"?: string,"weight_kg"?: number | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "body_metrics_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
                   ]
                 },"categories": {
                   Row: {
@@ -155,8 +195,20 @@ isOneToOne: false
 "is_adult":
 { Args: { "dob": string,"today": string }; Returns: boolean
                            },
+"log_body_metrics":
+{ Args: { "height_cm": number,"weight_kg": number }; Returns: undefined
+                           },
+"require_step1":
+{ Args: Record<PropertyKey, never>; Returns: string
+                           },
 "revoke_role":
 { Args: { "old_role": Database["public"]['Enums']["app_role"],"target": string }; Returns: undefined
+                           },
+"save_sport_answers":
+{ Args: { "answers": Json,"category": string }; Returns: undefined
+                           },
+"save_training_basics":
+{ Args: { "ai_consent": boolean,"days": number,"equipment": (string)[],"injury_notes": string }; Returns: undefined
                            }
           }
           Enums: {

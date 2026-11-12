@@ -35,6 +35,5 @@ export async function saveAboutYou(_prev: AboutYouState, formData: FormData): Pr
   if (error?.message === 'sign in first') redirect('/sign-in');
   if (error) return { values, errors: { form: 'We could not save this. Try again.' } };
 
-  // shortcut: step 2 does not exist yet, so finish on the home page; M1-04 sends this to /welcome/2.
-  redirect('/');
+  redirect('/welcome/2');
 }

@@ -1,7 +1,7 @@
 import { indiaToday } from '@fitsphere/core';
 import { createDbClient } from '@fitsphere/db';
-import { expect, test, type Page } from '@playwright/test';
-import { admin, signUp, userIdByEmail } from './helpers';
+import { expect, test } from '@playwright/test';
+import { admin, fillAboutYou, signUp, userIdByEmail } from './helpers';
 
 // A date of birth `years` before today in India, plus `days`. On 29 February the same day years back
 // may not exist, so it steps back to 28 February: a little over `years`, never under.
@@ -11,16 +11,6 @@ function birthday(years: number, days = 0) {
   if (date.toISOString().slice(4, 10) !== md) date = new Date(`${y - years}-02-28T00:00:00Z`);
   date.setUTCDate(date.getUTCDate() + days);
   return date.toISOString().slice(0, 10);
-}
-
-async function fillAboutYou(page: Page, name: string, dob: string, sports: string[]) {
-  const [year, month, day] = dob.split('-') as [string, string, string];
-  await page.getByLabel('First name').fill(name);
-  await page.getByLabel('Day').fill(day);
-  await page.getByLabel('Month').fill(month);
-  await page.getByLabel('Year').fill(year);
-  for (const sport of sports) await page.getByRole('checkbox', { name: new RegExp(sport) }).check();
-  await page.getByRole('button', { name: 'Continue' }).click();
 }
 
 async function savedProfile(email: string) {
@@ -36,8 +26,7 @@ test('an adult finishes step 1 and their answers are saved', async ({ page }, te
   // Exactly 18 today passes.
   await fillAboutYou(page, 'Kabir', birthday(18), ['Boxing', 'Gym & Fitness']);
 
-  await expect(page).toHaveURL('/');
-  await expect(page.getByText(`Signed in as ${email}`)).toBeVisible();
+  await expect(page).toHaveURL('/welcome/2');
   expect(await savedProfile(email)).toEqual({ display_name: 'Kabir', date_of_birth: birthday(18), sports: ['boxing', 'gym'] });
 });
 
