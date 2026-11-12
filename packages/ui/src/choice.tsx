@@ -16,20 +16,31 @@ export function Checkbox({ label, className, ...props }: CheckboxProps) {
   );
 }
 
-export type RadioCardProps = Omit<ComponentProps<'input'>, 'type'> & { label: string; description?: string };
+type CardProps = Omit<ComponentProps<'input'>, 'type'> & { label: string; description?: string };
+export type RadioCardProps = CardProps;
+export type CheckboxCardProps = CardProps;
 
-export function RadioCard({ label, description, className, ...props }: RadioCardProps) {
+function ChoiceCard({ type, label, description, className, ...props }: CardProps & { type: 'radio' | 'checkbox' }) {
   // The chosen card has a 2 px border and 1 px less padding, so choosing does not move the layout.
   const state = props.disabled
     ? 'border border-dashed border-line-strong p-4 text-muted cursor-not-allowed'
     : 'border border-line-strong p-4 cursor-pointer has-checked:border-2 has-checked:border-ink has-checked:p-[15px]';
   return (
     <label className={`flex min-h-11 items-start gap-3 ${state}`}>
-      <input type="radio" className={`${control} mt-0.5${className ? ` ${className}` : ''}`} {...props} />
+      <input type={type} className={`${control} mt-0.5${className ? ` ${className}` : ''}`} {...props} />
       <span>
         <span className="block text-[16px] font-medium">{label}</span>
         {description ? <span className="block text-[14px] text-muted">{description}</span> : null}
       </span>
     </label>
   );
+}
+
+export function RadioCard(props: RadioCardProps) {
+  return <ChoiceCard type="radio" {...props} />;
+}
+
+/** A card for picking several options, like sports on sign-up step 1. */
+export function CheckboxCard(props: CheckboxCardProps) {
+  return <ChoiceCard type="checkbox" {...props} />;
 }

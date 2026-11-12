@@ -1,36 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { createDbClient } from '@fitsphere/db';
-
-// The local Supabase stack catches every email in Mailpit.
-const MAILPIT = process.env.MAILPIT_URL ?? 'http://127.0.0.1:54324';
-
-// Test-only admin client: reads auth state that RLS hides from the app.
-function admin() {
-  return createDbClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? '', process.env.SUPABASE_SECRET_KEY ?? '');
-}
-
-async function accountState(email: string) {
-  const { data, error } = await admin().auth.admin.listUsers({ perPage: 1000 });
-  expect(error).toBeNull();
-  const user = data.users.find((u) => u.email === email);
-  const { count } = await admin().from('profiles').select('id', { count: 'exact', head: true }).eq('id', user?.id ?? '');
-  return { exists: !!user, confirmed: !!user?.email_confirmed_at, profiles: count ?? 0 };
-}
-
-async function signInLink(email: string): Promise<string> {
-  let id: string | undefined;
-  await expect
-    .poll(async () => {
-      const res = await fetch(`${MAILPIT}/api/v1/search?query=${encodeURIComponent(`to:"${email}"`)}`);
-      id = (await res.json()).messages?.[0]?.ID;
-      return id;
-    }, { timeout: 15_000 })
-    .toBeTruthy();
-  const message = await (await fetch(`${MAILPIT}/api/v1/message/${id}`)).json();
-  const link = String(message.HTML ?? message.Text).match(/https?:\/\/[^\s"'<>]+\/auth\/v1\/verify[^\s"'<>]+/)?.[0];
-  if (!link) throw new Error(`No sign-in link in the email to ${email}`);
-  return link.replaceAll('&amp;', '&');
-}
+import { accountState, signInLink } from './helpers';
 
 test('a malformed email shows the inline error from the mockup', async ({ page }) => {
   await page.goto('/sign-in');
@@ -53,8 +23,9 @@ test('the email link from the local inbox signs the user in', async ({ page }, t
   expect(await accountState(email)).toEqual({ exists: true, confirmed: false, profiles: 0 });
 
   await page.goto(await signInLink(email));
-  await expect(page).toHaveURL('/');
-  await expect(page.getByText(`Signed in as ${email}`)).toBeVisible();
+  // A new user starts sign-up at step 1, signed in.
+  await expect(page).toHaveURL('/welcome/1');
+  await expect(page.getByRole('heading', { name: 'About you' })).toBeVisible();
   expect(await accountState(email)).toEqual({ exists: true, confirmed: true, profiles: 1 });
 });
 
@@ -65,7 +36,16 @@ test('resend stays disabled for 60 seconds', async ({ page }) => {
   await expect(resend).toBeDisabled();
   await expect(resend).toHaveText('Resend link in 1:00');
 
-  await page.clock.runFor(59_000);
+  // The button streams in behind Suspense, so its clock starts late. Tick until it moves, then read where it is.
+  await expect(async () => {
+    await page.clock.runFor(250);
+    await expect(resend).not.toHaveText('Resend link in 1:00', { timeout: 500 });
+  }).toPass();
+  const left = Number((await resend.textContent())?.match(/0:(\d\d)$/)?.[1]);
+  expect(left).toBeGreaterThan(1);
+
+  await page.clock.runFor((left - 1) * 1_000);
+  await expect(resend).toHaveText('Resend link in 0:01');
   await expect(resend).toBeDisabled();
   await page.clock.runFor(1_000);
   await expect(resend).toBeEnabled();
