@@ -1,20 +1,61 @@
 {
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git fetch -q origin 2>/dev/null; echo \"fitSphere sync: $(git status -sb | head -1)\"; git status --porcelain | head -5; [ -n \"$(git rev-list HEAD..@{u} 2>/dev/null)\" ] && echo 'This PC is BEHIND origin: git pull first, then npm ci if package-lock.json changed.'; true",
+            "timeout": 20
+          }
+        ]
+      }
+    ]
+  },
   "permissions": {
     "allow": [
-      "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(git show:*)",
-      "Bash(git add:*)", "Bash(git commit:*)", "Bash(git pull:*)", "Bash(git fetch:*)",
-      "Bash(git push:*)", "Bash(git checkout:*)", "Bash(git switch:*)", "Bash(git branch:*)",
-      "Bash(git merge:*)", "Bash(git stash:*)", "Bash(git rebase:*)",
-      "Bash(gh pr:*)", "Bash(gh run:*)", "Bash(gh issue:*)", "Bash(gh auth status:*)",
-      "Bash(npm ci:*)", "Bash(npm install:*)", "Bash(npm run:*)", "Bash(npm audit:*)",
-      "Bash(npx supabase:*)", "Bash(npx playwright:*)", "Bash(npx turbo:*)",
-      "Bash(docker:*)", "Bash(python docs/*)", "Bash(node:*)"
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git pull:*)",
+      "Bash(git fetch:*)",
+      "Bash(git push:*)",
+      "Bash(git checkout:*)",
+      "Bash(git switch:*)",
+      "Bash(git branch:*)",
+      "Bash(git merge:*)",
+      "Bash(git stash:*)",
+      "Bash(git rebase:*)",
+      "Bash(gh pr:*)",
+      "Bash(gh run:*)",
+      "Bash(gh issue:*)",
+      "Bash(gh auth status:*)",
+      "Bash(npm ci:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(npm audit:*)",
+      "Bash(npx supabase:*)",
+      "Bash(npx playwright:*)",
+      "Bash(npx turbo:*)",
+      "Bash(docker:*)",
+      "Bash(python docs/*)",
+      "Bash(node:*)"
     ],
     "deny": [
-      "Bash(git push --force*)", "Bash(git push -f*)",
-      "Bash(gh pr merge --admin*)", "Bash(gh repo delete*)", "Bash(gh secret*)",
-      "Bash(npx supabase db push*)", "Bash(npx supabase link*)", "Bash(npx supabase projects*)",
-      "Bash(npx vercel*)", "Bash(vercel*)"
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(gh pr merge --admin*)",
+      "Bash(gh repo delete*)",
+      "Bash(gh secret*)",
+      "Bash(npx supabase db push*)",
+      "Bash(npx supabase link*)",
+      "Bash(npx supabase projects*)",
+      "Bash(npx vercel*)",
+      "Bash(vercel*)"
     ]
   }
 }
