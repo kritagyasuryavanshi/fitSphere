@@ -183,7 +183,15 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "apply_sport_answers":
+            "admin_list_people":
+{ Args: { "search": string }; Returns: {
+              "display_name": string,"email": string,"id": string,"joined": string,"roles": (Database["public"]['Enums']["app_role"])[]
+            }[]
+                           },
+"admin_set_roles":
+{ Args: { "new_roles": (Database["public"]['Enums']["app_role"])[],"target": string }; Returns: undefined
+                           },
+"apply_sport_answers":
 { Args: { "by_sport": Json,"uid": string }; Returns: undefined
                            },
 "complete_about_you":

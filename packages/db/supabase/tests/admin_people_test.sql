@@ -3,11 +3,11 @@ begin;
 select plan(13);
 
 insert into auth.users (id, email, email_confirmed_at) values
-  ('a0000000-0000-0000-0000-00000000000a', 'kabir@t.test', now()),
-  ('b0000000-0000-0000-0000-00000000000b', 'neha@t.test', now()),
-  ('c0000000-0000-0000-0000-00000000000c', 'admin@t.test', now());
-update public.profiles set display_name = 'Kabir' where id = 'a0000000-0000-0000-0000-00000000000a';
-update public.profiles set display_name = 'Neha' where id = 'b0000000-0000-0000-0000-00000000000b';
+  ('a0000000-0000-0000-0000-00000000000a', 'qabirzed@t.test', now()),
+  ('b0000000-0000-0000-0000-00000000000b', 'nehazquill@t.test', now()),
+  ('c0000000-0000-0000-0000-00000000000c', 'adminzq@t.test', now());
+update public.profiles set display_name = 'Qabir Zed' where id = 'a0000000-0000-0000-0000-00000000000a';
+update public.profiles set display_name = 'Nehaz Quill' where id = 'b0000000-0000-0000-0000-00000000000b';
 insert into public.user_roles (user_id, role) values ('c0000000-0000-0000-0000-00000000000c', 'admin');
 
 -- A non-admin cannot list people or set roles.
@@ -18,10 +18,10 @@ select throws_ok($$ select public.admin_set_roles('b0000000-0000-0000-0000-00000
 
 -- As the admin.
 select set_config('request.jwt.claims', '{"sub":"c0000000-0000-0000-0000-00000000000c","role":"authenticated"}', true);
-select is((select count(*)::int from public.admin_list_people('') where email like '%@t.test'), 3, 'the admin lists everyone');
-select is((select email from public.admin_list_people('KAB')), 'kabir@t.test', 'search matches the name, ignoring case');
-select is((select display_name from public.admin_list_people('neha@')), 'Neha', 'search matches the email');
-select is((select roles from public.admin_list_people('kabir')), array['athlete']::public.app_role[], 'each person comes with their roles');
+select is((select count(*)::int from public.admin_list_people('') where email in ('qabirzed@t.test', 'nehazquill@t.test', 'adminzq@t.test')), 3, 'the admin lists everyone');
+select is((select email from public.admin_list_people('QABIR Z')), 'qabirzed@t.test', 'search matches the name, ignoring case');
+select is((select display_name from public.admin_list_people('nehazquill@')), 'Nehaz Quill', 'search matches the email');
+select is((select roles from public.admin_list_people('qabirzed@')), array['athlete']::public.app_role[], 'each person comes with their roles');
 
 -- Setting roles grants and revokes in one go, and every change is audited.
 select lives_ok($$ select public.admin_set_roles('a0000000-0000-0000-0000-00000000000a', array['coach', 'reviewer']::public.app_role[]) $$, 'the admin sets Kabir to coach and reviewer');
