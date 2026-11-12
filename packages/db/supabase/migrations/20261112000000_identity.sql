@@ -123,7 +123,7 @@ set search_path = ''
 as $$
 begin
   insert into public.profiles (id, display_name)
-  values (new.id, coalesce(new.raw_user_meta_data ->> 'full_name', new.raw_user_meta_data ->> 'name', ''));
+  values (new.id, left(coalesce(new.raw_user_meta_data ->> 'full_name', new.raw_user_meta_data ->> 'name', ''), 80));
   insert into public.user_roles (user_id, role) values (new.id, 'athlete');
   return new;
 end;

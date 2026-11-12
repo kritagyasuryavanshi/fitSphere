@@ -1,6 +1,6 @@
 -- M1-01: profiles, user_roles, consents and audit_log rules.
 begin;
-select plan(28);
+select plan(29);
 
 -- Users A and B are athletes; M is an admin. The sign-up trigger creates their profiles.
 insert into auth.users (id, email) values
@@ -55,6 +55,9 @@ select is((select display_name from public.profiles where id = 'b0000000-0000-00
 select is((select count(*)::int from public.audit_log where target_id = 'b0000000-0000-0000-0000-00000000000b'), 4, 'B has four audit rows: sign-up, grant, revoke, grant');
 delete from auth.users where id = 'c0000000-0000-0000-0000-00000000000c';
 select is((select count(*)::int from public.audit_log where target_id = 'b0000000-0000-0000-0000-00000000000b'), 4, 'deleting the granting admin writes no false audit rows');
+
+insert into auth.users (id, email, raw_user_meta_data) values ('d0000000-0000-0000-0000-00000000000d', 'long@t.test', jsonb_build_object('full_name', repeat('x', 200)));
+select is((select char_length(display_name) from public.profiles where id = 'd0000000-0000-0000-0000-00000000000d'), 80, 'a long sign-up name is trimmed, not rejected');
 
 select * from finish();
 rollback;
