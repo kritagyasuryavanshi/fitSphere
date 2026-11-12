@@ -26,7 +26,7 @@ None yet. The founder answered "No evidence yet" to the demand question. Every v
 ## Constraints
 - India-first, mobile-first, low-data. Phones first, desktop second.
 - Production quality: no placeholder pages, no dead buttons, no fake data. Sample content is labelled as sample.
-- Adults only (18+) in v1. India's DPDP Act requires verifiable parental consent for minors; that work moves to the academy phase.
+- No age limit (changed 2026-11-12; was adults only). India's DPDP Act requires verifiable parental consent for minors, so a parental-consent step is a launch blocker.
 - YouTube embeds for video in v1. No paid video hosting yet.
 - Founder accepts a longer timeline in exchange for three complete pillars.
 
@@ -40,7 +40,7 @@ The owner asked for a Coach Marketplace: discover, compare, shortlist and hire c
 1. **Content and cold start are the main risks, not code.** Coaches solve both: they bring reviewed content, athletes, and willingness to pay. (Revised after the second opinion.)
 2. **Two connected categories at launch:** Boxing (primary) and S&C (supporting, integrated, not a generic gym app). The data model stays multi-sport so cricket, football and MMA slot in later without a rebuild.
 3. **Mobile-first web app (PWA)** for v1, not native apps.
-4. **Adults only (18+)** in v1.
+4. **No age limit** (changed 2026-11-12). Parental consent for minors before launch.
 5. **Real-user evidence before Phase 2 work** (marketplace, payments, academies).
 
 ## Cross-Model Perspective
@@ -109,7 +109,7 @@ Meal plans and calorie targets, academies, minors, phone OTP, Hindi, native apps
    - a coach loses access the moment an athlete leaves their program;
    - a coach cannot publish, and nobody can approve their own item;
    - only an admin can grant the coach or reviewer role.
-   An end-to-end test signs up and completes onboarding. It is blocked if under 18, and the AI-personalisation consent is stored as a separate yes/no.
+   An end-to-end test signs up and completes onboarding. The date of birth is kept, and the AI-personalisation consent is stored as a separate yes/no.
 2. **M2 Video Learning Library.** Content pages, lesson pages with YouTube embeds, search and filters, save and complete, the authoring and review workflow, seed content clearly labelled as sample until coaches replace it.
    **Verify:** an end-to-end test browses Boxing > Technical Boxing > Jab > lesson, filters drills by equipment, saves a lesson and marks it complete, and both persist after reload. A draft lesson returns 404 publicly. A search for "jab" returns the jab skill and its drills. A sample item shows "Sample", never "Coach-verified".
 3. **M3 Coach-Led Training.** Coach profile, program builder, invite link, Today dashboard, session screen, sport-specific logging, coach feedback, basic progress.

@@ -192,9 +192,6 @@ isOneToOne: false
 "is_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
-"is_adult":
-{ Args: { "dob": string,"today": string }; Returns: boolean
-                           },
 "log_body_metrics":
 { Args: { "height_cm": number,"weight_kg": number }; Returns: undefined
                            },

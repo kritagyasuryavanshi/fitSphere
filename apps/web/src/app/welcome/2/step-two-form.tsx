@@ -70,7 +70,7 @@ export function StepTwoForm({ boxing, saved }: { boxing: boolean; saved: StepTwo
           {errors.form}
         </p>
       ) : null}
-      <SubmitRow note="FitSphere is for adults 18+." pending={pending} />
+      <SubmitRow note="You can change these any time." pending={pending} />
     </form>
   );
 }

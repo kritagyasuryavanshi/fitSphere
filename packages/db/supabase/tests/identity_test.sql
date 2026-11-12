@@ -22,7 +22,7 @@ update public.profiles set display_name = 'Kabir' where id = 'a0000000-0000-0000
 select is((select display_name from public.profiles where id = 'a0000000-0000-0000-0000-00000000000a'), 'Kabir', 'A edits their own profile');
 update public.profiles set display_name = 'hacked' where id = 'b0000000-0000-0000-0000-00000000000b';
 select throws_ok($$ update public.profiles set created_at = now() where id = 'a0000000-0000-0000-0000-00000000000a' $$, '42501', null, 'A cannot edit protected profile columns');
-select throws_ok($$ update public.profiles set date_of_birth = '2000-01-01' where id = 'a0000000-0000-0000-0000-00000000000a' $$, '42501', null, 'A cannot set their date of birth directly; the 18+ check owns it');
+select throws_ok($$ update public.profiles set date_of_birth = '2000-01-01' where id = 'a0000000-0000-0000-0000-00000000000a' $$, '42501', null, 'A cannot set their date of birth directly; step 1 owns it');
 select throws_ok($$ insert into public.user_roles (user_id, role) values ('a0000000-0000-0000-0000-00000000000a', 'admin') $$, '42501', null, 'A cannot insert a role row');
 select throws_ok($$ update public.user_roles set role = 'admin' where user_id = 'a0000000-0000-0000-0000-00000000000a' $$, '42501', null, 'A cannot change a role row');
 select throws_ok($$ delete from public.user_roles where user_id = 'a0000000-0000-0000-0000-00000000000a' $$, '42501', null, 'A cannot delete a role row');

@@ -1,4 +1,4 @@
-// Dates are ISO strings (YYYY-MM-DD). The 18+ rule itself lives in SQL: public.is_adult.
+// Dates are ISO strings (YYYY-MM-DD). There is no age limit; step 1 only checks the date is real and not in the future.
 
 /** Joins the three date-of-birth fields into an ISO date, or null when they are not a real date. */
 export function parseDob(day: string, month: string, year: string): string | null {

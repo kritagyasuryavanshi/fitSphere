@@ -30,7 +30,7 @@ export function AboutYouForm({ sports, saved }: { sports: Sport[]; saved: AboutY
 
       <fieldset className="m-0 border-0 p-0" aria-describedby={errors.dob ? 'dob-error' : undefined}>
         <legend className="pb-2 text-[15px] font-medium">Date of birth</legend>
-        <p className="m-0 mb-3 text-[14px] text-muted">FitSphere is for adults. We check this once.</p>
+        <p className="m-0 mb-3 text-[14px] text-muted">We ask this once. It cannot be changed later.</p>
         <div className="grid max-w-[420px] grid-cols-3 gap-2">
           <Input label="Day" name="day" inputMode="numeric" autoComplete="bday-day" maxLength={2} defaultValue={values.day} aria-invalid={errors.dob ? true : undefined} />
           <Input label="Month" name="month" inputMode="numeric" autoComplete="bday-month" maxLength={2} defaultValue={values.month} aria-invalid={errors.dob ? true : undefined} />
@@ -59,7 +59,7 @@ export function AboutYouForm({ sports, saved }: { sports: Sport[]; saved: AboutY
 
       {errors.form ? <p role="alert" className="m-0 text-[14px] font-medium text-danger">{errors.form}</p> : null}
       <div className="flex items-center justify-between gap-4 border-t border-line pt-5">
-        <span className="text-[14px] text-muted">Adults 18+ only.</span>
+        <span className="text-[14px] text-muted">You can change your name and sports later.</span>
         <Button type="submit" disabled={pending}>
           {pending ? 'Saving…' : 'Continue'}
         </Button>

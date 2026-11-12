@@ -9,5 +9,5 @@ updated: 2026-11-12
 - Do not deploy, delete data, or force-push without the owner's approval.
 - No secrets in the repo. Use `.env` files, which git ignores.
 - Demand evidence is zero. Pricing and usage assumptions are hypotheses.
-- Adults only in v1: [[decision-adults-only]]. Out of scope: [[decision-out-of-v1]].
+- No age limit: [[decision-no-age-limit]] (replaced [[decision-adults-only]] on 2026-11-12). Parental consent for minors is a launch blocker. Out of scope: [[decision-out-of-v1]].
 - Hub: [[project-overview]].

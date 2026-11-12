@@ -75,10 +75,8 @@ begin
   end if;
 
   update public.profiles set display_name = left(name, 80), date_of_birth = birth_date where id = uid;
-  -- Keep the rows (and their answers) of sports still chosen; add new ones; drop the rest.
-  delete from public.athlete_prefs where user_id = uid and category_id <> all (sports);
-  insert into public.athlete_prefs (user_id, category_id) select distinct uid, s from unnest(sports) s
-  on conflict (user_id, category_id) do nothing;
+  delete from public.athlete_prefs where user_id = uid;
+  insert into public.athlete_prefs (user_id, category_id) select distinct uid, s from unnest(sports) s;
 end;
 $$;
 

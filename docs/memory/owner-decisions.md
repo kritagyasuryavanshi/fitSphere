@@ -6,7 +6,7 @@ updated: 2026-11-12
 ---
 
 - Merge PR #1 to #6, in order ([[ci]]).
-- Before launch: what happens to a blocked minor's account ([[M1-03]] review)? Today nothing they typed is saved, but the email and auth user stay, and a Google sign-up keeps the Google name. Recommended: delete the auth user on the block screen. A lawyer should confirm the DPDP position.
+- Before launch: a parental-consent step for under-18s, confirmed by a lawyer. There is no age limit now ([[decision-no-age-limit]]), so the app can hold a child's health data without it.
 - Approve the skills switch-off list from the /usage review (10 unused skills), or change it ([[tooling]]).
 - Set `GITHUB_PERSONAL_ACCESS_TOKEN` for the github plugin, or switch it off ([[tooling]]).
 - Switch off the unused plugins and remove the Neon connector ([[tooling]]).
