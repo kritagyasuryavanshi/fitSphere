@@ -3,6 +3,8 @@
 Build tasks live on the board: `docs/plans/board.json` (rendered at https://claude.ai/artifact/BPCG8ghatzZkV7v1haJ1z1). This file keeps owner-level items only.
 
 ## Now
+- [ ] Owner: apply the project permission allow list, run `codex login`, and install WSL and Docker Desktop on the LENOVO PC. Details: `docs/memory/tooling.md`.
+- [ ] Owner: merge PR #1, then PR #2.
 - [ ] Owner: create Supabase, Vercel, Anthropic API and Google OAuth accounts (O-02). This blocks preview deploys (S0-06) and Google sign-in.
 - [ ] Owner: answer Q-01 to Q-15 in `docs/architecture/risks-and-gaps.md`, or accept the defaults (O-09).
 - [ ] Owner: decide on branch protection for `main`. It needs GitHub Pro (paid) or a public repo. Until then, merge only on a green CI run.
@@ -12,13 +14,13 @@ Build tasks live on the board: `docs/plans/board.json` (rendered at https://clau
 - [ ] Owner, before M4 (marketplace): confirm the payment provider (recommended Razorpay), set the fee %, refund and cancel terms, register the business and GST, and sign a coach agreement.
 - [ ] Owner: decide on nutrition for fat-loss users (meal plans or calorie targets are out of v1 for now).
 - [ ] Build M1 Foundation after the S0 setup tasks.
-- [ ] Add the toolchain commands to `.claude/settings.json` once the stack is installed.
-- [ ] Owner: install Bun to restore the gstack tooling.
 
 ## Next (design)
 - [ ] Owner: decide on Mobbin (optional).
 
 ## Done
+- [x] 2026-11-12: Memory graph in `docs/memory/` with a Memory tab on the board (PR #2).
+- [x] 2026-11-12: Installed Bun (gstack works) and the Codex CLI.
 - [x] 2026-11-12: CI on GitHub Actions: verify and database jobs on every PR and push to main (S0-05, PR #1).
 - [x] 2026-11-09: Local Supabase, migrations, pgTAP and typed client in `packages/db` (S0-04).
 - [x] 2026-11-09: Design tokens and base components in `packages/ui` (S0-03).
