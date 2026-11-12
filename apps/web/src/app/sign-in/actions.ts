@@ -9,9 +9,9 @@ export type SendLinkState = { error?: string };
 
 const INVALID_EMAIL = 'Enter a full email address, like kabir@example.com';
 
-// The Supabase redirect allow-list rejects any origin we do not own, so a forged Origin header goes nowhere.
+// Production sets NEXT_PUBLIC_SITE_URL. Previews and local use the request origin, which the Supabase allow-list checks.
 async function callbackUrl() {
-  const origin = (await headers()).get('origin') ?? process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+  const origin = process.env.NEXT_PUBLIC_SITE_URL ?? (await headers()).get('origin') ?? 'http://localhost:3000';
   return `${origin}/auth/callback`;
 }
 
@@ -19,7 +19,7 @@ async function sendLink(email: string): Promise<string | undefined> {
   const supabase = await supabaseServer();
   const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: await callbackUrl() } });
   if (!error) return undefined;
-  return error.status === 429 ? 'Wait a minute before you ask for another link.' : 'We could not send the link. Try again.';
+  return error.status === 429 ? 'Too many sign-in emails. Wait a few minutes, then try again.' : 'We could not send the link. Try again.';
 }
 
 export async function requestLink(_prev: SendLinkState, formData: FormData): Promise<SendLinkState> {

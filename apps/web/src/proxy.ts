@@ -20,5 +20,6 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|images/|favicon.ico|auth/callback).*)'],
+  // Skips static files (any path with a dot) and the callback, which sets its own cookies.
+  matcher: ['/((?!_next/static|_next/image|auth/callback|.*\..*).*)'],
 };

@@ -46,7 +46,7 @@ jobs:
         working-directory: packages/db
         run: |
           eval "$(npx supabase status -o env)"
-          printf 'NEXT_PUBLIC_SUPABASE_URL=%s\nNEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=%s\n' "$API_URL" "$PUBLISHABLE_KEY" > ../../apps/web/.env.local
+          printf 'NEXT_PUBLIC_SUPABASE_URL=%s\nNEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=%s\nSUPABASE_SECRET_KEY=%s\n' "$API_URL" "$PUBLISHABLE_KEY" "$SECRET_KEY" > ../../apps/web/.env.local
       - run: npx -w @fitsphere/web playwright install --with-deps chromium
       - run: npm run build -w @fitsphere/web
       - run: npm run test:e2e

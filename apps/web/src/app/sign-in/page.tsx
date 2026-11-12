@@ -7,14 +7,14 @@ import { SignInForm } from './sign-in-form';
 export const metadata: Metadata = { title: 'Log in or join · FitSphere' };
 
 const errors: Record<string, string> = {
-  link: 'That link has expired or was already used. Send a new one.',
+  link: 'That link has expired, was already used, or was opened in a different browser. Send a new one here.',
   google: 'Google sign-in did not work. Try again, or use your email.',
 };
 
 // Reads the error from the URL at request time; the rest of the page is static.
 async function FormWithError({ searchParams }: { searchParams: PageProps<'/sign-in'>['searchParams'] }) {
   const { error } = await searchParams;
-  return <SignInForm initialError={typeof error === 'string' ? errors[error] : undefined} />;
+  return <SignInForm initialError={typeof error === 'string' && Object.hasOwn(errors, error) ? errors[error] : undefined} />;
 }
 
 export default function SignInPage({ searchParams }: PageProps<'/sign-in'>) {
