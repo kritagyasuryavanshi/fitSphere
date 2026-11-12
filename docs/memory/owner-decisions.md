@@ -11,6 +11,9 @@ updated: 2026-11-12
 - Follow-up for M3/M5: check per-sport answers against option lists stored as data in `categories`, before coaches or the AI read them ([[M1-04-review]]).
 - Before launch: a protected owner account. Today any admin can remove another admin's role; the audit log records it ([[M1-06]] review). Default applied: accepted for M1.
 - People with no role: refused for now (default applied). Revisit when a real suspend feature is built.
+- Submit buttons wait for the page script (hydration), so a tap is never sent twice. Trade-off: without the script nobody can sign in. Reviewers suggested server-side idempotency instead; sign-in also retries once on a duplicate. Keep or change ([[lesson-prod-build-e2e]]).
+- When the email sender starts: drop outbox rows older than about 7 days so no stale decision goes out (M1-07 review).
+- Is there a minimum age for coaches? Nothing checks it now ([[decision-no-age-limit]]).
 - Approve the skills switch-off list from the /usage review (10 unused skills), or change it ([[tooling]]).
 - Set `GITHUB_PERSONAL_ACCESS_TOKEN` for the github plugin, or switch it off ([[tooling]]).
 - Switch off the unused plugins and remove the Neon connector ([[tooling]]).
