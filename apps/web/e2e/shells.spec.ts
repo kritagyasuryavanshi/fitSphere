@@ -52,11 +52,27 @@ test('an athlete opening /coach sees the not-allowed page', async ({ page }) => 
   await expect(page.getByRole('heading', { name: 'Not for your account' })).toBeVisible();
 });
 
-test('an athlete who has not finished sign-up goes back to step 1', async ({ page }) => {
-  await signInAs(page, ['athlete'], { signedUp: false });
+test('an unfinished sign-up goes back to its next step', async ({ page, browser }) => {
+  await signInAs(page, ['athlete'], { stepsDone: 0 });
   await expect(page).toHaveURL('/welcome/1');
   await page.goto('/today');
   await expect(page).toHaveURL('/welcome/1');
+
+  // Someone who stopped after step 1 resumes at step 2, so the AI consent is always asked.
+  const second = await (await browser.newContext()).newPage();
+  await signInAs(second, ['athlete'], { stepsDone: 1 });
+  await expect(second).toHaveURL('/welcome/2');
+  await second.goto('/today');
+  await expect(second).toHaveURL('/welcome/2');
+});
+
+test('an admin-only user lands on People and is offered no coach pages', async ({ page }, testInfo) => {
+  test.skip(isPhone(testInfo.project.name), 'The admin links live in the desktop header.');
+  await signInAs(page, ['admin']);
+  await expect(page).toHaveURL('/admin/people');
+  const header = page.getByRole('navigation', { name: 'Coach' }).first();
+  await expect(header.getByRole('link', { name: 'People' })).toBeVisible();
+  await expect(header.getByRole('link', { name: 'Athletes' })).toHaveCount(0);
 });
 
 test('a coach lands on the coach dashboard with the coach header', async ({ page }, testInfo) => {

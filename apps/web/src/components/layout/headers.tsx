@@ -20,13 +20,16 @@ export const athleteLinks: NavItem[] = [
   { href: '/ask', label: 'Ask AI', icon: 'chat' },
 ];
 
+// Each link shows only to the roles that can open it, so nobody is offered a page that says "not allowed".
 function coachLinks(viewer: Viewer, desktop: boolean): NavItem[] {
-  const links: NavItem[] = [
-    { href: '/coach', label: 'Athletes', icon: 'calendar', exact: true },
-    { href: '/coach/clients', label: 'Clients', icon: 'chat' },
-    { href: '/coach/programs', label: 'Programs', icon: 'bars' },
-    { href: '/coach/lessons', label: desktop ? 'My lessons' : 'Lessons', icon: 'play' },
-  ];
+  const links: NavItem[] = viewer.roles.includes('coach')
+    ? [
+        { href: '/coach', label: 'Athletes', icon: 'calendar', exact: true },
+        { href: '/coach/clients', label: 'Clients', icon: 'chat' },
+        { href: '/coach/programs', label: 'Programs', icon: 'bars' },
+        { href: '/coach/lessons', label: desktop ? 'My lessons' : 'Lessons', icon: 'play' },
+      ]
+    : [];
   // shortcut: the queue count arrives with the review queue (M2); the link shows only for reviewers.
   if (viewer.roles.includes('reviewer')) links.push({ href: '/review', label: desktop ? 'Review queue' : 'Review', icon: 'bars' });
   if (desktop && viewer.roles.includes('admin')) links.push({ href: '/admin/people', label: 'People' });
@@ -140,7 +143,8 @@ export function AthleteShell({ children }: { children: ReactNode }) {
 
 async function CoachNav({ part }: { part: 'links' | 'right' | 'tabs' }) {
   const viewer = await getViewer();
-  if (!viewer) return null;
+  // Someone without the role sees no coach links while the page guard redirects them.
+  if (!viewer || !viewer.roles.some((r) => r === 'coach' || r === 'admin')) return null;
   if (part === 'links') return <HeaderLinks items={coachLinks(viewer, true)} />;
   if (part === 'tabs') return <BottomTabs items={coachLinks(viewer, false)} label="Coach" />;
   const admin = viewer.roles.includes('admin');
