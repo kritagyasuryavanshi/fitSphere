@@ -5,7 +5,9 @@ description: Open items that wait on the owner
 updated: 2026-11-12
 ---
 
-- Merge PR #1, then #2, #3 and #4, in order ([[ci]]).
+- Merge PR #1 to #6, in order ([[ci]]).
+- Before launch: what happens to a blocked minor's account ([[M1-03]] review)? Today nothing they typed is saved, but the email and auth user stay, and a Google sign-up keeps the Google name. Recommended: delete the auth user on the block screen. A lawyer should confirm the DPDP position.
+- Approve the skills switch-off list from the /usage review (10 unused skills), or change it ([[tooling]]).
 - Set `GITHUB_PERSONAL_ACCESS_TOKEN` for the github plugin, or switch it off ([[tooling]]).
 - Switch off the unused plugins and remove the Neon connector ([[tooling]]).
 - Untracked `AGENTS.md` and `.codex/hooks.json` appeared in the repo on 2026-11-12; keep or delete ([[session-8]]).
