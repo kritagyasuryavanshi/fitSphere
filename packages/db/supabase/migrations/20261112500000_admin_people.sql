@@ -69,3 +69,7 @@ $$;
 
 revoke execute on function public.admin_list_people(text), public.admin_set_roles(uuid, public.app_role[], public.app_role[]) from public, anon;
 grant execute on function public.admin_list_people(text), public.admin_set_roles(uuid, public.app_role[], public.app_role[]) to authenticated;
+
+-- grant_role and revoke_role become internal: only admin_set_roles (security definer) calls them. Otherwise an admin
+-- could skip its rules with a direct call, for example leave someone with no role or overwrite a stale change.
+revoke execute on function public.grant_role(uuid, public.app_role), public.revoke_role(uuid, public.app_role) from authenticated;
