@@ -1,4 +1,4 @@
-import { NextResponse, type NextRequest } from 'next/server';
+import { connection, NextResponse, type NextRequest } from 'next/server';
 import { supabaseServer } from '@/lib/supabase/server';
 import { homeAfterSignIn } from '@/lib/viewer';
 
@@ -10,6 +10,8 @@ type EmailOtpType = 'magiclink' | 'signup' | 'email';
 const allowed: EmailOtpType[] = ['magiclink', 'signup', 'email'];
 
 export async function GET(request: NextRequest) {
+  // Request time first: otherwise the build prerenders this handler with the flag off and serves that 404 forever.
+  await connection();
   if (process.env.E2E_AUTH_CONFIRM !== '1') return new NextResponse(null, { status: 404 });
   const tokenHash = request.nextUrl.searchParams.get('token_hash');
   const type = request.nextUrl.searchParams.get('type') as EmailOtpType | null;
