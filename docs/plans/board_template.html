@@ -67,6 +67,29 @@ section.phase{margin-top:48px}
   .body{padding-left:4px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.tabs{display:flex;gap:8px;margin-top:28px;border-bottom:2px solid var(--fg)}
+.tabs button{font:inherit;font-weight:600;font-size:15px;min-height:48px;padding:0 20px;border:0;border-radius:30px 30px 0 0;background:transparent;color:var(--muted);cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--fg);color:var(--bg)}
+.mgrid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:20px;margin-top:20px}
+#graph{width:100%;height:620px;background:var(--soft);display:block;touch-action:none}
+#graph text{font:500 11px var(--body);fill:var(--ink-2);pointer-events:none}
+#graph line{stroke:var(--line);stroke-width:1.2}
+#graph line.hot{stroke:var(--fg);stroke-width:2}
+#graph .n{cursor:pointer;stroke:var(--bg);stroke-width:1.5}
+#graph .n.sel{stroke:var(--fg);stroke-width:3}
+#graph .dim{opacity:.15}
+.k-area{fill:var(--volt)}.k-decision{fill:var(--fg)}.k-constraint{fill:var(--block)}.k-lesson{fill:#c26a00}.k-environment{fill:var(--done)}.k-session{fill:var(--muted)}.k-task{fill:var(--bg);stroke:var(--fg)!important}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:12px}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.reader{border-top:2px solid var(--fg);padding-top:14px;max-height:620px;overflow:auto}
+.reader h2{font-size:30px;overflow-wrap:anywhere}
+.reader .kind{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.reader p,.reader ul{margin:10px 0;max-width:70ch}
+.reader ul{padding-left:20px}
+.reader code{font-size:13px;background:var(--soft);padding:1px 5px;overflow-wrap:anywhere}
+.reader a,.reader button.lk{color:inherit;font-weight:600;text-decoration:underline;background:none;border:0;padding:0;font:inherit;font-weight:600;cursor:pointer}
+.reader h3{font-size:13px;color:var(--muted);margin:18px 0 4px}
+@media (max-width:860px){.mgrid{grid-template-columns:1fr}#graph{height:440px}.reader{max-height:none}}
 </style>
 
 <div class="wrap">
@@ -77,6 +100,11 @@ section.phase{margin-top:48px}
     </div>
     <p class="muted" style="max-width:44ch">One task at a time: tests first, then code, then verify. A task is ready when every task it depends on is done.</p>
   </header>
+  <div class="tabs" role="tablist" aria-label="Board views">
+    <button role="tab" id="tb-tasks" aria-controls="tab-tasks" aria-selected="true">Tasks</button>
+    <button role="tab" id="tb-memory" aria-controls="tab-memory" aria-selected="false">Memory</button>
+  </div>
+  <div id="tab-tasks" role="tabpanel" aria-labelledby="tb-tasks">
   <div class="counts" id="counts"></div>
   <div class="bar" aria-hidden="true"><i id="overall"></i></div>
   <section class="ready" aria-labelledby="readyh">
@@ -91,8 +119,21 @@ section.phase{margin-top:48px}
     <input type="search" id="fq" placeholder="Search tasks" aria-label="Search tasks">
   </div>
   <div id="phases"></div>
+  </div>
+  <div id="tab-memory" role="tabpanel" aria-labelledby="tb-memory" hidden>
+    <div class="filters" role="group" aria-label="Memory filters">
+      <div id="mchips" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+      <input type="search" id="mq" placeholder="Search memory" aria-label="Search memory">
+    </div>
+    <div class="legend" id="legend"></div>
+    <div class="mgrid">
+      <svg id="graph" role="img" aria-label="Memory graph. Click a node to read its note."></svg>
+      <article class="reader" id="reader" aria-live="polite"></article>
+    </div>
+  </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
 <script>
 const BOARD = /*__DATA__*/null;
 const LABEL = {todo:'To do', in_progress:'In progress', blocked:'Blocked', done:'Done'};
@@ -158,4 +199,137 @@ for (const [id, key] of [['fstatus', 'status'], ['fprio', 'prio'], ['fowner', 'o
 const fq = document.getElementById('fq'); fq.value = state.q; fq.oninput = () => { state.q = fq.value; save(); render(); };
 document.addEventListener('click', e => { const a = e.target.closest('a[href^="#t-"]'); if (!a) return; const d = document.querySelector(a.getAttribute('href')); if (d) { if (state.phase && !d) return; d.open = true; } });
 counts(); chips(); render();
+
+// ---- Memory tab: notes from docs/memory, links as edges, linked board tasks as square nodes
+const NOTES = BOARD.memory || [];
+const KINDS = ['area', 'decision', 'constraint', 'lesson', 'environment', 'session', 'task'];
+const noteById = Object.fromEntries(NOTES.map(n => [n.id, n]));
+let mstate = {kind: '', q: '', sel: 'project-overview'};
+try { Object.assign(mstate, JSON.parse(localStorage.getItem('fs-mem') || '{}')); } catch (e) {}
+const msave = () => { try { localStorage.setItem('fs-mem', JSON.stringify(mstate)); } catch (e) {} };
+const backlinks = id => NOTES.filter(n => n.links.includes(id)).map(n => n.id);
+const linkHtml = id => noteById[id] || byId[id] ? `<button class="lk" data-go="${esc(id)}">${esc(id)}</button>` : esc(id);
+
+function md(src) {
+  const inline = s => esc(s)
+    .replace(/`([^`]+)`/g, (m, c) => `<code>${c}</code>`)
+    .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>')
+    .replace(/\[\[([^\]|]+)\]\]/g, (m, id) => linkHtml(id))
+    .replace(/(https?:\/\/[^\s<)]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+  return src.split(/\n{2,}/).map(block => {
+    const lines = block.split('\n');
+    if (lines.every(l => /^(- |\d+\. )/.test(l))) return `<ul>${lines.map(l => `<li>${inline(l.replace(/^(- |\d+\. )/, ''))}</li>`).join('')}</ul>`;
+    const first = lines.findIndex(l => /^(- |\d+\. )/.test(l));
+    if (first > 0) return `<p>${inline(lines.slice(0, first).join(' '))}</p>` + md(lines.slice(first).join('\n'));
+    return `<p>${inline(lines.join(' '))}</p>`;
+  }).join('');
+}
+
+function read(id) {
+  mstate.sel = id; msave();
+  const el = document.getElementById('reader');
+  const t = byId[id], n = noteById[id];
+  if (t) {
+    el.innerHTML = `<p class="kind">Board task · ${LABEL[t.status]}</p><h2>${esc(t.id)}</h2><p>${esc(t.title)}</p>
+      <p><button class="lk" data-task="${esc(t.id)}">Open in the Tasks tab</button></p>
+      <h3>Notes that link here</h3><p>${backlinks(id).map(linkHtml).join(', ') || 'None'}</p>`;
+  } else if (n) {
+    const back = backlinks(id);
+    el.innerHTML = `<p class="kind">${esc(n.type)} · updated ${esc(n.updated)}</p><h2>${esc(n.id)}</h2><p class="muted">${esc(n.description)}</p>${md(n.body)}
+      <h3>Linked from</h3><p>${back.map(linkHtml).join(', ') || 'Nothing links here yet'}</p>
+      <p class="muted" style="font-size:13px">File: docs/memory/${esc(n.id)}.md</p>`;
+  } else { el.innerHTML = '<p class="muted">Click a node to read its note.</p>'; }
+  highlight();
+}
+
+let gsel = null;
+function highlight() {
+  if (!gsel) return;
+  const q = mstate.q.toLowerCase();
+  const hit = d => (!mstate.kind || d.kind === mstate.kind) && (!q || d.text.includes(q));
+  const near = new Set([mstate.sel]);
+  gsel.links.each(l => { if (l.source.id === mstate.sel) near.add(l.target.id); if (l.target.id === mstate.sel) near.add(l.source.id); });
+  gsel.nodes.classed('dim', d => !hit(d)).classed('sel', d => d.id === mstate.sel);
+  gsel.labels.classed('dim', d => !hit(d));
+  gsel.links.classed('hot', l => l.source.id === mstate.sel || l.target.id === mstate.sel)
+    .classed('dim', l => !(hit(l.source) && hit(l.target)) && !(near.has(l.source.id) && near.has(l.target.id)));
+}
+
+function graph() {
+  const svg = d3.select('#graph');
+  const box = svg.node().getBoundingClientRect();
+  const W = box.width || 800, H = box.height || 600;
+  svg.attr('viewBox', [0, 0, W, H]);
+  const taskIds = [...new Set(NOTES.flatMap(n => n.links).filter(l => byId[l] && !noteById[l]))];
+  const nodes = NOTES.map(n => ({id: n.id, kind: n.type, text: (n.id + ' ' + n.description + ' ' + n.body).toLowerCase()}))
+    .concat(taskIds.map(id => ({id, kind: 'task', text: (id + ' ' + byId[id].title).toLowerCase()})));
+  const links = NOTES.flatMap(n => n.links.map(l => ({source: n.id, target: l})));
+  const deg = {}; links.forEach(l => { deg[l.source] = (deg[l.source] || 0) + 1; deg[l.target] = (deg[l.target] || 0) + 1; });
+  const r = d => d.kind === 'task' ? 6 : 5 + Math.min(12, Math.sqrt(deg[d.id] || 1) * 2.2);
+  const root = svg.append('g');
+  const zoom = d3.zoom().scaleExtent([.2, 4]).on('zoom', e => { root.attr('transform', e.transform); root.selectAll('text').style('font-size', 12 / e.transform.k + 'px'); });
+  svg.call(zoom);
+  const fit = () => {
+    const b = root.node().getBBox(); if (!b.width) return;
+    const k = Math.min(1.4, .94 * Math.min(W / b.width, H / b.height));
+    svg.call(zoom.transform, d3.zoomIdentity.translate(W / 2 - k * (b.x + b.width / 2), H / 2 - k * (b.y + b.height / 2)).scale(k));
+  };
+  const lk = root.append('g').selectAll('line').data(links).join('line');
+  const shapes = root.append('g').selectAll('path').data(nodes).join('path')
+    .attr('class', d => 'n k-' + d.kind)
+    .attr('d', d => d.kind === 'task' ? d3.symbol(d3.symbolSquare, 110)() : d3.symbol(d3.symbolCircle, Math.PI * r(d) ** 2)())
+    .on('click', (e, d) => read(d.id));
+  shapes.append('title').text(d => d.id);
+  const lb = root.append('g').selectAll('text').data(nodes.filter(d => d.kind === 'area' || d.kind === 'task' || (deg[d.id] || 0) > 5)).join('text')
+    .text(d => d.id).attr('dx', d => r(d) + 3).attr('dy', 4);
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const sim = d3.forceSimulation(nodes)
+    .force('link', d3.forceLink(links).id(d => d.id).distance(l => l.source.kind === 'area' && l.target.kind === 'area' ? 120 : 55))
+    .force('charge', d3.forceManyBody().strength(-170))
+    .force('center', d3.forceCenter(W / 2, H / 2))
+    .force('collide', d3.forceCollide(d => r(d) + 4));
+  const tick = () => {
+    lk.attr('x1', d => d.source.x).attr('y1', d => d.source.y).attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+    shapes.attr('transform', d => `translate(${d.x},${d.y})`);
+    lb.attr('x', d => d.x).attr('y', d => d.y);
+  };
+  sim.stop(); for (let i = 0; i < 300; i++) sim.tick(); tick(); fit();
+  if (!reduce) sim.on('tick', tick);
+  shapes.call(d3.drag()
+    .on('start', (e, d) => { if (!e.active && !reduce) sim.alphaTarget(.3).restart(); d.fx = d.x; d.fy = d.y; })
+    .on('drag', (e, d) => { d.fx = e.x; d.fy = e.y; if (reduce) { d.x = e.x; d.y = e.y; tick(); } })
+    .on('end', (e, d) => { if (!e.active) sim.alphaTarget(0); d.fx = null; d.fy = null; }));
+  gsel = {nodes: shapes, links: lk, labels: lb};
+}
+
+function mchips() {
+  const count = k => k === 'task' ? new Set(NOTES.flatMap(n => n.links).filter(l => byId[l] && !noteById[l])).size : NOTES.filter(n => n.type === k).length;
+  document.getElementById('mchips').innerHTML = [''].concat(KINDS).map(k => `<button class="chip" data-kind="${k}" aria-pressed="${mstate.kind === k}">${k ? k[0].toUpperCase() + k.slice(1) + ' ' + count(k) : 'All ' + NOTES.length + ' notes'}</button>`).join('');
+  document.getElementById('legend').innerHTML = KINDS.map(k => `<span><i class="k-${k}"></i>${k}</span>`).join('');
+  document.querySelectorAll('#legend i').forEach((i, n) => { i.style.background = getComputedStyle(i).fill; if (KINDS[n] === 'task') i.style.border = '1.5px solid var(--fg)'; });
+}
+
+let drawn = false;
+function showTab(name) {
+  const mem = name === 'memory';
+  document.getElementById('tab-tasks').hidden = mem; document.getElementById('tab-memory').hidden = !mem;
+  document.getElementById('tb-tasks').setAttribute('aria-selected', !mem); document.getElementById('tb-memory').setAttribute('aria-selected', mem);
+  try { localStorage.setItem('fs-tab', name); } catch (e) {}
+  if (mem && !drawn) {
+    drawn = true; mchips();
+    if (window.d3) graph(); else document.getElementById('graph').outerHTML = '<p class="empty">The graph library did not load. Notes are still readable from the links in the reader.</p>';
+    read(mstate.sel);
+  }
+}
+document.querySelector('.tabs').onclick = e => { const b = e.target.closest('button'); if (b) showTab(b.id === 'tb-memory' ? 'memory' : 'tasks'); };
+document.querySelector('.tabs').onkeydown = e => { if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { const m = document.getElementById('tb-tasks').getAttribute('aria-selected') === 'true'; showTab(m ? 'memory' : 'tasks'); document.getElementById(m ? 'tb-memory' : 'tb-tasks').focus(); } };
+document.getElementById('mchips').onclick = e => { const b = e.target.closest('button'); if (!b) return; mstate.kind = b.dataset.kind; msave(); mchips(); highlight(); };
+const mq = document.getElementById('mq'); mq.value = mstate.q; mq.oninput = () => { mstate.q = mq.value; msave(); highlight(); };
+document.getElementById('reader').onclick = e => {
+  const g = e.target.closest('[data-go]'); if (g) return read(g.dataset.go);
+  const t = e.target.closest('[data-task]'); if (t) { showTab('tasks'); const d = document.getElementById('t-' + t.dataset.task); if (d) { d.open = true; d.scrollIntoView(); } }
+};
+let startTab = location.hash === '#memory' ? 'memory' : 'tasks';
+try { if (!location.hash) startTab = localStorage.getItem('fs-tab') || 'tasks'; } catch (e) {}
+showTab(startTab);
 </script>
