@@ -6,7 +6,7 @@ create type public.consent_purpose as enum ('ai_health_personalisation');
 
 create table public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
-  display_name text not null default '',
+  display_name text not null default '' check (char_length(display_name) <= 80),
   date_of_birth date,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -28,7 +28,8 @@ create table public.consents (
   user_id uuid not null references public.profiles (id) on delete cascade,
   purpose public.consent_purpose not null,
   granted boolean not null,
-  created_at timestamptz not null default now()
+  -- clock_timestamp, so two rows in one transaction still order.
+  created_at timestamptz not null default clock_timestamp()
 );
 create index consents_user_purpose_idx on public.consents (user_id, purpose, created_at desc);
 
@@ -109,7 +110,8 @@ begin
   return null;
 end;
 $$;
-create trigger user_roles_audit after insert or update or delete on public.user_roles
+-- Not on granted_by: deleting the granting admin sets it to null, which is not a role change.
+create trigger user_roles_audit after insert or delete or update of user_id, role on public.user_roles
   for each row execute function public.audit_role_change();
 
 -- Every new auth user gets a profile and the athlete role.
@@ -131,8 +133,11 @@ create trigger on_auth_user_created after insert on auth.users
 
 -- Privileges. Supabase grants everything to anon and authenticated by default, so start from nothing.
 revoke all on public.profiles, public.user_roles, public.consents, public.audit_log from anon, authenticated;
+revoke all on sequence public.audit_log_id_seq from anon, authenticated;
+grant all on public.profiles, public.user_roles, public.consents, public.audit_log to service_role;
 grant select on public.profiles, public.user_roles, public.consents, public.audit_log to authenticated;
-grant update (display_name, date_of_birth) on public.profiles to authenticated;
+-- date_of_birth is written only by the server-side 18+ check (M1-03).
+grant update (display_name) on public.profiles to authenticated;
 grant insert (user_id, purpose, granted) on public.consents to authenticated;
 
 revoke execute on function public.is_admin(), public.grant_role(uuid, public.app_role), public.revoke_role(uuid, public.app_role),

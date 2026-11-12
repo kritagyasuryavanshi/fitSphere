@@ -1,6 +1,6 @@
 -- M1-01: profiles, user_roles, consents and audit_log rules.
 begin;
-select plan(24);
+select plan(28);
 
 -- Users A and B are athletes; M is an admin. The sign-up trigger creates their profiles.
 insert into auth.users (id, email) values
@@ -22,6 +22,7 @@ update public.profiles set display_name = 'Kabir' where id = 'a0000000-0000-0000
 select is((select display_name from public.profiles where id = 'a0000000-0000-0000-0000-00000000000a'), 'Kabir', 'A edits their own profile');
 update public.profiles set display_name = 'hacked' where id = 'b0000000-0000-0000-0000-00000000000b';
 select throws_ok($$ update public.profiles set created_at = now() where id = 'a0000000-0000-0000-0000-00000000000a' $$, '42501', null, 'A cannot edit protected profile columns');
+select throws_ok($$ update public.profiles set date_of_birth = '2000-01-01' where id = 'a0000000-0000-0000-0000-00000000000a' $$, '42501', null, 'A cannot set their date of birth directly; the 18+ check owns it');
 select throws_ok($$ insert into public.user_roles (user_id, role) values ('a0000000-0000-0000-0000-00000000000a', 'admin') $$, '42501', null, 'A cannot insert a role row');
 select throws_ok($$ update public.user_roles set role = 'admin' where user_id = 'a0000000-0000-0000-0000-00000000000a' $$, '42501', null, 'A cannot change a role row');
 select throws_ok($$ delete from public.user_roles where user_id = 'a0000000-0000-0000-0000-00000000000a' $$, '42501', null, 'A cannot delete a role row');
@@ -46,10 +47,14 @@ select throws_ok($$ select public.revoke_role('c0000000-0000-0000-0000-000000000
 select throws_ok($$ insert into public.user_roles (user_id, role) values ('b0000000-0000-0000-0000-00000000000b', 'reviewer') $$, '42501', null, 'the admin cannot insert a role row directly');
 select lives_ok($$ select public.revoke_role('b0000000-0000-0000-0000-00000000000b', 'coach') $$, 'the admin revokes the coach role');
 select is((select count(*)::int from public.audit_log where target_id = 'b0000000-0000-0000-0000-00000000000b' and action = 'role_revoked'), 1, 'the revoke writes an audit row');
+select lives_ok($$ select public.grant_role('b0000000-0000-0000-0000-00000000000b', 'reviewer') $$, 'the admin grants B the reviewer role');
 
 -- As postgres again: B's profile is unchanged by A's update.
 reset role;
 select is((select display_name from public.profiles where id = 'b0000000-0000-0000-0000-00000000000b'), '', 'A could not edit the profile of B');
+select is((select count(*)::int from public.audit_log where target_id = 'b0000000-0000-0000-0000-00000000000b'), 4, 'B has four audit rows: sign-up, grant, revoke, grant');
+delete from auth.users where id = 'c0000000-0000-0000-0000-00000000000c';
+select is((select count(*)::int from public.audit_log where target_id = 'b0000000-0000-0000-0000-00000000000b'), 4, 'deleting the granting admin writes no false audit rows');
 
 select * from finish();
 rollback;
