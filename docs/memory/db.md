@@ -12,4 +12,5 @@ Built in [[S0-04]] ([[session-5]]). Local Supabase needs Docker, not a cloud acc
 - Studio: http://127.0.0.1:54323.
 - `apps/web/.env.local` holds the local keys and is git-ignored. Recreate it from `npx supabase status` in `packages/db`.
 - Analytics is off in `supabase/config.toml`. Nothing uses it, it took 559 MB, and its log shipper restart-looped.
-- Docker exists only on [[env-welcome-pc]]. [[ci]] runs the DB tests on every PR.
+- `supabase/seed.sql` ([[S0-07]]) adds five test users: athlete, coach1, coach2, reviewer, admin `@test.fitsphere`, password `password123`. The role sits in user metadata until [[M1-01]]. `db:start` and `db:reset` apply it.
+- Docker runs on [[env-welcome-pc]] and [[env-lenovo-pc]]. [[ci]] runs the DB tests on every PR.

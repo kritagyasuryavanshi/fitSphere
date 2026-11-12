@@ -3,8 +3,7 @@
 Build tasks live on the board: `docs/plans/board.json` (rendered at https://claude.ai/artifact/BPCG8ghatzZkV7v1haJ1z1). This file keeps owner-level items only.
 
 ## Now
-- [ ] Owner: restart the LENOVO PC, then open Docker Desktop once and accept its terms.
-- [ ] Owner: merge PR #1, then PR #2.
+- [ ] Owner: merge PR #1, then PR #2, then PR #3.
 - [ ] Owner: create Supabase, Vercel, Anthropic API and Google OAuth accounts (O-02). This blocks preview deploys (S0-06) and Google sign-in.
 - [ ] Owner: answer Q-01 to Q-15 in `docs/architecture/risks-and-gaps.md`, or accept the defaults (O-09).
 - [ ] Owner: decide on branch protection for `main`. It needs GitHub Pro (paid) or a public repo. Until then, merge only on a green CI run.
@@ -19,6 +18,7 @@ Build tasks live on the board: `docs/plans/board.json` (rendered at https://clau
 - [ ] Owner: decide on Mobbin (optional).
 
 ## Done
+- [x] 2026-11-12: Playwright e2e harness with seeded test users; e2e CI job (S0-07, PR #3).
 - [x] 2026-11-12: Memory graph in `docs/memory/` with a Memory tab on the board (PR #2).
 - [x] 2026-11-12: Installed Bun (gstack works) and the Codex CLI.
 - [x] 2026-11-12: CI on GitHub Actions: verify and database jobs on every PR and push to main (S0-05, PR #1).
