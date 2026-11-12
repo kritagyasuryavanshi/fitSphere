@@ -9,10 +9,19 @@ export function admin() {
   return createDbClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? '', process.env.SUPABASE_SECRET_KEY ?? '');
 }
 
-export async function accountState(email: string) {
+async function userByEmail(email: string) {
+  // shortcut: reads the first 1000 users; fine because every local run starts from db reset.
   const { data, error } = await admin().auth.admin.listUsers({ perPage: 1000 });
   expect(error).toBeNull();
-  const user = data.users.find((u) => u.email === email);
+  return data.users.find((u) => u.email === email);
+}
+
+export async function userIdByEmail(email: string) {
+  return (await userByEmail(email))?.id ?? '';
+}
+
+export async function accountState(email: string) {
+  const user = await userByEmail(email);
   const { count } = await admin().from('profiles').select('id', { count: 'exact', head: true }).eq('id', user?.id ?? '');
   return { exists: !!user, confirmed: !!user?.email_confirmed_at, profiles: count ?? 0 };
 }

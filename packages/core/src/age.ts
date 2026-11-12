@@ -1,11 +1,4 @@
-// Dates are ISO strings (YYYY-MM-DD) so the rule never depends on the server's time zone.
-
-/** The 18+ rule. A 29 February birthday counts as 1 March in a non-leap year, as Postgres does. */
-export function isAdult(dob: string, today: string): boolean {
-  const eighteenth = `${String(Number(dob.slice(0, 4)) + 18).padStart(4, '0')}${dob.slice(4)}`;
-  // ISO strings compare in date order, and "2026-02-29" sorts between 28 February and 1 March.
-  return today >= eighteenth;
-}
+// Dates are ISO strings (YYYY-MM-DD). The 18+ rule itself lives in SQL: public.is_adult.
 
 /** Joins the three date-of-birth fields into an ISO date, or null when they are not a real date. */
 export function parseDob(day: string, month: string, year: string): string | null {

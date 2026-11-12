@@ -1,12 +1,14 @@
 import { indiaToday } from '@fitsphere/core';
 import { createDbClient } from '@fitsphere/db';
 import { expect, test, type Page } from '@playwright/test';
-import { admin, signUp } from './helpers';
+import { admin, signUp, userIdByEmail } from './helpers';
 
-// A date of birth `years` before today in India, plus `days`.
+// A date of birth `years` before today in India, plus `days`. On 29 February the same day years back
+// may not exist, so it steps back to 28 February: a little over `years`, never under.
 function birthday(years: number, days = 0) {
-  const date = new Date(`${indiaToday()}T00:00:00Z`);
-  date.setUTCFullYear(date.getUTCFullYear() - years);
+  const [y, md] = [Number(indiaToday().slice(0, 4)), indiaToday().slice(4)];
+  let date = new Date(`${y - years}${md}T00:00:00Z`);
+  if (date.toISOString().slice(4, 10) !== md) date = new Date(`${y - years}-02-28T00:00:00Z`);
   date.setUTCDate(date.getUTCDate() + days);
   return date.toISOString().slice(0, 10);
 }
@@ -22,8 +24,7 @@ async function fillAboutYou(page: Page, name: string, dob: string, sports: strin
 }
 
 async function savedProfile(email: string) {
-  const { data } = await admin().auth.admin.listUsers({ perPage: 1000 });
-  const id = data.users.find((u) => u.email === email)?.id ?? '';
+  const id = await userIdByEmail(email);
   const { data: profile } = await admin().from('profiles').select('display_name, date_of_birth').eq('id', id).single();
   const { data: prefs } = await admin().from('athlete_prefs').select('category_id').eq('user_id', id).order('category_id');
   return { ...profile, sports: prefs?.map((p) => p.category_id) };
@@ -68,6 +69,14 @@ test('step 1 shows inline errors and keeps what was typed', async ({ page }, tes
   await expect(page.getByLabel('First name')).toHaveValue('Kabir');
   await expect(page.getByLabel('Day')).toHaveValue('31');
   await expect(page.getByRole('checkbox', { name: /Cricket/ })).toBeDisabled();
+});
+
+test('a year in the future is a typo, not a child', async ({ page }, testInfo) => {
+  const email = `e2e-typo-${testInfo.project.name}-${Date.now()}@test.fitsphere`;
+  await signUp(page, email);
+  await fillAboutYou(page, 'Kabir', '2098-06-12', ['Boxing']);
+  await expect(page.getByText('Enter a real date, like 12 06 1998')).toBeVisible();
+  await expect(page).toHaveURL('/welcome/1');
 });
 
 test('the 18+ rule holds when the browser is bypassed', async ({}, testInfo) => {

@@ -32,7 +32,7 @@ export default function AboutYouPage() {
       back={{ href: '/sign-in', label: 'Back' }}
       photo={{ src: '/images/gloves-red.jpg', alt: 'Pair of red boxing gloves' }}
       slogan="Let’s build your camp."
-      step={{ label: 'Step 1 of 4', now: 1, of: 4 }}
+      step={{ now: 1, of: 4 }}
     >
       <Suspense fallback={null}>
         <Form />

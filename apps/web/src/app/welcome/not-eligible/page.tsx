@@ -14,7 +14,7 @@ export default function NotEligiblePage() {
       </p>
       <p className="m-0 text-[16px] font-medium">We did not save anything you typed.</p>
       <div className="flex flex-wrap gap-3">
-        {/* shortcut: the free library arrives in M2-03; until then both links go home. */}
+        {/* shortcut: "Watch free lessons" joins when the library exists (M2-03). */}
         <Link href="/" className={buttonClass()}>
           Back to home
         </Link>

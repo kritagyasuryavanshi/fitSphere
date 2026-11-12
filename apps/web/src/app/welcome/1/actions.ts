@@ -1,6 +1,6 @@
 'use server';
 
-import { indiaToday, isAdult, parseDob } from '@fitsphere/core';
+import { indiaToday, parseDob } from '@fitsphere/core';
 import { redirect } from 'next/navigation';
 import { supabaseServer } from '@/lib/supabase/server';
 
@@ -23,17 +23,16 @@ export async function saveAboutYou(_prev: AboutYouState, formData: FormData): Pr
 
   const errors: AboutYouState['errors'] = {};
   if (!name) errors.name = 'Enter your first name';
-  if (!dob) errors.dob = 'Enter a real date, like 12 06 1998';
+  // A date after today is a typo, not a child.
+  if (!dob || dob > indiaToday()) errors.dob = 'Enter a real date, like 12 06 1998';
   if (sports.length === 0) errors.sports = 'Pick at least one sport';
   if (errors.name || errors.dob || errors.sports) return { values, errors };
 
-  // The server decides on India's date; the database checks the same rule again.
-  if (!isAdult(dob!, indiaToday())) await notEligible();
-
+  // The database owns the 18+ rule (public.is_adult) and runs it on India's date, whatever the browser sent.
   const { error } = await (await supabaseServer()).rpc('complete_about_you', { first_name: name, birth_date: dob!, sports });
   if (error?.message === 'under_18') await notEligible();
   if (error?.message === 'dob_locked') return { values, errors: { dob: 'Your date of birth is already saved. It cannot be changed.' } };
-  if (error?.code === '42501') redirect('/sign-in');
+  if (error?.message === 'sign in first') redirect('/sign-in');
   if (error) return { values, errors: { form: 'We could not save this. Try again.' } };
 
   // shortcut: step 2 does not exist yet, so finish on the home page; M1-04 sends this to /welcome/2.

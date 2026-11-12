@@ -8,7 +8,7 @@ type ShellProps = {
   photo?: { src: string; alt: string };
   slogan?: string;
   /** Shown opposite the back link, like "Step 1 of 4". A step screen starts at the top instead of the middle. */
-  step?: { label: string; now: number; of: number };
+  step?: { now: number; of: number };
 };
 
 const glovesBlack = { src: '/images/gloves-black.jpg', alt: 'Black boxing gloves hanging in a gym' };
@@ -35,7 +35,7 @@ export function AuthShell({ back, children, photo = glovesBlack, slogan = 'Glove
             </svg>
             {back.label}
           </Link>
-          {step ? <span className="text-[14px] font-medium text-muted">{step.label}</span> : null}
+          {step ? <span className="text-[14px] font-medium text-muted">Step {step.now} of {step.of}</span> : null}
         </div>
         {step ? (
           <>

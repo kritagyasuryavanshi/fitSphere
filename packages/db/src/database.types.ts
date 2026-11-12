@@ -152,6 +152,9 @@ isOneToOne: false
 "is_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
+"is_adult":
+{ Args: { "dob": string,"today": string }; Returns: boolean
+                           },
 "revoke_role":
 { Args: { "old_role": Database["public"]['Enums']["app_role"],"target": string }; Returns: undefined
                            }
