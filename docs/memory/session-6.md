@@ -13,13 +13,16 @@ pc: lenovo
 - Rewrote the stale `README.md` and `PROJECT.md`.
 - Installed Bun (gstack works again), WSL 3.0.5 and Docker Desktop 4.99.0 ([[env-lenovo-pc]], [[tooling]]).
 - The owner applied the project permission allow list.
-- Wrote the routine for working across two PCs ([[multi-pc-workflow]]).
+- Wrote the routine for working across two PCs ([[multi-pc-workflow]]). The owner applied the session-start sync hook.
+- Global rulebook (`suryavanshi-claude/CLAUDE.md`): independent review moved from Codex to `/code-review`, the `planner` agent and `/security-review` ([[tooling]]). Committed locally as `eec9e30`, not pushed yet. `sync.sh` linked the `planner` agent on this PC.
 
 ## Bugs and errors
 - `npm run verify` failed: `node_modules` was stale after the pull. Fixed with `npm ci` ([[lesson-stale-node-modules]]).
 - Push of the workflow file was rejected for a missing `workflow` scope. Fixed ([[lesson-gh-workflow-scope]]).
 - `gh pr merge` is blocked by auto mode, even with an allow rule ([[lesson-auto-mode-merge]]). Open.
 - Branch protection is not possible on GitHub Free for a private repo ([[ci]]).
+- `gh auth setup-git` made git use the `kritagyasuryavanshi` login for all of github.com, so the push to `Akash9179/suryavanshi-claude` got 403 ([[lesson-gh-workflow-scope]]). Open: the owner runs the scoped credential fix.
+- `suryavanshi-claude` `test.sh` (10 of 15 fail) and `doctor.sh` misread settings on this PC. These failures predate this session. Open.
 
 ## Decisions
 - No Codex subscription. Reviews use a Claude subagent ([[tooling]]).
@@ -29,6 +32,7 @@ pc: lenovo
 - Restart the LENOVO PC, then open Docker Desktop once and accept its terms.
 - Merge PR #1, then PR #2.
 - Decide on branch protection (GitHub Pro or a public repo).
+- Run the scoped git credential fix, then push `suryavanshi-claude`.
 
 ## Next
 - Post-restart Docker checks ([[env-lenovo-pc]]).

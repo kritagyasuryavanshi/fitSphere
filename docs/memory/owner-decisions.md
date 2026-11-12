@@ -7,6 +7,7 @@ updated: 2026-11-12
 
 - Restart the LENOVO PC to finish the WSL and Docker install, then open Docker Desktop once ([[env-lenovo-pc]]).
 - Merge PR #1, then PR #2 ([[ci]]).
+- Run the scoped git credential fix, then push `suryavanshi-claude` ([[lesson-gh-workflow-scope]]).
 - Branch protection for `main`: needs GitHub Pro (paid) or a public repo. See [[ci]].
 - [[O-02]]: Supabase, Vercel, Anthropic and Google OAuth accounts. Blocks [[S0-06]] and Google sign-in.
 - [[O-09]]: answer Q-01–Q-15 or accept the defaults ([[architecture-docs]]).

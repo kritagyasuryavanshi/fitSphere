@@ -7,6 +7,7 @@ updated: 2026-11-12
 GitHub is the only shared state. Claude's chat history stays on each PC; the repo carries everything else ([[memory-system]]).
 
 Start on any PC:
+0. Open Docker Desktop (for DB work). Open a terminal in the project folder (Explorer: right-click the folder, Open in Terminal), run `claude`, and type `resume`. End with `wrap up`. Same for every project.
 1. Open Claude in the fitSphere folder. The SessionStart hook fetches and shows if this PC is behind.
 2. `git pull`, then `npm ci` if `package-lock.json` changed ([[lesson-stale-node-modules]]).
 3. Read `MEMORY.md` and the latest session note. Check the board's Updates tab.
