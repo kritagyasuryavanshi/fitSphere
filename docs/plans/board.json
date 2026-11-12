@@ -478,7 +478,7 @@
       "deps": [
         "M1-02"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "e2e",
       "screens": [
@@ -490,7 +490,9 @@
         "Phone shows bottom tabs (athlete and coach) and the visitor menu",
         "End-to-end: a guest opening /today goes to sign-in; an athlete opening /coach sees a not-allowed page",
         "The guard runs on the server for every protected route"
-      ]
+      ],
+      "done_on": "2026-11-12",
+      "commit": "50e8cf1"
     },
     {
       "id": "M1-06",
@@ -502,7 +504,7 @@
         "M1-01",
         "M1-05"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "db+e2e",
       "screens": [
@@ -512,7 +514,8 @@
         "Only an admin sees the page",
         "Changing a role calls the admin function and writes audit_log",
         "An admin cannot change their own role (blocked in the database)"
-      ]
+      ],
+      "done_on": "2026-11-12"
     },
     {
       "id": "M1-07",
