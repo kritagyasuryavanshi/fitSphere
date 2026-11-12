@@ -251,6 +251,12 @@ isOneToOne: false
 "decide_coach_application":
 { Args: { "application": string,"approve": boolean }; Returns: undefined
                            },
+"delete_my_account":
+{ Args: Record<PropertyKey, never>; Returns: undefined
+                           },
+"export_my_data":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
 "grant_role":
 { Args: { "new_role": Database["public"]['Enums']["app_role"],"target": string }; Returns: undefined
                            },
@@ -271,6 +277,9 @@ isOneToOne: false
                            },
 "save_training_basics":
 { Args: { "ai_consent": boolean,"days": number,"equipment": (string)[],"injury_notes": string,"notice": string,"sport_answers": Json }; Returns: undefined
+                           },
+"set_my_consent":
+{ Args: { "granted": boolean,"notice": string,"purpose": Database["public"]['Enums']["consent_purpose"] }; Returns: undefined
                            },
 "submit_coach_application":
 { Args: { "category": string,"city": string,"full_name": string,"how_today": string,"work_url": string,"years": number }; Returns: undefined
