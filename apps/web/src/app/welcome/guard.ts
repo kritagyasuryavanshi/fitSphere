@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { connection } from 'next/server';
 import { supabaseServer } from '@/lib/supabase/server';
+import { readAccount } from '@/lib/viewer';
 
 /** For sign-up steps 2 to 4: a signed-in user who has finished step 1, with their chosen sports. */
 export async function signUpUser() {
@@ -9,13 +10,13 @@ export async function signUpUser() {
   const { data } = await supabase.auth.getClaims();
   const userId = data?.claims.sub;
   if (!userId) redirect('/sign-in');
-  const [{ data: profile }, { data: prefs }, { data: basics }] = await Promise.all([
-    supabase.from('profiles').select('display_name, date_of_birth').eq('id', userId).maybeSingle(),
+  // The sign-up state comes from the shared reader, so every screen agrees on which step is next.
+  const [account, prefs] = await Promise.all([
+    readAccount(supabase, userId),
     supabase.from('athlete_prefs').select('category_id, answers').eq('user_id', userId),
-    supabase.from('athlete_basics').select('user_id').eq('user_id', userId).maybeSingle(),
   ]);
-  if (!profile?.date_of_birth) redirect('/welcome/1');
-  const answers = Object.fromEntries((prefs ?? []).map((p) => [p.category_id, (p.answers ?? {}) as Record<string, unknown>]));
-  // Step 2 is done once its basics row exists; steps 3 and 4 send the user back to it until then.
-  return { supabase, userId, name: profile.display_name, sports: Object.keys(answers), answers, stepTwoDone: !!basics };
+  if (prefs.error) throw new Error(`Could not read the sports: ${prefs.error.message}`);
+  if (account.nextStep === '/welcome/1') redirect('/welcome/1');
+  const answers = Object.fromEntries((prefs.data ?? []).map((p) => [p.category_id, (p.answers ?? {}) as Record<string, unknown>]));
+  return { supabase, userId, name: account.name, roles: account.roles, sports: Object.keys(answers), answers, stepTwoDone: account.nextStep === null };
 }
