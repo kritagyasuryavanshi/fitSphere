@@ -125,6 +125,8 @@ test('step 3 refuses odd numbers, and saved measurements can be cleared', async 
 test('the summary cannot be reached by skipping step 2', async ({ page }, testInfo) => {
   await signUp(page, `e2e-skip2-${testInfo.project.name}-${Date.now()}@test.fitsphere`);
   await fillAboutYou(page, 'Kabir', '1998-06-12', ['Boxing']);
+  // Wait for step 1 to save before typing the address, or the guard sees an unfinished step 1.
+  await expect(page).toHaveURL('/welcome/2');
   await page.goto('/welcome/4');
   await expect(page).toHaveURL('/welcome/2');
 });
