@@ -1,22 +1,11 @@
 'use client';
 
-import { Button, CheckboxCard, Input } from '@fitsphere/ui';
+import { CheckboxCard, Input } from '@fitsphere/ui';
+import { FieldError, SubmitRow } from '../fields';
 import { useActionState } from 'react';
 import { saveAboutYou, type AboutYouValues } from './actions';
 
 type Sport = { id: string; name: string; tagline: string; is_live: boolean };
-
-function FieldError({ id, children }: { id: string; children?: string }) {
-  return children ? (
-    <span id={id} className="mt-2 flex items-center gap-1.5 text-[14px] font-medium text-danger">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true" className="flex-none">
-        <path d="M12 3l10 18H2z" />
-        <path d="M12 10v5M12 18v.5" />
-      </svg>
-      {children}
-    </span>
-  ) : null;
-}
 
 export function AboutYouForm({ sports, saved }: { sports: Sport[]; saved: AboutYouValues }) {
   const [state, action, pending] = useActionState(saveAboutYou, {});
@@ -58,12 +47,7 @@ export function AboutYouForm({ sports, saved }: { sports: Sport[]; saved: AboutY
       </fieldset>
 
       {errors.form ? <p role="alert" className="m-0 text-[14px] font-medium text-danger">{errors.form}</p> : null}
-      <div className="flex items-center justify-between gap-4 border-t border-line pt-5">
-        <span className="text-[14px] text-muted">You can change your name and sports later.</span>
-        <Button type="submit" disabled={pending}>
-          {pending ? 'Saving…' : 'Continue'}
-        </Button>
-      </div>
+      <SubmitRow note="You can change your name and sports later." pending={pending} />
     </form>
   );
 }

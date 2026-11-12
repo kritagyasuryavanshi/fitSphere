@@ -2,7 +2,7 @@
 
 import { Input, RadioCard } from '@fitsphere/ui';
 import { useActionState } from 'react';
-import { FieldError, Group, Pills, SubmitRow } from '../fields';
+import { FieldError, Group, Pills, SubmitRow, YesNo } from '../fields';
 import { gymGoals, gymPlaces, liftingExperience } from '../options';
 import { saveStepThree, type StepThreeValues } from './actions';
 
@@ -39,8 +39,16 @@ export function StepThreeForm({ saved }: { saved: StepThreeValues }) {
           <Input label="Height (cm)" name="height" inputMode="numeric" placeholder="e.g. 168" defaultValue={values.height} aria-invalid={errors.body ? true : undefined} />
         </div>
         <FieldError id="body-error">{errors.body}</FieldError>
-        <p className="m-0 mt-3 text-[14px] text-muted">Only you and your coach see these. They never go to the AI guide unless you turn that on in Account.</p>
+        <p className="m-0 mt-3 text-[14px] text-muted">Only you and your coach see these. Leave both empty to remove them.</p>
       </fieldset>
+
+      <YesNo
+        name="ai_consent"
+        legend="Use your weight and height to personalise AI answers?"
+        hint="If yes, they are sent to our AI provider outside India, without your name or contact details. You can change this any time."
+        value={values.aiConsent}
+        error={errors.aiConsent}
+      />
 
       {errors.form ? (
         <p role="alert" className="m-0 text-[14px] font-medium text-danger">

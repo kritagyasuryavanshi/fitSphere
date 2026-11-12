@@ -9,11 +9,13 @@ export async function signUpUser() {
   const { data } = await supabase.auth.getClaims();
   const userId = data?.claims.sub;
   if (!userId) redirect('/sign-in');
-  const [{ data: profile }, { data: prefs }] = await Promise.all([
+  const [{ data: profile }, { data: prefs }, { data: basics }] = await Promise.all([
     supabase.from('profiles').select('display_name, date_of_birth').eq('id', userId).maybeSingle(),
     supabase.from('athlete_prefs').select('category_id, answers').eq('user_id', userId),
+    supabase.from('athlete_basics').select('user_id').eq('user_id', userId).maybeSingle(),
   ]);
   if (!profile?.date_of_birth) redirect('/welcome/1');
   const answers = Object.fromEntries((prefs ?? []).map((p) => [p.category_id, (p.answers ?? {}) as Record<string, unknown>]));
-  return { supabase, userId, name: profile.display_name, sports: Object.keys(answers), answers };
+  // Step 2 is done once its basics row exists; steps 3 and 4 send the user back to it until then.
+  return { supabase, userId, name: profile.display_name, sports: Object.keys(answers), answers, stepTwoDone: !!basics };
 }

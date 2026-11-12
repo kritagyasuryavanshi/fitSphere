@@ -1,8 +1,8 @@
 'use client';
 
-import { Checkbox, CheckboxCard, RadioCard } from '@fitsphere/ui';
+import { Checkbox, RadioCard } from '@fitsphere/ui';
 import { useActionState } from 'react';
-import { Group, Pills, SubmitRow, TextArea } from '../fields';
+import { Group, Pills, SubmitRow, TextArea, YesNo } from '../fields';
 import { boxingExperience, boxingWants, equipment, trainingDays } from '../options';
 import { saveStepTwo, type StepTwoValues } from './actions';
 
@@ -54,14 +54,14 @@ export function StepTwoForm({ boxing, saved }: { boxing: boolean; saved: StepTwo
           maxLength={500}
           placeholder="e.g. old left knee injury, avoid jumping"
           defaultValue={values.injuries}
+          error={errors.injuries}
         />
-        {errors.injuries ? <p className="m-0 text-[14px] font-medium text-danger">{errors.injuries}</p> : null}
-        <CheckboxCard
+        <YesNo
           name="ai_consent"
-          value="yes"
-          label="Use this to personalise AI answers"
-          description="It is sent to our AI provider outside India, without your name or contact details. You can turn this off any time."
-          defaultChecked={values.aiConsent}
+          legend="Use your injury notes to personalise AI answers?"
+          hint="If yes, they are sent to our AI provider outside India, without your name or contact details. You can change this any time."
+          value={values.aiConsent}
+          error={errors.aiConsent}
         />
       </div>
 

@@ -119,14 +119,14 @@ isOneToOne: false
                   ]
                 },"consents": {
                   Row: {
-                    "created_at": string,"granted": boolean,"id": string,"purpose": Database["public"]['Enums']["consent_purpose"],"user_id": string
+                    "created_at": string,"granted": boolean,"id": string,"notice_version": string,"purpose": Database["public"]['Enums']["consent_purpose"],"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"granted": boolean,"id"?: string,"purpose": Database["public"]['Enums']["consent_purpose"],"user_id": string
+                    "created_at"?: string,"granted": boolean,"id"?: string,"notice_version"?: string,"purpose": Database["public"]['Enums']["consent_purpose"],"user_id": string
                   }
                   Update: {
-                    "created_at"?: string,"granted"?: boolean,"id"?: string,"purpose"?: Database["public"]['Enums']["consent_purpose"],"user_id"?: string
+                    "created_at"?: string,"granted"?: boolean,"id"?: string,"notice_version"?: string,"purpose"?: Database["public"]['Enums']["consent_purpose"],"user_id"?: string
                   }
                   Relationships: [
                     {
@@ -183,7 +183,10 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "complete_about_you":
+            "apply_sport_answers":
+{ Args: { "by_sport": Json,"uid": string }; Returns: undefined
+                           },
+"complete_about_you":
 { Args: { "birth_date": string,"first_name": string,"sports": (string)[] }; Returns: undefined
                            },
 "grant_role":
@@ -192,8 +195,8 @@ isOneToOne: false
 "is_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
-"log_body_metrics":
-{ Args: { "height_cm": number,"weight_kg": number }; Returns: undefined
+"record_consent":
+{ Args: { "answer": boolean,"notice": string,"uid": string,"what": Database["public"]['Enums']["consent_purpose"] }; Returns: undefined
                            },
 "require_step1":
 { Args: Record<PropertyKey, never>; Returns: string
@@ -201,15 +204,15 @@ isOneToOne: false
 "revoke_role":
 { Args: { "old_role": Database["public"]['Enums']["app_role"],"target": string }; Returns: undefined
                            },
-"save_sport_answers":
-{ Args: { "answers": Json,"category": string }; Returns: undefined
+"save_body_metrics":
+{ Args: { "ai_consent": boolean,"height_cm": number,"notice": string,"sport_answers": Json,"weight_kg": number }; Returns: undefined
                            },
 "save_training_basics":
-{ Args: { "ai_consent": boolean,"days": number,"equipment": (string)[],"injury_notes": string }; Returns: undefined
+{ Args: { "ai_consent": boolean,"days": number,"equipment": (string)[],"injury_notes": string,"notice": string,"sport_answers": Json }; Returns: undefined
                            }
           }
           Enums: {
-            "app_role": "athlete"|"coach"|"reviewer"|"admin","consent_purpose": "ai_health_personalisation"
+            "app_role": "athlete"|"coach"|"reviewer"|"admin","consent_purpose": "ai_health_personalisation"|"ai_body_metrics"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -329,7 +332,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "app_role": ["athlete", "coach", "reviewer", "admin"],"consent_purpose": ["ai_health_personalisation"]
+            "app_role": ["athlete", "coach", "reviewer", "admin"],"consent_purpose": ["ai_health_personalisation", "ai_body_metrics"]
           }
         }
 } as const

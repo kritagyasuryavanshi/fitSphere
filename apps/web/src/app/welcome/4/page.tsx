@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import { AuthShell } from '../../auth-shell';
 import { signUpUser } from '../guard';
@@ -8,25 +9,24 @@ import { boxingExperience, gymGoals, gymPlaces, labelOf } from '../options';
 export const metadata: Metadata = { title: 'You’re in · FitSphere' };
 
 async function Summary() {
-  const { supabase, userId, name, sports, answers } = await signUpUser();
-  const [{ data: categories }, { data: basics }, { data: consent }] = await Promise.all([
+  const { supabase, userId, name, sports, answers, stepTwoDone } = await signUpUser();
+  // The summary needs the earlier steps, so nobody reaches it by typing the address.
+  if (!stepTwoDone) redirect('/welcome/2');
+  if (sports.includes('gym') && !answers.gym?.goal) redirect('/welcome/3');
+  const [{ data: categories }, { data: basics }, { data: consents }] = await Promise.all([
     supabase.from('categories').select('id, name').order('sort'),
     supabase.from('athlete_basics').select('days_per_week').eq('user_id', userId).maybeSingle(),
-    supabase
-      .from('consents')
-      .select('granted')
-      .eq('user_id', userId)
-      .eq('purpose', 'ai_health_personalisation')
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle(),
+    supabase.from('consents').select('purpose, granted').eq('user_id', userId).order('created_at', { ascending: false }),
   ]);
+  // Rows come newest first, so the first one per purpose is the current answer.
+  const current = (purpose: string) => consents?.find((c) => c.purpose === purpose)?.granted ? 'Shared' : 'Not shared';
 
   const rows: [string, string][] = [['Training', (categories ?? []).filter((c) => sports.includes(c.id)).map((c) => c.name).join(', ')]];
   if (answers.gym?.goal) rows.push(['Gym goal', `${labelOf(gymGoals, answers.gym.goal)}, ${labelOf(gymPlaces, answers.gym.place).toLowerCase()}`]);
   if (answers.boxing?.experience) rows.push(['Experience', labelOf(boxingExperience, answers.boxing.experience)]);
   if (basics) rows.push(['Days a week', String(basics.days_per_week)]);
-  rows.push(['Injury notes for AI', consent?.granted ? 'Shared' : 'Not shared']);
+  rows.push(['Injury notes for AI', current('ai_health_personalisation')]);
+  if (sports.includes('gym')) rows.push(['Weight and height for AI', current('ai_body_metrics')]);
 
   return (
     <>

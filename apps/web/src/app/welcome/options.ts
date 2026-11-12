@@ -2,6 +2,20 @@
 
 export type Option = { value: string; label: string; hint?: string };
 
+// Change a version whenever its consent text changes, so an old yes does not cover new wording.
+export const AI_NOTES_NOTICE = 'ai-notes-2026-11-12';
+export const AI_METRICS_NOTICE = 'ai-metrics-2026-11-12';
+
+export const yesNo: Option[] = [
+  { value: 'yes', label: 'Yes' },
+  { value: 'no', label: 'No' },
+];
+
+/** A saved consent as the yes/no form value; empty when the user has never answered. */
+export function consentValue(granted: boolean | null | undefined): string {
+  return granted == null ? '' : granted ? 'yes' : 'no';
+}
+
 export const boxingExperience: Option[] = [
   { value: 'new', label: 'Brand new', hint: 'Never thrown a punch' },
   { value: 'few_classes', label: 'A few classes', hint: 'Know stance and the jab' },

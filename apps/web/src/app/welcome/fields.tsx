@@ -1,6 +1,6 @@
 import { Button } from '@fitsphere/ui';
 import type { ComponentProps, ReactNode } from 'react';
-import type { Option } from './options';
+import { yesNo, type Option } from './options';
 
 export function FieldError({ id, children }: { id: string; children?: string }) {
   return children ? (
@@ -43,17 +43,32 @@ export function Pills({ name, options, value }: { name: string; options: Option[
   );
 }
 
-export function TextArea({ label, hint, ...props }: ComponentProps<'textarea'> & { label: string; hint?: string }) {
+export function TextArea({ label, hint, error, ...props }: ComponentProps<'textarea'> & { label: string; hint?: string; error?: string }) {
+  const errorId = `${props.name}-error`;
   return (
-    <label className="flex flex-col gap-2 text-[15px] font-medium">
-      <span>
-        {label} {hint ? <span className="font-normal text-muted">{hint}</span> : null}
-      </span>
-      <textarea
-        className="box-border w-full border border-line-strong bg-paper px-3.5 py-3 text-[16px] font-normal text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
-        {...props}
-      />
-    </label>
+    <div className="flex flex-col">
+      <label className="flex flex-col gap-2 text-[15px] font-medium">
+        <span>
+          {label} {hint ? <span className="font-normal text-muted">{hint}</span> : null}
+        </span>
+        <textarea
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? errorId : undefined}
+          className={`box-border w-full bg-paper px-3.5 py-3 text-[16px] font-normal text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink ${error ? 'border-2 border-danger' : 'border border-line-strong'}`}
+          {...props}
+        />
+      </label>
+      <FieldError id={errorId}>{error}</FieldError>
+    </div>
+  );
+}
+
+/** A required yes/no question with nothing chosen at first, so every answer is an explicit choice. */
+export function YesNo({ name, legend, hint, value, error }: { name: string; legend: string; hint: string; value: string; error?: string }) {
+  return (
+    <Group name={name} legend={legend} hint={hint} error={error}>
+      <Pills name={name} options={yesNo} value={value} />
+    </Group>
   );
 }
 

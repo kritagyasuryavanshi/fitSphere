@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { AuthShell } from '../../auth-shell';
 import { signUpUser } from '../guard';
+import { consentValue } from '../options';
 import { StepTwoForm } from './step-two-form';
 
 export const metadata: Metadata = { title: 'Your training · FitSphere' };
@@ -26,9 +27,10 @@ async function Form() {
     days: basics ? String(basics.days_per_week) : '',
     equipment: basics?.equipment ?? [],
     injuries: basics?.injury_notes ?? '',
-    aiConsent: consent?.granted ?? false,
+    aiConsent: consentValue(consent?.granted),
   };
-  return <StepTwoForm boxing={sports.includes('boxing')} saved={saved} />;
+  // Keyed on the saved answers: Next keeps a visited step mounted, and a reused radio ignores a new defaultChecked.
+  return <StepTwoForm key={JSON.stringify(saved)} boxing={sports.includes('boxing')} saved={saved} />;
 }
 
 export default function StepTwoPage() {

@@ -62,3 +62,10 @@ export async function fillAboutYou(page: Page, name: string, dob: string, sports
   for (const sport of sports) await page.getByRole('checkbox', { name: new RegExp(sport) }).check();
   await page.getByRole('button', { name: 'Continue' }).click();
 }
+
+/** Picks a pill answer by clicking its visible label. The radio inside is visually hidden, so a forced check could hit a neighbour. */
+export async function choose(page: Page, label: string) {
+  // Labels here are plain words and digits; match the whole text so "No" never matches "New to it".
+  // Next keeps the previous step mounted but hidden, so only visible labels count.
+  await page.locator('label').filter({ hasText: new RegExp(`^${label}$`), visible: true }).click();
+}
