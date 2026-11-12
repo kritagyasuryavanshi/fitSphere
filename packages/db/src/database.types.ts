@@ -189,7 +189,7 @@ isOneToOne: false
             }[]
                            },
 "admin_set_roles":
-{ Args: { "new_roles": (Database["public"]['Enums']["app_role"])[],"target": string }; Returns: undefined
+{ Args: { "expected_roles": (Database["public"]['Enums']["app_role"])[],"new_roles": (Database["public"]['Enums']["app_role"])[],"target": string }; Returns: undefined
                            },
 "apply_sport_answers":
 { Args: { "by_sport": Json,"uid": string }; Returns: undefined

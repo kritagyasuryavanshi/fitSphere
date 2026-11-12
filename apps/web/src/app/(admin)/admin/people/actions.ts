@@ -17,18 +17,25 @@ export async function saveRoles(_prev: SaveRolesState, formData: FormData): Prom
   await requireRole('admin');
   const supabase = await supabaseServer();
 
-  const people = formData.getAll('person').map(String).filter((id) => UUID.test(id));
+  // The page lists at most 200 people, so a bigger form is forged.
+  const people = formData.getAll('person').map(String).filter((id) => UUID.test(id)).slice(0, 200);
+  const roles = (values: string[]) => values.filter((r): r is Role => ROLES.includes(r as Role)).sort();
   const changed = people.flatMap((id) => {
-    const before = String(formData.get(`before:${id}`) ?? '').split(',').filter(Boolean).sort();
-    const after = formData.getAll(`roles:${id}`).map(String).filter((r): r is Role => ROLES.includes(r as Role)).sort();
-    return before.join() === after.join() ? [] : [{ id, name: String(formData.get(`name:${id}`) ?? 'someone'), roles: after }];
+    const before = roles(String(formData.get(`before:${id}`) ?? '').split(','));
+    const after = roles(formData.getAll(`roles:${id}`).map(String));
+    return before.join() === after.join() ? [] : [{ id, name: String(formData.get(`name:${id}`) ?? 'someone'), before, after }];
   });
   if (!changed.length) return { message: 'Nothing to save.' };
 
   const errors: string[] = [];
   for (const person of changed) {
-    const { error } = await supabase.rpc('admin_set_roles', { target: person.id, new_roles: person.roles });
-    if (error) errors.push(error.code === '42501' ? `You cannot change the roles of ${person.name}.` : `Could not save ${person.name}. Try again.`);
+    // The roles this page showed go along, so the database refuses the save if another admin changed them since.
+    const { error } = await supabase.rpc('admin_set_roles', { target: person.id, new_roles: person.after, expected_roles: person.before });
+    if (!error) continue;
+    if (error.message === 'roles_changed') errors.push(`The roles of ${person.name} changed since you opened this page. The list now shows them; check and save again.`);
+    else if (error.message === 'roles_required') errors.push(`Pick at least one role for ${person.name}.`);
+    else if (error.code === '42501') errors.push(`You cannot change the roles of ${person.name}.`);
+    else errors.push(`Could not save ${person.name}. Try again.`);
   }
   revalidatePath('/admin/people');
   const saved = changed.length - errors.length;

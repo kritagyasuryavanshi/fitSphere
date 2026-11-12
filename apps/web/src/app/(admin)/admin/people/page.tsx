@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Form from 'next/form';
 import { Suspense } from 'react';
 import { Icon } from '@/components/layout/icons';
 import { supabaseServer } from '@/lib/supabase/server';
@@ -7,7 +8,7 @@ import { PeopleTable } from './people-table';
 
 export const metadata: Metadata = { title: 'People · FitSphere Admin' };
 
-const joined = new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' });
+const joined = new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' });
 
 async function People({ searchParams }: { searchParams: PageProps<'/admin/people'>['searchParams'] }) {
   const viewer = await requireRole('admin');
@@ -27,7 +28,7 @@ async function People({ searchParams }: { searchParams: PageProps<'/admin/people
 
   return (
     <>
-      <form role="search" className="flex max-w-[420px] items-center gap-2 border border-line-strong px-3.5 focus-within:outline-2 focus-within:outline-ink">
+      <Form action="/admin/people" role="search" className="flex max-w-[420px] items-center gap-2 border border-line-strong px-3.5 focus-within:outline-2 focus-within:outline-ink">
         <Icon name="search" size={20} />
         <label htmlFor="people-search" className="sr-only">
           Search people
@@ -40,7 +41,7 @@ async function People({ searchParams }: { searchParams: PageProps<'/admin/people
           placeholder="Search by name or email"
           className="min-h-12 w-full bg-transparent text-[16px] outline-none"
         />
-      </form>
+      </Form>
       <PeopleTable people={people} />
     </>
   );

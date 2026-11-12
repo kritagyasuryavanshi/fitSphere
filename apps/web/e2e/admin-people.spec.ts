@@ -30,6 +30,32 @@ test('an admin finds a person, makes them a coach, and the change is audited', a
   await expect(row.getByLabel('Coach')).toBeChecked();
 });
 
+test('saving from the full list, which holds the own row of the admin, shows no false error', async ({ page }) => {
+  // Unique names: earlier runs leave other people in the local database.
+  const tag = Date.now().toString(36);
+  const target = await createUser(['athlete'], { name: `Ritu ${tag}` });
+  await signInAs(page, ['admin'], { name: `Asha ${tag}` });
+  await expect(page.getByRole('group', { name: `Roles for Asha ${tag}` })).toBeVisible();
+  await page.getByRole('group', { name: `Roles for Ritu ${tag}` }).getByLabel('Reviewer').check();
+  await page.getByRole('button', { name: 'Save role changes' }).click();
+  await expect(page.getByText('Saved role changes for 1 person.')).toBeVisible();
+  await expect(page.getByText(/cannot change the roles/)).toHaveCount(0);
+  expect(await rolesOf(target.id)).toEqual(['athlete', 'reviewer']);
+});
+
+test('a save from a stale page does not undo another admin', async ({ page }) => {
+  const target = await createUser(['athlete'], { name: 'Sana' });
+  await signInAs(page, ['admin'], { name: 'Asha' });
+  await page.goto(`/admin/people?q=${encodeURIComponent(target.email)}`);
+  // Another admin grants coach while this page is open.
+  await admin().from('user_roles').insert({ user_id: target.id, role: 'coach' });
+
+  await page.getByRole('group', { name: 'Roles for Sana' }).getByLabel('Reviewer').check();
+  await page.getByRole('button', { name: 'Save role changes' }).click();
+  await expect(page.getByText(/The roles of Sana changed since you opened this page/)).toBeVisible();
+  expect(await rolesOf(target.id)).toEqual(['athlete', 'coach']);
+});
+
 test('an admin cannot change their own roles', async ({ page }) => {
   const email = await signInAs(page, ['admin'], { name: 'Asha' });
   await page.goto(`/admin/people?q=${encodeURIComponent(email)}`);

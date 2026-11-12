@@ -9,7 +9,7 @@ security definer
 set search_path = ''
 as $$
 declare
-  pattern text := '%' || replace(replace(replace(btrim(coalesce(search, '')), '\', '\'), '%', '\%'), '_', '\_') || '%';
+  pattern text := '%' || replace(replace(replace(btrim(coalesce(search, '')), '\', '\\'), '%', '\%'), '_', '\_') || '%';
 begin
   if not public.is_admin() then
     raise exception 'only an admin can list people' using errcode = '42501';
@@ -29,7 +29,9 @@ $$;
 
 -- Sets one person's roles to exactly this list in one transaction. It goes through grant_role and revoke_role,
 -- so the admin check, the "nobody changes their own roles" rule and the audit trigger all still apply.
-create function public.admin_set_roles(target uuid, new_roles public.app_role[])
+-- expected_roles are the roles the admin's page showed. If they differ from what the person holds now,
+-- another admin changed them in the meantime, and the save is refused rather than silently undoing that change.
+create function public.admin_set_roles(target uuid, new_roles public.app_role[], expected_roles public.app_role[])
 returns void
 language plpgsql
 security definer
@@ -37,6 +39,7 @@ set search_path = ''
 as $$
 declare
   r public.app_role;
+  held public.app_role[];
 begin
   if not public.is_admin() then
     raise exception 'only an admin can set roles' using errcode = '42501';
@@ -44,17 +47,25 @@ begin
   if target = auth.uid() then
     raise exception 'nobody can change their own roles' using errcode = '42501';
   end if;
-  if new_roles is null or array_position(new_roles, null) is not null then
+  -- Nobody is left with no role: that person could open nothing. A real suspend feature can come later.
+  if coalesce(cardinality(new_roles), 0) = 0 or array_position(new_roles, null) is not null then
     raise exception 'roles_required' using errcode = '22023';
   end if;
+
+  perform 1 from public.profiles where id = target for update;
+  select coalesce(array_agg(role order by role), '{}') into held from public.user_roles where user_id = target;
+  if held is distinct from (select coalesce(array_agg(distinct x order by x), '{}') from unnest(expected_roles) x) then
+    raise exception 'roles_changed' using errcode = '40001';
+  end if;
+
   for r in select role from public.user_roles where user_id = target and role <> all (new_roles) order by role loop
     perform public.revoke_role(target, r);
   end loop;
-  for r in select distinct x from unnest(new_roles) x where not exists (select 1 from public.user_roles where user_id = target and role = x) order by x loop
+  for r in select distinct x from unnest(new_roles) x where x <> all (held) order by x loop
     perform public.grant_role(target, r);
   end loop;
 end;
 $$;
 
-revoke execute on function public.admin_list_people(text), public.admin_set_roles(uuid, public.app_role[]) from public, anon;
-grant execute on function public.admin_list_people(text), public.admin_set_roles(uuid, public.app_role[]) to authenticated;
+revoke execute on function public.admin_list_people(text), public.admin_set_roles(uuid, public.app_role[], public.app_role[]) from public, anon;
+grant execute on function public.admin_list_people(text), public.admin_set_roles(uuid, public.app_role[], public.app_role[]) to authenticated;

@@ -38,9 +38,14 @@ export function PeopleTable({ people }: { people: Person[] }) {
                 </td>
                 <td className="py-3 pr-4">{person.email}</td>
                 <td className="py-1 pr-4">
-                  <input type="hidden" name="person" value={person.id} />
-                  <input type="hidden" name={`before:${person.id}`} value={person.roles.join(',')} />
-                  <input type="hidden" name={`name:${person.id}`} value={person.name || person.email} />
+                  {/* The admin's own row sends nothing: its boxes are disabled, and nobody changes their own roles. */}
+                  {person.self ? null : (
+                    <>
+                      <input type="hidden" name="person" value={person.id} />
+                      <input type="hidden" name={`before:${person.id}`} value={person.roles.join(',')} />
+                      <input type="hidden" name={`name:${person.id}`} value={person.name || person.email} />
+                    </>
+                  )}
                   <fieldset className="m-0 flex flex-wrap gap-x-4 border-0 p-0" disabled={person.self}>
                     <legend className="sr-only">Roles for {person.name || person.email}</legend>
                     {ROLES.map(([value, label]) => (
@@ -64,8 +69,8 @@ export function PeopleTable({ people }: { people: Person[] }) {
       </div>
       <div role="status" className="flex flex-col gap-1 text-[14px] font-medium">
         {state.message ? <p className="m-0">{state.message}</p> : null}
-        {state.errors?.map((error) => (
-          <p key={error} className="m-0 text-danger">
+        {state.errors?.map((error, i) => (
+          <p key={i} className="m-0 text-danger">
             {error}
           </p>
         ))}
