@@ -1,6 +1,6 @@
 -- M1-01: profiles, user_roles, consents and audit_log rules.
 begin;
-select plan(29);
+select plan(35);
 
 -- Users A and B are athletes; M is an admin. The sign-up trigger creates their profiles.
 insert into auth.users (id, email) values
@@ -27,6 +27,8 @@ select throws_ok($$ insert into public.user_roles (user_id, role) values ('a0000
 select throws_ok($$ update public.user_roles set role = 'admin' where user_id = 'a0000000-0000-0000-0000-00000000000a' $$, '42501', null, 'A cannot change a role row');
 select throws_ok($$ delete from public.user_roles where user_id = 'a0000000-0000-0000-0000-00000000000a' $$, '42501', null, 'A cannot delete a role row');
 select throws_ok($$ select public.grant_role('a0000000-0000-0000-0000-00000000000a', 'admin') $$, '42501', null, 'A non-admin cannot call grant_role');
+select throws_ok($$ select public.revoke_role('b0000000-0000-0000-0000-00000000000b', 'athlete') $$, '42501', null, 'A non-admin cannot call revoke_role');
+select is((select count(*)::int from public.user_roles), 1, 'A sees only their own role rows');
 select throws_ok($$ insert into public.audit_log (action) values ('fake') $$, '42501', null, 'A cannot write the audit log');
 select is_empty($$ select 1 from public.audit_log $$, 'A non-admin reads no audit rows');
 
@@ -40,6 +42,8 @@ select is_empty($$ select 1 from public.consents $$, 'B cannot see the consents 
 
 -- As admin M.
 select set_config('request.jwt.claims', '{"sub":"c0000000-0000-0000-0000-00000000000c","role":"authenticated"}', true);
+select ok((select count(*) from public.profiles) >= 3, 'the admin reads other profiles');
+select isnt_empty($$ select 1 from public.audit_log where target_id <> 'c0000000-0000-0000-0000-00000000000c' $$, 'the admin reads the audit log');
 select lives_ok($$ select public.grant_role('b0000000-0000-0000-0000-00000000000b', 'coach') $$, 'the admin grants B the coach role');
 select is((select count(*)::int from public.audit_log where actor_id = 'c0000000-0000-0000-0000-00000000000c' and target_id = 'b0000000-0000-0000-0000-00000000000b' and action = 'role_granted' and details->>'role' = 'coach'), 1, 'the grant writes an audit row with the actor');
 select throws_ok($$ select public.grant_role('c0000000-0000-0000-0000-00000000000c', 'coach') $$, '42501', null, 'the admin cannot grant themselves a role');
@@ -58,6 +62,11 @@ select is((select count(*)::int from public.audit_log where target_id = 'b000000
 
 insert into auth.users (id, email, raw_user_meta_data) values ('d0000000-0000-0000-0000-00000000000d', 'long@t.test', jsonb_build_object('full_name', repeat('x', 200)));
 select is((select char_length(display_name) from public.profiles where id = 'd0000000-0000-0000-0000-00000000000d'), 80, 'a long sign-up name is trimmed, not rejected');
+
+-- A role update audits the revoke before the grant, and each row has its own time.
+update public.user_roles set role = 'coach' where user_id = 'd0000000-0000-0000-0000-00000000000d' and role = 'athlete';
+select is((select array_agg(action order by id) from public.audit_log where target_id = 'd0000000-0000-0000-0000-00000000000d'), array['role_granted', 'role_revoked', 'role_granted'], 'a role update logs the revoke before the grant');
+select is((select count(distinct created_at)::int from public.audit_log where target_id = 'd0000000-0000-0000-0000-00000000000d'), 3, 'audit rows in one transaction get distinct times');
 
 select * from finish();
 rollback;

@@ -20,7 +20,8 @@ for (const [email, role] of seededUsers) {
     const db = createDbClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? '', process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? '');
     const { data, error } = await db.auth.signInWithPassword({ email, password: 'password123' });
     expect(error).toBeNull();
-    const { data: roles } = await db.from('user_roles').select('role').eq('user_id', data.user!.id);
+    const { data: roles, error: rolesError } = await db.from('user_roles').select('role').eq('user_id', data.user!.id);
+    expect(rolesError).toBeNull();
     expect(roles?.map((r) => r.role)).toContain(role);
   });
 }

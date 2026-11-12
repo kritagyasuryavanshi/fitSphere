@@ -4,7 +4,7 @@ Build tasks live on the board: `docs/plans/board.json` (rendered at https://clau
 
 ## Now
 - [ ] Owner: merge PR #1, then #2, #3 and #4.
-- [ ] Owner: set the GitHub plugin token, push the rulebook, and switch off unused plugins (see the tooling audit: https://claude.ai/artifact/NAWsRxJUah4godqxBrXA6T).
+- [ ] Owner: set the GitHub plugin token, push the rulebook, and switch off unused plugins. The tooling audit lists the steps: https://claude.ai/artifact/NAWsRxJUah4godqxBrXA6T.
 - [ ] Owner: create Supabase, Vercel, Anthropic API and Google OAuth accounts (O-02). This blocks preview deploys (S0-06) and Google sign-in.
 - [ ] Owner: answer Q-01 to Q-15 in `docs/architecture/risks-and-gaps.md`, or accept the defaults (O-09).
 - [ ] Owner: decide on branch protection for `main`. It needs GitHub Pro (paid) or a public repo. Until then, merge only on a green CI run.

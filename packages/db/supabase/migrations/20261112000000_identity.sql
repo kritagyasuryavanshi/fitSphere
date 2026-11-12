@@ -21,6 +21,7 @@ create table public.user_roles (
   created_at timestamptz not null default now(),
   primary key (user_id, role)
 );
+create index user_roles_granted_by_idx on public.user_roles (granted_by);
 
 -- Append-only: the newest row per user and purpose is the current answer.
 create table public.consents (
@@ -40,7 +41,8 @@ create table public.audit_log (
   action text not null,
   target_id uuid,
   details jsonb not null default '{}',
-  created_at timestamptz not null default now()
+  -- clock_timestamp, so two rows in one transaction still order.
+  created_at timestamptz not null default clock_timestamp()
 );
 create index audit_log_target_idx on public.audit_log (target_id, created_at desc);
 
@@ -81,6 +83,8 @@ security definer
 set search_path = ''
 as $$
 begin
+  -- Lock the admin rows first, so two admins cannot revoke each other at once and leave none.
+  perform 1 from public.user_roles where role = 'admin' for update;
   if not public.is_admin() then
     raise exception 'only an admin can revoke a role' using errcode = '42501';
   end if;
@@ -99,13 +103,14 @@ security definer
 set search_path = ''
 as $$
 begin
-  if tg_op in ('INSERT', 'UPDATE') then
-    insert into public.audit_log (actor_id, action, target_id, details)
-    values (auth.uid(), 'role_granted', new.user_id, jsonb_build_object('role', new.role));
-  end if;
+  -- Revoke first, so an UPDATE reads as the old role ending and then the new one starting.
   if tg_op in ('DELETE', 'UPDATE') then
     insert into public.audit_log (actor_id, action, target_id, details)
     values (auth.uid(), 'role_revoked', old.user_id, jsonb_build_object('role', old.role));
+  end if;
+  if tg_op in ('INSERT', 'UPDATE') then
+    insert into public.audit_log (actor_id, action, target_id, details)
+    values (auth.uid(), 'role_granted', new.user_id, jsonb_build_object('role', new.role));
   end if;
   return null;
 end;
