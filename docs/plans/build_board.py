@@ -50,7 +50,8 @@ for t in tasks:
 
 # memory graph: one note per file, YAML-ish frontmatter, [[slug]] links to notes or task ids
 MEM = os.path.join(HERE, '..', 'memory')
-TYPES = ['area', 'decision', 'constraint', 'lesson', 'environment', 'session']
+TYPES = ['area', 'decision', 'constraint', 'lesson', 'environment', 'session', 'bug']
+PCS = ['lenovo', 'welcome']
 def parse(text):
     m = re.match(r'---\n(.*?)\n---\n(.*)', text.replace('\r', ''), re.S)
     if not m:
@@ -70,8 +71,13 @@ for f in sorted(os.listdir(MEM)):
         errors.append(f'memory/{f}: type must be one of {TYPES}')
     if not meta.get('description') or not meta.get('updated'):
         errors.append(f'memory/{f}: needs description and updated')
+    if meta.get('type') == 'session' and (not re.fullmatch(r'\d{4}-\d{2}-\d{2}', meta.get('date', '')) or meta.get('pc') not in PCS):
+        errors.append(f'memory/{f}: a session needs date (YYYY-MM-DD) and pc (one of {PCS})')
+    if meta.get('type') == 'bug' and meta.get('status') not in ('open', 'fixed'):
+        errors.append(f'memory/{f}: a bug needs status open or fixed')
     notes.append({'id': meta['name'], 'type': meta.get('type'), 'description': meta.get('description', ''),
                   'updated': meta.get('updated', ''), 'body': body,
+                  'date': meta.get('date', ''), 'pc': meta.get('pc', ''), 'status': meta.get('status', ''),
                   'links': sorted(set(re.findall(r'\[\[([^\]|]+)\]\]', re.sub(r'`[^`]*`', '', body))))})
 note_ids = {n['id'] for n in notes}
 for n in notes:

@@ -5,6 +5,8 @@ description: Open items that wait on the owner
 updated: 2026-11-12
 ---
 
+- Restart the LENOVO PC to finish the WSL and Docker install, then open Docker Desktop once ([[env-lenovo-pc]]).
+- Merge PR #1, then PR #2 ([[ci]]).
 - Branch protection for `main`: needs GitHub Pro (paid) or a public repo. See [[ci]].
 - [[O-02]]: Supabase, Vercel, Anthropic and Google OAuth accounts. Blocks [[S0-06]] and Google sign-in.
 - [[O-09]]: answer Q-01–Q-15 or accept the defaults ([[architecture-docs]]).
@@ -12,4 +14,3 @@ updated: 2026-11-12
 - Before M4: payment provider, fee %, refund and cancel terms, business and GST registration, coach agreement ([[marketplace]]).
 - Nutrition for fat-loss users ([[decision-no-nutrition]]).
 - Mobbin: only unofficial MCPs exist; needs a paid account. The owner must say "install mobbin-mcp".
-- Restart the LENOVO PC to finish the WSL and Docker install, then open Docker Desktop once ([[env-lenovo-pc]]).
