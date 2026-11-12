@@ -57,7 +57,8 @@ export async function requireRole(role: Role): Promise<Viewer> {
   return viewer;
 }
 
-/** A person's main screen once sign-up is done. Coaches start on their dashboard; the athlete header links back. */
+/** A person's main screen once sign-up is done. Coaches start on their dashboard; "Train" in the coach header and
+ * "Coach tools" in the athlete header link the two sides. */
 export function homeFor(roles: Role[]): string {
   if (roles.includes('coach')) return '/coach';
   if (roles.includes('athlete')) return '/today';

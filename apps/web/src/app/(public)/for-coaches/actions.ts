@@ -12,6 +12,10 @@ const messages: Record<string, string> = {
   already_coach: 'Your coach tools are already on.',
   unknown_sport: 'Pick what you coach.',
   bad_link: 'Enter a web link that starts with https://',
+  bad_years: 'Enter whole years, 0 to 60',
+  name_and_city_required: 'Enter your full name and city, up to 80 characters each.',
+  too_long: 'Keep your answer under 1,000 characters.',
+  recently_declined: 'You can apply again 30 days after your last application was declined.',
 };
 
 export async function applyToCoach(_prev: ApplyState, formData: FormData): Promise<ApplyState> {
@@ -34,7 +38,8 @@ export async function applyToCoach(_prev: ApplyState, formData: FormData): Promi
   const errors: ApplyState['errors'] = {};
   if (!values.fullName) errors.fullName = 'Enter your full name';
   if (!values.city) errors.city = 'Enter your city';
-  if (!/^\d{1,2}$/.test(values.years)) errors.years = 'Enter whole years, 0 to 60';
+  // Same range as the database (0 to 60), so the person sees the field error, not a generic one.
+  if (!/^\d{1,2}$/.test(values.years) || Number(values.years) > 60) errors.years = 'Enter whole years, 0 to 60';
   if (values.workUrl && !/^https?:\/\/\S+$/i.test(values.workUrl)) errors.workUrl = messages.bad_link;
   if (values.howToday.length > 1000) errors.howToday = 'Keep this under 1,000 characters';
   if (!values.terms) errors.terms = 'Agree to the terms to apply';

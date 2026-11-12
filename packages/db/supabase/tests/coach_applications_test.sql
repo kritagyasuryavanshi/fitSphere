@@ -1,6 +1,6 @@
 -- M1-07: coach applications (apply, review, make coach or decline) and the email outbox.
 begin;
-select plan(18);
+select plan(23);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('a0000000-0000-0000-0000-00000000000a', 'meerazq@t.test', now()),
@@ -42,6 +42,24 @@ select throws_ok($$ select public.decide_coach_application((select id from publi
 reset role;
 select is((select array_agg(role::text order by role) from public.user_roles where user_id = 'a0000000-0000-0000-0000-00000000000a'), array['athlete', 'coach'], 'Meera is now a coach, and the grant is audited by the role trigger');
 select is((select array_agg(to_email || ':' || template order by to_email) from public.email_outbox where to_email like '%zq@t.test'), array['meerazq@t.test:coach_approved', 'ravizq@t.test:coach_declined'], 'each decision queues an email to the applicant');
+
+-- Ravi was declined: he must wait 30 days before applying again.
+select set_config('request.jwt.claims', '{"sub":"b0000000-0000-0000-0000-00000000000b","role":"authenticated"}', true);
+set local role authenticated;
+select throws_ok($$ select public.submit_coach_application('Ravi', 'gym', 'Pune', 3, '', '') $$, '22023', 'recently_declined', 'a declined applicant waits 30 days');
+select throws_ok($$ select decided_by from public.coach_applications where user_id = 'b0000000-0000-0000-0000-00000000000b' $$, '42501', null, 'an applicant cannot see which admin decided');
+
+-- The admin list shows the account email, so a copied name cannot fool the admin.
+select set_config('request.jwt.claims', '{"sub":"c0000000-0000-0000-0000-00000000000c","role":"authenticated"}', true);
+reset role;
+insert into auth.users (id, email, email_confirmed_at) values ('d0000000-0000-0000-0000-00000000000d', 'samzq@t.test', now());
+update public.profiles set date_of_birth = '1990-01-01' where id = 'd0000000-0000-0000-0000-00000000000d';
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"d0000000-0000-0000-0000-00000000000d","role":"authenticated"}', true);
+select lives_ok($$ select public.submit_coach_application('Meera Pillai', 'boxing', 'Kochi', 6, '', '') $$, 'Sam applies under a famous name');
+select throws_ok($$ select * from public.admin_list_applications() $$, '42501', null, 'only an admin lists applications');
+select set_config('request.jwt.claims', '{"sub":"c0000000-0000-0000-0000-00000000000c","role":"authenticated"}', true);
+select is((select email from public.admin_list_applications() where full_name = 'Meera Pillai'), 'samzq@t.test', 'the admin sees the real account email');
 
 select * from finish();
 rollback;

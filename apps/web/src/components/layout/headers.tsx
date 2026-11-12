@@ -118,7 +118,7 @@ async function AthleteAvatar() {
     <>
       {/* Coaches who also train get a way back to their coach tools. */}
       {viewer.roles.includes('coach') ? (
-        <Link href="/coach" className="hidden text-[14px] font-medium underline underline-offset-4 md:inline">
+        <Link href="/coach" className="px-1 text-[14px] font-medium underline underline-offset-4">
           Coach tools
         </Link>
       ) : null}
@@ -159,9 +159,14 @@ async function CoachNav({ part }: { part: 'links' | 'right' | 'tabs' }) {
   if (part === 'links') return <HeaderLinks items={coachLinks(viewer, true)} />;
   if (part === 'tabs') return <BottomTabs items={coachLinks(viewer, false)} label="Coach" />;
   const admin = viewer.roles.includes('admin');
+  // A coach who also trains gets "Train" on every screen size; other admins get the athlete site on desktop.
   return (
     <>
-      {admin ? (
+      {viewer.roles.includes('athlete') ? (
+        <Link href="/today" className="px-1 text-[14px] font-medium underline underline-offset-4">
+          Train
+        </Link>
+      ) : admin ? (
         <Link href="/learn/boxing" className="hidden text-[14px] font-medium underline underline-offset-4 md:inline">
           Athlete site
         </Link>

@@ -73,6 +73,7 @@ test('an admin-only user lands on People and is offered no coach pages', async (
   const header = page.getByRole('navigation', { name: 'Coach' }).first();
   await expect(header.getByRole('link', { name: 'People' })).toBeVisible();
   await expect(header.getByRole('link', { name: 'Athletes' })).toHaveCount(0);
+  await expect(header.getByRole('link', { name: 'Athlete site' })).toBeVisible();
 });
 
 test('a coach lands on the coach dashboard with the coach header', async ({ page }, testInfo) => {
@@ -101,7 +102,8 @@ test('an admin sees People and the athlete site link; others cannot open People'
   const header = page.getByRole('navigation', { name: 'Coach' }).first();
   await expect(header.getByRole('link', { name: 'People' })).toHaveAttribute('aria-current', 'page');
   await expect(header.getByRole('link', { name: /Review queue/ })).toBeVisible();
-  await expect(header.getByRole('link', { name: 'Athlete site' })).toBeVisible();
+  // This admin also trains, so the header offers "Train"; an admin who does not train gets "Athlete site".
+  await expect(header.getByRole('link', { name: 'Train' })).toBeVisible();
 
   const coachPage = await (await browser.newContext()).newPage();
   await signInAs(coachPage, ['coach']);

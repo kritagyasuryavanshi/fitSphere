@@ -13,7 +13,6 @@ const joined = new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short'
 
 async function People({ searchParams }: { searchParams: PageProps<'/admin/people'>['searchParams'] }) {
   const viewer = await requireRole('admin');
-  const applications = <Applications />;
   const { q } = await searchParams;
   const search = typeof q === 'string' ? q.slice(0, 100) : '';
   const { data, error } = await (await supabaseServer()).rpc('admin_list_people', { search });
@@ -30,7 +29,7 @@ async function People({ searchParams }: { searchParams: PageProps<'/admin/people
 
   return (
     <>
-      {applications}
+      <Applications viewerId={viewer.userId} />
       <h2 className="m-0 text-[22px] font-medium">Everyone</h2>
       <Form action="/admin/people" role="search" className="flex max-w-[420px] items-center gap-2 border border-line-strong px-3.5 focus-within:outline-2 focus-within:outline-ink">
         <Icon name="search" size={20} />

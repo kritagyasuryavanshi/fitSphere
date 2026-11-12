@@ -5,7 +5,7 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { supabaseServer } from '@/lib/supabase/server';
 
-// The typed email goes back with the error, so the field keeps it (also when the form was sent before the script loaded).
+// The typed email goes back with the error, so the field keeps it.
 export type SendLinkState = { email?: string; error?: string };
 
 const INVALID_EMAIL = 'Enter a full email address, like kabir@example.com';
@@ -18,7 +18,11 @@ async function callbackUrl() {
 
 async function sendLink(email: string): Promise<string | undefined> {
   const supabase = await supabaseServer();
-  const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: await callbackUrl() } });
+  const send = async () => supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: await callbackUrl() } });
+  let { error } = await send();
+  // Two requests for a new address at once make Supabase fail one of them on a duplicate user.
+  // The other one created the user, so a single retry sends the link.
+  if (error && error.status === 500) ({ error } = await send());
   if (!error) return undefined;
   return error.status === 429 ? 'Too many sign-in emails. Wait a few minutes, then try again.' : 'We could not send the link. Try again.';
 }

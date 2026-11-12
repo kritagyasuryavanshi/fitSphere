@@ -30,6 +30,17 @@ async function Apply() {
       </div>
     );
   }
+  // Applying needs a finished sign-up; say so before the person fills in the form.
+  if (viewer.nextStep) {
+    return (
+      <div className="flex flex-col gap-3">
+        <p className="m-0 text-[16px] text-ink-soft">Finish signing up first. It takes two short steps.</p>
+        <Link href={viewer.nextStep} className={`${buttonClass()} self-start`}>
+          Finish signing up
+        </Link>
+      </div>
+    );
+  }
   if (viewer.roles.includes('coach')) {
     return (
       <Link href="/coach" className={`${buttonClass()} self-start`}>

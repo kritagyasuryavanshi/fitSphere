@@ -229,7 +229,12 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "admin_list_people":
+            "admin_list_applications":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "city": string,"email": string,"full_name": string,"how_today": string,"id": string,"sport": string,"user_id": string,"work_url": string,"years_coaching": number
+            }[]
+                           },
+"admin_list_people":
 { Args: { "search": string }; Returns: {
               "display_name": string,"email": string,"id": string,"joined": string,"roles": (Database["public"]['Enums']["app_role"])[]
             }[]

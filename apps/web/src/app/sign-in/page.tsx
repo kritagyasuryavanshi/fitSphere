@@ -35,8 +35,8 @@ export default function SignInPage({ searchParams }: PageProps<'/sign-in'>) {
       </Suspense>
       <SignInForm />
       <p className="m-0 text-[13px] leading-[1.5] text-muted">
-        By continuing you agree to the <Link href="/terms" className="underline">terms</Link> and{' '}
-        <Link href="/privacy" className="underline">privacy policy</Link>.
+        By continuing you agree to the <Link href="/legal/terms" className="underline">terms</Link> and{' '}
+        <Link href="/legal/privacy" className="underline">privacy policy</Link>.
       </p>
     </AuthShell>
   );

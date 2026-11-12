@@ -51,6 +51,10 @@ begin
   if exists (select 1 from public.coach_applications where user_id = uid and status = 'pending') then
     raise exception 'already_applied' using errcode = '22023';
   end if;
+  -- After a decline, wait 30 days, so one person cannot fill the admin queue (and the outbox) by reapplying.
+  if exists (select 1 from public.coach_applications where user_id = uid and status = 'declined' and decided_at > now() - interval '30 days') then
+    raise exception 'recently_declined' using errcode = '22023';
+  end if;
   if char_length(name) not between 1 and 80 or char_length(town) not between 1 and 80 then
     raise exception 'name_and_city_required' using errcode = '22023';
   end if;
@@ -110,17 +114,43 @@ begin
   end if;
 
   select u.email into email from auth.users u where u.id = app.user_id;
-  insert into public.email_outbox (to_email, template, data)
-  values (email, case when approve then 'coach_approved' else 'coach_declined' end, jsonb_build_object('name', app.full_name));
+  -- A person without an email (for example a phone sign-in later) still gets the decision; there is just nobody to mail.
+  if email is not null then
+    insert into public.email_outbox (to_email, template, data)
+    values (email, case when approve then 'coach_approved' else 'coach_declined' end, jsonb_build_object('name', app.full_name));
+  end if;
+end;
+$$;
+
+-- The pending list for admins, with the account email: full_name is free text, so the email shows who really applied.
+create function public.admin_list_applications()
+returns table (id uuid, user_id uuid, email text, full_name text, sport text, city text, years_coaching smallint, work_url text, how_today text)
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $$
+begin
+  if not public.is_admin() then
+    raise exception 'only an admin can list applications' using errcode = '42501';
+  end if;
+  return query
+    select a.id, a.user_id, u.email::text, a.full_name, c.name, a.city, a.years_coaching, a.work_url, a.how_today
+    from public.coach_applications a
+    join auth.users u on u.id = a.user_id
+    join public.categories c on c.id = a.category_id
+    where a.status = 'pending'
+    order by a.created_at;
 end;
 $$;
 
 revoke all on public.coach_applications, public.email_outbox from anon, authenticated;
 revoke all on sequence public.email_outbox_id_seq from anon, authenticated;
 grant all on public.coach_applications, public.email_outbox to service_role;
-grant select on public.coach_applications to authenticated;
-revoke execute on function public.submit_coach_application(text, text, text, int, text, text), public.decide_coach_application(uuid, boolean) from public, anon;
-grant execute on function public.submit_coach_application(text, text, text, int, text, text), public.decide_coach_application(uuid, boolean) to authenticated;
+-- Applicants read their own rows, but not which admin decided.
+grant select (id, user_id, full_name, category_id, city, years_coaching, work_url, how_today, status, decided_at, created_at) on public.coach_applications to authenticated;
+revoke execute on function public.submit_coach_application(text, text, text, int, text, text), public.decide_coach_application(uuid, boolean), public.admin_list_applications() from public, anon;
+grant execute on function public.submit_coach_application(text, text, text, int, text, text), public.decide_coach_application(uuid, boolean), public.admin_list_applications() to authenticated;
 
 alter table public.coach_applications enable row level security;
 alter table public.email_outbox enable row level security;

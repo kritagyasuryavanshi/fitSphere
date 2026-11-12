@@ -29,6 +29,8 @@ test('an applicant applies, the admin makes them a coach, and they get coach too
   await signInAs(adminPage, ['admin']);
   const card = adminPage.getByRole('article', { name: `Application from ${name}` });
   await expect(card).toContainText('6 years coaching, self-reported');
+  // The account email shows, so a copied name cannot fool the admin.
+  await expect(card).toContainText(email);
   await card.getByRole('button', { name: 'Make coach' }).click();
   await expect(card).toHaveCount(0);
   expect(await outbox(email)).toEqual([{ template: 'coach_approved', data: { name } }]);
@@ -37,6 +39,11 @@ test('an applicant applies, the admin makes them a coach, and they get coach too
   await page.goto('/coach');
   await expect(page.getByRole('navigation', { name: 'Coach' }).first().getByText('Coach', { exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Set up your camp' })).toBeVisible();
+  // The new coach can move between both sides.
+  await page.getByRole('link', { name: 'Train' }).click();
+  await expect(page).toHaveURL('/today');
+  await page.getByRole('link', { name: 'Coach tools' }).click();
+  await expect(page).toHaveURL('/coach');
 
   // Signing in again lands the new coach on the first-run screen.
   const again = await (await browser.newContext()).newPage();

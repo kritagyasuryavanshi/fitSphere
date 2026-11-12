@@ -1,24 +1,26 @@
-import { buttonClass } from '@fitsphere/ui';
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { Suspense } from 'react';
 import { requireRole } from '@/lib/viewer';
 
 export const metadata: Metadata = { title: 'Set up your camp · FitSphere Coach' };
 
 // K-CoachEmpty: the first-run screen a new coach lands on. The dashboard with athletes (C-CoachDash) replaces it in M3.
+// shortcut: the pages behind each step (profile, packages, programs, invites, lessons) come in M3 and M4; until then
+// each step says "Available soon" instead of linking to a page that does not exist yet.
 const steps = [
-  ['Fill in your profile', 'Photo, headline, how you coach', '/coach/profile'],
-  ['Set your packages and prices', 'Athletes can hire you once one package is live', '/coach/profile'],
-  ['Build your first program', 'Weeks, sessions, drills from the library', '/coach/programs'],
-  ['Invite your first athlete', 'Share one link on WhatsApp', '/coach/programs'],
+  ['Fill in your profile', 'Photo, headline, how you coach'],
+  ['Set your packages and prices', 'Athletes can hire you once one package is live'],
+  ['Build your first program', 'Weeks, sessions, drills from the library'],
+  ['Invite your first athlete', 'Share one link on WhatsApp'],
 ];
 
 const empties = [
-  ['No athletes yet', 'Athletes you invite, and clients who hire you, show up here with their training each week.', 'Get an invite link', '/coach/programs'],
-  ['No requests yet', 'Requests appear once your profile has a live package. You choose who to accept.', 'Add a package', '/coach/profile'],
-  ['No lessons yet', 'Your lessons and their review status appear here.', 'Write a lesson', '/coach/lessons'],
+  ['No athletes yet', 'Athletes you invite, and clients who hire you, show up here with their training each week.'],
+  ['No requests yet', 'Requests appear once your profile has a live package. You choose who to accept.'],
+  ['No lessons yet', 'Your lessons and their review status appear here.'],
 ];
+
+const soon = <span className="text-[13px] font-medium text-muted">Available soon</span>;
 
 async function FirstRun() {
   const viewer = await requireRole('coach');
@@ -38,16 +40,14 @@ async function FirstRun() {
             <span className="text-[14px] text-muted">0 of 4 done</span>
           </div>
           <ol className="m-0 flex list-none flex-col p-0">
-            {steps.map(([title, hint, href], i) => (
+            {steps.map(([title, hint], i) => (
               <li key={title} className="flex items-center gap-4 border-t border-line py-3">
                 <span className="flex size-8 flex-none items-center justify-center rounded-full border border-line-strong text-[14px] font-semibold">{i + 1}</span>
                 <span className="flex flex-1 flex-col">
                   <span className="text-[16px] font-medium">{title}</span>
                   <span className="text-[14px] text-muted">{hint}</span>
                 </span>
-                <Link href={href} className={buttonClass({ variant: 'light', size: 'small' })}>
-                  Start
-                </Link>
+                {soon}
               </li>
             ))}
           </ol>
@@ -55,19 +55,15 @@ async function FirstRun() {
         <aside className="flex flex-col gap-3 bg-mist p-5">
           <h2 className="m-0 text-[20px] font-medium">Got lessons on YouTube?</h2>
           <p className="m-0 text-[15px] text-ink-soft">Add them to the library. A second coach reviews each one, then it goes live with your name.</p>
-          <Link href="/coach/lessons" className={`${buttonClass({ size: 'small' })} self-start`}>
-            Write a lesson
-          </Link>
+          {soon}
         </aside>
       </div>
       <div className="grid gap-4 md:grid-cols-3">
-        {empties.map(([title, text, cta, href]) => (
+        {empties.map(([title, text]) => (
           <section key={title} className="flex flex-col gap-2 border border-dashed border-line-strong p-5">
             <h3 className="m-0 text-[17px] font-medium">{title}</h3>
             <p className="m-0 text-[14px] text-ink-soft">{text}</p>
-            <Link href={href} className="text-[14px] font-medium underline">
-              {cta}
-            </Link>
+            {soon}
           </section>
         ))}
       </div>
