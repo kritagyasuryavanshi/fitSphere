@@ -185,14 +185,14 @@ isOneToOne: false
                   ]
                 },"content_items": {
                   Row: {
-                    "author_id": string | null,"created_at": string,"discipline_id": string,"dose": NonNullable<Json>,"drill_type": string | null,"duration_min": number | null,"environments": (string)[],"equipment": (string)[],"id": string,"is_sample": boolean,"kind": Database["public"]['Enums']["content_kind"],"level": Database["public"]['Enums']["content_level"],"mistakes": string,"published_at": string | null,"review_note": string | null,"reviewed_by": string | null,"safety": string,"slug": string,"status": Database["public"]['Enums']["content_status"],"summary": string,"supports": (string)[],"title": string,"updated_at": string,"video_broken": boolean,"video_id": string | null
+                    "author_id": string | null,"created_at": string,"discipline_id": string,"dose": NonNullable<Json>,"drill_type": string | null,"duration_min": number | null,"environments": (string)[],"equipment": (string)[],"id": string,"is_sample": boolean,"kind": Database["public"]['Enums']["content_kind"],"level": Database["public"]['Enums']["content_level"],"mistakes": string,"published_at": string | null,"review_note": string | null,"reviewed_by": string | null,"safety": string,"search": unknown,"slug": string,"status": Database["public"]['Enums']["content_status"],"summary": string,"supports": (string)[],"title": string,"updated_at": string,"video_broken": boolean,"video_id": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "author_id"?: string | null,"created_at"?: string,"discipline_id": string,"dose"?: NonNullable<Json>,"drill_type"?: string | null,"duration_min"?: number | null,"environments"?: (string)[],"equipment"?: (string)[],"id"?: string,"is_sample"?: boolean,"kind": Database["public"]['Enums']["content_kind"],"level"?: Database["public"]['Enums']["content_level"],"mistakes"?: string,"published_at"?: string | null,"review_note"?: string | null,"reviewed_by"?: string | null,"safety"?: string,"slug": string,"status"?: Database["public"]['Enums']["content_status"],"summary"?: string,"supports"?: (string)[],"title": string,"updated_at"?: string,"video_broken"?: boolean,"video_id"?: string | null
+                    "author_id"?: string | null,"created_at"?: string,"discipline_id": string,"dose"?: NonNullable<Json>,"drill_type"?: string | null,"duration_min"?: number | null,"environments"?: (string)[],"equipment"?: (string)[],"id"?: string,"is_sample"?: boolean,"kind": Database["public"]['Enums']["content_kind"],"level"?: Database["public"]['Enums']["content_level"],"mistakes"?: string,"published_at"?: string | null,"review_note"?: string | null,"reviewed_by"?: string | null,"safety"?: string,"search"?: never,"slug": string,"status"?: Database["public"]['Enums']["content_status"],"summary"?: string,"supports"?: (string)[],"title": string,"updated_at"?: string,"video_broken"?: boolean,"video_id"?: string | null
                   }
                   Update: {
-                    "author_id"?: string | null,"created_at"?: string,"discipline_id"?: string,"dose"?: NonNullable<Json>,"drill_type"?: string | null,"duration_min"?: number | null,"environments"?: (string)[],"equipment"?: (string)[],"id"?: string,"is_sample"?: boolean,"kind"?: Database["public"]['Enums']["content_kind"],"level"?: Database["public"]['Enums']["content_level"],"mistakes"?: string,"published_at"?: string | null,"review_note"?: string | null,"reviewed_by"?: string | null,"safety"?: string,"slug"?: string,"status"?: Database["public"]['Enums']["content_status"],"summary"?: string,"supports"?: (string)[],"title"?: string,"updated_at"?: string,"video_broken"?: boolean,"video_id"?: string | null
+                    "author_id"?: string | null,"created_at"?: string,"discipline_id"?: string,"dose"?: NonNullable<Json>,"drill_type"?: string | null,"duration_min"?: number | null,"environments"?: (string)[],"equipment"?: (string)[],"id"?: string,"is_sample"?: boolean,"kind"?: Database["public"]['Enums']["content_kind"],"level"?: Database["public"]['Enums']["content_level"],"mistakes"?: string,"published_at"?: string | null,"review_note"?: string | null,"reviewed_by"?: string | null,"safety"?: string,"search"?: never,"slug"?: string,"status"?: Database["public"]['Enums']["content_status"],"summary"?: string,"supports"?: (string)[],"title"?: string,"updated_at"?: string,"video_broken"?: boolean,"video_id"?: string | null
                   }
                   Relationships: [
                     {
@@ -446,6 +446,11 @@ isOneToOne: false
                            },
 "save_training_basics":
 { Args: { "ai_consent": boolean,"days": number,"equipment": (string)[],"injury_notes": string,"notice": string,"sport_answers": Json }; Returns: undefined
+                           },
+"search_content":
+{ Args: { "q": string }; Returns: {
+              "author_id": string,"category_id": string,"duration_min": number,"equipment": (string)[],"is_sample": boolean,"kind": Database["public"]['Enums']["content_kind"],"level": Database["public"]['Enums']["content_level"],"rank": number,"slug": string,"supports": (string)[],"title": string
+            }[]
                            },
 "seed_sample_content":
 { Args: Record<PropertyKey, never>; Returns: undefined
