@@ -21,7 +21,7 @@ const tags = (v: FormDataEntryValue | null) =>
 const messages: Record<string, [string, string]> = {
   title_required: ['Give the lesson a title.', 'title'],
   bad_tag: ['Use short words for equipment and skills, separated by commas.', 'equipment'],
-  incomplete: ['Add a public video, 3 steps, mistakes and safety before you submit.', 'safety'],
+  incomplete: ['Something on the Ready for review list is missing. Check each item and try again.', ''],
   not_editable: ['This lesson is in review or live, so it cannot change now.', ''],
 };
 
