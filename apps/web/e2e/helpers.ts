@@ -69,3 +69,31 @@ export async function choose(page: Page, label: string) {
   // Next keeps the previous step mounted but hidden, so only visible labels count.
   await page.locator('label').filter({ hasText: new RegExp(`^${label}$`), visible: true }).click();
 }
+
+type Role = 'athlete' | 'coach' | 'reviewer' | 'admin';
+
+/**
+ * Creates a confirmed user with exactly these roles and signs them in through the test-only /auth/confirm.
+ * It uses the admin API, so no email is sent and the 60-second resend limit never applies.
+ * stepsDone: 0 = nothing saved, 1 = step 1 saved, 2 = sign-up done (steps 3 and 4 are optional).
+ */
+export async function signInAs(page: Page, roles: Role[], { stepsDone = 2, name = 'Kabir' } = {}) {
+  const db = admin();
+  const email = `e2e-${roles.join('-') || 'none'}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}@test.fitsphere`;
+  const { data: created, error } = await db.auth.admin.createUser({ email, email_confirm: true });
+  expect(error).toBeNull();
+  const id = created.user!.id;
+  const check = ({ error }: { error: unknown }) => expect(error).toBeNull();
+
+  if (stepsDone >= 1) check(await db.from('profiles').update({ display_name: name, date_of_birth: '1998-06-12' }).eq('id', id));
+  if (stepsDone >= 2) check(await db.from('athlete_basics').insert({ user_id: id, days_per_week: 4 }));
+  // The sign-up trigger gave the athlete role; make the roles match exactly.
+  if (!roles.includes('athlete')) check(await db.from('user_roles').delete().eq('user_id', id).eq('role', 'athlete'));
+  const extra = roles.filter((r) => r !== 'athlete');
+  if (extra.length) check(await db.from('user_roles').insert(extra.map((role) => ({ user_id: id, role }))));
+
+  const { data: link, error: linkError } = await db.auth.admin.generateLink({ type: 'magiclink', email });
+  expect(linkError).toBeNull();
+  await page.goto(`/auth/confirm?token_hash=${link.properties!.hashed_token}&type=magiclink`);
+  return email;
+}

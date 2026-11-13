@@ -20,6 +20,7 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Skips static files (any path with a dot) and the callback, which sets its own cookies.
-  matcher: ['/((?!_next/static|_next/image|auth/callback|.*\..*).*)'],
+  // Skips static files (any path with a dot) and the auth routes, which set their own cookies.
+  // Double backslash: in a plain string "\." loses its backslash and the dot then matches any character.
+  matcher: ['/((?!_next/static|_next/image|auth/|.*\\..*).*)'],
 };

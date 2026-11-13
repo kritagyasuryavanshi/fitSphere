@@ -20,5 +20,7 @@ export default defineConfig({
     command: process.env.CI ? 'npm run start' : 'npm run dev',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
+    // Turns on the test-only /auth/confirm sign-in route (see src/app/auth/confirm/route.ts).
+    env: { E2E_AUTH_CONFIRM: '1' },
   },
 });

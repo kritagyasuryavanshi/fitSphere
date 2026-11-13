@@ -3,13 +3,14 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import { AuthShell } from '../../auth-shell';
+import { homeFor } from '@/lib/viewer';
 import { signUpUser } from '../guard';
 import { boxingExperience, gymGoals, gymPlaces, labelOf } from '../options';
 
 export const metadata: Metadata = { title: 'You’re in · FitSphere' };
 
 async function Summary() {
-  const { supabase, userId, name, sports, answers, stepTwoDone } = await signUpUser();
+  const { supabase, userId, name, roles, sports, answers, stepTwoDone } = await signUpUser();
   // The summary needs the earlier steps, so nobody reaches it by typing the address.
   if (!stepTwoDone) redirect('/welcome/2');
   if (sports.includes('gym') && !answers.gym?.goal) redirect('/welcome/3');
@@ -44,12 +45,12 @@ async function Summary() {
       </Link>
       <h2 className="m-0 mt-4 text-[20px] font-medium">How do you want to start?</h2>
       <div className="grid gap-2 sm:grid-cols-2">
-        {/* shortcut: invites arrive in M3 and Today in M2; until then both cards go home. */}
+        {/* shortcut: invite links arrive in M3; until then both cards go to the person's main screen. */}
         {[
           ['I have a coach’s invite link', 'Join their program'],
           ['Start on my own', 'Lessons and drills, no coach yet'],
         ].map(([title, hint]) => (
-          <Link key={title} href="/" className="flex flex-col gap-1 border border-line-strong p-4 hover:border-ink">
+          <Link key={title} href={homeFor(roles)} className="flex flex-col gap-1 border border-line-strong p-4 hover:border-ink">
             <span className="text-[16px] font-medium">{title}</span>
             <span className="text-[14px] text-muted">{hint}</span>
           </Link>
