@@ -66,7 +66,7 @@ async function Lesson({ params }: PageProps<'/learn/[category]/[slug]'>) {
           {item.videoId ? (
             <Video id={item.videoId} title={item.title} />
           ) : (
-            <div className="flex aspect-video w-full items-center justify-center bg-mist p-6 text-center text-[16px] text-muted">The video comes when a coach films this lesson.</div>
+            <div className="flex aspect-video w-full items-center justify-center bg-mist p-6 text-center text-[16px] text-muted">{item.videoBroken ? 'This video is not available right now. The coach is fixing the link.' : 'The video comes when a coach films this lesson.'}</div>
           )}
         </div>
 
