@@ -442,6 +442,9 @@ isOneToOne: false
 "save_training_basics":
 { Args: { "ai_consent": boolean,"days": number,"equipment": (string)[],"injury_notes": string,"notice": string,"sport_answers": Json }; Returns: undefined
                            },
+"seed_sample_content":
+{ Args: Record<PropertyKey, never>; Returns: undefined
+                           },
 "set_my_consent":
 { Args: { "granted": boolean,"purpose": Database["public"]['Enums']["consent_purpose"] }; Returns: undefined
                            },
