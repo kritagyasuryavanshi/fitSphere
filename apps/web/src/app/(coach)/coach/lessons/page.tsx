@@ -22,7 +22,7 @@ async function Lessons({ searchParams }: PageProps<'/coach/lessons'>) {
   const supabase = await supabaseServer();
   const { data, error } = await supabase
     .from('content_items')
-    .select('id, slug, title, kind, status, review_note, updated_at, disciplines(category_id)')
+    .select('id, slug, title, kind, status, review_note, video_broken, updated_at, disciplines(category_id)')
     .eq('author_id', viewer.userId)
     .order('updated_at', { ascending: false });
   if (error) throw error;
@@ -72,6 +72,7 @@ async function Lessons({ searchParams }: PageProps<'/coach/lessons'>) {
                 <div className="flex flex-col gap-1">
                   <span className="text-[16px] font-medium">{i.title}</span>
                   {i.status === 'needs_changes' && i.review_note ? <span className="text-[14px] text-danger">{i.review_note}</span> : null}
+                  {i.video_broken ? <span className="text-[14px] font-medium text-danger">Video broken: YouTube says it is removed or private.{s.action === 'Edit' || i.status === 'needs_changes' ? ' Re-link it.' : ''}</span> : null}
                 </div>
                 <span className="text-[14px] text-muted">{kinds[i.kind]}</span>
                 <span>

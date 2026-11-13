@@ -1,7 +1,7 @@
 ---
 name: session-10
 type: session
-description: 2026-11-13: all M1 PRs merged; M2-01 to M2-05 built, reviewed by Codex and merged one by one
+description: 2026-11-13: all M1 PRs merged; milestone M2 built, reviewed by Codex and merged task by task
 updated: 2026-11-13
 date: 2026-11-13
 pc: lenovo
@@ -17,6 +17,9 @@ pc: lenovo
 - M2-05 search, PR #16: `/search` and `search_content(q)` with Postgres full-text.
 - Codex reviewed every PR. One P2 on M2-03 was rejected with evidence: the field it said was missing is set, and e2e covers it.
 
+- M2-06 save and complete (PR #17), M2-08 coach editor (PR #18), M2-09 review queue (PR #19), M2-07 skill path (PR #20), M2-10 daily video check and M2-11 milestone check (PR #21). Evidence: [[M2-check]].
+- Codex findings this round: revalidate only lesson paths (fixed), hyphens in category ids (fixed), batch the video checks (fixed). Rejected with evidence: an unchanged export function, and unscoped reads that RLS already scopes.
+
 ## Bugs and errors
 - Next 16 Cache Components: see [[lesson-next16-suspense]].
 - An old server held port 3000, and the classifier blocked inspecting it. `E2E_PORT` in `playwright.config.ts` runs e2e on another port. Magic-link specs still need 3000.
@@ -27,4 +30,6 @@ pc: lenovo
 - Category rules are data: `categories.uses_supports` and `uses_muscles` drive the submit check (decision D5).
 
 ## Next
-- M2-06 save and complete, then M2-08 coach editor, M2-09 review queue, M2-07, M2-10, M2-11.
+- M3 Coach-Led Training, starting with the first ready M3 task on the board.
+- Two phone and desktop e2e runs that create the same slug raced; `save_content_draft` now retries a unique clash with a suffix.
+- `authorNames` with the guest client cannot see reviewer-only names; pass the signed-in client.

@@ -13,6 +13,7 @@ Build tasks live on the board: `docs/plans/board.json` (rendered at https://clau
 
 ## Next
 - [ ] Release gate, before sign-in goes live: turn on "Confirm email" in the hosted Supabase project, set custom SMTP, add Turnstile CAPTCHA to sign-in, set `NEXT_PUBLIC_SITE_URL`, list only our own domains in the redirect allow-list, and set auth rate limits in the dashboard (local config raises them for tests).
+- [ ] Release gate, video check (M2-10): set `CRON_SECRET` in Vercel, confirm the daily cron in `apps/web/vercel.json` shows in the Vercel project, and set `SUPABASE_SECRET_KEY` for the route.
 - [ ] Owner, before M4 (marketplace): confirm the payment provider (recommended Razorpay), set the fee %, refund and cancel terms, register the business and GST, and sign a coach agreement.
 - [ ] Owner: decide on nutrition for fat-loss users (meal plans or calorie targets are out of v1 for now).
 
@@ -20,6 +21,7 @@ Build tasks live on the board: `docs/plans/board.json` (rendered at https://clau
 - [ ] Owner: decide on Mobbin (optional).
 
 ## Done
+- [x] 2026-11-13: M2 Library done: save and complete, skill path, coach editor, review queue, daily video check, milestone check (PRs #17 to #21).
 - [x] 2026-11-13: M2-01 to M2-05: content schema, sample content, library, lesson pages and search (PRs #12 to #16).
 - [x] 2026-11-13: PRs #1 to #11 merged; CI on main green.
 - [x] 2026-11-13: Coach applications (M1-07, PR #10) and account with consents, download and delete (M1-08, PR #11).

@@ -120,7 +120,7 @@ export async function lessonBySlug(category: string, slug: string) {
   const { data: item, error } = await supabase
     .from('content_items')
     .select(
-      `id, slug, title, kind, summary, level, duration_min, equipment, supports, video_id, mistakes, safety, dose, is_sample, author_id, reviewed_by,
+      `id, slug, title, kind, summary, level, duration_min, equipment, supports, video_id, video_broken, mistakes, safety, dose, is_sample, author_id, reviewed_by,
        disciplines!inner(name, category_id, categories(name)),
        content_steps(position, body), content_muscles(is_primary, muscles(name)),
        out:content_links!content_links_from_id_fkey(kind, sort, to:content_items!content_links_to_id_fkey(${linked}))`,
@@ -152,7 +152,8 @@ export async function lessonBySlug(category: string, slug: string) {
     durationMin: item.duration_min,
     equipment: item.equipment,
     supports: item.supports,
-    videoId: item.video_id,
+    videoId: item.video_broken ? null : item.video_id,
+    videoBroken: item.video_broken,
     mistakes: item.mistakes,
     safety: item.safety,
     dose: item.dose as DoseRow[],

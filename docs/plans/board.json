@@ -716,7 +716,7 @@
         "M2-04",
         "M1-04"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "e2e",
       "screens": [
@@ -725,7 +725,8 @@
       "ac": [
         "End-to-end: save and complete a lesson, reload, both persist",
         "Guests are asked to sign in first"
-      ]
+      ],
+      "done_on": "2026-11-13"
     },
     {
       "id": "M2-07",
@@ -736,7 +737,7 @@
       "deps": [
         "M2-06"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "unit",
       "screens": [
@@ -745,7 +746,8 @@
       "ac": [
         "Path order comes from prerequisite links",
         "Unit: status per skill is done, in progress or not started, from completions"
-      ]
+      ],
+      "done_on": "2026-11-13"
     },
     {
       "id": "M2-08",
@@ -757,7 +759,7 @@
         "M2-01",
         "M1-05"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "unit+e2e",
       "screens": [
@@ -770,7 +772,8 @@
         "Status chips: draft, in review, needs changes, live",
         "End-to-end: a coach drafts and submits a lesson",
         "On phones My lessons shows stacked cards, as in M-K-Lessons (decision D3)"
-      ]
+      ],
+      "done_on": "2026-11-13"
     },
     {
       "id": "M2-09",
@@ -781,7 +784,7 @@
       "deps": [
         "M2-08"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "db+e2e",
       "screens": [
@@ -793,7 +796,8 @@
         "Send back needs a note, which the author sees",
         "Own items show the 'another reviewer approves it' message, and the database also blocks it",
         "End-to-end: submit, review, publish, then the lesson is public"
-      ]
+      ],
+      "done_on": "2026-11-13"
     },
     {
       "id": "M2-10",
@@ -804,14 +808,15 @@
       "deps": [
         "M2-04"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "unit",
       "ac": [
         "Unit with a mocked response: a removed or private video sets a broken flag",
         "The author sees the flag in My lessons",
         "Runs once a day"
-      ]
+      ],
+      "done_on": "2026-11-13"
     },
     {
       "id": "M2-11",
@@ -827,14 +832,15 @@
         "M2-08",
         "M2-09"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "all",
       "ac": [
         "The design doc's M2 Verify list passes",
         "Visual check of library and lesson pages against the canvas at 390 and 1440 px",
         "Board and MEMORY.md updated"
-      ]
+      ],
+      "done_on": "2026-11-13"
     },
     {
       "id": "M3-01",

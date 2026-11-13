@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { signInAs } from './helpers';
+import { admin, signInAs, userIdByEmail } from './helpers';
 
 test.describe('coach lesson editor', () => {
   test('a coach drafts a lesson, saves it, then submits it for review', async ({ page }) => {
@@ -42,4 +42,26 @@ test.describe('coach lesson editor', () => {
     await page.goto('/coach/lessons/new');
     await expect(page).toHaveURL(/\/not-allowed/);
   });
+});
+
+test('the author sees a broken video flag in My lessons', async ({ page }) => {
+  const email = await signInAs(page, ['athlete', 'coach'], { name: 'Vikram' });
+  const db = admin();
+  const { data: discipline } = await db.from('disciplines').select('id').eq('category_id', 'boxing').eq('slug', 'defence').single();
+  await db.from('content_items').insert({
+    discipline_id: discipline!.id,
+    author_id: await userIdByEmail(email),
+    kind: 'skill',
+    slug: `broken-${test.info().project.name}-${Date.now()}`,
+    title: 'Broken clip',
+    video_id: 'dQw4w9WgXcQ',
+    video_broken: true,
+  });
+  await page.goto('/coach/lessons');
+  await expect(page.getByRole('listitem').filter({ hasText: 'Broken clip' })).toContainText('Video broken');
+});
+
+test('the daily video check refuses a caller without the cron secret', async ({ request }) => {
+  expect((await request.get('/api/cron/check-videos')).status()).toBe(401);
+  expect((await request.get('/api/cron/check-videos', { headers: { authorization: 'Bearer guess' } })).status()).toBe(401);
 });
