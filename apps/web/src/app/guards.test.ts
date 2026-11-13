@@ -4,7 +4,12 @@ import { describe, expect, it } from 'vitest';
 
 // Layouts do not re-run on client navigation (Next 16), and they never guard route handlers or server actions.
 // So every page, route handler and server-action file in a protected group must call the role guard itself.
-const groups = { '(athlete)': 'athlete', '(coach)': 'coach', '(admin)': 'admin' } as const;
+const groups = {
+  '(athlete)': "requireRole('athlete')",
+  '(coach)': "requireRole('coach')",
+  '(admin)': "requireRole('admin')",
+  '(account)': 'requireSignedIn()',
+} as const;
 
 function entryFiles(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -28,7 +33,7 @@ describe('route guards', () => {
     expect("// await requireRole('coach')\nexport default 1;".replace(/(^|[^:])\/\/.*$/gm, '$1')).not.toContain('requireRole');
   });
 
-  for (const [group, role] of Object.entries(groups)) {
+  for (const [group, guard] of Object.entries(groups)) {
     const found = entryFiles(join(__dirname, group));
 
     it(`${group} has entry points to guard`, () => {
@@ -36,8 +41,8 @@ describe('route guards', () => {
     });
 
     for (const file of found) {
-      it(`${file.slice(file.indexOf(group))} awaits requireRole('${role}')`, () => {
-        expect(code(file)).toContain(`await requireRole('${role}')`);
+      it(`${file.slice(file.indexOf(group))} awaits ${guard}`, () => {
+        expect(code(file)).toContain(`await ${guard}`);
       });
     }
   }

@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabase/server';
-import { requireRole } from '@/lib/viewer';
+import { requireSignedIn } from '@/lib/viewer';
 
 // "Download my data": one JSON file of everything personal we hold about the signed-in person (export_my_data).
 export async function GET() {
-  const viewer = await requireRole('athlete');
+  const viewer = await requireSignedIn();
   const { data, error } = await (await supabaseServer()).rpc('export_my_data');
   if (error) return NextResponse.json({ error: 'Could not build the download. Try again.' }, { status: 500 });
   return new NextResponse(JSON.stringify(data, null, 2), {

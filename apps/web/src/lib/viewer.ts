@@ -8,6 +8,8 @@ export type Role = Database['public']['Enums']['app_role'];
 type Client = Awaited<ReturnType<typeof supabaseServer>>;
 
 export type Account = {
+  /** False when the auth user has no profile, for example a token still alive after the account was deleted. */
+  exists: boolean;
   name: string;
   roles: Role[];
   /** The step to finish next, or null once sign-up is done. Step 1 saves the date of birth; step 2 saves the basics. */
@@ -28,6 +30,7 @@ export async function readAccount(supabase: Client, userId: string): Promise<Acc
   const error = profile.error ?? roles.error ?? basics.error;
   if (error) throw new Error(`Could not read the account: ${error.message}`);
   return {
+    exists: !!profile.data,
     name: profile.data?.display_name ?? '',
     roles: (roles.data ?? []).map((r) => r.role),
     nextStep: !profile.data?.date_of_birth ? '/welcome/1' : !basics.data ? '/welcome/2' : null,
@@ -41,7 +44,10 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
   const { data } = await supabase.auth.getClaims();
   const userId = data?.claims.sub;
   if (!userId) return null;
-  return { userId, email: String(data.claims.email ?? ''), ...(await readAccount(supabase, userId)) };
+  const account = await readAccount(supabase, userId);
+  // A deleted account's token stays valid until it expires; treat it as signed out.
+  if (!account.exists) return null;
+  return { userId, email: String(data.claims.email ?? ''), ...account };
 });
 
 /**
@@ -54,6 +60,16 @@ export async function requireRole(role: Role): Promise<Viewer> {
   if (!viewer) redirect('/sign-in');
   if (viewer.nextStep) redirect(viewer.nextStep);
   if (!viewer.roles.includes(role)) redirect('/not-allowed');
+  return viewer;
+}
+
+/**
+ * The guard for pages every signed-in person needs whatever their roles or sign-up state: the account page,
+ * data download, delete and log out (DPDP access and erasure rights).
+ */
+export async function requireSignedIn(): Promise<Viewer> {
+  const viewer = await getViewer();
+  if (!viewer) redirect('/sign-in');
   return viewer;
 }
 

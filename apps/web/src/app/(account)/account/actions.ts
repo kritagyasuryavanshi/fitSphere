@@ -3,13 +3,13 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { supabaseServer } from '@/lib/supabase/server';
-import { requireRole } from '@/lib/viewer';
-import { AI_METRICS_NOTICE, AI_NOTES_NOTICE } from '../../welcome/options';
+import { requireSignedIn } from '@/lib/viewer';
+import { aiSwitches } from '../../welcome/options';
 
 export type NameState = { name?: string; message?: string; error?: string };
 
 export async function saveName(_prev: NameState, formData: FormData): Promise<NameState> {
-  const viewer = await requireRole('athlete');
+  const viewer = await requireSignedIn();
   const name = String(formData.get('name') ?? '').trim();
   if (!name || name.length > 80) return { name, error: 'Enter your first name, up to 80 characters' };
   // RLS lets a person update only their own display_name.
@@ -19,32 +19,25 @@ export async function saveName(_prev: NameState, formData: FormData): Promise<Na
   return { name, message: 'Saved.' };
 }
 
-// Each switch maps to one consent purpose and the notice text shown next to it.
-const switches = {
-  ai_health_personalisation: AI_NOTES_NOTICE,
-  ai_body_metrics: AI_METRICS_NOTICE,
-} as const;
-
-/** A consent switch. The new row is the answer every reader uses, so turning it off takes effect at once. */
+/** A consent switch. The server records it against the current notice; the newest row is the answer, so off is at once. */
 export async function setConsent(formData: FormData): Promise<void> {
-  await requireRole('athlete');
-  const purpose = String(formData.get('purpose') ?? '');
-  if (!(purpose in switches)) return;
-  const key = purpose as keyof typeof switches;
-  const { error } = await (await supabaseServer()).rpc('set_my_consent', { purpose: key, granted: formData.get('on') === 'yes', notice: switches[key] });
+  await requireSignedIn();
+  const purpose = aiSwitches.find((s) => s.purpose === formData.get('purpose'))?.purpose;
+  if (!purpose) return;
+  const { error } = await (await supabaseServer()).rpc('set_my_consent', { purpose, granted: formData.get('on') === 'yes' });
   if (error) throw new Error(`Could not save the setting: ${error.message}`);
   revalidatePath('/account');
 }
 
 export async function logOut(): Promise<void> {
-  await requireRole('athlete');
+  await requireSignedIn();
   await (await supabaseServer()).auth.signOut();
   redirect('/');
 }
 
 /** Runs only from the confirm screen. The database removes the account and everything personal keyed to it. */
 export async function deleteAccount(): Promise<void> {
-  await requireRole('athlete');
+  await requireSignedIn();
   const supabase = await supabaseServer();
   const { error } = await supabase.rpc('delete_my_account');
   if (error?.message === 'admin_cannot_delete') redirect('/account/delete?error=admin');

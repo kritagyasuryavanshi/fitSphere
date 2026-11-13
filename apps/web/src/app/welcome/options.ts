@@ -6,6 +6,20 @@ export type Option = { value: string; label: string; hint?: string };
 export const AI_NOTES_NOTICE = 'ai-notes-2026-11-12';
 export const AI_METRICS_NOTICE = 'ai-metrics-2026-11-12';
 
+/** The AI consent switches on the account page. The server owns which notice version is current. */
+export const aiSwitches = [
+  {
+    purpose: 'ai_health_personalisation',
+    label: 'Use my injury notes in AI answers',
+    hint: 'Turn on only if you want answers that respect your limits. Sent to our AI provider outside India, without your name or contact details.',
+  },
+  {
+    purpose: 'ai_body_metrics',
+    label: 'Use my weight and height in AI answers',
+    hint: 'Sent to our AI provider outside India, without your name or contact details.',
+  },
+] as const;
+
 export const yesNo: Option[] = [
   { value: 'yes', label: 'Yes' },
   { value: 'no', label: 'No' },

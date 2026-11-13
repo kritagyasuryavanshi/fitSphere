@@ -149,6 +149,20 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"consent_notices": {
+                  Row: {
+                    "created_at": string,"is_current": boolean,"purpose": Database["public"]['Enums']["consent_purpose"],"version": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"is_current"?: boolean,"purpose": Database["public"]['Enums']["consent_purpose"],"version": string
+                  }
+                  Update: {
+                    "created_at"?: string,"is_current"?: boolean,"purpose"?: Database["public"]['Enums']["consent_purpose"],"version"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"consents": {
                   Row: {
                     "created_at": string,"granted": boolean,"id": string,"notice_version": string,"purpose": Database["public"]['Enums']["consent_purpose"],"user_id": string
@@ -171,17 +185,23 @@ isOneToOne: false
                   ]
                 },"email_outbox": {
                   Row: {
-                    "created_at": string,"data": NonNullable<Json>,"id": number,"sent_at": string | null,"template": string,"to_email": string
+                    "created_at": string,"data": NonNullable<Json>,"id": number,"sent_at": string | null,"template": string,"to_email": string,"user_id": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"data"?: NonNullable<Json>,"id"?: never,"sent_at"?: string | null,"template": string,"to_email": string
+                    "created_at"?: string,"data"?: NonNullable<Json>,"id"?: never,"sent_at"?: string | null,"template": string,"to_email": string,"user_id"?: string | null
                   }
                   Update: {
-                    "created_at"?: string,"data"?: NonNullable<Json>,"id"?: never,"sent_at"?: string | null,"template"?: string,"to_email"?: string
+                    "created_at"?: string,"data"?: NonNullable<Json>,"id"?: never,"sent_at"?: string | null,"template"?: string,"to_email"?: string,"user_id"?: string | null
                   }
                   Relationships: [
-                    
+                    {
+      foreignKeyName: "email_outbox_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
                   ]
                 },"profiles": {
                   Row: {
@@ -279,7 +299,7 @@ isOneToOne: false
 { Args: { "ai_consent": boolean,"days": number,"equipment": (string)[],"injury_notes": string,"notice": string,"sport_answers": Json }; Returns: undefined
                            },
 "set_my_consent":
-{ Args: { "granted": boolean,"notice": string,"purpose": Database["public"]['Enums']["consent_purpose"] }; Returns: undefined
+{ Args: { "granted": boolean,"purpose": Database["public"]['Enums']["consent_purpose"] }; Returns: undefined
                            },
 "submit_coach_application":
 { Args: { "category": string,"city": string,"full_name": string,"how_today": string,"work_url": string,"years": number }; Returns: undefined

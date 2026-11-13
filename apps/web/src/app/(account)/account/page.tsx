@@ -3,25 +3,12 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { supabaseServer } from '@/lib/supabase/server';
-import { requireRole } from '@/lib/viewer';
-import { boxingExperience, equipment as equipmentOptions, labelOf } from '../../welcome/options';
+import { requireSignedIn } from '@/lib/viewer';
+import { aiSwitches, boxingExperience, equipment as equipmentOptions, labelOf } from '../../welcome/options';
 import { logOut, setConsent } from './actions';
 import { NameForm } from './name-form';
 
 export const metadata: Metadata = { title: 'Account · FitSphere' };
-
-const switches = [
-  {
-    purpose: 'ai_health_personalisation',
-    label: 'Use my injury notes in AI answers',
-    hint: 'Turn on only if you want answers that respect your limits. Sent to our AI provider outside India, without your name or contact details.',
-  },
-  {
-    purpose: 'ai_body_metrics',
-    label: 'Use my weight and height in AI answers',
-    hint: 'Sent to our AI provider outside India, without your name or contact details.',
-  },
-] as const;
 
 function Switch({ purpose, label, hint, on }: { purpose: string; label: string; hint: string; on: boolean }) {
   // A plain form, so the change is saved on the server at once; the newest consent row is the answer.
@@ -49,18 +36,23 @@ function Switch({ purpose, label, hint, on }: { purpose: string; label: string; 
 }
 
 async function Account() {
-  const viewer = await requireRole('athlete');
+  const viewer = await requireSignedIn();
   const supabase = await supabaseServer();
-  const [{ data: prefs }, { data: categories }, { data: basics }, { data: consents }] = await Promise.all([
+  const [{ data: prefs }, { data: categories }, { data: basics }, { data: consents }, { data: notices }] = await Promise.all([
     supabase.from('athlete_prefs').select('category_id, answers').eq('user_id', viewer.userId),
     supabase.from('categories').select('id, name').order('sort'),
     supabase.from('athlete_basics').select('days_per_week, equipment').eq('user_id', viewer.userId).maybeSingle(),
-    supabase.from('consents').select('purpose, granted').eq('user_id', viewer.userId).order('created_at', { ascending: false }),
+    supabase.from('consents').select('purpose, granted, notice_version').eq('user_id', viewer.userId).order('created_at', { ascending: false }),
+    supabase.from('consent_notices').select('purpose, version').eq('is_current', true),
   ]);
   const chosen = new Set((prefs ?? []).map((p) => p.category_id));
   const boxing = (prefs ?? []).find((p) => p.category_id === 'boxing')?.answers as Record<string, unknown> | undefined;
-  // Rows come newest first, so the first one per purpose is the current answer.
-  const isOn = (purpose: string) => consents?.find((c) => c.purpose === purpose)?.granted === true;
+  // Rows come newest first, so the first one per purpose is the current answer. A yes counts only for the
+  // current wording: after the notice changes, the switch shows Off until the person agrees again.
+  const isOn = (purpose: string) => {
+    const latest = consents?.find((c) => c.purpose === purpose);
+    return latest?.granted === true && latest.notice_version === notices?.find((n) => n.purpose === purpose)?.version;
+  };
 
   const training: [string, string][] = [['Sports', (categories ?? []).filter((c) => chosen.has(c.id)).map((c) => c.name).join(', ')]];
   if (boxing?.experience) training.push(['Experience', labelOf(boxingExperience, boxing.experience)]);
@@ -106,7 +98,7 @@ async function Account() {
         <h2 id="ai" className="m-0 mb-2 text-[22px] font-medium">
           AI and privacy
         </h2>
-        {switches.map((s) => (
+        {aiSwitches.map((s) => (
           <Switch key={s.purpose} {...s} on={isOn(s.purpose)} />
         ))}
       </section>

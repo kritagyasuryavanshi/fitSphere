@@ -2,13 +2,13 @@ import { Button, buttonClass } from '@fitsphere/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { requireRole } from '@/lib/viewer';
+import { requireSignedIn } from '@/lib/viewer';
 import { deleteAccount } from '../actions';
 
 export const metadata: Metadata = { title: 'Delete your account? · FitSphere' };
 
 async function Confirm({ searchParams }: { searchParams: PageProps<'/account/delete'>['searchParams'] }) {
-  await requireRole('athlete');
+  await requireSignedIn();
   const { error } = await searchParams;
   return (
     <section role="alertdialog" aria-modal="true" aria-labelledby="dlg-title" aria-describedby="dlg-text" className="flex flex-col gap-5 border border-line-strong p-6">

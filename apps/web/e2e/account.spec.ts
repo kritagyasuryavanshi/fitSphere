@@ -74,3 +74,26 @@ test('the first name can be changed, and a guest cannot open the account page', 
   await guest.goto('/account');
   await expect(guest).toHaveURL('/sign-in');
 });
+
+test('someone who stopped at step 1 can still download and delete, and log out', async ({ page }) => {
+  const email = await signInAs(page, ['athlete'], { stepsDone: 0 });
+  await page.goto('/account');
+  await expect(page).toHaveURL('/account');
+  const [download] = await Promise.all([page.waitForEvent('download'), page.getByRole('link', { name: 'Download my data' }).click()]);
+  expect(JSON.parse(await readFile(await download.path(), 'utf8')).email).toBe(email);
+  await page.goto('/account/delete');
+  await page.getByRole('button', { name: 'Delete my account' }).click();
+  await expect(page).toHaveURL('/?deleted=1');
+  await expect(page.getByText('Your account and everything personal in it have been deleted.')).toBeVisible();
+  expect(await userIdByEmail(email)).toBe('');
+});
+
+test('a coach-only person can open the account page', async ({ page }) => {
+  await signInAs(page, ['coach']);
+  await page.goto('/account');
+  await expect(page.getByRole('heading', { name: 'Account' })).toBeVisible();
+  await page.getByRole('button', { name: 'Log out' }).click();
+  await expect(page).toHaveURL('/');
+  await page.goto('/account');
+  await expect(page).toHaveURL('/sign-in');
+});
