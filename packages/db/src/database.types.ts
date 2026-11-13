@@ -117,6 +117,38 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"coach_applications": {
+                  Row: {
+                    "category_id": string,"city": string,"created_at": string,"decided_at": string | null,"decided_by": string | null,"full_name": string,"how_today": string,"id": string,"status": Database["public"]['Enums']["application_status"],"user_id": string,"work_url": string,"years_coaching": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "category_id": string,"city": string,"created_at"?: string,"decided_at"?: string | null,"decided_by"?: string | null,"full_name": string,"how_today"?: string,"id"?: string,"status"?: Database["public"]['Enums']["application_status"],"user_id": string,"work_url"?: string,"years_coaching": number
+                  }
+                  Update: {
+                    "category_id"?: string,"city"?: string,"created_at"?: string,"decided_at"?: string | null,"decided_by"?: string | null,"full_name"?: string,"how_today"?: string,"id"?: string,"status"?: Database["public"]['Enums']["application_status"],"user_id"?: string,"work_url"?: string,"years_coaching"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "coach_applications_category_id_fkey"
+      columns: ["category_id"]
+isOneToOne: false
+      referencedRelation: "categories"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "coach_applications_decided_by_fkey"
+      columns: ["decided_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "coach_applications_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"consents": {
                   Row: {
                     "created_at": string,"granted": boolean,"id": string,"notice_version": string,"purpose": Database["public"]['Enums']["consent_purpose"],"user_id": string
@@ -136,6 +168,20 @@ isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
     }
+                  ]
+                },"email_outbox": {
+                  Row: {
+                    "created_at": string,"data": NonNullable<Json>,"id": number,"sent_at": string | null,"template": string,"to_email": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"data"?: NonNullable<Json>,"id"?: never,"sent_at"?: string | null,"template": string,"to_email": string
+                  }
+                  Update: {
+                    "created_at"?: string,"data"?: NonNullable<Json>,"id"?: never,"sent_at"?: string | null,"template"?: string,"to_email"?: string
+                  }
+                  Relationships: [
+                    
                   ]
                 },"profiles": {
                   Row: {
@@ -183,7 +229,12 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "admin_list_people":
+            "admin_list_applications":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "city": string,"email": string,"full_name": string,"how_today": string,"id": string,"sport": string,"user_id": string,"work_url": string,"years_coaching": number
+            }[]
+                           },
+"admin_list_people":
 { Args: { "search": string }; Returns: {
               "display_name": string,"email": string,"id": string,"joined": string,"roles": (Database["public"]['Enums']["app_role"])[]
             }[]
@@ -196,6 +247,9 @@ isOneToOne: false
                            },
 "complete_about_you":
 { Args: { "birth_date": string,"first_name": string,"sports": (string)[] }; Returns: undefined
+                           },
+"decide_coach_application":
+{ Args: { "application": string,"approve": boolean }; Returns: undefined
                            },
 "grant_role":
 { Args: { "new_role": Database["public"]['Enums']["app_role"],"target": string }; Returns: undefined
@@ -217,10 +271,13 @@ isOneToOne: false
                            },
 "save_training_basics":
 { Args: { "ai_consent": boolean,"days": number,"equipment": (string)[],"injury_notes": string,"notice": string,"sport_answers": Json }; Returns: undefined
+                           },
+"submit_coach_application":
+{ Args: { "category": string,"city": string,"full_name": string,"how_today": string,"work_url": string,"years": number }; Returns: undefined
                            }
           }
           Enums: {
-            "app_role": "athlete"|"coach"|"reviewer"|"admin","consent_purpose": "ai_health_personalisation"|"ai_body_metrics"
+            "app_role": "athlete"|"coach"|"reviewer"|"admin","application_status": "pending"|"approved"|"declined","consent_purpose": "ai_health_personalisation"|"ai_body_metrics"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -340,7 +397,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "app_role": ["athlete", "coach", "reviewer", "admin"],"consent_purpose": ["ai_health_personalisation", "ai_body_metrics"]
+            "app_role": ["athlete", "coach", "reviewer", "admin"],"application_status": ["pending", "approved", "declined"],"consent_purpose": ["ai_health_personalisation", "ai_body_metrics"]
           }
         }
 } as const

@@ -79,10 +79,15 @@ type Role = 'athlete' | 'coach' | 'reviewer' | 'admin';
  */
 export async function signInAs(page: Page, roles: Role[], options: { stepsDone?: number; name?: string } = {}) {
   const { email } = await createUser(roles, options);
-  const { data: link, error: linkError } = await admin().auth.admin.generateLink({ type: 'magiclink', email });
-  expect(linkError).toBeNull();
-  await page.goto(`/auth/confirm?token_hash=${link.properties!.hashed_token}&type=magiclink`);
+  await signInWithEmail(page, email);
   return email;
+}
+
+/** Signs an existing user in again through the test-only /auth/confirm. */
+export async function signInWithEmail(page: Page, email: string) {
+  const { data: link, error } = await admin().auth.admin.generateLink({ type: 'magiclink', email });
+  expect(error).toBeNull();
+  await page.goto(`/auth/confirm?token_hash=${link.properties!.hashed_token}&type=magiclink`);
 }
 
 /** Creates a confirmed user with exactly these roles, without signing in. */

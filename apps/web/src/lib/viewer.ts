@@ -57,10 +57,11 @@ export async function requireRole(role: Role): Promise<Viewer> {
   return viewer;
 }
 
-/** A person's main screen once sign-up is done. */
+/** A person's main screen once sign-up is done. Coaches start on their dashboard; "Train" in the coach header and
+ * "Coach tools" in the athlete header link the two sides. */
 export function homeFor(roles: Role[]): string {
-  if (roles.includes('athlete')) return '/today';
   if (roles.includes('coach')) return '/coach';
+  if (roles.includes('athlete')) return '/today';
   if (roles.includes('admin')) return '/admin/people';
   // shortcut: reviewer-only people land on the public home until the review queue exists (M2).
   return '/';

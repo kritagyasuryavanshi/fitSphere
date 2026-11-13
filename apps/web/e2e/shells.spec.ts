@@ -73,12 +73,13 @@ test('an admin-only user lands on People and is offered no coach pages', async (
   const header = page.getByRole('navigation', { name: 'Coach' }).first();
   await expect(header.getByRole('link', { name: 'People' })).toBeVisible();
   await expect(header.getByRole('link', { name: 'Athletes' })).toHaveCount(0);
+  await expect(header.getByRole('link', { name: 'Athlete site' })).toBeVisible();
 });
 
 test('a coach lands on the coach dashboard with the coach header', async ({ page }, testInfo) => {
   await signInAs(page, ['coach']);
   await expect(page).toHaveURL('/coach');
-  await expect(page.getByRole('heading', { name: 'Athletes' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Set up your camp' })).toBeVisible();
   const nav = page.getByRole('navigation', { name: 'Coach' });
   await expect(nav.first().getByText('Coach', { exact: true })).toBeVisible();
   if (isPhone(testInfo.project.name)) {
@@ -101,7 +102,8 @@ test('an admin sees People and the athlete site link; others cannot open People'
   const header = page.getByRole('navigation', { name: 'Coach' }).first();
   await expect(header.getByRole('link', { name: 'People' })).toHaveAttribute('aria-current', 'page');
   await expect(header.getByRole('link', { name: /Review queue/ })).toBeVisible();
-  await expect(header.getByRole('link', { name: 'Athlete site' })).toBeVisible();
+  // This admin also trains, so the header offers "Train"; an admin who does not train gets "Athlete site".
+  await expect(header.getByRole('link', { name: 'Train' })).toBeVisible();
 
   const coachPage = await (await browser.newContext()).newPage();
   await signInAs(coachPage, ['coach']);

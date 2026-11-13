@@ -526,7 +526,7 @@
       "deps": [
         "M1-06"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "e2e",
       "screens": [
@@ -540,7 +540,8 @@
         "Experience is labelled self-reported",
         "The applicant gets an email with the decision",
         "After approval the new coach lands on the first-run screen K-CoachEmpty"
-      ]
+      ],
+      "done_on": "2026-11-12"
     },
     {
       "id": "M1-08",

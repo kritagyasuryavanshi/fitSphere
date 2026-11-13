@@ -1,4 +1,7 @@
+'use client';
+
 import { Button } from '@fitsphere/ui';
+import { useHydrated } from '@/lib/use-hydrated';
 import type { ComponentProps, ReactNode } from 'react';
 import { yesNo, type Option } from './options';
 
@@ -73,10 +76,11 @@ export function YesNo({ name, legend, hint, value, error }: { name: string; lege
 }
 
 export function SubmitRow({ note, pending }: { note: string; pending: boolean }) {
+  const hydrated = useHydrated();
   return (
     <div className="flex items-center justify-between gap-4 border-t border-line pt-5">
       <span className="text-[14px] text-muted">{note}</span>
-      <Button type="submit" disabled={pending}>
+      <Button type="submit" disabled={pending || !hydrated}>
         {pending ? 'Saving…' : 'Continue'}
       </Button>
     </div>

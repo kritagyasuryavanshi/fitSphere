@@ -11,10 +11,16 @@ const errors: Record<string, string> = {
   google: 'Google sign-in did not work. Try again, or use your email.',
 };
 
-// Reads the error from the URL at request time; the rest of the page is static.
-async function FormWithError({ searchParams }: { searchParams: PageProps<'/sign-in'>['searchParams'] }) {
+// Only the message from the URL streams in at request time. The form itself stays in the static page:
+// if it streamed in too, it would replace an early copy of itself and drop what the person had typed.
+async function LinkError({ searchParams }: { searchParams: PageProps<'/sign-in'>['searchParams'] }) {
   const { error } = await searchParams;
-  return <SignInForm initialError={typeof error === 'string' && Object.hasOwn(errors, error) ? errors[error] : undefined} />;
+  const message = typeof error === 'string' && Object.hasOwn(errors, error) ? errors[error] : undefined;
+  return message ? (
+    <p role="alert" className="m-0 border-l-4 border-danger bg-danger-soft px-4 py-3 text-[15px] font-medium text-danger">
+      {message}
+    </p>
+  ) : null;
 }
 
 export default function SignInPage({ searchParams }: PageProps<'/sign-in'>) {
@@ -24,12 +30,13 @@ export default function SignInPage({ searchParams }: PageProps<'/sign-in'>) {
       <p className="m-0 max-w-[62ch] text-[16px] leading-[1.6] text-ink-soft">
         We email you a sign-in link. No password to remember. New here? The same link creates your account.
       </p>
-      <Suspense fallback={<SignInForm />}>
-        <FormWithError searchParams={searchParams} />
+      <Suspense fallback={null}>
+        <LinkError searchParams={searchParams} />
       </Suspense>
+      <SignInForm />
       <p className="m-0 text-[13px] leading-[1.5] text-muted">
-        By continuing you agree to the <Link href="/terms" className="underline">terms</Link> and{' '}
-        <Link href="/privacy" className="underline">privacy policy</Link>.
+        By continuing you agree to the <Link href="/legal/terms" className="underline">terms</Link> and{' '}
+        <Link href="/legal/privacy" className="underline">privacy policy</Link>.
       </p>
     </AuthShell>
   );
