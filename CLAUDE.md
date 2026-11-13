@@ -1,13 +1,18 @@
 # fitSphere
 
 ## Start of every session
-1. Read `MEMORY.md` for decisions and the current state.
-2. Read `PROJECT.md` for scope, stack, and milestones.
-3. Read `TASKS.md` for what to do now.
+1. `git pull`, then `npm ci` if `package-lock.json` changed.
+2. Read `MEMORY.md` for the current state.
+3. Read `docs/memory/INDEX.md`, then open the memory notes the task needs. Search them with `grep -rl <word> docs/memory`.
+4. Read `PROJECT.md` and `TASKS.md` when scope or owner items matter.
 
-## End of every session
-- Update `MEMORY.md` with new decisions and the current state.
-- Update `TASKS.md` with what is done and what is next.
+## End of every session (do not skip)
+Follow the routine in `docs/memory/memory-system.md`:
+1. Add a `docs/memory/session-N.md` note that links to every note the session touched.
+2. Add or update notes for new decisions, lessons and facts.
+3. Update the current state in `MEMORY.md` and the owner items in `TASKS.md`.
+4. Run `python docs/plans/build_board.py`. It fails on a broken link or an orphan note.
+5. Commit, push, and republish the board artifact.
 
 ## Folder rule
 All project files live in this repo. The owner works from more than one PC, so the path varies: `C:\Users\LENOVO\Desktop\Projects\fitSphere` and `C:\Users\WELCOME\fitSphere`.
