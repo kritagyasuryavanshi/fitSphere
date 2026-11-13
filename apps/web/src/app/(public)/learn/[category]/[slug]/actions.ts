@@ -16,6 +16,8 @@ export async function toggleProgress(formData: FormData): Promise<void> {
   const supabase = await supabaseServer();
   const { error } = what === 'saved' ? await supabase.rpc('set_saved', { item, saved: on }) : await supabase.rpc('set_completed', { item, done: on });
   if (error) throw new Error(`Could not save this: ${error.message}`);
-  revalidatePath(String(formData.get('path') ?? '/'));
+  // Revalidate only a lesson path; the form field is client data.
+  const path = String(formData.get('path') ?? '');
+  if (/^\/learn\/[a-z0-9_]+\/[a-z0-9-]+$/.test(path)) revalidatePath(path);
   revalidatePath('/account/saved');
 }
