@@ -77,7 +77,16 @@ type Role = 'athlete' | 'coach' | 'reviewer' | 'admin';
  * It uses the admin API, so no email is sent and the 60-second resend limit never applies.
  * stepsDone: 0 = nothing saved, 1 = step 1 saved, 2 = sign-up done (steps 3 and 4 are optional).
  */
-export async function signInAs(page: Page, roles: Role[], { stepsDone = 2, name = 'Kabir' } = {}) {
+export async function signInAs(page: Page, roles: Role[], options: { stepsDone?: number; name?: string } = {}) {
+  const { email } = await createUser(roles, options);
+  const { data: link, error: linkError } = await admin().auth.admin.generateLink({ type: 'magiclink', email });
+  expect(linkError).toBeNull();
+  await page.goto(`/auth/confirm?token_hash=${link.properties!.hashed_token}&type=magiclink`);
+  return email;
+}
+
+/** Creates a confirmed user with exactly these roles, without signing in. */
+export async function createUser(roles: Role[], { stepsDone = 2, name = 'Kabir' }: { stepsDone?: number; name?: string } = {}) {
   const db = admin();
   const email = `e2e-${roles.join('-') || 'none'}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}@test.fitsphere`;
   const { data: created, error } = await db.auth.admin.createUser({ email, email_confirm: true });
@@ -91,9 +100,5 @@ export async function signInAs(page: Page, roles: Role[], { stepsDone = 2, name 
   if (!roles.includes('athlete')) check(await db.from('user_roles').delete().eq('user_id', id).eq('role', 'athlete'));
   const extra = roles.filter((r) => r !== 'athlete');
   if (extra.length) check(await db.from('user_roles').insert(extra.map((role) => ({ user_id: id, role }))));
-
-  const { data: link, error: linkError } = await db.auth.admin.generateLink({ type: 'magiclink', email });
-  expect(linkError).toBeNull();
-  await page.goto(`/auth/confirm?token_hash=${link.properties!.hashed_token}&type=magiclink`);
-  return email;
+  return { id, email };
 }

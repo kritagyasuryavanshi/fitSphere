@@ -7,6 +7,10 @@ updated: 2026-11-12
 
 - Merge PR #1 to #6, in order ([[ci]]).
 - Before launch: a parental-consent step for under-18s, confirmed by a lawyer. There is no age limit now ([[decision-no-age-limit]]), so the app can hold a child's health data without it.
+- Before real emails use `/auth/confirm`: add a "Continue" page that POSTs, to stop login CSRF. Until then it is test-only ([[route-guards]]).
+- Follow-up for M3/M5: check per-sport answers against option lists stored as data in `categories`, before coaches or the AI read them ([[M1-04-review]]).
+- Before launch: a protected owner account. Today any admin can remove another admin's role; the audit log records it ([[M1-06]] review). Default applied: accepted for M1.
+- People with no role: refused for now (default applied). Revisit when a real suspend feature is built.
 - Approve the skills switch-off list from the /usage review (10 unused skills), or change it ([[tooling]]).
 - Set `GITHUB_PERSONAL_ACCESS_TOKEN` for the github plugin, or switch it off ([[tooling]]).
 - Switch off the unused plugins and remove the Neon connector ([[tooling]]).
