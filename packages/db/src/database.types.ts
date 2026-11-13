@@ -105,14 +105,14 @@ isOneToOne: false
                   ]
                 },"categories": {
                   Row: {
-                    "id": string,"is_live": boolean,"name": string,"sort": number,"tagline": string
+                    "id": string,"is_live": boolean,"name": string,"sort": number,"tagline": string,"uses_muscles": boolean,"uses_supports": boolean
                   }
                   ComputedFields: never
                   Insert: {
-                    "id": string,"is_live"?: boolean,"name": string,"sort"?: number,"tagline"?: string
+                    "id": string,"is_live"?: boolean,"name": string,"sort"?: number,"tagline"?: string,"uses_muscles"?: boolean,"uses_supports"?: boolean
                   }
                   Update: {
-                    "id"?: string,"is_live"?: boolean,"name"?: string,"sort"?: number,"tagline"?: string
+                    "id"?: string,"is_live"?: boolean,"name"?: string,"sort"?: number,"tagline"?: string,"uses_muscles"?: boolean,"uses_supports"?: boolean
                   }
                   Relationships: [
                     
@@ -183,6 +183,130 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"content_items": {
+                  Row: {
+                    "author_id": string | null,"created_at": string,"discipline_id": string,"dose": NonNullable<Json>,"drill_type": string | null,"duration_min": number | null,"environments": (string)[],"equipment": (string)[],"id": string,"is_sample": boolean,"kind": Database["public"]['Enums']["content_kind"],"level": Database["public"]['Enums']["content_level"],"mistakes": string,"published_at": string | null,"review_note": string | null,"reviewed_by": string | null,"safety": string,"slug": string,"status": Database["public"]['Enums']["content_status"],"summary": string,"supports": (string)[],"title": string,"updated_at": string,"video_broken": boolean,"video_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "author_id"?: string | null,"created_at"?: string,"discipline_id": string,"dose"?: NonNullable<Json>,"drill_type"?: string | null,"duration_min"?: number | null,"environments"?: (string)[],"equipment"?: (string)[],"id"?: string,"is_sample"?: boolean,"kind": Database["public"]['Enums']["content_kind"],"level"?: Database["public"]['Enums']["content_level"],"mistakes"?: string,"published_at"?: string | null,"review_note"?: string | null,"reviewed_by"?: string | null,"safety"?: string,"slug": string,"status"?: Database["public"]['Enums']["content_status"],"summary"?: string,"supports"?: (string)[],"title": string,"updated_at"?: string,"video_broken"?: boolean,"video_id"?: string | null
+                  }
+                  Update: {
+                    "author_id"?: string | null,"created_at"?: string,"discipline_id"?: string,"dose"?: NonNullable<Json>,"drill_type"?: string | null,"duration_min"?: number | null,"environments"?: (string)[],"equipment"?: (string)[],"id"?: string,"is_sample"?: boolean,"kind"?: Database["public"]['Enums']["content_kind"],"level"?: Database["public"]['Enums']["content_level"],"mistakes"?: string,"published_at"?: string | null,"review_note"?: string | null,"reviewed_by"?: string | null,"safety"?: string,"slug"?: string,"status"?: Database["public"]['Enums']["content_status"],"summary"?: string,"supports"?: (string)[],"title"?: string,"updated_at"?: string,"video_broken"?: boolean,"video_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "content_items_author_id_fkey"
+      columns: ["author_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "content_items_discipline_id_fkey"
+      columns: ["discipline_id"]
+isOneToOne: false
+      referencedRelation: "disciplines"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "content_items_reviewed_by_fkey"
+      columns: ["reviewed_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"content_links": {
+                  Row: {
+                    "from_id": string,"kind": Database["public"]['Enums']["content_link_kind"],"sort": number,"to_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "from_id": string,"kind": Database["public"]['Enums']["content_link_kind"],"sort"?: number,"to_id": string
+                  }
+                  Update: {
+                    "from_id"?: string,"kind"?: Database["public"]['Enums']["content_link_kind"],"sort"?: number,"to_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "content_links_from_id_fkey"
+      columns: ["from_id"]
+isOneToOne: false
+      referencedRelation: "content_items"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "content_links_to_id_fkey"
+      columns: ["to_id"]
+isOneToOne: false
+      referencedRelation: "content_items"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"content_muscles": {
+                  Row: {
+                    "is_primary": boolean,"item_id": string,"muscle_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "is_primary"?: boolean,"item_id": string,"muscle_id": string
+                  }
+                  Update: {
+                    "is_primary"?: boolean,"item_id"?: string,"muscle_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "content_muscles_item_id_fkey"
+      columns: ["item_id"]
+isOneToOne: false
+      referencedRelation: "content_items"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "content_muscles_muscle_id_fkey"
+      columns: ["muscle_id"]
+isOneToOne: false
+      referencedRelation: "muscles"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"content_steps": {
+                  Row: {
+                    "body": string,"item_id": string,"position": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "body": string,"item_id": string,"position": number
+                  }
+                  Update: {
+                    "body"?: string,"item_id"?: string,"position"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "content_steps_item_id_fkey"
+      columns: ["item_id"]
+isOneToOne: false
+      referencedRelation: "content_items"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"disciplines": {
+                  Row: {
+                    "category_id": string,"id": string,"name": string,"slug": string,"sort": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "category_id": string,"id"?: string,"name": string,"slug": string,"sort"?: number
+                  }
+                  Update: {
+                    "category_id"?: string,"id"?: string,"name"?: string,"slug"?: string,"sort"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "disciplines_category_id_fkey"
+      columns: ["category_id"]
+isOneToOne: false
+      referencedRelation: "categories"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"email_outbox": {
                   Row: {
                     "created_at": string,"data": NonNullable<Json>,"id": number,"sent_at": string | null,"template": string,"to_email": string,"user_id": string | null
@@ -202,6 +326,20 @@ isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
     }
+                  ]
+                },"muscles": {
+                  Row: {
+                    "id": string,"muscle_group": string,"name": string,"sort": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id": string,"muscle_group": string,"name": string,"sort"?: number
+                  }
+                  Update: {
+                    "id"?: string,"muscle_group"?: string,"name"?: string,"sort"?: number
+                  }
+                  Relationships: [
+                    
                   ]
                 },"profiles": {
                   Row: {
@@ -280,6 +418,9 @@ isOneToOne: false
 "grant_role":
 { Args: { "new_role": Database["public"]['Enums']["app_role"],"target": string }; Returns: undefined
                            },
+"has_role":
+{ Args: { "wanted": Database["public"]['Enums']["app_role"] }; Returns: boolean
+                           },
 "is_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
@@ -288,6 +429,9 @@ isOneToOne: false
                            },
 "require_step1":
 { Args: Record<PropertyKey, never>; Returns: string
+                           },
+"review_content":
+{ Args: { "approve": boolean,"item": string,"note": string }; Returns: undefined
                            },
 "revoke_role":
 { Args: { "old_role": Database["public"]['Enums']["app_role"],"target": string }; Returns: undefined
@@ -303,10 +447,13 @@ isOneToOne: false
                            },
 "submit_coach_application":
 { Args: { "category": string,"city": string,"full_name": string,"how_today": string,"work_url": string,"years": number }; Returns: undefined
+                           },
+"submit_content":
+{ Args: { "item": string }; Returns: undefined
                            }
           }
           Enums: {
-            "app_role": "athlete"|"coach"|"reviewer"|"admin","application_status": "pending"|"approved"|"declined","consent_purpose": "ai_health_personalisation"|"ai_body_metrics"
+            "app_role": "athlete"|"coach"|"reviewer"|"admin","application_status": "pending"|"approved"|"declined","consent_purpose": "ai_health_personalisation"|"ai_body_metrics","content_kind": "skill"|"drill"|"exercise","content_level": "beginner"|"intermediate"|"advanced","content_link_kind": "prerequisite"|"related"|"alternative","content_status": "draft"|"in_review"|"needs_changes"|"published"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -426,7 +573,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "app_role": ["athlete", "coach", "reviewer", "admin"],"application_status": ["pending", "approved", "declined"],"consent_purpose": ["ai_health_personalisation", "ai_body_metrics"]
+            "app_role": ["athlete", "coach", "reviewer", "admin"],"application_status": ["pending", "approved", "declined"],"consent_purpose": ["ai_health_personalisation", "ai_body_metrics"],"content_kind": ["skill", "drill", "exercise"],"content_level": ["beginner", "intermediate", "advanced"],"content_link_kind": ["prerequisite", "related", "alternative"],"content_status": ["draft", "in_review", "needs_changes", "published"]
           }
         }
 } as const
