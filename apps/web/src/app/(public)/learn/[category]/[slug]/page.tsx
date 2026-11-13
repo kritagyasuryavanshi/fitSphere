@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Suspense, type ReactNode } from 'react';
 import { humanise, lessonBySlug, levelLabel } from '@/lib/content';
+import { Progress } from './progress';
 import { Video } from './video';
 
 export async function generateMetadata({ params }: PageProps<'/learn/[category]/[slug]'>): Promise<Metadata> {
@@ -90,6 +91,9 @@ async function Lesson({ params }: PageProps<'/learn/[category]/[slug]'>) {
           ) : (
             <p className="m-0 text-[15px] text-muted">Sample items are placeholders until a coach replaces them. The AI guide never cites them.</p>
           )}
+          <Suspense fallback={<div className="min-h-12" />}>
+            <Progress itemId={item.id} path={`/learn/${category}/${slug}`} />
+          </Suspense>
           {typical.map((d) => (
             <div key={d.value} className="bg-mist p-5">
               <p className="m-0 text-[14px] font-medium text-muted">{d.label}</p>

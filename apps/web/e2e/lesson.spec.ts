@@ -29,7 +29,7 @@ test.describe('lesson pages', () => {
   test('a draft URL is not found, and a slug under the wrong category is not found', async ({ page }) => {
     const db = admin();
     const { data: discipline } = await db.from('disciplines').select('id').eq('category_id', 'boxing').eq('slug', 'defence').single();
-    const slug = `draft-${Date.now()}`;
+    const slug = `draft-${test.info().project.name}-${Date.now()}`;
     const { error } = await db.from('content_items').insert({ discipline_id: discipline!.id, kind: 'skill', slug, title: 'Secret draft', status: 'draft' });
     expect(error).toBeNull();
     for (const path of [`/learn/boxing/${slug}`, '/learn/gym/jab']) {

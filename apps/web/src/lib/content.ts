@@ -1,4 +1,5 @@
-import { supabaseServer } from './supabase/server';
+// Public pages read as a guest: no session cookies, so the same published rows for everyone.
+import { db } from './db';
 
 export const facetKeys = ['discipline', 'level', 'equipment', 'environments', 'drill_type', 'supports'] as const;
 export type FacetKey = (typeof facetKeys)[number];
@@ -70,7 +71,7 @@ export type LibraryItem = Facetable & {
 
 /** Published items of one category, in discipline order. RLS returns only published rows to the public. */
 export async function libraryItems(category: string): Promise<LibraryItem[]> {
-  const supabase = await supabaseServer();
+  const supabase = db();
   // shortcut: loads the whole category and filters in memory; move filters into SQL past a few hundred items per category.
   const { data, error } = await supabase
     .from('content_items')
@@ -103,7 +104,7 @@ export async function libraryItems(category: string): Promise<LibraryItem[]> {
 export async function authorNames(ids: (string | null)[]): Promise<Map<string, string>> {
   const wanted = [...new Set(ids.filter((id): id is string => !!id))];
   if (!wanted.length) return new Map();
-  const supabase = await supabaseServer();
+  const supabase = db();
   const { data, error } = await supabase.rpc('author_names', { ids: wanted });
   if (error) throw error;
   return new Map(data.map((r) => [r.id, r.display_name]));
@@ -114,7 +115,7 @@ type Linked = { slug: string; title: string; level: string; category: string; is
 
 /** One published item with everything its page shows, or null. Drafts and other categories are null, so the page 404s. */
 export async function lessonBySlug(category: string, slug: string) {
-  const supabase = await supabaseServer();
+  const supabase = db();
   const linked = 'slug, title, level, status, is_sample, disciplines!inner(category_id)';
   const { data: item, error } = await supabase
     .from('content_items')
@@ -142,6 +143,7 @@ export async function lessonBySlug(category: string, slug: string) {
     i && i.status === 'published' ? [{ slug: i.slug, title: i.title, level: i.level, category: i.disciplines.category_id, isSample: i.is_sample }] : [];
   const out = [...item.out].sort((a, b) => a.sort - b.sort);
   return {
+    id: item.id,
     slug: item.slug,
     title: item.title,
     kind: item.kind,
