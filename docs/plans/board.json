@@ -600,7 +600,7 @@
       "deps": [
         "M1-09"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "db",
       "ac": [
@@ -610,7 +610,8 @@
         "pgTAP: a reviewer cannot publish an item they wrote",
         "S&C items carry supports tags; gym items carry muscle links",
         "Categories are data, not code: a test adds a fourth category with rows only and the library lists it (decision D5)"
-      ]
+      ],
+      "done_on": "2026-11-13"
     },
     {
       "id": "M2-02",
@@ -621,14 +622,15 @@
       "deps": [
         "M2-01"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "db",
       "ac": [
         "Seed is idempotent",
         "Every seeded item has is_sample = true",
         "At least 10 boxing skills, 8 S&C and 10 gym exercises"
-      ]
+      ],
+      "done_on": "2026-11-13"
     },
     {
       "id": "M2-03",
@@ -640,7 +642,7 @@
         "M2-02",
         "M1-05"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "e2e",
       "screens": [
@@ -654,7 +656,8 @@
         "End-to-end: filtering boxing drills by equipment shows only matching items",
         "Counts shown are real counts, never fixed numbers",
         "Phone layout matches the reviewed phone board at 390 px (decision D2)"
-      ]
+      ],
+      "done_on": "2026-11-13"
     },
     {
       "id": "M2-04",
@@ -665,7 +668,7 @@
       "deps": [
         "M2-02"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "e2e",
       "screens": [
@@ -678,7 +681,8 @@
         "Steps, mistakes, safety, prerequisites and practice items from the database",
         "Gym page shows the rep-range table per goal",
         "End-to-end: a draft URL returns 404; a sample item shows Sample, never Coach-verified"
-      ]
+      ],
+      "done_on": "2026-11-13"
     },
     {
       "id": "M2-05",
@@ -689,7 +693,7 @@
       "deps": [
         "M2-02"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "db+e2e",
       "screens": [
@@ -699,7 +703,8 @@
         "Searching jab returns the jab skill first and its drills",
         "Results filter by type",
         "Unpublished items never appear"
-      ]
+      ],
+      "done_on": "2026-11-13"
     },
     {
       "id": "M2-06",

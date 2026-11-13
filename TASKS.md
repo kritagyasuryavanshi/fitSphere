@@ -3,7 +3,6 @@
 Build tasks live on the board: `docs/plans/board.json` (rendered at https://claude.ai/artifact/BPCG8ghatzZkV7v1haJ1z1). This file keeps owner-level items only.
 
 ## Now
-- [ ] Owner: merge PR #1 to #11, in order.
 - [ ] Owner: rotate the GitHub token, because it appeared in the chat.
 - [ ] Owner: push the `suryavanshi-claude` rulebook commit that brings Codex back (the push from LENOVO gets 403).
 - [ ] Owner: push the rulebook, and switch off unused plugins. The tooling audit lists the steps: https://claude.ai/artifact/NAWsRxJUah4godqxBrXA6T.
@@ -16,12 +15,13 @@ Build tasks live on the board: `docs/plans/board.json` (rendered at https://clau
 - [ ] Release gate, before sign-in goes live: turn on "Confirm email" in the hosted Supabase project, set custom SMTP, add Turnstile CAPTCHA to sign-in, set `NEXT_PUBLIC_SITE_URL`, list only our own domains in the redirect allow-list, and set auth rate limits in the dashboard (local config raises them for tests).
 - [ ] Owner, before M4 (marketplace): confirm the payment provider (recommended Razorpay), set the fee %, refund and cancel terms, register the business and GST, and sign a coach agreement.
 - [ ] Owner: decide on nutrition for fat-loss users (meal plans or calorie targets are out of v1 for now).
-- [ ] Build M1 Foundation after the S0 setup tasks.
 
 ## Next (design)
 - [ ] Owner: decide on Mobbin (optional).
 
 ## Done
+- [x] 2026-11-13: M2-01 to M2-05: content schema, sample content, library, lesson pages and search (PRs #12 to #16).
+- [x] 2026-11-13: PRs #1 to #11 merged; CI on main green.
 - [x] 2026-11-13: Coach applications (M1-07, PR #10) and account with consents, download and delete (M1-08, PR #11).
 - [x] 2026-11-12: App shells and route guards (M1-05, PR #8); admin people and roles (M1-06, PR #9).
 - [x] 2026-11-12: Sign-up steps 1 to 4 (M1-03, M1-04; PRs #6, #7). No age limit; two AI consents with explicit yes/no.
