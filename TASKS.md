@@ -21,6 +21,7 @@ Build tasks live on the board: `docs/plans/board.json` (rendered at https://clau
 - [ ] Owner: decide on Mobbin (optional).
 
 ## Done
+- [x] 2026-11-13: M2 Library done: save and complete, skill path, coach editor, review queue, daily video check, milestone check (PRs #17 to #21).
 - [x] 2026-11-13: M2-01 to M2-05: content schema, sample content, library, lesson pages and search (PRs #12 to #16).
 - [x] 2026-11-13: PRs #1 to #11 merged; CI on main green.
 - [x] 2026-11-13: Coach applications (M1-07, PR #10) and account with consents, download and delete (M1-08, PR #11).
