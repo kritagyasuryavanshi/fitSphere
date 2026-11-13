@@ -25,4 +25,5 @@ Done in [[session-10]]. The milestone before: [[M1-check]].
 - The "Learn" header link is marked only on `/learn/boxing`, not on S&C or gym pages.
 - The review queue count badge in the coach header is not built.
 - No email to the author when a lesson is published or sent back; the note shows in My lessons.
+- The daily check takes up to 500 videos a run, least recently checked first.
 - The video check confirms the link is a YouTube id at submit time; the daily cron catches removed or private videos.

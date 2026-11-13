@@ -20,6 +20,9 @@ pc: lenovo
 - M2-06 save and complete (PR #17), M2-08 coach editor (PR #18), M2-09 review queue (PR #19), M2-07 skill path (PR #20), M2-10 daily video check and M2-11 milestone check (PR #21). Evidence: [[M2-check]].
 - Codex findings this round: revalidate only lesson paths (fixed), hyphens in category ids (fixed), batch the video checks (fixed). Rejected with evidence: an unchanged export function, and unscoped reads that RLS already scopes.
 
+- After the final Codex pass on PR #21: the video check rotates by `video_checked_at`, and `updated_at` moves only on real content edits (pgTAP `video_broken_test.sql`).
+- Test-first slipped on M2-10's route and M2-11: their tests came right after the code, not before.
+
 ## Bugs and errors
 - Next 16 Cache Components: see [[lesson-next16-suspense]].
 - An old server held port 3000, and the classifier blocked inspecting it. `E2E_PORT` in `playwright.config.ts` runs e2e on another port. Magic-link specs still need 3000.
