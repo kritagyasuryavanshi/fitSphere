@@ -1,6 +1,6 @@
 -- M2-01: content schema, read rules and the draft -> in review -> published workflow.
 begin;
-select plan(34);
+select plan(36);
 
 -- Start from an empty library; the sample seed (M2-02) is rolled back with the test.
 delete from public.content_items;
@@ -81,6 +81,19 @@ select throws_ok($$ select public.review_content('10000000-0000-0000-0000-000000
 -- The author sees the note on the item that was sent back.
 select set_config('request.jwt.claims', '{"sub":"c0000000-0000-0000-0000-00000000000c","role":"authenticated"}', true);
 select is((select status::text || '|' || review_note from public.content_items where slug = 'kb-swing'), 'needs_changes|Show the hinge from the side.', 'the author sees the note');
+
+-- A reviewer sees the author name of an item waiting in review; the public does not.
+reset role;
+update public.profiles set display_name = 'Coach C' where id = 'c0000000-0000-0000-0000-00000000000c';
+insert into public.content_items (discipline_id, author_id, kind, slug, title, status) values
+  ((select id from public.disciplines where category_id = 'boxing' and slug = 'footwork'), 'd0000000-0000-0000-0000-00000000000d', 'skill', 'waiting', 'Waiting', 'in_review');
+update public.profiles set display_name = 'Coach D' where id = 'd0000000-0000-0000-0000-00000000000d';
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"e0000000-0000-0000-0000-00000000000e","role":"authenticated"}', true);
+select is((select display_name from public.author_names(array['d0000000-0000-0000-0000-00000000000d']::uuid[])), 'Coach D', 'a reviewer sees who wrote an item in review');
+set local role anon;
+select set_config('request.jwt.claims', '{"role":"anon"}', true);
+select is_empty($$ select 1 from public.author_names(array['d0000000-0000-0000-0000-00000000000d']::uuid[]) $$, 'the public does not');
 
 -- A coach who is also a reviewer cannot publish their own item.
 reset role;

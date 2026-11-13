@@ -8,6 +8,7 @@ const groups = {
   '(athlete)': "requireRole('athlete')",
   '(coach)': "requireRole('coach')",
   '(admin)': "requireRole('admin')",
+  '(reviewer)': "requireRole('reviewer')",
   '(account)': 'requireSignedIn()',
 } as const;
 
