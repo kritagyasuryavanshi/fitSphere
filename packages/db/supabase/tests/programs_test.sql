@@ -1,6 +1,6 @@
 -- M3-01: programs, versions, sessions and typed items.
 begin;
-select plan(17);
+select plan(20);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('c0000000-0000-0000-0000-00000000000c', 'c@t.test', now()),
@@ -43,6 +43,13 @@ select throws_ok(format($$ select public.save_program_draft(%L, 'X', '', 4, %L) 
 select throws_ok(format($$ select public.save_program_draft(%L, 'X', '', 4, %L) $$, (select id from ids),
   jsonb_build_array(jsonb_build_object('week', 5, 'day', 1, 'title', 'Late', 'items', '[]'::jsonb))),
   '22023', 'bad_day', 'a session must fall inside the program weeks');
+
+select throws_ok($$ select public.create_program('  ', 'boxing') $$, '22023', 'title_required', 'a program needs a title');
+select throws_ok(format($$ select public.save_program_draft(%L, ' ', '', 4, '[]') $$, (select id from ids)), '22023', 'title_required', 'saving keeps a title');
+select throws_ok(format($$ select public.save_program_draft(%L, 'X', '', 4, %L) $$, (select id from ids),
+  jsonb_build_array(jsonb_build_object('week', 1, 'day', 1, 'title', 'Bad', 'items', jsonb_build_array(
+    jsonb_build_object('item', 'zzzzzzzz-zzzz-zzzz-zzzz-zzzzzzzzzzzz', 'type', 'time', 'seconds', 60))))),
+  '22023', 'item_not_published', 'a malformed item id is refused cleanly');
 
 -- Publishing freezes the draft and opens a new one.
 select lives_ok(format($$ select public.publish_program(%L) $$, (select id from ids)), 'the coach publishes');

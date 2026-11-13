@@ -102,6 +102,9 @@ begin
   if not exists (select 1 from public.categories where id = category and is_live) then
     raise exception 'bad_category' using errcode = '22023';
   end if;
+  if char_length(btrim(coalesce(title, ''))) not between 1 and 120 then
+    raise exception 'title_required' using errcode = '22023';
+  end if;
   insert into public.programs (coach_id, category_id, title) values (uid, category, btrim(coalesce(title, ''))) returning id into program;
   insert into public.program_versions (program_id, version) values (program, 1);
   return program;
@@ -148,6 +151,9 @@ begin
   if weeks is null or weeks not between 1 and 26 then
     raise exception 'bad_weeks' using errcode = '22023';
   end if;
+  if char_length(btrim(coalesce(title, ''))) not between 1 and 120 then
+    raise exception 'title_required' using errcode = '22023';
+  end if;
   update public.programs set title = btrim(coalesce(save_program_draft.title, '')), summary = left(btrim(coalesce(save_program_draft.summary, '')), 500),
     weeks = save_program_draft.weeks where id = program;
   delete from public.program_sessions where version_id = draft;
@@ -163,7 +169,7 @@ begin
     values (draft, (s->>'week')::int, (s->>'day')::int, sn, left(btrim(coalesce(s->>'title', '')), 80))
     returning id into session;
     for i, n in select value, ordinality from jsonb_array_elements(coalesce(s->'items', '[]')) with ordinality loop
-      if (i->>'item') !~ '^[0-9a-f-]{36}$' or not exists (select 1 from public.content_items where id = (i->>'item')::uuid and status = 'published') then
+      if coalesce(i->>'item', '') !~ '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' or not exists (select 1 from public.content_items where id = (i->>'item')::uuid and status = 'published') then
         raise exception 'item_not_published' using errcode = '22023';
       end if;
       if (i->>'type') not in ('rounds', 'time', 'sets')
