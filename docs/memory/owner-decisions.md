@@ -14,6 +14,10 @@ updated: 2026-11-12
 - Submit buttons wait for the page script (hydration), so a tap is never sent twice. Trade-off: without the script nobody can sign in. Reviewers suggested server-side idempotency instead; sign-in also retries once on a duplicate. Keep or change ([[lesson-prod-build-e2e]]).
 - When the email sender starts: drop outbox rows older than about 7 days so no stale decision goes out (M1-07 review).
 - Is there a minimum age for coaches? Nothing checks it now ([[decision-no-age-limit]]).
+- Account deletion (M1-08, defaults applied): consent history is deleted with the account; the audit log keeps role events and an `account_deleted` event by id only; a sole admin cannot delete their own account (document a manual owner path). A lawyer should confirm the DPDP proof-of-consent position.
+- Route map change: `/account` pages serve every signed-in person, not only athletes (M1-08 review).
+- The mockup's "use my sport, level and goals in AI answers" switch is left out: it defaulted to on.
+- Add the legal pages (`/legal/terms`, `/legal/privacy`); links already point there and return 404 until then.
 - Approve the skills switch-off list from the /usage review (10 unused skills), or change it ([[tooling]]).
 - Set `GITHUB_PERSONAL_ACCESS_TOKEN` for the github plugin, or switch it off ([[tooling]]).
 - Switch off the unused plugins and remove the Neon connector ([[tooling]]).

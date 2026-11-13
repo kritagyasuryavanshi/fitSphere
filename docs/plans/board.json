@@ -552,7 +552,7 @@
       "deps": [
         "M1-04"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "db+e2e",
       "screens": [
@@ -563,7 +563,8 @@
         "Turning a consent off takes effect at once and is logged",
         "Download gives a JSON file of the user's own data",
         "Delete needs the confirm screen, then removes profile, logs and saves; pgTAP checks nothing personal remains"
-      ]
+      ],
+      "done_on": "2026-11-13"
     },
     {
       "id": "M1-09",
