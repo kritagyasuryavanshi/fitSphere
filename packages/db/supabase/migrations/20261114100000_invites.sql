@@ -111,6 +111,10 @@ begin
     insert into public.enrollments (program_id, athlete_id, invite_code, start_date)
     values (inv.program_id, uid, inv.code, public.india_today())
     on conflict do nothing returning id into e;
+    -- A join running at the same moment won; return its row.
+    if e is null then
+      select id into e from public.enrollments where program_id = inv.program_id and athlete_id = uid and status = 'active';
+    end if;
   end if;
   return e;
 end;
