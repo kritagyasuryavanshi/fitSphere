@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { authorNames, humanise, levelLabel } from '@/lib/content';
-import { supabaseServer } from '@/lib/supabase/server';
+import { db } from '@/lib/db';
 
 export const metadata: Metadata = { title: 'Search · FitSphere' };
 
@@ -23,7 +23,7 @@ async function Results({ searchParams }: PageProps<'/search'>) {
   const type = types.some((t) => t.id === one(params.type)) ? one(params.type) : 'all';
   if (!q) return <p className="m-0 mt-8 text-[16px] text-muted">Type a skill, drill or exercise, like jab or squat.</p>;
 
-  const supabase = await supabaseServer();
+  const supabase = db();
   const { data, error } = await supabase.rpc('search_content', { q });
   if (error) throw error;
   const names = await authorNames(data.map((r) => r.author_id));

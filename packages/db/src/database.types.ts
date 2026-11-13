@@ -149,6 +149,32 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"completions": {
+                  Row: {
+                    "created_at": string,"item_id": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"item_id": string,"user_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"item_id"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "completions_item_id_fkey"
+      columns: ["item_id"]
+isOneToOne: false
+      referencedRelation: "content_items"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "completions_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"consent_notices": {
                   Row: {
                     "created_at": string,"is_current": boolean,"purpose": Database["public"]['Enums']["consent_purpose"],"version": string
@@ -355,6 +381,32 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"saves": {
+                  Row: {
+                    "created_at": string,"item_id": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"item_id": string,"user_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"item_id"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "saves_item_id_fkey"
+      columns: ["item_id"]
+isOneToOne: false
+      referencedRelation: "content_items"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "saves_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"user_roles": {
                   Row: {
                     "created_at": string,"granted_by": string | null,"role": Database["public"]['Enums']["app_role"],"user_id": string
@@ -432,6 +484,9 @@ isOneToOne: false
 "record_consent":
 { Args: { "answer": boolean,"notice": string,"uid": string,"what": Database["public"]['Enums']["consent_purpose"] }; Returns: undefined
                            },
+"require_published":
+{ Args: { "item": string }; Returns: string
+                           },
 "require_step1":
 { Args: Record<PropertyKey, never>; Returns: string
                            },
@@ -455,8 +510,14 @@ isOneToOne: false
 "seed_sample_content":
 { Args: Record<PropertyKey, never>; Returns: undefined
                            },
+"set_completed":
+{ Args: { "done": boolean,"item": string }; Returns: undefined
+                           },
 "set_my_consent":
 { Args: { "granted": boolean,"purpose": Database["public"]['Enums']["consent_purpose"] }; Returns: undefined
+                           },
+"set_saved":
+{ Args: { "item": string,"saved": boolean }; Returns: undefined
                            },
 "submit_coach_application":
 { Args: { "category": string,"city": string,"full_name": string,"how_today": string,"work_url": string,"years": number }; Returns: undefined

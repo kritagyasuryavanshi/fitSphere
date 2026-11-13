@@ -75,6 +75,10 @@ async function Account() {
         </div>
       </section>
 
+      <Link href="/account/saved" className="flex min-h-14 items-center justify-between border-y border-line text-[16px] font-medium">
+        Saved and completed lessons <span aria-hidden="true">→</span>
+      </Link>
+
       <section aria-labelledby="train" className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-4">
           <h2 id="train" className="m-0 text-[22px] font-medium">

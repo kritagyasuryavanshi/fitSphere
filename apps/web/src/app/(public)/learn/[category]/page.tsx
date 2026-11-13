@@ -4,11 +4,11 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { facetKeys, humanise, itemNoun, type FacetKey, type Filters, legendFor, levelLabel, libraryItems, type LibraryItem, matches, parseFilters, valuesOf } from '@/lib/content';
-import { supabaseServer } from '@/lib/supabase/server';
+import { db } from '@/lib/db';
 import { FilterForm } from './filter-form';
 
 async function liveCategory(id: string) {
-  const supabase = await supabaseServer();
+  const supabase = db();
   const { data } = await supabase.from('categories').select('id, name, is_live').order('sort');
   const all = data ?? [];
   const current = all.find((c) => c.id === id && c.is_live);
@@ -82,7 +82,7 @@ async function Library({ params, searchParams }: PageProps<'/learn/[category]'>)
   const found = await liveCategory(category);
   if (!found) notFound();
   const filters = parseFilters(await searchParams);
-  const supabase = await supabaseServer();
+  const supabase = db();
   const [items, { data: disciplines }] = await Promise.all([libraryItems(category), supabase.from('disciplines').select('slug, name').eq('category_id', category)]);
   const names = new Map((disciplines ?? []).map((d) => [d.slug, d.name]));
   const shown = items.filter((item) => matches(item, filters));
