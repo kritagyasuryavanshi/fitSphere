@@ -499,6 +499,9 @@ isOneToOne: false
 "save_body_metrics":
 { Args: { "ai_consent": boolean,"height_cm": number,"notice": string,"sport_answers": Json,"weight_kg": number }; Returns: undefined
                            },
+"save_content_draft":
+{ Args: { "discipline": string,"duration_min": number,"equipment": (string)[],"item": string,"kind": Database["public"]['Enums']["content_kind"],"level": Database["public"]['Enums']["content_level"],"mistakes": string,"muscles": (string)[],"prerequisites": (string)[],"safety": string,"steps": (string)[],"summary": string,"supports": (string)[],"title": string,"video_id": string }; Returns: string
+                           },
 "save_training_basics":
 { Args: { "ai_consent": boolean,"days": number,"equipment": (string)[],"injury_notes": string,"notice": string,"sport_answers": Json }; Returns: undefined
                            },
