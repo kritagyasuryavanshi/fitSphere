@@ -3,7 +3,9 @@
 Build tasks live on the board: `docs/plans/board.json` (rendered at https://claude.ai/artifact/BPCG8ghatzZkV7v1haJ1z1). This file keeps owner-level items only.
 
 ## Now
-- [ ] Owner: merge PR #1, then PR #2, then PR #3.
+- [ ] Owner: merge PR #1, then #2, #3 and #4.
+- [ ] Owner: restart Claude Code, run `/mcp` to confirm GitHub connects, and rotate the token, because it appeared in the chat.
+- [ ] Owner: push the rulebook, and switch off unused plugins. The tooling audit lists the steps: https://claude.ai/artifact/NAWsRxJUah4godqxBrXA6T.
 - [ ] Owner: create Supabase, Vercel, Anthropic API and Google OAuth accounts (O-02). This blocks preview deploys (S0-06) and Google sign-in.
 - [ ] Owner: answer Q-01 to Q-15 in `docs/architecture/risks-and-gaps.md`, or accept the defaults (O-09).
 - [ ] Owner: decide on branch protection for `main`. It needs GitHub Pro (paid) or a public repo. Until then, merge only on a green CI run.
@@ -18,6 +20,8 @@ Build tasks live on the board: `docs/plans/board.json` (rendered at https://clau
 - [ ] Owner: decide on Mobbin (optional).
 
 ## Done
+- [x] 2026-11-12: /code-review high on M1-01; review fixes pushed to PR #4, CI green.
+- [x] 2026-11-12: Identity schema with RLS, reviewed by the planner and /security-review (M1-01, PR #4).
 - [x] 2026-11-12: Playwright e2e harness with seeded test users; e2e CI job (S0-07, PR #3).
 - [x] 2026-11-12: Memory graph in `docs/memory/` with a Memory tab on the board (PR #2).
 - [x] 2026-11-12: Installed Bun (gstack works) and the Codex CLI.

@@ -1,0 +1,128 @@
+<title>fitSphere Tooling Audit</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: one reading column; a verdict strip on top, then one table per group. Fight Camp palette from the project. */
+:root{
+  --bg:#f6f6f3;--surface:#ffffff;--ink:#111214;--muted:#5c5f66;--line:#dedfd9;--volt:#c8f03c;--volt-ink:#111214;
+  --ok:#1f7a3a;--warn:#9a6200;--bad:#b3261e;--ok-bg:#e3f3e7;--warn-bg:#fbf0db;--bad-bg:#fbe5e3;
+  --display:'Anton',Impact,'Arial Narrow',sans-serif;--body:'Inter',system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#121315;--surface:#1b1c1f;--ink:#ecece8;--muted:#a3a6ad;--line:#2d2f33;--volt:#c8f03c;--volt-ink:#111214;
+  --ok:#6fd38c;--warn:#f0b54f;--bad:#ff8a80;--ok-bg:#16301f;--warn-bg:#33270f;--bad-bg:#3a1916;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121315;--surface:#1b1c1f;--ink:#ecece8;--muted:#a3a6ad;--line:#2d2f33;--volt:#c8f03c;--volt-ink:#111214;
+  --ok:#6fd38c;--warn:#f0b54f;--bad:#ff8a80;--ok-bg:#16301f;--warn-bg:#33270f;--bad-bg:#3a1916;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 56px}
+main{max-width:920px;margin:0 auto;display:flex;flex-direction:column;gap:36px}
+h1{font:400 clamp(34px,6vw,56px)/1 var(--display);letter-spacing:.01em;text-transform:uppercase;margin:0;text-wrap:balance}
+h2{font:400 26px/1.1 var(--display);text-transform:uppercase;letter-spacing:.02em;margin:0 0 4px}
+.lede{color:var(--muted);max-width:65ch;margin:10px 0 0}
+.sub{color:var(--muted);margin:0 0 14px;max-width:65ch}
+.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px 16px}
+.tile b{display:block;font:400 34px/1 var(--display);font-variant-numeric:tabular-nums}
+.tile span{color:var(--muted);font-size:13px}
+.tile.key{background:var(--volt);border-color:var(--volt);color:var(--volt-ink)}
+.tile.key span{color:var(--volt-ink)}
+.wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:6px}
+table{border-collapse:collapse;width:100%;min-width:620px}
+th,td{text-align:left;vertical-align:top;padding:10px 14px;border-bottom:1px solid var(--line)}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:600;white-space:nowrap}
+code{font:13px ui-monospace,SFMono-Regular,Consolas,monospace;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:1px 5px;word-break:break-word}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.ok{background:var(--ok-bg);color:var(--ok)}.warn{background:var(--warn-bg);color:var(--warn)}.bad{background:var(--bad-bg);color:var(--bad)}
+.cmd{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.cmd p{margin:0}
+pre{margin:0;overflow-x:auto;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:10px 12px;font:13px/1.5 ui-monospace,Consolas,monospace}
+</style>
+<main>
+<header>
+<h1>Tooling Audit</h1>
+<p class="lede">Every plugin, connector and skill in use on the LENOVO PC on 2026-11-12, checked against the rulebook (<code>suryavanshi-claude/CLAUDE.md</code>) and against how this session actually used them.</p>
+</header>
+
+<section class="strip" aria-label="Summary">
+<div class="tile key"><b>9</b><span>errors fixed this session</span></div>
+<div class="tile"><b>4</b><span>need you (a sign-in or a token)</span></div>
+<div class="tile"><b>5</b><span>plugins to switch off</span></div>
+<div class="tile"><b>1</b><span>connector to remove (Neon)</span></div>
+</section>
+
+<section>
+<h2>Errors</h2>
+<p class="sub">Status after this session.</p>
+<div class="wrap"><table>
+<tr><th>Error</th><th>Cause</th><th>Status</th></tr>
+<tr><td>Docker checks</td><td>A restart was pending after the install.</td><td><span class="pill ok">Fixed</span> DB, pgTAP and Playwright run here.</td></tr>
+<tr><td><code>doctor.sh</code> RED</td><td><code>python3</code> is the Microsoft Store stub. Windows Python prints CRLF, so the script read <code>yes\r</code>.</td><td><span class="pill ok">Fixed</span> GREEN.</td></tr>
+<tr><td><code>test.sh</code> 10 of 15 fail</td><td>The same <code>python3</code> stub.</td><td><span class="pill ok">Fixed 7</span> 3 left. They need native symlinks: turn on Windows Developer Mode.</td></tr>
+<tr><td>Settings drift</td><td>8 skills were on here but off in <code>settings.shared.json</code>.</td><td><span class="pill ok">Fixed</span> A backup was saved first.</td></tr>
+<tr><td><code>/security-review</code> crashed</td><td><code>origin/HEAD</code> was not set.</td><td><span class="pill ok">Fixed</span> <code>git remote set-head origin main</code></td></tr>
+<tr><td>CI Node 20 warning</td><td>The workflow used <code>checkout@v4</code>, <code>setup-node@v4</code> and <code>upload-artifact@v4</code>.</td><td><span class="pill ok">Fixed</span> Moved to v5 in PR #4. CI is green.</td></tr>
+<tr><td>Stale <code>node_modules</code></td><td>I ran <code>npm ci</code> on old main, then switched branches.</td><td><span class="pill ok">Fixed</span> Second time this happened. See the lesson note.</td></tr>
+<tr><td>Sign-up fails on long names</td><td>Found by the security review. A Google name over 80 characters broke the new length check.</td><td><span class="pill ok">Fixed</span> The name is trimmed. A test covers it.</td></tr>
+<tr><td>M1-01 review defects</td><td>The planner found a false audit write, an open sequence and a client-writable date of birth.</td><td><span class="pill ok">Fixed</span> Regression tests added.</td></tr>
+<tr><td>GitHub plugin 400</td><td>Its config sends <code>Bearer ${GITHUB_PERSONAL_ACCESS_TOKEN}</code>, and that variable is not set.</td><td><span class="pill warn">Needs you</span> Set the token (command below).</td></tr>
+<tr><td>Rulebook push 403</td><td>The <code>gh</code> credential helper sends the fitSphere account to the <code>Akash9179</code> repo.</td><td><span class="pill warn">Needs you</span> A browser sign-in (command below).</td></tr>
+<tr><td>PRs not merged</td><td>PRs #1 to #4 are still open on GitHub. Auto mode blocks <code>gh pr merge</code>.</td><td><span class="pill warn">Needs you</span> Merge in order: #1, #2, #3, #4.</td></tr>
+<tr><td>Symlinks</td><td>Git Bash <code>ln -s</code> copies files unless Developer Mode is on.</td><td><span class="pill warn">Needs you</span> Optional. The copies work, since sync runs at every start.</td></tr>
+</table></div>
+</section>
+
+<section>
+<h2>Plugins</h2>
+<p class="sub">Rule: one tool per job. Each enabled plugin loads its skill list into every session, so an unused one costs context every time.</p>
+<div class="wrap"><table>
+<tr><th>Plugin</th><th>Used for</th><th>Verdict</th></tr>
+<tr><td>ponytail</td><td>Small diffs and the end-of-reply risk line.</td><td><span class="pill ok">Keep</span> It matches "Implement narrowly". Check what <code>sendNames: true</code> sends.</td></tr>
+<tr><td>github</td><td>GitHub through MCP.</td><td><span class="pill warn">Fix or drop</span> <code>gh</code> already does every GitHub job here. If you do not set the token, switch it off.</td></tr>
+<tr><td>ui-ux-pro-max</td><td>Eight design skills.</td><td><span class="pill bad">Off</span> It overlaps <code>design-references</code>, <code>hallmark</code> and <code>/design-review</code>. The design system is already locked in <code>packages/ui</code>.</td></tr>
+<tr><td>openseo</td><td>Thirteen SEO skills and an MCP that needs a sign-in.</td><td><span class="pill bad">Off until M6</span> There is nothing to rank before launch.</td></tr>
+<tr><td>typesafe</td><td>Typed AI questions.</td><td><span class="pill bad">Off</span> fitSphere does not use it. Turn it back on only if M5 needs it.</td></tr>
+<tr><td>swift-lsp</td><td>Swift language server.</td><td><span class="pill bad">Off</span> There is no Swift code.</td></tr>
+<tr><td>superpowers, playwright, frontend-design, karpathy, claude-seo, and others</td><td>None.</td><td><span class="pill ok">Already off</span> Playwright runs from the repo, not the plugin.</td></tr>
+</table></div>
+</section>
+
+<section>
+<h2>Connectors</h2>
+<div class="wrap"><table>
+<tr><th>Connector</th><th>State</th><th>Verdict</th></tr>
+<tr><td>Neon</td><td>Connected in write mode, with tools that can delete projects.</td><td><span class="pill bad">Remove</span> The project uses Supabase. This is risk with no use.</td></tr>
+<tr><td>Claude Docs</td><td>Connected.</td><td><span class="pill ok">Keep</span> Used only when you ask for a doc.</td></tr>
+<tr><td>Canva, Google Drive</td><td>Not signed in.</td><td><span class="pill ok">Harmless</span> Remove them if you never use them.</td></tr>
+</table></div>
+</section>
+
+<section>
+<h2>Skills and agents</h2>
+<p class="sub">How each one was used in this session, against the rule.</p>
+<div class="wrap"><table>
+<tr><th>Tool</th><th>Rule</th><th>Used right?</th></tr>
+<tr><td>planner (Fable)</td><td>Review high-risk diffs.</td><td><span class="pill ok">Yes</span> It found 2 real defects in the RLS work. All are fixed.</td></tr>
+<tr><td>/security-review</td><td>Every high-risk diff.</td><td><span class="pill ok">Yes</span> Its sub-task ran on Sonnet under the new routing. It found 1 robustness bug.</td></tr>
+<tr><td>test-driven-development</td><td>Test first for logic.</td><td><span class="pill ok">Yes</span> Every rule was seen to fail before the code was written.</td></tr>
+<tr><td>/code-review high</td><td>The final diff of Feature work.</td><td><span class="pill warn">Not run</span> It is owed for M1-01. The planner and security review covered correctness, so this is a gap against the rule.</td></tr>
+<tr><td>/verify</td><td>Before every commit.</td><td><span class="pill warn">Partly</span> I ran <code>npm run verify</code> directly. That is the project's check, but not the skill.</td></tr>
+<tr><td>Explore (Haiku)</td><td>Cheap fan-out search.</td><td><span class="pill ok">Set up right</span> Not needed this session.</td></tr>
+<tr><td>Web access rule</td><td>Points scraping and search to firecrawl skills.</td><td><span class="pill bad">Broken</span> No firecrawl skill is installed. Install it, or change the rule to the web-fetch agent and WebSearch.</td></tr>
+<tr><td>/browse, /qa, /design-review</td><td>Web QA.</td><td><span class="pill ok">Ready</span> Their first real use is M1-02, the first screen.</td></tr>
+<tr><td>Design skills (hallmark, design-references, design-shotgun)</td><td>New UI.</td><td><span class="pill warn">Overlap</span> Keep <code>design-references</code> and <code>/design-review</code>. Hallmark only when you name it.</td></tr>
+</table></div>
+</section>
+
+<section>
+<h2>Commands for you</h2>
+<div class="cmd"><p><b>GitHub plugin.</b> This puts your <code>gh</code> token in a user variable. Restart Claude Code afterwards.</p>
+<pre>! powershell -NoProfile -c "[Environment]::SetEnvironmentVariable('GITHUB_PERSONAL_ACCESS_TOKEN', (gh auth token), 'User')"</pre></div>
+<div class="cmd"><p><b>Rulebook push.</b> This uses the Windows credential manager for this one repo, then opens a sign-in for <code>Akash9179</code>.</p>
+<pre>! cd ~/suryavanshi-claude && git config credential.helper "" && git config --add credential.helper manager && git config credential.useHttpPath true && git push</pre></div>
+<div class="cmd"><p><b>Plugins off.</b> Run <code>/plugin</code>, then switch off ui-ux-pro-max, openseo, typesafe and swift-lsp. Remove Neon in claude.ai under Settings, then Connectors.</p></div>
+</div>
+</section>
+</main>
