@@ -381,6 +381,72 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"program_sessions": {
+                  Row: {
+                    "day": number,"id": string,"position": number,"title": string,"version_id": string,"week": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "day": number,"id"?: string,"position"?: number,"title"?: string,"version_id": string,"week": number
+                  }
+                  Update: {
+                    "day"?: number,"id"?: string,"position"?: number,"title"?: string,"version_id"?: string,"week"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "program_sessions_version_id_fkey"
+      columns: ["version_id"]
+isOneToOne: false
+      referencedRelation: "program_versions"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"program_versions": {
+                  Row: {
+                    "created_at": string,"effective_from": string | null,"id": string,"program_id": string,"published_at": string | null,"version": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"effective_from"?: string | null,"id"?: string,"program_id": string,"published_at"?: string | null,"version": number
+                  }
+                  Update: {
+                    "created_at"?: string,"effective_from"?: string | null,"id"?: string,"program_id"?: string,"published_at"?: string | null,"version"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "program_versions_program_id_fkey"
+      columns: ["program_id"]
+isOneToOne: false
+      referencedRelation: "programs"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"programs": {
+                  Row: {
+                    "category_id": string,"coach_id": string | null,"created_at": string,"id": string,"summary": string,"title": string,"updated_at": string,"weeks": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "category_id": string,"coach_id"?: string | null,"created_at"?: string,"id"?: string,"summary"?: string,"title": string,"updated_at"?: string,"weeks"?: number
+                  }
+                  Update: {
+                    "category_id"?: string,"coach_id"?: string | null,"created_at"?: string,"id"?: string,"summary"?: string,"title"?: string,"updated_at"?: string,"weeks"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "programs_category_id_fkey"
+      columns: ["category_id"]
+isOneToOne: false
+      referencedRelation: "categories"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "programs_coach_id_fkey"
+      columns: ["coach_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"saves": {
                   Row: {
                     "created_at": string,"item_id": string,"user_id": string
@@ -404,6 +470,32 @@ isOneToOne: false
       columns: ["user_id"]
 isOneToOne: false
       referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"session_items": {
+                  Row: {
+                    "cue": string,"id": string,"item_id": string,"position": number,"prescription": NonNullable<Json>,"session_id": string,"type": Database["public"]['Enums']["prescription_type"]
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "cue"?: string,"id"?: string,"item_id": string,"position": number,"prescription": NonNullable<Json>,"session_id": string,"type": Database["public"]['Enums']["prescription_type"]
+                  }
+                  Update: {
+                    "cue"?: string,"id"?: string,"item_id"?: string,"position"?: number,"prescription"?: NonNullable<Json>,"session_id"?: string,"type"?: Database["public"]['Enums']["prescription_type"]
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "session_items_item_id_fkey"
+      columns: ["item_id"]
+isOneToOne: false
+      referencedRelation: "content_items"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "session_items_session_id_fkey"
+      columns: ["session_id"]
+isOneToOne: false
+      referencedRelation: "program_sessions"
       referencedColumns: ["id"]
     }
                   ]
@@ -463,6 +555,9 @@ isOneToOne: false
 "complete_about_you":
 { Args: { "birth_date": string,"first_name": string,"sports": (string)[] }; Returns: undefined
                            },
+"create_program":
+{ Args: { "category": string,"title": string }; Returns: string
+                           },
 "decide_coach_application":
 { Args: { "application": string,"approve": boolean }; Returns: undefined
                            },
@@ -478,8 +573,23 @@ isOneToOne: false
 "has_role":
 { Args: { "wanted": Database["public"]['Enums']["app_role"] }; Returns: boolean
                            },
+"india_today":
+{ Args: Record<PropertyKey, never>; Returns: string
+                           },
 "is_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
+                           },
+"own_draft":
+{ Args: { "program": string }; Returns: string
+                           },
+"owns_program":
+{ Args: { "program": string }; Returns: boolean
+                           },
+"program_is_published":
+{ Args: { "program": string }; Returns: boolean
+                           },
+"publish_program":
+{ Args: { "program": string }; Returns: number
                            },
 "record_consent":
 { Args: { "answer": boolean,"notice": string,"uid": string,"what": Database["public"]['Enums']["consent_purpose"] }; Returns: undefined
@@ -501,6 +611,9 @@ isOneToOne: false
                            },
 "save_content_draft":
 { Args: { "discipline": string,"duration_min": number,"equipment": (string)[],"item": string,"kind": Database["public"]['Enums']["content_kind"],"level": Database["public"]['Enums']["content_level"],"mistakes": string,"muscles": (string)[],"prerequisites": (string)[],"safety": string,"steps": (string)[],"summary": string,"supports": (string)[],"title": string,"video_id": string }; Returns: string
+                           },
+"save_program_draft":
+{ Args: { "program": string,"sessions": Json,"summary": string,"title": string,"weeks": number }; Returns: undefined
                            },
 "save_training_basics":
 { Args: { "ai_consent": boolean,"days": number,"equipment": (string)[],"injury_notes": string,"notice": string,"sport_answers": Json }; Returns: undefined
@@ -527,10 +640,13 @@ isOneToOne: false
                            },
 "submit_content":
 { Args: { "item": string }; Returns: undefined
+                           },
+"valid_prescription":
+{ Args: { "p": Json,"t": Database["public"]['Enums']["prescription_type"] }; Returns: boolean
                            }
           }
           Enums: {
-            "app_role": "athlete"|"coach"|"reviewer"|"admin","application_status": "pending"|"approved"|"declined","consent_purpose": "ai_health_personalisation"|"ai_body_metrics","content_kind": "skill"|"drill"|"exercise","content_level": "beginner"|"intermediate"|"advanced","content_link_kind": "prerequisite"|"related"|"alternative","content_status": "draft"|"in_review"|"needs_changes"|"published"
+            "app_role": "athlete"|"coach"|"reviewer"|"admin","application_status": "pending"|"approved"|"declined","consent_purpose": "ai_health_personalisation"|"ai_body_metrics","content_kind": "skill"|"drill"|"exercise","content_level": "beginner"|"intermediate"|"advanced","content_link_kind": "prerequisite"|"related"|"alternative","content_status": "draft"|"in_review"|"needs_changes"|"published","prescription_type": "rounds"|"time"|"sets"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -650,7 +766,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "app_role": ["athlete", "coach", "reviewer", "admin"],"application_status": ["pending", "approved", "declined"],"consent_purpose": ["ai_health_personalisation", "ai_body_metrics"],"content_kind": ["skill", "drill", "exercise"],"content_level": ["beginner", "intermediate", "advanced"],"content_link_kind": ["prerequisite", "related", "alternative"],"content_status": ["draft", "in_review", "needs_changes", "published"]
+            "app_role": ["athlete", "coach", "reviewer", "admin"],"application_status": ["pending", "approved", "declined"],"consent_purpose": ["ai_health_personalisation", "ai_body_metrics"],"content_kind": ["skill", "drill", "exercise"],"content_level": ["beginner", "intermediate", "advanced"],"content_link_kind": ["prerequisite", "related", "alternative"],"content_status": ["draft", "in_review", "needs_changes", "published"],"prescription_type": ["rounds", "time", "sets"]
           }
         }
 } as const
