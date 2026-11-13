@@ -581,14 +581,15 @@
         "M1-06",
         "M1-08"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "all",
       "ac": [
         "npm run verify green in CI",
         "Codex review of auth and RLS changes; findings fixed or rejected with evidence",
         "Board and MEMORY.md updated"
-      ]
+      ],
+      "done_on": "2026-11-13"
     },
     {
       "id": "M2-01",
