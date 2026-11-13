@@ -402,7 +402,7 @@
         "S0-03",
         "S0-07"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "e2e",
       "screens": [
@@ -414,7 +414,9 @@
         "A malformed email shows the inline error from the mockup",
         "Resend is disabled for 60 seconds",
         "Google button starts the OAuth flow (manual check on preview)"
-      ]
+      ],
+      "done_on": "2026-11-12",
+      "commit": "6ac3d33"
     },
     {
       "id": "M1-03",

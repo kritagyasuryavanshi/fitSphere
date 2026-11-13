@@ -3,8 +3,9 @@
 Build tasks live on the board: `docs/plans/board.json` (rendered at https://claude.ai/artifact/BPCG8ghatzZkV7v1haJ1z1). This file keeps owner-level items only.
 
 ## Now
-- [ ] Owner: merge PR #1, then #2, #3 and #4.
-- [ ] Owner: restart Claude Code, run `/mcp` to confirm GitHub connects, and rotate the token, because it appeared in the chat.
+- [ ] Owner: merge PR #1, then #2, #3, #4 and #5.
+- [ ] Owner: rotate the GitHub token, because it appeared in the chat.
+- [ ] Owner: push the `suryavanshi-claude` rulebook commit that brings Codex back (the push from LENOVO gets 403).
 - [ ] Owner: push the rulebook, and switch off unused plugins. The tooling audit lists the steps: https://claude.ai/artifact/NAWsRxJUah4godqxBrXA6T.
 - [ ] Owner: create Supabase, Vercel, Anthropic API and Google OAuth accounts (O-02). This blocks preview deploys (S0-06) and Google sign-in.
 - [ ] Owner: answer Q-01 to Q-15 in `docs/architecture/risks-and-gaps.md`, or accept the defaults (O-09).
@@ -12,6 +13,7 @@ Build tasks live on the board: `docs/plans/board.json` (rendered at https://clau
 - [ ] Owner: meet one boxing coach and one S&C coach this week (the assignment in the design doc).
 
 ## Next
+- [ ] Release gate, before sign-in goes live: turn on "Confirm email" in the hosted Supabase project, set custom SMTP, add Turnstile CAPTCHA to sign-in, set `NEXT_PUBLIC_SITE_URL`, and list only our own domains in the redirect allow-list (M1-02 review).
 - [ ] Owner, before M4 (marketplace): confirm the payment provider (recommended Razorpay), set the fee %, refund and cancel terms, register the business and GST, and sign a coach agreement.
 - [ ] Owner: decide on nutrition for fat-loss users (meal plans or calorie targets are out of v1 for now).
 - [ ] Build M1 Foundation after the S0 setup tasks.
@@ -20,6 +22,7 @@ Build tasks live on the board: `docs/plans/board.json` (rendered at https://clau
 - [ ] Owner: decide on Mobbin (optional).
 
 ## Done
+- [x] 2026-11-12: Sign in with an email link or Google (M1-02, PR #5), reviewed by the planner, /code-review, a security scan and Codex.
 - [x] 2026-11-12: /code-review high on M1-01; review fixes pushed to PR #4, CI green.
 - [x] 2026-11-12: Identity schema with RLS, reviewed by the planner and /security-review (M1-01, PR #4).
 - [x] 2026-11-12: Playwright e2e harness with seeded test users; e2e CI job (S0-07, PR #3).
