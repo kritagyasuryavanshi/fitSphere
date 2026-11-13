@@ -101,10 +101,10 @@ export async function libraryItems(category: string): Promise<LibraryItem[]> {
 }
 
 /** Display names of the authors of published items; profiles are not public otherwise. */
-export async function authorNames(ids: (string | null)[]): Promise<Map<string, string>> {
+/** Pass the signed-in client where the caller's role widens the names, as for reviewers. */
+export async function authorNames(ids: (string | null)[], supabase: Pick<ReturnType<typeof db>, 'rpc'> = db()): Promise<Map<string, string>> {
   const wanted = [...new Set(ids.filter((id): id is string => !!id))];
   if (!wanted.length) return new Map();
-  const supabase = db();
   const { data, error } = await supabase.rpc('author_names', { ids: wanted });
   if (error) throw error;
   return new Map(data.map((r) => [r.id, r.display_name]));

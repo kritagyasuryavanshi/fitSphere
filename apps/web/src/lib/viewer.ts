@@ -79,7 +79,7 @@ export function homeFor(roles: Role[]): string {
   if (roles.includes('coach')) return '/coach';
   if (roles.includes('athlete')) return '/today';
   if (roles.includes('admin')) return '/admin/people';
-  // shortcut: reviewer-only people land on the public home until the review queue exists (M2).
+  if (roles.includes('reviewer')) return '/review';
   return '/';
 }
 
