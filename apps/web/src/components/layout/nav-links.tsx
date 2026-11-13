@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Suspense } from 'react';
 import { Icon, type IconName } from './icons';
 
 export type NavItem = { href: string; label: string; icon?: IconName; badge?: number; exact?: boolean };
@@ -14,7 +15,19 @@ function isCurrent(pathname: string, item: NavItem) {
 
 /** The desktop header links. The current one is underlined, as in the mockups. */
 export function HeaderLinks({ items }: { items: NavItem[] }) {
-  const pathname = usePathname();
+  // On a dynamic route the path is request data, so it needs a Suspense boundary. The fallback marks no link.
+  return (
+    <Suspense fallback={<Links items={items} pathname="" />}>
+      <CurrentLinks items={items} />
+    </Suspense>
+  );
+}
+
+function CurrentLinks({ items }: { items: NavItem[] }) {
+  return <Links items={items} pathname={usePathname()} />;
+}
+
+function Links({ items, pathname }: { items: NavItem[]; pathname: string }) {
   return (
     <div className="hidden flex-wrap gap-7 text-[16px] font-medium md:flex">
       {items.map((item) => {
@@ -37,7 +50,18 @@ export function HeaderLinks({ items }: { items: NavItem[] }) {
 
 /** The phone tab bar for athletes and coaches. Hidden on desktop, where the header holds the links. */
 export function BottomTabs({ items, label }: { items: NavItem[]; label: string }) {
-  const pathname = usePathname();
+  return (
+    <Suspense fallback={<Tabs items={items} label={label} pathname="" />}>
+      <CurrentTabs items={items} label={label} />
+    </Suspense>
+  );
+}
+
+function CurrentTabs({ items, label }: { items: NavItem[]; label: string }) {
+  return <Tabs items={items} label={label} pathname={usePathname()} />;
+}
+
+function Tabs({ items, label, pathname }: { items: NavItem[]; label: string; pathname: string }) {
   return (
     <nav aria-label={label} className="sticky bottom-0 z-10 flex border-t border-line bg-paper px-2 pb-5 pt-1 md:hidden">
       {items.map((item) => {

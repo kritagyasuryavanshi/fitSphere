@@ -1,6 +1,6 @@
 -- M2-01: content schema, read rules and the draft -> in review -> published workflow.
 begin;
-select plan(31);
+select plan(33);
 
 -- Start from an empty library; the sample seed (M2-02) is rolled back with the test.
 delete from public.content_items;
@@ -99,6 +99,14 @@ insert into public.content_items (discipline_id, kind, slug, title, status, is_s
 set local role anon;
 select set_config('request.jwt.claims', '{"role":"anon"}', true);
 select is((select i.title from public.content_items i join public.disciplines d on d.id = i.discipline_id join public.categories c on c.id = d.category_id where c.id = 'tennis'), 'Flat serve', 'a fourth category lists its items');
+
+-- Author names are public only for people with a published item.
+reset role;
+update public.profiles set display_name = 'Coach C' where id = 'c0000000-0000-0000-0000-00000000000c';
+update public.profiles set display_name = 'Coach D' where id = 'd0000000-0000-0000-0000-00000000000d';
+set local role anon;
+select is((select array_agg(display_name) from public.author_names(array['c0000000-0000-0000-0000-00000000000c', 'd0000000-0000-0000-0000-00000000000d']::uuid[])), array['Coach C'], 'only authors of published items have a public name');
+select throws_ok($$ select 1 from public.profiles $$, '42501', null, 'profiles stay private');
 
 -- A deleted author leaves their published items in place.
 reset role;
