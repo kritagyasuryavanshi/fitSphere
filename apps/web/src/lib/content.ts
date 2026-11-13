@@ -108,3 +108,61 @@ export async function authorNames(ids: (string | null)[]): Promise<Map<string, s
   if (error) throw error;
   return new Map(data.map((r) => [r.id, r.display_name]));
 }
+
+export type DoseRow = { goal?: string; reps?: string; sets?: string; rest?: string; effort?: string; label?: string; value?: string; note?: string };
+type Linked = { slug: string; title: string; level: string; category: string; isSample: boolean };
+
+/** One published item with everything its page shows, or null. Drafts and other categories are null, so the page 404s. */
+export async function lessonBySlug(category: string, slug: string) {
+  const supabase = await supabaseServer();
+  const linked = 'slug, title, level, status, is_sample, disciplines!inner(category_id)';
+  const { data: item, error } = await supabase
+    .from('content_items')
+    .select(
+      `id, slug, title, kind, summary, level, duration_min, equipment, supports, video_id, mistakes, safety, dose, is_sample, author_id, reviewed_by,
+       disciplines!inner(name, category_id, categories(name)),
+       content_steps(position, body), content_muscles(is_primary, muscles(name)),
+       out:content_links!content_links_from_id_fkey(kind, sort, to:content_items!content_links_to_id_fkey(${linked}))`,
+    )
+    .eq('slug', slug)
+    .eq('status', 'published')
+    .eq('disciplines.category_id', category)
+    .maybeSingle();
+  if (error) throw error;
+  if (!item) return null;
+  // Items that list this one as a prerequisite are what you practise or learn next.
+  const { data: incoming, error: inError } = await supabase
+    .from('content_links')
+    .select(`from:content_items!content_links_from_id_fkey(${linked})`)
+    .eq('to_id', item.id)
+    .eq('kind', 'prerequisite');
+  if (inError) throw inError;
+  const names = await authorNames([item.author_id, item.reviewed_by]);
+  const toLinked = (i: { slug: string; title: string; level: string; status: string; is_sample: boolean; disciplines: { category_id: string } } | null): Linked[] =>
+    i && i.status === 'published' ? [{ slug: i.slug, title: i.title, level: i.level, category: i.disciplines.category_id, isSample: i.is_sample }] : [];
+  const out = [...item.out].sort((a, b) => a.sort - b.sort);
+  return {
+    slug: item.slug,
+    title: item.title,
+    kind: item.kind,
+    summary: item.summary,
+    level: item.level,
+    durationMin: item.duration_min,
+    equipment: item.equipment,
+    supports: item.supports,
+    videoId: item.video_id,
+    mistakes: item.mistakes,
+    safety: item.safety,
+    dose: item.dose as DoseRow[],
+    isSample: item.is_sample,
+    discipline: item.disciplines.name,
+    categoryName: item.disciplines.categories.name,
+    author: item.author_id ? (names.get(item.author_id) ?? null) : null,
+    reviewer: item.reviewed_by ? (names.get(item.reviewed_by) ?? null) : null,
+    steps: [...item.content_steps].sort((a, b) => a.position - b.position).map((s) => s.body),
+    muscles: [...item.content_muscles].sort((a, b) => Number(b.is_primary) - Number(a.is_primary)).map((m) => m.muscles.name),
+    prerequisites: out.filter((l) => l.kind === 'prerequisite').flatMap((l) => toLinked(l.to)),
+    related: out.filter((l) => l.kind !== 'prerequisite').flatMap((l) => toLinked(l.to)),
+    next: incoming.flatMap((l) => toLinked(l.from)),
+  };
+}

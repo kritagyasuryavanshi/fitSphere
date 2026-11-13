@@ -1,6 +1,6 @@
 -- M2-01: content schema, read rules and the draft -> in review -> published workflow.
 begin;
-select plan(33);
+select plan(34);
 
 -- Start from an empty library; the sample seed (M2-02) is rolled back with the test.
 delete from public.content_items;
@@ -107,6 +107,7 @@ update public.profiles set display_name = 'Coach D' where id = 'd0000000-0000-00
 set local role anon;
 select is((select array_agg(display_name) from public.author_names(array['c0000000-0000-0000-0000-00000000000c', 'd0000000-0000-0000-0000-00000000000d']::uuid[])), array['Coach C'], 'only authors of published items have a public name');
 select throws_ok($$ select 1 from public.profiles $$, '42501', null, 'profiles stay private');
+select is((select count(*)::int from public.author_names(array['e0000000-0000-0000-0000-00000000000e']::uuid[])), 1, 'the reviewer of a published item has a public name');
 
 -- A deleted author leaves their published items in place.
 reset role;
