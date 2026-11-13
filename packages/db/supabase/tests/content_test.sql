@@ -2,6 +2,9 @@
 begin;
 select plan(31);
 
+-- Start from an empty library; the sample seed (M2-02) is rolled back with the test.
+delete from public.content_items;
+
 insert into auth.users (id, email, email_confirmed_at) values
   ('c0000000-0000-0000-0000-00000000000c', 'c@t.test', now()),
   ('d0000000-0000-0000-0000-00000000000d', 'd@t.test', now()),
