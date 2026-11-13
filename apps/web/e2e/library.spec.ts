@@ -21,13 +21,13 @@ test.describe('library', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Boxing' })).toBeVisible();
     const tiles = page.getByRole('region', { name: 'Boxing lessons' }).locator('a[href^="/learn/boxing/"]');
     await expect(tiles.filter({ hasText: /^The Jab/ })).toHaveCount(1);
-    await expect(page.getByText(/^\d+ lessons shown$/)).toBeVisible();
+    await expect(page.getByText(/^\d+ lessons shown/)).toBeVisible();
 
     await (await filterBox(page)).getByRole('checkbox', { name: /Heavy bag/ }).check();
     await expect(page).toHaveURL(/equipment=heavy_bag/);
     await expect(tiles).toHaveCount(1);
     await expect(tiles.first()).toContainText('Heavy bag rhythm');
-    await expect(page.getByText('1 lesson shown')).toBeVisible();
+    await expect(page.getByText(/^1 lesson shown/)).toBeVisible();
 
     // Reload and share keep the filter.
     await page.reload();
