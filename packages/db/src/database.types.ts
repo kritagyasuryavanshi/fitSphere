@@ -403,6 +403,11 @@ isOneToOne: false
 "apply_sport_answers":
 { Args: { "by_sport": Json,"uid": string }; Returns: undefined
                            },
+"author_names":
+{ Args: { "ids": (string)[] }; Returns: {
+              "display_name": string,"id": string
+            }[]
+                           },
 "complete_about_you":
 { Args: { "birth_date": string,"first_name": string,"sports": (string)[] }; Returns: undefined
                            },
