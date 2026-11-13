@@ -34,3 +34,22 @@ test.describe('save and complete', () => {
     await expect(page.getByText('Nothing saved yet.')).toBeVisible();
   });
 });
+
+test('the boxing skill path follows prerequisites and shows progress', async ({ page }) => {
+  await signInAs(page, ['athlete']);
+  await page.goto('/learn/boxing/stance');
+  await page.getByRole('button', { name: 'Mark complete' }).click();
+  await expect(page.getByRole('button', { name: 'Completed ✓' })).toBeVisible();
+  await page.goto('/learn/boxing/guard');
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Saved' })).toBeVisible();
+
+  await page.goto('/learn/boxing');
+  const path = page.getByRole('region', { name: 'Your skill path' });
+  const steps = path.getByRole('listitem');
+  await expect(steps.nth(0)).toContainText('Stance');
+  await expect(steps.nth(0)).toContainText('Done');
+  await expect(steps.nth(1)).toContainText('Guard');
+  await expect(steps.nth(1)).toContainText('In progress');
+  await expect(path).toContainText(/1 of \d+ skills complete/);
+});

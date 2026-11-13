@@ -6,6 +6,7 @@ import { Suspense } from 'react';
 import { facetKeys, humanise, itemNoun, type FacetKey, type Filters, legendFor, levelLabel, libraryItems, type LibraryItem, matches, parseFilters, valuesOf } from '@/lib/content';
 import { db } from '@/lib/db';
 import { FilterForm } from './filter-form';
+import { SkillPath } from './skill-path';
 
 async function liveCategory(id: string) {
   const supabase = db();
@@ -117,6 +118,10 @@ async function Library({ params, searchParams }: PageProps<'/learn/[category]'>)
           {shown.length} {noun} shown{coaches ? ` · ${coaches} ${coaches === 1 ? 'coach' : 'coaches'}` : ''}
         </p>
       </div>
+
+      <Suspense fallback={null}>
+        <SkillPath category={category} categoryName={found.current.name} items={items} />
+      </Suspense>
 
       <div className="mt-10 flex flex-col gap-10 md:flex-row md:items-start">
         <details className="border-y border-line py-3 md:hidden">

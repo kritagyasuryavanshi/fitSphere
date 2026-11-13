@@ -4,7 +4,7 @@ import { admin } from './helpers';
 test.describe('lesson pages', () => {
   test('a boxing lesson shows steps, mistakes, safety, prerequisites and what to practise next', async ({ page }) => {
     await page.goto('/learn/boxing');
-    await page.locator('a[href="/learn/boxing/jab"]').click();
+    await page.getByRole('region', { name: 'Boxing lessons' }).locator('a[href="/learn/boxing/jab"]').click();
     await expect(page.getByRole('heading', { level: 1, name: 'The Jab' })).toBeVisible();
     // Client navigation keeps the previous page hidden in the DOM, so match visible text only.
     await expect(page.getByText('Sample, awaiting a coach').filter({ visible: true })).toBeVisible();
