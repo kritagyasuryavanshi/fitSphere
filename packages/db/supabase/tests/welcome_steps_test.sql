@@ -2,6 +2,10 @@
 begin;
 select plan(30);
 
+-- Test notice versions; the real ones are seeded by the M1-08 migration.
+insert into public.consent_notices (purpose, version) values
+  ('ai_health_personalisation', 'v1'), ('ai_health_personalisation', 'v2'), ('ai_body_metrics', 'v1');
+
 insert into auth.users (id, email, email_confirmed_at) values
   ('a0000000-0000-0000-0000-00000000000a', 'a@t.test', now()),
   ('b0000000-0000-0000-0000-00000000000b', 'b@t.test', now());
