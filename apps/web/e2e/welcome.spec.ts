@@ -1,7 +1,6 @@
 import { indiaToday } from '@fitsphere/core';
-import { createDbClient } from '@fitsphere/db';
-import { expect, test, type Page } from '@playwright/test';
-import { admin, signUp, userIdByEmail } from './helpers';
+import { expect, test } from '@playwright/test';
+import { admin, fillAboutYou, signUp, userIdByEmail } from './helpers';
 
 // A date of birth `years` before today in India, plus `days`. On 29 February the same day years back
 // may not exist, so it steps back to 28 February: a little over `years`, never under.
@@ -13,16 +12,6 @@ function birthday(years: number, days = 0) {
   return date.toISOString().slice(0, 10);
 }
 
-async function fillAboutYou(page: Page, name: string, dob: string, sports: string[]) {
-  const [year, month, day] = dob.split('-') as [string, string, string];
-  await page.getByLabel('First name').fill(name);
-  await page.getByLabel('Day').fill(day);
-  await page.getByLabel('Month').fill(month);
-  await page.getByLabel('Year').fill(year);
-  for (const sport of sports) await page.getByRole('checkbox', { name: new RegExp(sport) }).check();
-  await page.getByRole('button', { name: 'Continue' }).click();
-}
-
 async function savedProfile(email: string) {
   const id = await userIdByEmail(email);
   const { data: profile } = await admin().from('profiles').select('display_name, date_of_birth').eq('id', id).single();
@@ -30,30 +19,22 @@ async function savedProfile(email: string) {
   return { ...profile, sports: prefs?.map((p) => p.category_id) };
 }
 
-test('an adult finishes step 1 and their answers are saved', async ({ page }, testInfo) => {
+test('step 1 saves the name, date of birth and sports', async ({ page }, testInfo) => {
   const email = `e2e-adult-${testInfo.project.name}-${Date.now()}@test.fitsphere`;
   await signUp(page, email);
-  // Exactly 18 today passes.
   await fillAboutYou(page, 'Kabir', birthday(18), ['Boxing', 'Gym & Fitness']);
 
-  await expect(page).toHaveURL('/');
-  await expect(page.getByText(`Signed in as ${email}`)).toBeVisible();
+  await expect(page).toHaveURL('/welcome/2');
   expect(await savedProfile(email)).toEqual({ display_name: 'Kabir', date_of_birth: birthday(18), sports: ['boxing', 'gym'] });
 });
 
-test('under 18 shows the block screen and stores nothing', async ({ page }, testInfo) => {
-  const email = `e2e-minor-${testInfo.project.name}-${Date.now()}@test.fitsphere`;
+test('there is no age limit: a child finishes step 1 and the date is kept', async ({ page }, testInfo) => {
+  const email = `e2e-child-${testInfo.project.name}-${Date.now()}@test.fitsphere`;
   await signUp(page, email);
-  // One day short of 18.
-  await fillAboutYou(page, 'Kid', birthday(18, 1), ['Boxing']);
+  await fillAboutYou(page, 'Aarav', birthday(10), ['Boxing']);
 
-  await expect(page).toHaveURL('/welcome/not-eligible');
-  await expect(page.getByRole('heading', { name: 'FitSphere is for adults, for now' })).toBeVisible();
-  expect(await savedProfile(email)).toEqual({ display_name: '', date_of_birth: null, sports: [] });
-
-  // The session ended too.
-  await page.goto('/');
-  await expect(page.getByRole('link', { name: 'Log in or join' })).toBeVisible();
+  await expect(page).toHaveURL('/welcome/2');
+  expect(await savedProfile(email)).toEqual({ display_name: 'Aarav', date_of_birth: birthday(10), sports: ['boxing'] });
 });
 
 test('step 1 shows inline errors and keeps what was typed', async ({ page }, testInfo) => {
@@ -77,14 +58,6 @@ test('a year in the future is a typo, not a child', async ({ page }, testInfo) =
   await fillAboutYou(page, 'Kabir', '2098-06-12', ['Boxing']);
   await expect(page.getByText('Enter a real date, like 12 06 1998')).toBeVisible();
   await expect(page).toHaveURL('/welcome/1');
-});
-
-test('the 18+ rule holds when the browser is bypassed', async ({}, testInfo) => {
-  test.skip(testInfo.project.name !== 'desktop', 'An API check; one viewport is enough.');
-  const db = createDbClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? '', process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? '');
-  await db.auth.signInWithPassword({ email: 'athlete@test.fitsphere', password: 'password123' });
-  const { error } = await db.rpc('complete_about_you', { first_name: 'Kid', birth_date: birthday(17), sports: ['boxing'] });
-  expect(error?.message).toBe('under_18');
 });
 
 test('step 1 needs a signed-in user', async ({ page }) => {

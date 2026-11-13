@@ -28,7 +28,7 @@ export default function SignInPage({ searchParams }: PageProps<'/sign-in'>) {
         <FormWithError searchParams={searchParams} />
       </Suspense>
       <p className="m-0 text-[13px] leading-[1.5] text-muted">
-        FitSphere is for adults 18 and over. By continuing you agree to the <Link href="/terms" className="underline">terms</Link> and{' '}
+        By continuing you agree to the <Link href="/terms" className="underline">terms</Link> and{' '}
         <Link href="/privacy" className="underline">privacy policy</Link>.
       </p>
     </AuthShell>

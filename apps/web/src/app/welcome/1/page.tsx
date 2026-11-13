@@ -23,7 +23,8 @@ async function Form() {
   ]);
   const [year = '', month = '', day = ''] = profile?.date_of_birth?.split('-') ?? [];
   const saved = { name: profile?.display_name ?? '', day, month, year, sports: prefs?.map((p) => p.category_id) ?? [] };
-  return <AboutYouForm sports={sports ?? []} saved={saved} />;
+  // Keyed on the saved answers: Next keeps a visited step mounted, and a reused radio ignores a new defaultChecked.
+  return <AboutYouForm key={JSON.stringify(saved)} sports={sports ?? []} saved={saved} />;
 }
 
 export default function AboutYouPage() {
