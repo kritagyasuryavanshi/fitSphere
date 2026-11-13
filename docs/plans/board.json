@@ -340,14 +340,16 @@
       "deps": [
         "S0-04"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "e2e",
       "ac": [
         "Seed creates one athlete, two coaches, one reviewer, one admin",
         "A sample end-to-end test passes locally and in CI",
         "Tests run at 390 px (phone) and 1440 px (desktop)"
-      ]
+      ],
+      "done_on": "2026-11-12",
+      "commit": "739d91d"
     },
     {
       "id": "S0-08",
