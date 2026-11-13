@@ -6,7 +6,7 @@ type Fetcher = (url: string, init?: RequestInit) => Promise<Response>;
 export async function videoIsBroken(id: string, fetcher: Fetcher = fetch): Promise<boolean | null> {
   const url = `https://www.youtube.com/oembed?${new URLSearchParams({ format: 'json', url: `https://www.youtube.com/watch?v=${id}` })}`;
   try {
-    const res = await fetcher(url, { signal: AbortSignal.timeout(10_000) });
+    const res = await fetcher(url, { signal: AbortSignal.timeout(5_000) });
     if (res.ok) return false;
     return [401, 403, 404].includes(res.status) ? true : null;
   } catch {
