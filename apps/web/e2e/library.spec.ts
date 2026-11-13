@@ -4,8 +4,13 @@ import { expect, type Page, test } from '@playwright/test';
 async function filterBox(page: Page) {
   const toggle = page.locator('summary', { hasText: 'Filters' });
   if (await toggle.isVisible()) {
-    await toggle.click();
-    return page.locator('details');
+    const panel = page.locator('details');
+    // A click right after load can land before the page settles, so retry until the panel is open.
+    await expect(async () => {
+      if ((await panel.getAttribute('open')) === null) await toggle.click();
+      await expect(panel).toHaveAttribute('open', '', { timeout: 1000 });
+    }).toPass();
+    return panel;
   }
   return page.getByRole('complementary', { name: 'Filters' });
 }
