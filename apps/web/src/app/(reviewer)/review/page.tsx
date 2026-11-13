@@ -16,11 +16,16 @@ const tabs = [
   { id: 'published', label: 'Published this week' },
 ] as const;
 
+// The cutoff for "Published this week". Called after connection(), so it runs per request.
+function weekAgo() {
+  return new Date(Date.now() - 7 * 864e5).toISOString();
+}
+
 async function Queue({ searchParams }: PageProps<'/review'>) {
   const viewer = await requireRole('reviewer');
   const { tab, done } = await searchParams;
   await connection();
-  const weekAgo = new Date(Date.now() - 7 * 864e5).toISOString();
+  const since = weekAgo();
   const supabase = await supabaseServer();
   const { data, error } = await supabase
     .from('content_items')
@@ -32,7 +37,7 @@ async function Queue({ searchParams }: PageProps<'/review'>) {
   const groups = {
     waiting: data.filter((i) => i.status === 'in_review'),
     'sent-back': data.filter((i) => i.status === 'needs_changes'),
-    published: data.filter((i) => i.status === 'published' && i.published_at && i.published_at >= weekAgo),
+    published: data.filter((i) => i.status === 'published' && i.published_at && i.published_at >= since),
   };
   const current = tabs.find((t) => t.id === tab)?.id ?? 'waiting';
   const names = await authorNames(data.map((i) => i.author_id), supabase);
