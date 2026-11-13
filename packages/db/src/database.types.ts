@@ -23,7 +23,33 @@ export type Database = {
           }
         },"public": {
           Tables: {
-            "audit_log": {
+            "athlete_prefs": {
+                  Row: {
+                    "category_id": string,"created_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "category_id": string,"created_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "category_id"?: string,"created_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "athlete_prefs_category_id_fkey"
+      columns: ["category_id"]
+isOneToOne: false
+      referencedRelation: "categories"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "athlete_prefs_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"audit_log": {
                   Row: {
                     "action": string,"actor_id": string | null,"created_at": string,"details": NonNullable<Json>,"id": number,"target_id": string | null
                   }
@@ -33,6 +59,20 @@ export type Database = {
                   }
                   Update: {
                     "action"?: string,"actor_id"?: string | null,"created_at"?: string,"details"?: NonNullable<Json>,"id"?: never,"target_id"?: string | null
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"categories": {
+                  Row: {
+                    "id": string,"is_live": boolean,"name": string,"sort": number,"tagline": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id": string,"is_live"?: boolean,"name": string,"sort"?: number,"tagline"?: string
+                  }
+                  Update: {
+                    "id"?: string,"is_live"?: boolean,"name"?: string,"sort"?: number,"tagline"?: string
                   }
                   Relationships: [
                     
@@ -103,11 +143,17 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "grant_role":
+            "complete_about_you":
+{ Args: { "birth_date": string,"first_name": string,"sports": (string)[] }; Returns: undefined
+                           },
+"grant_role":
 { Args: { "new_role": Database["public"]['Enums']["app_role"],"target": string }; Returns: undefined
                            },
 "is_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
+                           },
+"is_adult":
+{ Args: { "dob": string,"today": string }; Returns: boolean
                            },
 "revoke_role":
 { Args: { "old_role": Database["public"]['Enums']["app_role"],"target": string }; Returns: undefined

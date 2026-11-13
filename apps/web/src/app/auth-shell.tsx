@@ -2,28 +2,53 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 
-/** The photo panel and form column shared by the sign-in screens (A-SignIn, A-CheckEmail). */
-export function AuthShell({ back, children }: { back: { href: string; label: string }; children: ReactNode }) {
+type ShellProps = {
+  back: { href: string; label: string };
+  children: ReactNode;
+  photo?: { src: string; alt: string };
+  slogan?: string;
+  /** Shown opposite the back link, like "Step 1 of 4". A step screen starts at the top instead of the middle. */
+  step?: { now: number; of: number };
+};
+
+const glovesBlack = { src: '/images/gloves-black.jpg', alt: 'Black boxing gloves hanging in a gym' };
+
+/** The photo panel and form column shared by the sign-in and sign-up screens. */
+export function AuthShell({ back, children, photo = glovesBlack, slogan = 'Glove up.', step }: ShellProps) {
   return (
     <div className="flex min-h-screen flex-wrap">
       <section className="relative min-h-[322px] flex-[1_1_480px] overflow-hidden bg-ink md:min-h-[520px]">
-        <Image src="/images/gloves-black.jpg" alt="Black boxing gloves hanging in a gym" fill priority sizes="(min-width: 1040px) 50vw, 100vw" className="object-cover" />
+        <Image src={photo.src} alt={photo.alt} fill priority sizes="(min-width: 1040px) 50vw, 100vw" className="object-cover" />
         <div aria-hidden="true" className="absolute inset-0 bg-black/40" />
         <Link href="/" className="absolute left-10 top-8 font-display text-[28px] uppercase text-paper hover:text-paper">
           FitSphere
         </Link>
         <p aria-hidden="true" className="absolute bottom-12 left-10 right-10 m-0 font-display text-[clamp(56px,6vw,104px)] uppercase leading-[0.9] text-paper">
-          Glove up.
+          {slogan}
         </p>
       </section>
       <main className="box-border flex min-w-0 flex-[1_1_560px] flex-col px-5 pb-5 pt-4 md:px-14 md:pb-14 md:pt-10">
-        <Link href={back.href} className="inline-flex min-h-11 items-center gap-1.5 self-start text-[15px] font-medium">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
-            <path d="M15 5l-7 7 7 7" />
-          </svg>
-          {back.label}
-        </Link>
-        <div className="my-auto flex w-full max-w-[480px] flex-col gap-6 pt-12">{children}</div>
+        <div className="flex items-center justify-between gap-4">
+          <Link href={back.href} className="inline-flex min-h-11 items-center gap-1.5 text-[15px] font-medium">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
+              <path d="M15 5l-7 7 7 7" />
+            </svg>
+            {back.label}
+          </Link>
+          {step ? <span className="text-[14px] font-medium text-muted">Step {step.now} of {step.of}</span> : null}
+        </div>
+        {step ? (
+          <>
+            <div role="progressbar" aria-label="Sign-up progress" aria-valuenow={step.now} aria-valuemin={0} aria-valuemax={step.of} className="mt-3 grid gap-1" style={{ gridTemplateColumns: `repeat(${step.of}, minmax(0, 1fr))` }}>
+              {Array.from({ length: step.of }, (_, i) => (
+                <span key={i} className={`h-1 ${i < step.now ? 'bg-ink' : 'bg-line'}`} />
+              ))}
+            </div>
+            <div className="mt-10 flex w-full max-w-[640px] flex-col gap-5">{children}</div>
+          </>
+        ) : (
+          <div className="my-auto flex w-full max-w-[480px] flex-col gap-6 pt-12">{children}</div>
+        )}
       </main>
     </div>
   );

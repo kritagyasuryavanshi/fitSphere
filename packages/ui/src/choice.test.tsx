@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
-import { Checkbox, RadioCard } from './choice';
+import { Checkbox, CheckboxCard, RadioCard } from './choice';
 import { expectNoSeriousAxeIssues } from './test-helpers';
 
 describe('Checkbox', () => {
@@ -58,5 +58,24 @@ describe('RadioCard', () => {
   it('has no serious axe issue', async () => {
     const { container } = render(<>{group}<Checkbox label="Bag work" /></>);
     await expectNoSeriousAxeIssues(container);
+  });
+});
+
+describe('CheckboxCard', () => {
+  it('lets several cards be chosen, and a disabled card cannot be', async () => {
+    render(
+      <fieldset>
+        <legend>Sports</legend>
+        <CheckboxCard name="sport" value="boxing" label="Boxing" description="Technique" />
+        <CheckboxCard name="sport" value="gym" label="Gym" />
+        <CheckboxCard name="sport" value="cricket" label="Cricket" disabled />
+      </fieldset>,
+    );
+    await userEvent.click(screen.getByText('Boxing'));
+    await userEvent.click(screen.getByText('Gym'));
+    await userEvent.click(screen.getByText('Cricket'));
+    expect(screen.getByRole('checkbox', { name: /Boxing/ })).toHaveProperty('checked', true);
+    expect(screen.getByRole('checkbox', { name: 'Gym' })).toHaveProperty('checked', true);
+    expect(screen.getByRole('checkbox', { name: 'Cricket' })).toHaveProperty('checked', false);
   });
 });
