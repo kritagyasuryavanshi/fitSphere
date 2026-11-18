@@ -851,7 +851,7 @@
       "deps": [
         "M2-11"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "db",
       "ac": [
@@ -859,7 +859,8 @@
         "Only published library items can be added",
         "pgTAP: only the owning coach edits a program",
         "Publishing creates a new version; enrolled athletes see it from the next day"
-      ]
+      ],
+      "done_on": "2026-11-13"
     },
     {
       "id": "M3-02",
@@ -891,7 +892,7 @@
       "deps": [
         "M3-01"
       ],
-      "status": "todo",
+      "status": "in_progress",
       "owner": "claude",
       "test": "e2e",
       "screens": [
@@ -938,13 +939,14 @@
       "deps": [
         "M3-01"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "unit",
       "ac": [
         "Unit: correct day for joins late at night, across week boundaries and month ends",
         "Several programs merge into one day list"
-      ]
+      ],
+      "done_on": "2026-11-13"
     },
     {
       "id": "M3-06",
