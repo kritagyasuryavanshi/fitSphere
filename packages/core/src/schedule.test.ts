@@ -1,6 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import { indiaToday } from './age';
-import { addDays, programDay, sessionsOn } from './schedule';
+import { addDays, calendarWeek, programDay, sessionsOn } from './schedule';
+
+describe('calendarWeek', () => {
+  it('gives Monday to Sunday around a date, with weekday names', () => {
+    // 2026-11-19 is a Thursday.
+    const week = calendarWeek('2026-11-19');
+    expect(week.map((d) => d.date)).toEqual(['2026-11-16', '2026-11-17', '2026-11-18', '2026-11-19', '2026-11-20', '2026-11-21', '2026-11-22']);
+    expect(week.map((d) => d.name)).toEqual(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']);
+  });
+  it('starts on the date itself on a Monday, and ends on it on a Sunday, across a month end', () => {
+    expect(calendarWeek('2026-11-30')[0]?.date).toBe('2026-11-30');
+    expect(calendarWeek('2026-11-29').map((d) => d.date)).toEqual(['2026-11-23', '2026-11-24', '2026-11-25', '2026-11-26', '2026-11-27', '2026-11-28', '2026-11-29']);
+  });
+});
 
 describe('programDay', () => {
   it('counts the join date as week 1 day 1, and moves across a week boundary', () => {
