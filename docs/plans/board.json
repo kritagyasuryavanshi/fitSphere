@@ -871,7 +871,7 @@
       "deps": [
         "M3-01"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "e2e",
       "screens": [
@@ -881,7 +881,8 @@
       "ac": [
         "Weeks, sessions, add from library, edit prescription and cue, reorder, publish",
         "End-to-end: a coach builds one boxing and one S&C session and publishes"
-      ]
+      ],
+      "done_on": "2026-11-19"
     },
     {
       "id": "M3-03",
