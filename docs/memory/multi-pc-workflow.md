@@ -1,10 +1,12 @@
 ---
 name: multi-pc-workflow
 type: constraint
-description: How to work on fitSphere from two PCs without losing progress
-updated: 2026-11-12
+description: How to work on fitSphere from two PCs (and a phone) without losing progress
+updated: 2026-11-19
 ---
 GitHub is the only shared state. Claude's chat history stays on each PC; the repo carries everything else ([[memory-system]]).
+
+From the iPhone ([[session-12]]): in a running session type `/remote-control` (or start `claude remote-control` in the project folder) and scan the QR code; the Claude app's Code tab then drives this PC's session, with its Docker and `.env.local`. The PC must stay awake and online ([[env-welcome-pc]]). Type `/goal` in the PC terminal: a slash command pasted from the phone arrived as plain text. Cloud sessions in the app work with the PC off but cannot reach local Docker or `.env.local`.
 
 Start on any PC:
 0. Open Docker Desktop (for DB work). Open a terminal in the project folder (Explorer: right-click the folder, Open in Terminal), run `claude`, and type `resume`. End with `wrap up`. Same for every project.

@@ -604,6 +604,9 @@ isOneToOne: false
               "display_name": string,"id": string
             }[]
                            },
+"coach_can_read":
+{ Args: { "athlete": string }; Returns: boolean
+                           },
 "complete_about_you":
 { Args: { "birth_date": string,"first_name": string,"sports": (string)[] }; Returns: undefined
                            },
@@ -639,6 +642,14 @@ isOneToOne: false
 "join_program":
 { Args: { "code": string }; Returns: string
                            },
+"leave_program":
+{ Args: { "enrollment": string }; Returns: undefined
+                           },
+"my_programs":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "category_id": string,"coach_name": string,"enrollment_id": string,"joined_at": string,"program_id": string,"start_date": string,"summary": string,"title": string,"weeks": number
+            }[]
+                           },
 "new_invite_code":
 { Args: Record<PropertyKey, never>; Returns: string
                            },
@@ -664,6 +675,9 @@ isOneToOne: false
                            },
 "record_consent":
 { Args: { "answer": boolean,"notice": string,"uid": string,"what": Database["public"]['Enums']["consent_purpose"] }; Returns: undefined
+                           },
+"remove_athlete":
+{ Args: { "enrollment": string }; Returns: string
                            },
 "require_published":
 { Args: { "item": string }; Returns: string

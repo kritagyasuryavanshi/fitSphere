@@ -2,9 +2,14 @@
 name: owner-decisions
 type: area
 description: Open items that wait on the owner
-updated: 2026-11-12
+updated: 2026-11-19
 ---
 
+- Merge PR #27 (M3-04) if it is still open: CI and both reviews are on the PR ([[session-12]]).
+- Follow-up, invites: after signing in, a guest lands on their home screen, not back on the invite. A safe return-to path through the magic link and Google callbacks is needed ([[programs]]).
+- Follow-up, builder: two tabs saving the same draft overwrite each other (last save wins). A version check needs a new `save_program_draft` signature ([[programs]]).
+- Decide with M3-11: may a coach see an athlete's body metrics? Today only profile, sport answers and training basics are shared with the coach ([[programs]]).
+- Sharing the date of birth with an enrolled athlete's coach follows the design ("onboarding data while enrolled"). Say if a coach should see age only.
 - Merge PR #1 to #6, in order ([[ci]]).
 - Before launch: a parental-consent step for under-18s, confirmed by a lawyer. There is no age limit now ([[decision-no-age-limit]]), so the app can hold a child's health data without it.
 - Before real emails use `/auth/confirm`: add a "Continue" page that POSTs, to stop login CSRF. Until then it is test-only ([[route-guards]]).

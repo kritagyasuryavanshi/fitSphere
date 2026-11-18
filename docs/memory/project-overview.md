@@ -14,6 +14,7 @@ Sources of truth: `PROJECT.md`, `docs/designs/fitsphere-v1.md`, `docs/PRODUCT_BR
 Areas:
 - [[stack]]: the code structure and tools.
 - [[categories]]: Boxing, S&C, Gym & Fitness.
+- [[programs]]: coach programs, invites, enrollments and the coach access rule (M3).
 - [[design-system]] and [[mockups]]: the Fight Camp look.
 - [[db]]: Supabase, migrations and tests.
 - [[ci]]: GitHub Actions.
