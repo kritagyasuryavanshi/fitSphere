@@ -60,6 +60,22 @@ test.describe('program builder', () => {
     const card = page.getByRole('list', { name: 'Programs' }).getByRole('listitem').filter({ hasText: 'Boxing Fundamentals' });
     await expect(card.getByText('Live · v1')).toBeVisible();
     await expect(card.getByText('Unpublished changes')).toHaveCount(0);
+
+    // Saving without a change is not an unpublished change; a real edit is.
+    await card.getByRole('link', { name: /Edit.*Boxing Fundamentals/ }).click();
+    await page.getByRole('button', { name: 'Save draft' }).click();
+    await expect(page.getByText('Draft saved')).toBeVisible();
+    await page.goto('/coach/programs');
+    await expect(card.getByText('Unpublished changes')).toHaveCount(0);
+    await card.getByRole('link', { name: /Edit.*Boxing Fundamentals/ }).click();
+    await page.getByRole('button', { name: 'Edit The Jab' }).click();
+    await page.getByLabel('Rounds', { exact: true }).fill('5');
+    await expect(page.getByText('Unsaved changes')).toBeVisible();
+    await page.getByRole('button', { name: 'Save draft' }).click();
+    await expect(page.getByText('Draft saved')).toBeVisible();
+    await expect(page.getByText('Unsaved changes')).toHaveCount(0);
+    await page.goto('/coach/programs');
+    await expect(card.getByText('Unpublished changes')).toBeVisible();
   });
 
   test('an athlete without the coach role cannot open the builder', async ({ page }) => {

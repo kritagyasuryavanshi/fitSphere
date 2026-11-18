@@ -20,12 +20,12 @@ async function Load({ params, searchParams }: PageProps<'/coach/programs/[id]'>)
     supabase
       .from('programs')
       .select(
-        'id, title, summary, weeks, category_id, program_versions(id, version, published_at, program_sessions(id, week, day, position, title, session_items(id, position, item_id, type, prescription, cue, content_items(title))))',
+        'id, title, summary, weeks, updated_at, program_versions(id, version, published_at, program_sessions(id, week, day, position, title, session_items(id, position, item_id, type, prescription, cue, content_items(title, status))))',
       )
       .eq('id', id)
       .eq('coach_id', viewer.userId)
       .maybeSingle(),
-    supabase.from('content_items').select('id, title, kind, disciplines!inner(name, category_id, categories!inner(name, sort))').eq('status', 'published').order('title').limit(500),
+    supabase.from('content_items').select('id, title, disciplines!inner(name, category_id, categories!inner(name, sort))').eq('status', 'published').order('title').limit(500),
   ]);
   if (program.error) throw program.error;
   if (library.error) throw library.error;
@@ -46,8 +46,10 @@ async function Load({ params, searchParams }: PageProps<'/coach/programs/[id]'>)
         .map((it) => ({
           key: it.id,
           item: it.item_id,
-          // A drill unpublished since it was added has no readable title; save then asks the coach to remove it.
-          title: it.content_items?.title ?? 'No longer in the library',
+          // Unpublished since it was added: someone else's drill has no readable title, and the coach's own one is
+          // readable but no longer published. Both block saving, so both are marked for the coach to remove.
+          title: it.content_items?.title ?? 'A drill',
+          unavailable: it.content_items?.status !== 'published',
           type: it.type as PrescriptionType,
           ...(it.prescription as Numbers),
           cue: it.cue,
@@ -55,16 +57,18 @@ async function Load({ params, searchParams }: PageProps<'/coach/programs/[id]'>)
     }));
   const items: LibraryItem[] = library.data
     .sort((a, b) => a.disciplines.categories.sort - b.disciplines.categories.sort || a.title.localeCompare(b.title))
-    .map((c) => ({ id: c.id, title: c.title, kind: c.kind, categoryId: c.disciplines.category_id, categoryName: c.disciplines.categories.name, discipline: c.disciplines.name }));
+    .map((c) => ({ id: c.id, title: c.title, categoryId: c.disciplines.category_id, categoryName: c.disciplines.categories.name, discipline: c.disciplines.name }));
 
   return (
     <>
       <div className="flex flex-wrap items-center gap-3">
         <Tag variant="outline">Draft · v{draft?.version ?? 1}</Tag>
         {live ? <Tag variant="success">Live · v{live.version}</Tag> : null}
-        {saved ? <Tag variant="success">Draft saved</Tag> : null}
       </div>
-      <Builder program={{ id: p.id, title: p.title, summary: p.summary, weeks: p.weeks, categoryId: p.category_id }} sessions={sessions} library={items} />
+      {/* Every save moves updated_at, so the builder starts again from what was saved, with nothing unsaved. */}
+      <Builder
+        key={p.updated_at}
+        program={{ id: p.id, title: p.title, summary: p.summary, weeks: p.weeks }} sessions={sessions} library={items} saved={saved === '1'} />
     </>
   );
 }

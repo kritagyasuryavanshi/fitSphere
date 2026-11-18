@@ -1,7 +1,7 @@
 'use client';
 
-import { Button, Input } from '@fitsphere/ui';
-import { useActionState, useRef, useState } from 'react';
+import { Button, Input, Tag } from '@fitsphere/ui';
+import { useActionState, useEffect, useRef, useState } from 'react';
 import {
   defaultPrescription,
   describePrescription,
@@ -20,8 +20,10 @@ import { useHydrated } from '@/lib/use-hydrated';
 import { TextArea } from '../../../../welcome/fields';
 import { saveProgram } from '../actions';
 
-export type LibraryItem = { id: string; title: string; kind: string; categoryId: string; categoryName: string; discipline: string };
-type Program = { id: string; title: string; summary: string; weeks: number; categoryId: string };
+export type LibraryItem = { id: string; title: string; categoryId: string; categoryName: string; discipline: string };
+type Program = { id: string; title: string; summary: string; weeks: number };
+const SHOWN = 60;
+const LEAVE = 'You have unsaved changes. Leave without saving?';
 type Selected = { session: string; item: string } | null;
 
 const numberFields: Record<PrescriptionType, { key: keyof Numbers; label: string; optional?: boolean; step?: string }[]> = {
@@ -38,7 +40,7 @@ const numberFields: Record<PrescriptionType, { key: keyof Numbers; label: string
   ],
 };
 
-export function Builder({ program, sessions: initial, library }: { program: Program; sessions: DraftSession[]; library: LibraryItem[] }) {
+export function Builder({ program, sessions: initial, library, saved }: { program: Program; sessions: DraftSession[]; library: LibraryItem[]; saved: boolean }) {
   const [state, action, pending] = useActionState(saveProgram, {});
   const hydrated = useHydrated();
   const counter = useRef(0);
@@ -46,7 +48,36 @@ export function Builder({ program, sessions: initial, library }: { program: Prog
 
   const [title, setTitle] = useState(program.title);
   const [weeks, setWeeks] = useState(program.weeks);
-  const [sessions, setSessions] = useState(initial);
+  const [sessions, setSessionsRaw] = useState(initial);
+  // Any edit makes the draft dirty; a save reloads the page from the server, which starts clean.
+  const [dirty, setDirty] = useState(false);
+  const setSessions: typeof setSessionsRaw = (next) => {
+    setDirty(true);
+    setSessionsRaw(next);
+  };
+  const submitting = useRef(false);
+
+  useEffect(() => {
+    if (!dirty) return;
+    const onUnload = (e: BeforeUnloadEvent) => {
+      if (submitting.current) return;
+      e.preventDefault();
+    };
+    // In-app links do not fire beforeunload, so ask on any link click while there are unsaved changes.
+    const onClick = (e: MouseEvent) => {
+      const link = (e.target as Element | null)?.closest?.('a[href]');
+      if (link && !link.getAttribute('target') && !window.confirm(LEAVE)) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+    window.addEventListener('beforeunload', onUnload);
+    document.addEventListener('click', onClick, true);
+    return () => {
+      window.removeEventListener('beforeunload', onUnload);
+      document.removeEventListener('click', onClick, true);
+    };
+  }, [dirty]);
   const [week, setWeek] = useState(1);
   const [target, setTarget] = useState<string | null>(initial[0]?.key ?? null);
   const [selected, setSelected] = useState<Selected>(null);
@@ -54,7 +85,8 @@ export function Builder({ program, sessions: initial, library }: { program: Prog
   const [sport, setSport] = useState('all');
   const search = useRef<HTMLInputElement>(null);
 
-  const inWeek = sessions.filter((s) => s.week === week);
+  // Day order, as they are saved; sessions on the same day keep the order they were added in.
+  const inWeek = sessions.filter((s) => s.week === week).sort((a, b) => a.day - b.day);
   const updateSession = (key: string, change: (s: DraftSession) => DraftSession) => setSessions((all) => all.map((s) => (s.key === key ? change(s) : s)));
   const updateItem = (sessionKey: string, itemKey: string, change: (i: DraftItem) => DraftItem) =>
     updateSession(sessionKey, (s) => ({ ...s, items: s.items.map((i) => (i.key === itemKey ? change(i) : i)) }));
@@ -81,19 +113,44 @@ export function Builder({ program, sessions: initial, library }: { program: Prog
   const targetSession = sessions.find((s) => s.key === target && s.week === week);
   const chosen = selected ? sessions.find((s) => s.key === selected.session)?.items.find((i) => i.key === selected.item) : undefined;
   const errors = sessions.flatMap((s) => s.items.map((i) => prescriptionError(i))).filter(Boolean);
+  const unavailable = sessions.some((s) => s.items.some((i) => i.unavailable));
   const sports = [...new Map(library.map((c) => [c.categoryId, c.categoryName]))];
   const q = query.trim().toLowerCase();
   const found = library.filter((c) => (sport === 'all' || c.categoryId === sport) && (!q || c.title.toLowerCase().includes(q) || c.discipline.toLowerCase().includes(q)));
   const sessionName = (s: DraftSession) => `Day ${s.day}${s.title.trim() ? ` · ${s.title.trim()}` : ''}`;
 
   return (
-    <form action={action} noValidate className="grid gap-10 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+    <form
+      action={action}
+      onSubmit={() => {
+        submitting.current = true;
+      }}
+      noValidate
+      className="grid gap-10 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]"
+    >
       <input type="hidden" name="id" value={program.id} />
       <input type="hidden" name="sessions" value={JSON.stringify(toPayload(sessions))} />
 
       <div className="flex flex-col gap-6">
-        <Input label="Program name" name="title" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} error={state.field === 'title' ? state.error : undefined} />
-        <TextArea label="Summary" name="summary" defaultValue={program.summary} rows={2} maxLength={500} />
+        {saved && !dirty ? (
+          <span role="status" className="self-start">
+            <Tag variant="success">Draft saved</Tag>
+          </span>
+        ) : dirty ? (
+          <span className="self-start text-[14px] font-medium text-muted">Unsaved changes</span>
+        ) : null}
+        <Input
+          label="Program name"
+          name="title"
+          value={title}
+          onChange={(e) => {
+            setTitle(e.target.value);
+            setDirty(true);
+          }}
+          maxLength={120}
+          error={state.field === 'title' ? state.error : undefined}
+        />
+        <TextArea label="Summary" name="summary" defaultValue={program.summary} rows={2} maxLength={500} onChange={() => setDirty(true)} />
         <label className="flex flex-col gap-2 text-[15px] font-medium">
           Length
           <select
@@ -102,6 +159,7 @@ export function Builder({ program, sessions: initial, library }: { program: Prog
             onChange={(e) => {
               const n = Number(e.target.value);
               setWeeks(n);
+              setDirty(true);
               if (week > n) setWeek(n);
             }}
             className="min-h-12 max-w-[200px] border border-line-strong bg-paper px-3 text-[16px] font-normal"
@@ -163,7 +221,7 @@ export function Builder({ program, sessions: initial, library }: { program: Prog
             {s.items.length ? (
               <ol aria-label={`Drills in ${sessionName(s)}`} className="m-0 flex list-none flex-col p-0">
                 {s.items.map((it, i) => {
-                  const error = prescriptionError(it);
+                  const error = it.unavailable ? 'No longer published in the library. Remove it to save.' : prescriptionError(it);
                   return (
                     <li key={it.key} className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-line py-2">
                       <div className="flex min-w-0 flex-1 flex-col">
@@ -307,7 +365,7 @@ export function Builder({ program, sessions: initial, library }: { program: Prog
             ))}
           </div>
           <ul aria-label="Library results" className="m-0 flex max-h-[420px] list-none flex-col overflow-y-auto p-0">
-            {found.slice(0, 60).map((c) => (
+            {found.slice(0, SHOWN).map((c) => (
               <li key={c.id} className="flex items-center gap-2 border-b border-line py-2">
                 <div className="flex min-w-0 flex-1 flex-col">
                   <span className="text-[15px] font-medium">{c.title}</span>
@@ -322,21 +380,28 @@ export function Builder({ program, sessions: initial, library }: { program: Prog
             ))}
             {!found.length ? <li className="py-2 text-[15px] text-muted">No published drills match.</li> : null}
           </ul>
+          {found.length > SHOWN ? (
+            <p className="m-0 text-[13px] font-medium">
+              Showing {SHOWN} of {found.length}. Search or pick a sport to find the rest.
+            </p>
+          ) : null}
           <p className="m-0 text-[13px] text-muted">Only published, coach-verified drills appear here.</p>
         </section>
 
         <div className="flex flex-col gap-3">
-          {errors.length ? (
+          {unavailable ? (
+            <p className="m-0 text-[14px] font-medium text-danger">Remove the drills marked as no longer published before you save.</p>
+          ) : errors.length ? (
             <p className="m-0 text-[14px] font-medium text-danger">Fix the numbers marked in red before you save.</p>
           ) : state.error && state.field !== 'title' ? (
             <p role="alert" className="m-0 text-[14px] font-medium text-danger">
               {state.error}
             </p>
           ) : null}
-          <Button type="submit" name="intent" value="publish" disabled={!hydrated || pending || errors.length > 0 || !sessions.length}>
+          <Button type="submit" name="intent" value="publish" disabled={!hydrated || pending || errors.length > 0 || unavailable || !sessions.length}>
             Publish changes
           </Button>
-          <Button type="submit" name="intent" value="save" variant="light" disabled={!hydrated || pending || errors.length > 0}>
+          <Button type="submit" name="intent" value="save" variant="light" disabled={!hydrated || pending || errors.length > 0 || unavailable}>
             Save draft
           </Button>
           <p className="m-0 text-[14px] text-muted">Athletes already in the program see published changes from tomorrow.</p>

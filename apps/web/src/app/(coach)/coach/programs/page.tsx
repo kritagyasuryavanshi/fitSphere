@@ -2,6 +2,7 @@ import { buttonClass, Tag } from '@fitsphere/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Suspense } from 'react';
+import { sessionsKey } from '@/lib/program-draft';
 import { supabaseServer } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/viewer';
 
@@ -13,7 +14,9 @@ async function Programs({ searchParams }: PageProps<'/coach/programs'>) {
   const supabase = await supabaseServer();
   const { data, error } = await supabase
     .from('programs')
-    .select('id, title, weeks, updated_at, categories(name), program_versions(version, published_at, program_sessions(week))')
+    .select(
+      'id, title, weeks, updated_at, categories(name), program_versions(version, published_at, program_sessions(week, day, position, title, session_items(position, item_id, type, prescription, cue)))',
+    )
     .eq('coach_id', viewer.userId)
     .order('updated_at', { ascending: false });
   if (error) throw error;
@@ -22,8 +25,8 @@ async function Programs({ searchParams }: PageProps<'/coach/programs'>) {
     const live = p.program_versions.filter((v) => v.published_at).sort((a, b) => b.version - a.version)[0];
     const draft = p.program_versions.find((v) => !v.published_at);
     const weeksBuilt = new Set(draft?.program_sessions.map((s) => s.week)).size;
-    // save_program_draft touches the program row; publishing does not. A save after the last publish is unpublished.
-    const changed = !!live && new Date(p.updated_at) > new Date(live.published_at!);
+    // Publishing copies the live version into the new draft, so they differ only after a real edit.
+    const changed = !!live && !!draft && sessionsKey(draft.program_sessions) !== sessionsKey(live.program_sessions);
     return { ...p, live, weeksBuilt, changed };
   });
 
