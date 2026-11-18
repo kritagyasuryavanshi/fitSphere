@@ -13,8 +13,12 @@ export async function leaveProgram(formData: FormData) {
   if (!isUuid(id)) redirect('/account/programs');
   const supabase = await supabaseServer();
   const { error } = await supabase.rpc('leave_program', { enrollment: id });
-  // Already ended (another tab) counts as done; anything else goes back with the error.
-  if (error && !error.message.includes('not_active')) {
+  if (error) {
+    // Already ended, by another tab or by the coach removing them: no "you left" message, the list shows what is true.
+    if (error.message.includes('not_active')) {
+      revalidatePath('/account/programs');
+      redirect('/account/programs');
+    }
     console.error('leave_program failed', error.code, error.message);
     redirect(`/account/programs/${id}/leave?error=1`);
   }

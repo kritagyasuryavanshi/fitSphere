@@ -40,8 +40,9 @@ end;
 $$;
 
 -- The owning coach removes an athlete. join_program refuses them afterwards, through any link.
+-- Returns the program, so the app refreshes that program's pages and not one named by the form.
 create function public.remove_athlete(enrollment uuid)
-returns void
+returns uuid
 language plpgsql
 security definer
 set search_path = ''
@@ -57,6 +58,7 @@ begin
     raise exception 'not_active' using errcode = '22023';
   end if;
   update public.enrollments set status = 'removed', ended_at = now() where id = enrollment;
+  return e.program_id;
 end;
 $$;
 

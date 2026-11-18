@@ -35,6 +35,10 @@ async function Invite({ params, searchParams }: PageProps<'/coach/programs/[id]/
         <p role="status" className="m-0 bg-success-soft p-4 text-[15px] font-medium text-success">
           Removed. You no longer see their logs or sign-up answers, and the link does not let them back in.
         </p>
+      ) : removed === 'gone' ? (
+        <p role="status" className="m-0 bg-mist p-4 text-[15px] font-medium">
+          They had already left the program, so nothing was removed. Your access to their data has ended.
+        </p>
       ) : reset === 'failed' ? (
         <p role="alert" className="m-0 bg-danger-soft p-4 text-[15px] font-medium text-danger">
           We could not reset the link. Try again.

@@ -1,6 +1,6 @@
 -- M3-04: leaving, removal, and the coach access rule (coach_can_read).
 begin;
-select plan(25);
+select plan(28);
 
 -- Coaches A and B, each with a published program. Kabir joins A's, Neha joins B's.
 insert into auth.users (id, email, email_confirmed_at) values
@@ -68,14 +68,17 @@ select set_config('request.jwt.claims', '{"sub":"a0000000-0000-0000-0000-0000000
 select is(public.coach_can_read('c0000000-0000-0000-0000-0000000000c1'), false, 'coach A loses access the moment Kabir leaves');
 select is((select count(*)::int from public.profiles where id = 'c0000000-0000-0000-0000-0000000000c1'), 0, 'his profile is hidden again');
 select is((select count(*)::int from public.athlete_basics where user_id = 'c0000000-0000-0000-0000-0000000000c1'), 0, 'and his training basics');
+select throws_ok(format($$ select public.remove_athlete(%L) $$, (select v from ids where name = 'ek')), '22023', 'not_active', 'removing someone who already left is refused, not reported as a removal');
 
 -- Coach B removes Neha: access ends at once, and she cannot rejoin through the link.
 select set_config('request.jwt.claims', '{"sub":"b0000000-0000-0000-0000-0000000000b1","role":"authenticated"}', true);
-select lives_ok(format($$ select public.remove_athlete(%L) $$, (select v from ids where name = 'en')), 'coach B removes Neha');
+select is(public.remove_athlete((select v from ids where name = 'en')::uuid)::text, (select v from ids where name = 'pb'), 'coach B removes Neha, and the function names the program');
 select is(public.coach_can_read('d0000000-0000-0000-0000-0000000000d1'), false, 'coach B loses access the moment Neha is removed');
 select is((select count(*)::int from public.athlete_prefs where user_id = 'd0000000-0000-0000-0000-0000000000d1'), 0, 'her sport answers are hidden again');
+select is((select count(*)::int from public.athlete_basics where user_id = 'd0000000-0000-0000-0000-0000000000d1'), 0, 'and her training basics');
 select set_config('request.jwt.claims', '{"sub":"d0000000-0000-0000-0000-0000000000d1","role":"authenticated"}', true);
 select is((select status::text from public.enrollments where id = (select v from ids where name = 'en')::uuid), 'removed', 'Neha sees that she was removed');
+select throws_ok(format($$ select public.join_program(%L) $$, (select v from ids where name = 'cb')), '22023', 'removed_from_program', 'Neha cannot rejoin through the link');
 select is((select count(*)::int from public.my_programs()), 0, 'her programs list shows no active programs');
 
 -- Kabir rejoins after leaving (leaving is his choice; removal is not).

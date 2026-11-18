@@ -34,7 +34,8 @@ async function Programs({ searchParams }: PageProps<'/account/programs'>) {
         <ul aria-label="My programs" className="m-0 flex list-none flex-col gap-4 p-0">
           {data.map((p) => {
             const at = programDay(p.start_date, p.weeks, today);
-            const where = at ? `week ${at.week} of ${p.weeks}` : today < p.start_date ? 'starts soon' : 'finished';
+            // Joining starts the program today, so a date outside it means it has finished.
+            const where = at ? `week ${at.week} of ${p.weeks}` : 'finished';
             return (
               <li key={p.enrollment_id} className="flex flex-col gap-3 border border-line p-5">
                 <h2 className="m-0 font-display text-[28px] font-normal uppercase leading-none">{p.title}</h2>

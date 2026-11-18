@@ -677,7 +677,7 @@ isOneToOne: false
 { Args: { "answer": boolean,"notice": string,"uid": string,"what": Database["public"]['Enums']["consent_purpose"] }; Returns: undefined
                            },
 "remove_athlete":
-{ Args: { "enrollment": string }; Returns: undefined
+{ Args: { "enrollment": string }; Returns: string
                            },
 "require_published":
 { Args: { "item": string }; Returns: string
