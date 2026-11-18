@@ -1,5 +1,6 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { supabaseServer } from '@/lib/supabase/server';
 import { getViewer } from '@/lib/viewer';
@@ -20,6 +21,8 @@ export async function joinProgram(_prev: JoinState, formData: FormData): Promise
   const viewer = await getViewer();
   if (!viewer) redirect('/sign-in');
   if (viewer.nextStep) redirect(viewer.nextStep);
+  // Today needs the athlete role; the database checks it again in join_program.
+  if (!viewer.roles.includes('athlete')) return { error: 'Programs are for athlete accounts. This account cannot train in one.' };
   const supabase = await supabaseServer();
   const { error } = await supabase.rpc('join_program', { code });
   if (error) {
@@ -27,5 +30,7 @@ export async function joinProgram(_prev: JoinState, formData: FormData): Promise
     if (!known) console.error('join_program failed', error.code, error.message);
     return { error: known ? messages[known] : 'We could not add you to this program. Try again.' };
   }
-  redirect(`/join/${code}?joined=1`);
+  // The page reads the enrollment and shows "You are in".
+  revalidatePath(`/join/${code}`);
+  redirect(`/join/${code}`);
 }

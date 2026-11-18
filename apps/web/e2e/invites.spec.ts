@@ -45,6 +45,16 @@ test.describe('invite links', () => {
     await expect(guest.getByRole('heading', { name: title })).toBeVisible();
     await expect(guest.getByText('Vikram invited you to')).toBeVisible();
     await expect(guest.getByRole('link', { name: 'Sign in or join free' })).toBeVisible();
+    // A query string cannot fake the joined state.
+    await guest.goto(`${new URL(link).pathname}?joined=1`);
+    await expect(guest.getByRole('link', { name: 'Sign in or join free' })).toBeVisible();
+    await expect(guest.getByText(/You are in/)).toHaveCount(0);
+
+    // The coach opening their own link is told so, with no Join button.
+    await page.goto(new URL(link).pathname);
+    await expect(page.getByText('This is your own program.')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Join program' })).toHaveCount(0);
+    await page.goto(`/coach/programs/${programId}/invite`);
 
     // An athlete who finished sign-up joins.
     const athlete = await newPage(browser);

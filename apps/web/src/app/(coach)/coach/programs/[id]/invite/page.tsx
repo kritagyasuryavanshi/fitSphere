@@ -1,31 +1,27 @@
 import { buttonClass } from '@fitsphere/ui';
 import type { Metadata } from 'next';
-import { headers } from 'next/headers';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
+import { ownProgram } from '@/lib/programs';
+import { siteOrigin } from '@/lib/site-origin';
 import { supabaseServer } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/viewer';
 import { CopyLink } from './copy-link';
 
 export const metadata: Metadata = { title: 'Invite athletes · FitSphere Coach' };
 
-const day = new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' });
+const day = new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' });
 
 async function Invite({ params, searchParams }: PageProps<'/coach/programs/[id]/invite'>) {
   const viewer = await requireRole('coach');
   const { id } = await params;
   const { reset } = await searchParams;
-  if (!/^[0-9a-f-]{36}$/.test(id)) notFound();
+  const program = await ownProgram(id, viewer);
   const supabase = await supabaseServer();
-  const { data: program } = await supabase.from('programs').select('id, title').eq('id', id).eq('coach_id', viewer.userId).maybeSingle();
-  if (!program) notFound();
   // Makes the program's code on first visit; the same code comes back until a reset.
-  const [code, members] = await Promise.all([supabase.rpc('program_invite', { program: id }), supabase.rpc('program_members', { program: id })]);
+  const [code, members, origin] = await Promise.all([supabase.rpc('program_invite', { program: id }), supabase.rpc('program_members', { program: id }), siteOrigin()]);
   if (code.error) throw code.error;
   if (members.error) throw members.error;
-  const h = await headers();
-  const origin = process.env.NEXT_PUBLIC_SITE_URL ?? `${h.get('x-forwarded-proto') ?? 'http'}://${h.get('host')}`;
 
   return (
     <>

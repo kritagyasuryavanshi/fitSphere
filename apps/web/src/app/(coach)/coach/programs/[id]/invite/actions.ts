@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { isUuid } from '@/lib/programs';
 import { supabaseServer } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/viewer';
 
@@ -9,7 +10,7 @@ import { requireRole } from '@/lib/viewer';
 export async function resetInvite(formData: FormData) {
   await requireRole('coach');
   const id = String(formData.get('id') ?? '');
-  if (!/^[0-9a-f-]{36}$/.test(id)) redirect('/coach/programs');
+  if (!isUuid(id)) redirect('/coach/programs');
   const supabase = await supabaseServer();
   const { error } = await supabase.rpc('reset_invite', { program: id });
   if (error) {
