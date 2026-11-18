@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { INVITE_CODE } from '@/lib/invite-code';
 import { supabaseServer } from '@/lib/supabase/server';
 import { getViewer } from '@/lib/viewer';
 
@@ -17,7 +18,7 @@ const messages: Record<string, string> = {
 /** Join through an invite link. The database checks the link, the sign-up and the program again. */
 export async function joinProgram(_prev: JoinState, formData: FormData): Promise<JoinState> {
   const code = String(formData.get('code') ?? '');
-  if (!/^[0-9a-f]{32}$/.test(code)) return { error: messages.invite_inactive };
+  if (!INVITE_CODE.test(code)) return { error: messages.invite_inactive };
   const viewer = await getViewer();
   if (!viewer) redirect('/sign-in');
   if (viewer.nextStep) redirect(viewer.nextStep);

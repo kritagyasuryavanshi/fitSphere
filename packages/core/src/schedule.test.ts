@@ -1,6 +1,25 @@
 import { describe, expect, it } from 'vitest';
 import { indiaToday } from './age';
-import { addDays, calendarWeek, programDay, sessionsOn } from './schedule';
+import { addDays, calendarWeek, programDay, sessionsOn, versionOn } from './schedule';
+
+describe('versionOn', () => {
+  const versions = [
+    { id: 'v1', version: 1, effectiveFrom: '2026-11-10' },
+    { id: 'v3', version: 3, effectiveFrom: '2026-11-20' },
+    { id: 'v2', version: 2, effectiveFrom: '2026-11-15' },
+  ];
+  it('picks the newest version whose first day has come, as version_in_effect does', () => {
+    expect(versionOn(versions, '2026-11-14')?.id).toBe('v1');
+    expect(versionOn(versions, '2026-11-15')?.id).toBe('v2');
+    expect(versionOn(versions, '2026-11-19')?.id).toBe('v2');
+    expect(versionOn(versions, '2026-11-20')?.id).toBe('v3');
+  });
+  it('falls back to the earliest before any has started, and breaks a same-day tie by version', () => {
+    expect(versionOn(versions, '2026-11-01')?.id).toBe('v1');
+    expect(versionOn([...versions, { id: 'v4', version: 4, effectiveFrom: '2026-11-20' }], '2026-11-21')?.id).toBe('v4');
+    expect(versionOn([], '2026-11-21')).toBeUndefined();
+  });
+});
 
 describe('calendarWeek', () => {
   it('gives Monday to Sunday around a date, with weekday names', () => {

@@ -5,7 +5,7 @@ description: Open items that wait on the owner
 updated: 2026-11-19
 ---
 
-- Merge PR #27 (M3-04) if it is still open: CI and both reviews are on the PR ([[session-12]]).
+- Merge PR #28 (M3-06) if it is still open: CI and the review are on the PR ([[session-12]]).
 - Follow-up, invites: after signing in, a guest lands on their home screen, not back on the invite. A safe return-to path through the magic link and Google callbacks is needed ([[programs]]).
 - Follow-up, builder: two tabs saving the same draft overwrite each other (last save wins). A version check needs a new `save_program_draft` signature ([[programs]]).
 - Decide with M3-11: may a coach see an athlete's body metrics? Today only profile, sport answers and training basics are shared with the coach ([[programs]]).

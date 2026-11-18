@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { coachWithProgram, signInAs } from './helpers';
+import { admin, coachWithProgram, signInAs } from './helpers';
 
 async function join(page: import('@playwright/test').Page, path: string) {
   await page.goto(path);
@@ -64,6 +64,28 @@ test.describe('Today', () => {
     await page.goto('/today');
     await expect(page.getByText('Rest day', { exact: true })).toBeVisible();
     await expect(page.getByRole('region', { name: 'Rest day' })).toContainText(/Next: .+ · Southpaw stance/);
+  });
+
+  test('a version that starts tomorrow decides tomorrow, not the version in effect today', async ({ page }) => {
+    const { programId, joinPath } = await coachWithProgram(`Southpaw basics ${Date.now()}`, { sessions: [{ day: 3, title: 'Old day three', items: [] }] });
+    // Version 2, published today, starts tomorrow and moves the session to day 2.
+    const db = admin();
+    const tomorrow = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(new Date(Date.now() + 86_400_000));
+    const { data: v2 } = await db
+      .from('program_versions')
+      .update({ published_at: new Date().toISOString(), effective_from: tomorrow, title: 'Southpaw basics', summary: '', weeks: 6 })
+      .eq('program_id', programId)
+      .eq('version', 2)
+      .select('id')
+      .single();
+    expect((await db.from('program_sessions').insert({ version_id: v2!.id, week: 1, day: 2, position: 1, title: 'New day two' })).error).toBeNull();
+    expect((await db.from('program_versions').insert({ program_id: programId, version: 3 })).error).toBeNull();
+
+    await signInAs(page, ['athlete'], { name: 'Kabir' });
+    await join(page, joinPath);
+    await page.goto('/today');
+    await expect(page.getByText('Rest day', { exact: true })).toBeVisible();
+    await expect(page.getByRole('region', { name: 'Rest day' })).toContainText(/Next: .+ · New day two/);
   });
 
   test('a coach without the athlete role cannot open Today', async ({ page }) => {

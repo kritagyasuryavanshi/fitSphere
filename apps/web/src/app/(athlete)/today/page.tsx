@@ -1,4 +1,4 @@
-import { addDays, calendarWeek, indiaToday, programDay, sessionsOn } from '@fitsphere/core';
+import { addDays, calendarWeek, indiaToday, programDay, sessionsOn, versionOn } from '@fitsphere/core';
 import { buttonClass } from '@fitsphere/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -63,34 +63,68 @@ async function Today() {
     );
   }
 
-  const [sessionRows, categoryRows] = await Promise.all([
+  // The schedule first: every published version of the athlete's programs and their sessions, without drills.
+  const [versionRows, categoryRows] = await Promise.all([
     supabase
-      .from('program_sessions')
-      .select('id, version_id, week, day, position, title, session_items(position, type, prescription, cue, content_items(title, slug, disciplines(category_id)))')
+      .from('program_versions')
+      .select('id, program_id, version, effective_from, title, weeks')
       .in(
-        'version_id',
-        programs.map((p) => p.version_id),
-      ),
+        'program_id',
+        programs.map((p) => p.program_id),
+      )
+      .not('published_at', 'is', null),
     supabase.from('categories').select('id, name'),
   ]);
-  if (sessionRows.error) throw sessionRows.error;
+  if (versionRows.error) throw versionRows.error;
   if (categoryRows.error) throw categoryRows.error;
+  const sessionRows = await supabase
+    .from('program_sessions')
+    .select('id, version_id, week, day, position, title')
+    .in(
+      'version_id',
+      versionRows.data.map((v) => v.id),
+    );
+  if (sessionRows.error) throw sessionRows.error;
+
   const categories = new Map(categoryRows.data.map((c) => [c.id, c.name]));
   const byEnrollment = new Map(programs.map((p) => [p.enrollment_id, p]));
-  // One plan per enrollment, each on the version in effect today.
-  const plans = programs.map((p) => ({ id: p.enrollment_id, startDate: p.start_date, weeks: p.weeks, sessions: sessionRows.data.filter((s) => s.version_id === p.version_id) }));
-  const due = sessionsOn(plans, today);
-  const week = calendarWeek(today).map((d) => ({ ...d, sessions: sessionsOn(plans, d.date) }));
-  const next = due.length
+  const versions = versionRows.data.map((v) => ({ ...v, effectiveFrom: v.effective_from! }));
+  // Each date follows the version in effect that day, so tomorrow's cell shows a version that starts tomorrow.
+  const due = (date: string) =>
+    sessionsOn(
+      programs.flatMap((p) => {
+        const v = versionOn(
+          versions.filter((x) => x.program_id === p.program_id),
+          date,
+        );
+        return v ? [{ id: p.enrollment_id, startDate: p.start_date, weeks: v.weeks!, sessions: sessionRows.data.filter((s) => s.version_id === v.id) }] : [];
+      }),
+      date,
+    );
+  const todays = due(today);
+  const week = calendarWeek(today).map((d) => ({ ...d, sessions: due(d.date) }));
+  const next = todays.length
     ? null
     : Array.from({ length: 28 }, (_, i) => addDays(today, i + 1))
-        .map((date) => ({ date, sessions: sessionsOn(plans, date) }))
+        .map((date) => ({ date, sessions: due(date) }))
         .find((d) => d.sessions.length);
+
+  // Drills only for today's sessions. A drill shows as a link only while it is published.
+  const itemRows = todays.length
+    ? await supabase
+        .from('session_items')
+        .select('session_id, position, type, prescription, cue, content_items(title, slug, status, disciplines(category_id))')
+        .in(
+          'session_id',
+          todays.map((s) => s.id),
+        )
+    : { data: [], error: null };
+  if (itemRows.error) throw itemRows.error;
 
   return (
     <>
       <Header today={today} line={`${greeting()}, ${viewer.name}`} />
-      <p className="m-0 text-[16px] font-medium">{due.length ? `${due.length} ${due.length === 1 ? 'session' : 'sessions'} today` : 'Rest day'}</p>
+      <p className="m-0 text-[16px] font-medium">{todays.length ? `${todays.length} ${todays.length === 1 ? 'session' : 'sessions'} today` : 'Rest day'}</p>
 
       <ol aria-label="This week" className="m-0 grid list-none grid-cols-7 gap-1 p-0">
         {week.map((d) => {
@@ -98,7 +132,8 @@ async function Today() {
           const ids = [...new Set(d.sessions.map((s) => byEnrollment.get(s.programId)!.category_id))];
           // Phones have about 35 px per day, so they get short labels; wider screens get the full names.
           const full = ids.length ? ids.map((id) => categories.get(id) ?? id).join(' + ') : 'Rest';
-          const short = ids.length ? ids.map((id) => shortNames[id] ?? (categories.get(id) ?? id).slice(0, 3)) : ['Rest'];
+          // Deduplicated: two new sports can share a three-letter fallback.
+          const short = ids.length ? [...new Set(ids.map((id) => shortNames[id] ?? (categories.get(id) ?? id).slice(0, 3)))] : ['Rest'];
           return (
             <li
               key={d.date}
@@ -123,12 +158,12 @@ async function Today() {
         })}
       </ol>
 
-      {due.length ? (
+      {todays.length ? (
         <ul aria-label="Today's sessions" className="m-0 grid list-none gap-4 p-0 md:grid-cols-2">
-          {due.map((s) => {
+          {todays.map((s) => {
             const p = byEnrollment.get(s.programId)!;
             const at = programDay(p.start_date, p.weeks, today)!;
-            const items = [...s.session_items].sort((a, b) => a.position - b.position);
+            const items = itemRows.data.filter((i) => i.session_id === s.id).sort((a, b) => a.position - b.position);
             const name = s.title.trim() || `Week ${at.week}, day ${at.day}`;
             return (
               <li key={`${s.programId}-${s.id}`}>
@@ -144,7 +179,7 @@ async function Today() {
                       return (
                         <li key={it.position} className="flex flex-col gap-0.5 border-b border-line py-2.5">
                           <div className="flex flex-wrap items-baseline justify-between gap-x-3">
-                            {content?.disciplines ? (
+                            {content?.disciplines && content.status === 'published' ? (
                               <Link href={`/learn/${content.disciplines.category_id}/${content.slug}`} className="text-[16px] font-medium underline-offset-4 hover:underline">
                                 {content.title}
                               </Link>
@@ -168,8 +203,7 @@ async function Today() {
           <p className="m-0 text-[18px] font-medium">No session today. Rest and recover.</p>
           {next ? (
             <p className="m-0 text-[15px] text-ink-soft">
-              Next: {shortDate.format(dateOf(next.date))} · {next.sessions.map((s) => s.title.trim() || byEnrollment.get(s.programId)!.title).join(', ')}
-            </p>
+              Next: {shortDate.format(dateOf(next.date))} · {next.sessions.map((s) => s.title.trim() || byEnrollment.get(s.programId)!.title).join(', ')}            </p>
           ) : (
             <p className="m-0 text-[15px] text-ink-soft">No more sessions are planned in your programs for the next four weeks.</p>
           )}

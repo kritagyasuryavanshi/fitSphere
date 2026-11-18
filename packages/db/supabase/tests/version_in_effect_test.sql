@@ -1,6 +1,6 @@
 -- M3-06: athletes see the version in effect, never the coach's unpublished draft.
 begin;
-select plan(9);
+select plan(12);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('a1000000-0000-0000-0000-0000000000a1', 'coach@t.test', now()),
@@ -45,6 +45,14 @@ select set_config('request.jwt.claims', '{"sub":"c1000000-0000-0000-0000-0000000
 select is((select title || '|' || weeks::text from public.my_programs()), 'Boxing Fundamentals|6', 'version 2 is not in effect until tomorrow');
 select is((select v.version from public.program_versions v where v.id = public.version_in_effect((select v from ids where name = 'p')::uuid, public.india_today() + 1)),
   2, 'tomorrow, version 2 is in effect');
+set local role anon;
+select set_config('request.jwt.claims', '{"role":"anon"}', true);
+select is((select title || '|' || weeks::text from public.invite_info((select v from ids where name = 'code'))), 'Boxing Fundamentals|6',
+  'the invite page describes the version someone joining today gets');
+select is((select count(*)::int from public.programs), 0, 'guests cannot read programs, whose title and length are the draft''s');
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"c1000000-0000-0000-0000-0000000000c1","role":"authenticated"}', true);
+select is((select count(*)::int from public.programs), 0, 'nor can an athlete in the program');
 
 -- Once its day comes, version 2 is what the athlete sees.
 reset role;

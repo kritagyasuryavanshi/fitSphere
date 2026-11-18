@@ -7,8 +7,9 @@ alter table public.program_versions
   add column summary text check (char_length(summary) <= 500),
   add column weeks smallint check (weeks between 1 and 26);
 
--- Versions published before this migration take the program's current values. Their drafts were saved before
--- publishing, so for a program not edited since, these are the published values.
+-- Versions published before this migration take the program's current values. For a program whose draft was
+-- edited after publishing these are the draft's values, not the published ones, and the old values are not kept
+-- anywhere. Acceptable here: no production database exists yet (O-02), only local and test data.
 update public.program_versions v set title = p.title, summary = p.summary, weeks = p.weeks
 from public.programs p where p.id = v.program_id and v.published_at is not null;
 
@@ -67,7 +68,7 @@ begin
 end;
 $$;
 
--- invite_info as in 20261114100000_invites.sql, reading the newest published version once there is one.
+-- invite_info as in 20261114100000_invites.sql, reading the version someone joining today would follow.
 -- An unpublished program shows its working title on the "not open yet" page, to people the coach gave the link.
 create or replace function public.invite_info(code text)
 returns table (program_id uuid, title text, summary text, weeks smallint, category_id text, coach_name text, active boolean, published boolean)
@@ -82,8 +83,7 @@ as $$
   from public.invites i
   join public.programs p on p.id = i.program_id
   left join public.profiles c on c.id = p.coach_id
-  left join lateral (select x.id, x.title, x.summary, x.weeks from public.program_versions x
-    where x.program_id = p.id and x.published_at is not null order by x.version desc limit 1) v on true
+  left join public.program_versions v on v.id = public.version_in_effect(p.id, public.india_today())
   cross join lateral (select i.revoked_at is null and p.coach_id is not null as active) a
   where i.code = invite_info.code;
 $$;
@@ -108,3 +108,7 @@ $$;
 
 revoke execute on function public.version_in_effect(uuid, date), public.my_programs() from public, anon;
 grant execute on function public.version_in_effect(uuid, date), public.my_programs() to authenticated;
+
+-- programs now holds only the coach's working values, so only its coach reads it. Everyone else reads published
+-- versions (their own RLS) or the functions above. The other program policies do not depend on this one.
+drop policy programs_select_published on public.programs;
