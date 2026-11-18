@@ -103,6 +103,10 @@ begin
   if not public.program_is_published(inv.program_id) then
     raise exception 'not_published' using errcode = '22023';
   end if;
+  -- Sign-up is finished after step 2, the same rule as readAccount in apps/web/src/lib/viewer.ts.
+  if not exists (select 1 from public.athlete_basics where user_id = uid) then
+    raise exception 'signup_unfinished' using errcode = '22023';
+  end if;
   if exists (select 1 from public.programs where id = inv.program_id and coach_id = uid) then
     raise exception 'own_program' using errcode = '22023';
   end if;

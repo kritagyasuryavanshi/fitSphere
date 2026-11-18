@@ -1,15 +1,19 @@
 -- M3-03: invite links per program, reset, join, and the joined list.
 begin;
-select plan(14);
+select plan(15);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('c0000000-0000-0000-0000-00000000000c', 'c@t.test', now()),
   ('d0000000-0000-0000-0000-00000000000d', 'd@t.test', now()),
   ('a0000000-0000-0000-0000-00000000000a', 'a@t.test', now()),
-  ('b0000000-0000-0000-0000-00000000000b', 'b@t.test', now());
+  ('b0000000-0000-0000-0000-00000000000b', 'b@t.test', now()),
+  ('e0000000-0000-0000-0000-00000000000e', 'e@t.test', now());
 insert into public.user_roles (user_id, role) values ('c0000000-0000-0000-0000-00000000000c', 'coach'), ('d0000000-0000-0000-0000-00000000000d', 'coach');
 update public.profiles set display_name = 'Vikram' where id = 'c0000000-0000-0000-0000-00000000000c';
 update public.profiles set display_name = 'Kabir', date_of_birth = '1998-06-12' where id = 'a0000000-0000-0000-0000-00000000000a';
+insert into public.athlete_basics (user_id, days_per_week) values ('a0000000-0000-0000-0000-00000000000a', 3);
+-- E finished step 1 (date of birth) but not step 2 (basics).
+update public.profiles set date_of_birth = '1995-01-01' where id = 'e0000000-0000-0000-0000-00000000000e';
 
 create temp table ids (name text primary key, v text);
 grant all on ids to authenticated, anon;
@@ -36,10 +40,12 @@ select set_config('request.jwt.claims', '{"role":"anon"}', true);
 select is((select title || '|' || coach_name || '|' || active::text from public.invite_info((select v from ids where name = 'code'))), 'Boxing Fundamentals|Vikram|true', 'the invite page shows the program and coach');
 select throws_ok(format($$ select public.join_program(%L) $$, (select v from ids where name = 'code')), '42501', null, 'a guest must sign in to join');
 
--- B has not finished sign-up; Kabir has.
+-- B has not started sign-up, E stopped after step 1; Kabir has finished.
 set local role authenticated;
 select set_config('request.jwt.claims', '{"sub":"b0000000-0000-0000-0000-00000000000b","role":"authenticated"}', true);
 select throws_ok(format($$ select public.join_program(%L) $$, (select v from ids where name = 'code')), '22023', 'step1_required', 'joining needs a finished sign-up');
+select set_config('request.jwt.claims', '{"sub":"e0000000-0000-0000-0000-00000000000e","role":"authenticated"}', true);
+select throws_ok(format($$ select public.join_program(%L) $$, (select v from ids where name = 'code')), '22023', 'signup_unfinished', 'step 1 alone is not a finished sign-up');
 select set_config('request.jwt.claims', '{"sub":"a0000000-0000-0000-0000-00000000000a","role":"authenticated"}', true);
 select lives_ok(format($$ select public.join_program(%L) $$, (select v from ids where name = 'code')), 'Kabir joins');
 select lives_ok(format($$ select public.join_program(%L) $$, (select v from ids where name = 'code')), 'joining twice is fine');
