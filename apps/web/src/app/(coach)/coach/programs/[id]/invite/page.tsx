@@ -15,7 +15,7 @@ const day = new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short', y
 async function Invite({ params, searchParams }: PageProps<'/coach/programs/[id]/invite'>) {
   const viewer = await requireRole('coach');
   const { id } = await params;
-  const { reset } = await searchParams;
+  const { reset, removed } = await searchParams;
   const program = await ownProgram(id, viewer);
   const supabase = await supabaseServer();
   // Makes the program's code on first visit; the same code comes back until a reset.
@@ -30,6 +30,10 @@ async function Invite({ params, searchParams }: PageProps<'/coach/programs/[id]/
       {reset === '1' ? (
         <p role="status" className="m-0 bg-success-soft p-4 text-[15px] font-medium text-success">
           New link made. The old link no longer works.
+        </p>
+      ) : removed === '1' ? (
+        <p role="status" className="m-0 bg-success-soft p-4 text-[15px] font-medium text-success">
+          Removed. You no longer see their logs or sign-up answers, and the link does not let them back in.
         </p>
       ) : reset === 'failed' ? (
         <p role="alert" className="m-0 bg-danger-soft p-4 text-[15px] font-medium text-danger">
@@ -46,9 +50,15 @@ async function Invite({ params, searchParams }: PageProps<'/coach/programs/[id]/
         {members.data.length ? (
           <ul aria-label="Joined athletes" className="m-0 flex list-none flex-col border-t border-line p-0">
             {members.data.map((m) => (
-              <li key={m.enrollment_id} className="flex items-center justify-between gap-4 border-b border-line py-3">
-                <span className="text-[16px] font-medium">{m.display_name || 'Athlete'}</span>
+              <li key={m.enrollment_id} className="flex items-center gap-4 border-b border-line py-3">
+                <span className="flex-1 text-[16px] font-medium">{m.display_name || 'Athlete'}</span>
                 <span className="text-[14px] text-muted">{day.format(new Date(m.joined_at))}</span>
+                <Link
+                  href={`/coach/programs/${id}/members/${m.enrollment_id}/remove`}
+                  className="inline-flex min-h-11 items-center text-[14px] font-medium text-danger underline underline-offset-4"
+                >
+                  Remove<span className="sr-only"> {m.display_name || 'athlete'}</span>
+                </Link>
               </li>
             ))}
           </ul>

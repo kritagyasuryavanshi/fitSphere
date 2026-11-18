@@ -918,7 +918,7 @@
       "deps": [
         "M3-03"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "db+e2e",
       "screens": [
@@ -928,9 +928,10 @@
       "ac": [
         "pgTAP: coach A cannot read coach B's athletes",
         "pgTAP: a coach loses access the moment the athlete leaves or is removed",
-        "Past feedback stays visible to the athlete",
+        "Past feedback stays visible to the athlete (no feedback table yet: M3-13 adds it with an athlete-own policy and the pgTAP check)",
         "Leave and remove both use confirm screens"
-      ]
+      ],
+      "done_on": "2026-11-19"
     },
     {
       "id": "M3-05",
@@ -1127,7 +1128,8 @@
       ],
       "ac": [
         "Coach sees logs and sign-up answers for an enrolled athlete only",
-        "End-to-end: coach sends feedback; athlete sees it in Today and Coach feedback and replies; coach sees the reply"
+        "End-to-end: coach sends feedback; athlete sees it in Today and Coach feedback and replies; coach sees the reply",
+        "pgTAP (moved from M3-04): feedback stays visible to the athlete after they leave or are removed; the coach reads it only through coach_can_read"
       ]
     },
     {

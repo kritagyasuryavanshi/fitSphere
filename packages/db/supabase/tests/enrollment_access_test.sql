@@ -1,6 +1,6 @@
 -- M3-04: leaving, removal, and the coach access rule (coach_can_read).
 begin;
-select plan(24);
+select plan(25);
 
 -- Coaches A and B, each with a published program. Kabir joins A's, Neha joins B's.
 insert into auth.users (id, email, email_confirmed_at) values
@@ -82,6 +82,16 @@ select is((select count(*)::int from public.my_programs()), 0, 'her programs lis
 select set_config('request.jwt.claims', '{"sub":"c0000000-0000-0000-0000-0000000000c1","role":"authenticated"}', true);
 select public.join_program((select v from ids where name = 'ca'));
 select is((select title || '|' || coach_name || '|' || weeks::text from public.my_programs()), 'Boxing Fundamentals|Vikram|6', 'after rejoining, his programs list shows the program and coach');
+
+-- An account without the athlete role cannot join: Today is for athletes.
+reset role;
+insert into auth.users (id, email, email_confirmed_at) values ('e0000000-0000-0000-0000-0000000000e1', 'reviewer@t.test', now());
+update public.profiles set display_name = 'Rohan', date_of_birth = '1990-01-01' where id = 'e0000000-0000-0000-0000-0000000000e1';
+insert into public.athlete_basics (user_id, days_per_week) values ('e0000000-0000-0000-0000-0000000000e1', 3);
+delete from public.user_roles where user_id = 'e0000000-0000-0000-0000-0000000000e1' and role = 'athlete';
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"e0000000-0000-0000-0000-0000000000e1","role":"authenticated"}', true);
+select throws_ok(format($$ select public.join_program(%L) $$, (select v from ids where name = 'ca')), '42501', 'not_athlete', 'an account without the athlete role cannot join');
 
 select * from finish();
 rollback;

@@ -1,5 +1,5 @@
 import { createDbClient } from '@fitsphere/db';
-import { expect, type Page } from '@playwright/test';
+import { expect, type Browser, type Page } from '@playwright/test';
 
 // The local Supabase stack catches every email in Mailpit.
 const MAILPIT = process.env.MAILPIT_URL ?? 'http://127.0.0.1:54324';
@@ -88,6 +88,33 @@ export async function signInWithEmail(page: Page, email: string) {
   const { data: link, error } = await admin().auth.admin.generateLink({ type: 'magiclink', email });
   expect(error).toBeNull();
   await page.goto(`/auth/confirm?token_hash=${link.properties!.hashed_token}&type=magiclink`);
+}
+
+/**
+ * A coach (named Vikram) with one program, published unless told otherwise, and its invite path.
+ * Rows go in through the service role to keep specs short; joining goes through the real screens.
+ */
+export async function coachWithProgram(title: string, { published = true } = {}) {
+  const db = admin();
+  const coach = await createUser(['athlete', 'coach'], { name: 'Vikram' });
+  const { data: program, error } = await db.from('programs').insert({ coach_id: coach.id, category_id: 'boxing', title, weeks: 6 }).select('id').single();
+  expect(error).toBeNull();
+  const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(new Date());
+  const versions = published
+    ? [
+        { program_id: program!.id, version: 1, published_at: new Date().toISOString(), effective_from: today },
+        { program_id: program!.id, version: 2 },
+      ]
+    : [{ program_id: program!.id, version: 1 }];
+  expect((await db.from('program_versions').insert(versions)).error).toBeNull();
+  const code = [...crypto.getRandomValues(new Uint8Array(16))].map((b) => b.toString(16).padStart(2, '0')).join('');
+  expect((await db.from('invites').insert({ code, program_id: program!.id })).error).toBeNull();
+  return { coach, programId: program!.id, joinPath: `/join/${code}` };
+}
+
+/** A page in a fresh browser context, for a second person in the same test. */
+export async function newPage(browser: Browser) {
+  return (await browser.newContext()).newPage();
 }
 
 /** Creates a confirmed user with exactly these roles, without signing in. */

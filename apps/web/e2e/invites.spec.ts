@@ -1,26 +1,5 @@
-import { expect, test, type Browser } from '@playwright/test';
-import { admin, createUser, signInAs, signInWithEmail } from './helpers';
-
-/** A coach with one program; published unless told otherwise. Rows go in through the service role to keep the spec short. */
-async function coachWithProgram(title: string, { published = true } = {}) {
-  const db = admin();
-  const coach = await createUser(['athlete', 'coach'], { name: 'Vikram' });
-  const { data: program, error } = await db.from('programs').insert({ coach_id: coach.id, category_id: 'boxing', title, weeks: 6 }).select('id').single();
-  expect(error).toBeNull();
-  const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(new Date());
-  const versions = published
-    ? [
-        { program_id: program!.id, version: 1, published_at: new Date().toISOString(), effective_from: today },
-        { program_id: program!.id, version: 2 },
-      ]
-    : [{ program_id: program!.id, version: 1 }];
-  expect((await db.from('program_versions').insert(versions)).error).toBeNull();
-  return { coach, programId: program!.id };
-}
-
-async function newPage(browser: Browser) {
-  return (await browser.newContext()).newPage();
-}
+import { expect, test } from '@playwright/test';
+import { coachWithProgram, newPage, signInAs, signInWithEmail } from './helpers';
 
 test.describe('invite links', () => {
   test('a coach shares a link, an athlete joins, and a reset closes the old link', async ({ page, browser }) => {
