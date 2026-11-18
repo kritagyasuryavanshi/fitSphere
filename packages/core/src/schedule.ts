@@ -8,6 +8,23 @@ export function addDays(iso: string, days: number): string {
   return new Date(toMs(iso) + days * DAY).toISOString().slice(0, 10);
 }
 
+export type PublishedVersion = { id: string; version: number; effectiveFrom: string };
+
+/** The version that applies on a date: the same rule as version_in_effect in the database. */
+export function versionOn<V extends PublishedVersion>(versions: V[], date: string): V | undefined {
+  const started = versions.filter((v) => v.effectiveFrom <= date).sort((a, b) => b.effectiveFrom.localeCompare(a.effectiveFrom) || b.version - a.version);
+  return started[0] ?? [...versions].sort((a, b) => a.version - b.version)[0];
+}
+
+const weekdays =['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as const;
+
+/** The calendar week (Monday to Sunday) that holds a date, for the week strip on Today. */
+export function calendarWeek(iso: string): { date: string; name: (typeof weekdays)[number] }[] {
+  // getUTCDay: 0 is Sunday. Shift so Monday is 0.
+  const monday = addDays(iso, -((new Date(toMs(iso)).getUTCDay() + 6) % 7));
+  return weekdays.map((name, i) => ({ date: addDays(monday, i), name }));
+}
+
 /** Which program week and day a date is, counting the start date as week 1 day 1; null outside the program. */
 export function programDay(startDate: string, weeks: number, date: string): { week: number; day: number } | null {
   const offset = Math.round((toMs(date) - toMs(startDate)) / DAY);

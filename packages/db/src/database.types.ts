@@ -455,14 +455,14 @@ isOneToOne: false
                   ]
                 },"program_versions": {
                   Row: {
-                    "created_at": string,"effective_from": string | null,"id": string,"program_id": string,"published_at": string | null,"version": number
+                    "created_at": string,"effective_from": string | null,"id": string,"program_id": string,"published_at": string | null,"summary": string | null,"title": string | null,"version": number,"weeks": number | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"effective_from"?: string | null,"id"?: string,"program_id": string,"published_at"?: string | null,"version": number
+                    "created_at"?: string,"effective_from"?: string | null,"id"?: string,"program_id": string,"published_at"?: string | null,"summary"?: string | null,"title"?: string | null,"version": number,"weeks"?: number | null
                   }
                   Update: {
-                    "created_at"?: string,"effective_from"?: string | null,"id"?: string,"program_id"?: string,"published_at"?: string | null,"version"?: number
+                    "created_at"?: string,"effective_from"?: string | null,"id"?: string,"program_id"?: string,"published_at"?: string | null,"summary"?: string | null,"title"?: string | null,"version"?: number,"weeks"?: number | null
                   }
                   Relationships: [
                     {
@@ -647,7 +647,7 @@ isOneToOne: false
                            },
 "my_programs":
 { Args: Record<PropertyKey, never>; Returns: {
-              "category_id": string,"coach_name": string,"enrollment_id": string,"joined_at": string,"program_id": string,"start_date": string,"summary": string,"title": string,"weeks": number
+              "category_id": string,"coach_name": string,"enrollment_id": string,"joined_at": string,"program_id": string,"start_date": string,"summary": string,"title": string,"version_id": string,"weeks": number
             }[]
                            },
 "new_invite_code":
@@ -731,6 +731,9 @@ isOneToOne: false
                            },
 "valid_prescription":
 { Args: { "p": Json,"t": Database["public"]['Enums']["prescription_type"] }; Returns: boolean
+                           },
+"version_in_effect":
+{ Args: { "on_date": string,"program": string }; Returns: string
                            }
           }
           Enums: {

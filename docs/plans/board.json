@@ -961,7 +961,7 @@
         "M3-04",
         "M3-05"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "e2e",
       "screens": [
@@ -973,10 +973,11 @@
       "ac": [
         "End-to-end: an athlete in two programs sees both sessions today",
         "With no program, the empty state offers an invite link and lessons",
-        "The latest coach feedback shows with a reply link",
+        "The latest coach feedback shows with a reply link (moved to M3-13, which builds feedback)",
         "Phone layout matches the reviewed phone board at 390 px (decision D2)",
         "Athletes see the version in effect, not the draft: title, summary and weeks live on programs and change on every draft save, so publish must freeze them on program_versions; then my_programs and invite_info read the version (from the PR #27 review)"
-      ]
+      ],
+      "done_on": "2026-11-19"
     },
     {
       "id": "M3-07",

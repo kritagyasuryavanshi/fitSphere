@@ -1,6 +1,38 @@
 import { describe, expect, it } from 'vitest';
 import { indiaToday } from './age';
-import { addDays, programDay, sessionsOn } from './schedule';
+import { addDays, calendarWeek, programDay, sessionsOn, versionOn } from './schedule';
+
+describe('versionOn', () => {
+  const versions = [
+    { id: 'v1', version: 1, effectiveFrom: '2026-11-10' },
+    { id: 'v3', version: 3, effectiveFrom: '2026-11-20' },
+    { id: 'v2', version: 2, effectiveFrom: '2026-11-15' },
+  ];
+  it('picks the newest version whose first day has come, as version_in_effect does', () => {
+    expect(versionOn(versions, '2026-11-14')?.id).toBe('v1');
+    expect(versionOn(versions, '2026-11-15')?.id).toBe('v2');
+    expect(versionOn(versions, '2026-11-19')?.id).toBe('v2');
+    expect(versionOn(versions, '2026-11-20')?.id).toBe('v3');
+  });
+  it('falls back to the earliest before any has started, and breaks a same-day tie by version', () => {
+    expect(versionOn(versions, '2026-11-01')?.id).toBe('v1');
+    expect(versionOn([...versions, { id: 'v4', version: 4, effectiveFrom: '2026-11-20' }], '2026-11-21')?.id).toBe('v4');
+    expect(versionOn([], '2026-11-21')).toBeUndefined();
+  });
+});
+
+describe('calendarWeek', () => {
+  it('gives Monday to Sunday around a date, with weekday names', () => {
+    // 2026-11-19 is a Thursday.
+    const week = calendarWeek('2026-11-19');
+    expect(week.map((d) => d.date)).toEqual(['2026-11-16', '2026-11-17', '2026-11-18', '2026-11-19', '2026-11-20', '2026-11-21', '2026-11-22']);
+    expect(week.map((d) => d.name)).toEqual(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']);
+  });
+  it('starts on the date itself on a Monday, and ends on it on a Sunday, across a month end', () => {
+    expect(calendarWeek('2026-11-30')[0]?.date).toBe('2026-11-30');
+    expect(calendarWeek('2026-11-29').map((d) => d.date)).toEqual(['2026-11-23', '2026-11-24', '2026-11-25', '2026-11-26', '2026-11-27', '2026-11-28', '2026-11-29']);
+  });
+});
 
 describe('programDay', () => {
   it('counts the join date as week 1 day 1, and moves across a week boundary', () => {

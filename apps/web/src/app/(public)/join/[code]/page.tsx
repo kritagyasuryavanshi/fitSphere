@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
+import { INVITE_CODE } from '@/lib/invite-code';
 import { supabaseServer } from '@/lib/supabase/server';
 import { getViewer } from '@/lib/viewer';
 import { JoinForm } from './join-form';
@@ -20,7 +21,7 @@ function Notice({ title, children }: { title: string; children: React.ReactNode 
 
 async function Invite({ params }: PageProps<'/join/[code]'>) {
   const { code } = await params;
-  if (!/^[0-9a-f]{32}$/.test(code)) notFound();
+  if (!INVITE_CODE.test(code)) notFound();
   const [viewer, supabase] = await Promise.all([getViewer(), supabaseServer()]);
   const { data, error } = await supabase.rpc('invite_info', { code });
   if (error) throw error;

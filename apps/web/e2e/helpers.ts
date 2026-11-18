@@ -94,20 +94,35 @@ export async function signInWithEmail(page: Page, email: string) {
  * A coach (named Vikram) with one program, published unless told otherwise, and its invite path.
  * Rows go in through the service role to keep specs short; joining goes through the real screens.
  */
-export async function coachWithProgram(title: string, { published = true } = {}) {
+type SeedSession = { day: number; title: string; items: { slug: string; type: 'rounds' | 'time' | 'sets'; prescription: Record<string, number>; cue?: string }[] };
+
+export async function coachWithProgram(
+  title: string,
+  { published = true, category = 'boxing', coachName = 'Vikram', sessions = [] as SeedSession[] } = {},
+) {
   const db = admin();
-  const coach = await createUser(['athlete', 'coach'], { name: 'Vikram' });
-  const { data: program, error } = await db.from('programs').insert({ coach_id: coach.id, category_id: 'boxing', title, weeks: 6 }).select('id').single();
+  const coach = await createUser(['athlete', 'coach'], { name: coachName });
+  const { data: program, error } = await db.from('programs').insert({ coach_id: coach.id, category_id: category, title, weeks: 6 }).select('id').single();
   expect(error).toBeNull();
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(new Date());
   const versions = published
     ? [
-        { program_id: program!.id, version: 1, published_at: new Date().toISOString(), effective_from: today },
+        { program_id: program!.id, version: 1, published_at: new Date().toISOString(), effective_from: today, title, summary: '', weeks: 6 },
         { program_id: program!.id, version: 2 },
       ]
     : [{ program_id: program!.id, version: 1 }];
   expect((await db.from('program_versions').insert(versions)).error).toBeNull();
-  const code = [...crypto.getRandomValues(new Uint8Array(16))].map((b) => b.toString(16).padStart(2, '0')).join('');
+  // Sessions go on version 1, which athletes follow from today: week 1, day 1 is the day they join.
+  const { data: v1 } = await db.from('program_versions').select('id').eq('program_id', program!.id).eq('version', 1).single();
+  for (const [n, s] of sessions.entries()) {
+    const { data: row, error: sessionError } = await db.from('program_sessions').insert({ version_id: v1!.id, week: 1, day: s.day, position: n + 1, title: s.title }).select('id').single();
+    expect(sessionError).toBeNull();
+    for (const [i, it] of s.items.entries()) {
+      const { data: item } = await db.from('content_items').select('id').eq('slug', it.slug).eq('status', 'published').limit(1).single();
+      expect((await db.from('session_items').insert({ session_id: row!.id, position: i + 1, item_id: item!.id, type: it.type, prescription: it.prescription, cue: it.cue ?? '' })).error).toBeNull();
+    }
+  }
+  const code =[...crypto.getRandomValues(new Uint8Array(16))].map((b) => b.toString(16).padStart(2, '0')).join('');
   expect((await db.from('invites').insert({ code, program_id: program!.id })).error).toBeNull();
   return { coach, programId: program!.id, joinPath: `/join/${code}` };
 }
