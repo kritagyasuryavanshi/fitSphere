@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import type { DraftSession, Numbers, PrescriptionType } from '@/lib/program-draft';
+import { isUuid } from '@/lib/programs';
 import { supabaseServer } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/viewer';
 import { Builder, type LibraryItem } from './builder';
@@ -14,7 +15,7 @@ async function Load({ params, searchParams }: PageProps<'/coach/programs/[id]'>)
   const viewer = await requireRole('coach');
   const { id } = await params;
   const { saved } = await searchParams;
-  if (!/^[0-9a-f-]{36}$/.test(id)) notFound();
+  if (!isUuid(id)) notFound();
   const supabase = await supabaseServer();
   const [program, library] = await Promise.all([
     supabase

@@ -1,8 +1,8 @@
 'use server';
 
 import { normaliseEmail } from '@fitsphere/core';
-import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { siteOrigin } from '@/lib/site-origin';
 import { supabaseServer } from '@/lib/supabase/server';
 
 // The typed email goes back with the error, so the field keeps it.
@@ -10,10 +10,9 @@ export type SendLinkState = { email?: string; error?: string };
 
 const INVALID_EMAIL = 'Enter a full email address, like kabir@example.com';
 
-// Production sets NEXT_PUBLIC_SITE_URL. Previews and local use the request origin, which the Supabase allow-list checks.
+// The Supabase redirect allow-list checks this origin (lib/site-origin.ts).
 async function callbackUrl() {
-  const origin = process.env.NEXT_PUBLIC_SITE_URL ?? (await headers()).get('origin') ?? 'http://localhost:3000';
-  return `${origin}/auth/callback`;
+  return `${await siteOrigin()}/auth/callback`;
 }
 
 async function sendLink(email: string): Promise<string | undefined> {

@@ -14,8 +14,9 @@ async function Programs({ searchParams }: PageProps<'/coach/programs'>) {
   const supabase = await supabaseServer();
   const { data, error } = await supabase
     .from('programs')
+    // RLS shows the coach only active enrollments in their own programs, so the count is current members.
     .select(
-      'id, title, weeks, updated_at, categories(name), program_versions(version, published_at, program_sessions(week, day, position, title, session_items(position, item_id, type, prescription, cue)))',
+      'id, title, weeks, updated_at, categories(name), enrollments(count), program_versions(version, published_at, program_sessions(week, day, position, title, session_items(position, item_id, type, prescription, cue)))',
     )
     .eq('coach_id', viewer.userId)
     .order('updated_at', { ascending: false });
@@ -27,7 +28,7 @@ async function Programs({ searchParams }: PageProps<'/coach/programs'>) {
     const weeksBuilt = new Set(draft?.program_sessions.map((s) => s.week)).size;
     // Publishing copies the live version into the new draft, so they differ only after a real edit.
     const changed = !!live && !!draft && sessionsKey(draft.program_sessions) !== sessionsKey(live.program_sessions);
-    return { ...p, live, weeksBuilt, changed };
+    return { ...p, live, weeksBuilt, changed, athletes: p.enrollments[0]?.count ?? 0 };
   });
 
   return (
@@ -52,11 +53,19 @@ async function Programs({ searchParams }: PageProps<'/coach/programs'>) {
               </div>
               <h2 className="m-0 font-display text-[28px] font-normal uppercase leading-none">{p.title}</h2>
               <p className="m-0 text-[15px] text-muted">
-                {p.categories.name} · {p.live ? `${p.weeks} ${p.weeks === 1 ? 'week' : 'weeks'}` : `${p.weeksBuilt} of ${p.weeks} weeks built`}
+                {p.categories.name} · {p.live ? `${p.weeks} ${p.weeks === 1 ? 'week' : 'weeks'}` : `${p.weeksBuilt} of ${p.weeks} weeks built`} ·{' '}
+                {p.athletes ? `${p.athletes} ${p.athletes === 1 ? 'athlete' : 'athletes'}` : 'no athletes yet'}
               </p>
-              <Link href={`/coach/programs/${p.id}`} className="inline-flex min-h-11 items-center self-start text-[15px] font-medium underline underline-offset-4">
-                Edit<span className="sr-only">: {p.title}</span>
-              </Link>
+              <div className="flex flex-wrap gap-5">
+                <Link href={`/coach/programs/${p.id}`} className="inline-flex min-h-11 items-center text-[15px] font-medium underline underline-offset-4">
+                  Edit<span className="sr-only">: {p.title}</span>
+                </Link>
+                {p.live ? (
+                  <Link href={`/coach/programs/${p.id}/invite`} className="inline-flex min-h-11 items-center text-[15px] font-medium underline underline-offset-4">
+                    Invite<span className="sr-only">: {p.title}</span>
+                  </Link>
+                ) : null}
+              </div>
             </li>
           ))}
         </ul>

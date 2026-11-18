@@ -3,12 +3,12 @@
 import type { Database } from '@fitsphere/db';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { isUuid } from '@/lib/programs';
 import { supabaseServer } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/viewer';
 
 export type ProgramState = { error?: string; field?: string };
 
-const uuid = /^[0-9a-f-]{36}$/;
 
 const messages: Record<string, [string, string]> = {
   title_required: ['Give the program a name.', 'title'],
@@ -46,7 +46,7 @@ export async function createProgram(_prev: ProgramState, formData: FormData): Pr
 export async function saveProgram(_prev: ProgramState, formData: FormData): Promise<ProgramState> {
   await requireRole('coach');
   const id = String(formData.get('id') ?? '');
-  if (!uuid.test(id)) return { error: 'This program could not be found.' };
+  if (!isUuid(id)) return { error: 'This program could not be found.' };
   let sessions: Database['public']['Functions']['save_program_draft']['Args']['sessions'];
   try {
     sessions = JSON.parse(String(formData.get('sessions') ?? '[]'));
