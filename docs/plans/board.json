@@ -893,7 +893,7 @@
       "deps": [
         "M3-01"
       ],
-      "status": "in_progress",
+      "status": "done",
       "owner": "claude",
       "test": "e2e",
       "screens": [
@@ -903,10 +903,11 @@
       ],
       "ac": [
         "Link codes are random and unguessable",
-        "Joining needs sign-in and a finished 18+ sign-up",
+        "Joining needs sign-in and a finished sign-up (no age limit since session 9)",
         "After reset the old link shows 'no longer active'",
         "The coach sees each person who joined"
-      ]
+      ],
+      "done_on": "2026-11-19"
     },
     {
       "id": "M3-04",

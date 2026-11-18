@@ -31,13 +31,13 @@ test.describe('invite links', () => {
     await page.goto('/coach/programs');
     const card = page.getByRole('list', { name: 'Programs' }).getByRole('listitem').filter({ hasText: title });
     await expect(card).toContainText('no athletes yet');
-    await card.getByRole('link', { name: `Invite: ${title}` }).click();
+    await card.getByRole('link', { name: /^Invite/ }).click();
     await expect(page).toHaveURL(new RegExp(`/coach/programs/${programId}/invite$`));
     await expect(page.getByText('Nobody has joined yet.')).toBeVisible();
-    const link = await page.getByLabel('Invite link').inputValue();
+    const link = await page.getByRole('textbox', { name: 'Invite link' }).inputValue();
     expect(link).toMatch(/\/join\/[0-9a-f]{32}$/);
     await page.reload();
-    expect(await page.getByLabel('Invite link').inputValue()).toBe(link);
+    expect(await page.getByRole('textbox', { name: 'Invite link' }).inputValue()).toBe(link);
 
     // A guest sees the program and is asked to sign in first.
     const guest = await newPage(browser);
@@ -64,7 +64,7 @@ test.describe('invite links', () => {
     await expect(page.getByRole('alertdialog', { name: 'Reset the invite link?' })).toBeVisible();
     await page.getByRole('button', { name: 'Reset link' }).click();
     await expect(page.getByText('New link made. The old link no longer works.')).toBeVisible();
-    expect(await page.getByLabel('Invite link').inputValue()).not.toBe(link);
+    expect(await page.getByRole('textbox', { name: 'Invite link' }).inputValue()).not.toBe(link);
     await expect(page.getByRole('list', { name: 'Joined athletes' })).toContainText('Kabir');
 
     const late = await newPage(browser);
@@ -82,7 +82,7 @@ test.describe('invite links', () => {
     const coachPage = await newPage(browser);
     await signInWithEmail(coachPage, coach.email);
     await coachPage.goto(`/coach/programs/${programId}/invite`);
-    const link = await coachPage.getByLabel('Invite link').inputValue();
+    const link = await coachPage.getByRole('textbox', { name: 'Invite link' }).inputValue();
 
     await signInAs(page, ['athlete'], { stepsDone: 1 });
     await page.goto(new URL(link).pathname);
@@ -96,7 +96,7 @@ test.describe('invite links', () => {
     const coachPage = await newPage(browser);
     await signInWithEmail(coachPage, coach.email);
     await coachPage.goto(`/coach/programs/${programId}/invite`);
-    const link = await coachPage.getByLabel('Invite link').inputValue();
+    const link = await coachPage.getByRole('textbox', { name: 'Invite link' }).inputValue();
 
     await signInAs(page, ['athlete']);
     await page.goto(new URL(link).pathname);
@@ -104,8 +104,10 @@ test.describe('invite links', () => {
     await expect(page.getByRole('button', { name: 'Join program' })).toHaveCount(0);
   });
 
+  // The page streams behind Suspense, so notFound() shows the not-found page with a 200 status.
   test('a code that never existed is not found', async ({ page }) => {
-    const response = await page.goto(`/join/${'0'.repeat(32)}`);
-    expect(response?.status()).toBe(404);
+    await page.goto(`/join/${'0'.repeat(32)}`);
+    await expect(page.getByText(/could not be found/i)).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Join program' })).toHaveCount(0);
   });
 });

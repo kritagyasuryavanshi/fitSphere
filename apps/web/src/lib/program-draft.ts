@@ -4,7 +4,8 @@
 export type PrescriptionType = 'rounds' | 'time' | 'sets';
 export type Numbers = { rounds?: number; work_s?: number; rest_s?: number; seconds?: number; sets?: number; reps?: number; load_kg?: number | null };
 export type Prescription = Numbers & { type: PrescriptionType };
-export type DraftItem = Prescription & { key: string; item: string; title: string; cue: string };
+/** unavailable: the drill is no longer published, so saving fails until the coach removes it. */
+export type DraftItem = Prescription & { key: string; item: string; title: string; cue: string; unavailable?: boolean };
 export type DraftSession = { key: string; week: number; day: number; title: string; items: DraftItem[] };
 
 export const typeLabels: Record<PrescriptionType, string> = { rounds: 'Rounds', time: 'Time', sets: 'Sets and reps' };
@@ -47,8 +48,9 @@ export function prescriptionError(p: Prescription): string | null {
   } else {
     if (!whole(p.sets, 1, 20)) return 'Sets must be 1 to 20.';
     if (!whole(p.reps, 1, 200)) return 'Reps must be 1 to 200.';
+    // The same text check as the database, so 2.3 passes although 2.3 * 100 is not a whole number in floating point.
     const load = p.load_kg;
-    if (load != null && !(load >= 0 && load <= 500 && Math.round(load * 100) === load * 100)) return 'Load must be 0 to 500 kg, with up to 2 decimals.';
+    if (load != null && !(/^\d{1,3}(\.\d{1,2})?$/.test(String(load)) && load <= 500)) return 'Load must be 0 to 500 kg, with up to 2 decimals.';
   }
   return null;
 }
@@ -62,7 +64,28 @@ export function move<T>(list: T[], i: number, delta: -1 | 1): T[] {
   return next;
 }
 
-export const maxWeekUsed = (sessions: DraftSession[]) => Math.max(1, ...sessions.map((s) => s.week));
+type StoredSession = {
+  week: number;
+  day: number;
+  position: number;
+  title: string;
+  session_items: { position: number; item_id: string; type: string; prescription: unknown; cue: string }[];
+};
+
+/** A version's sessions as one comparable string, so a save that changed nothing does not count as unpublished changes. */
+export function sessionsKey(sessions: StoredSession[]): string {
+  const sorted = [...sessions].sort((a, b) => a.position - b.position);
+  return JSON.stringify(
+    sorted.map((s) => [
+      s.week,
+      s.day,
+      s.title,
+      [...s.session_items].sort((a, b) => a.position - b.position).map((i) => [i.item_id, i.type, JSON.stringify(i.prescription), i.cue]),
+    ]),
+  );
+}
+
+export const maxWeekUsed =(sessions: DraftSession[]) => Math.max(1, ...sessions.map((s) => s.week));
 
 /** The JSON save_program_draft takes: sessions in week and day order, each item with only its type's numbers. */
 export function toPayload(sessions: DraftSession[]) {

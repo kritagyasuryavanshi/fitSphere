@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { defaultPrescription, describePrescription, maxWeekUsed, move, prescriptionError, toPayload, type DraftSession } from './program-draft';
+import { defaultPrescription, describePrescription, maxWeekUsed, move, prescriptionError, sessionsKey, toPayload, type DraftSession } from './program-draft';
 
 describe('describePrescription', () => {
   it('shows rounds with work and rest', () => {
@@ -31,6 +31,9 @@ describe('prescriptionError', () => {
     expect(prescriptionError({ type: 'time', seconds: 14400 })).toBeNull();
     expect(prescriptionError({ type: 'sets', sets: 20, reps: 200, load_kg: 500 })).toBeNull();
     expect(prescriptionError({ type: 'sets', sets: 3, reps: 5, load_kg: 22.5 })).toBeNull();
+  });
+  it('accepts two-decimal loads that floating point cannot hold exactly', () => {
+    for (const load_kg of [2.3, 1.1, 4.35, 1.15, 0.29, 0]) expect(prescriptionError({ type: 'sets', sets: 3, reps: 5, load_kg })).toBeNull();
   });
   it('names the first number out of range', () => {
     expect(prescriptionError({ type: 'rounds', rounds: 0, work_s: 120, rest_s: 60 })).toBe('Rounds must be 1 to 30.');
@@ -78,6 +81,24 @@ describe('toPayload', () => {
   it('leaves out an empty load', () => {
     const [s] = toPayload([{ ...sessions[0], items: [{ ...sessions[0].items[0], load_kg: null }] }]);
     expect(s.items[0]).toEqual({ item: 'kb', type: 'sets', sets: 3, reps: 15, cue: 'Snap the hips.' });
+  });
+});
+
+describe('sessionsKey', () => {
+  const item = { position: 1, item_id: 'jab', type: 'rounds', prescription: { rounds: 3, work_s: 120, rest_s: 60 }, cue: '' };
+  const a = [
+    { week: 1, day: 3, position: 2, title: 'B', session_items: [item, { ...item, position: 2, item_id: 'cross' }] },
+    { week: 1, day: 1, position: 1, title: 'A', session_items: [] },
+  ];
+  it('ignores row order and matches a copy', () => {
+    const b = [a[1], { ...a[0], session_items: [...a[0].session_items].reverse() }];
+    expect(sessionsKey(b)).toBe(sessionsKey(a));
+  });
+  it('changes when a number, cue, day or title changes', () => {
+    const changed = [{ ...a[0], session_items: [{ ...item, prescription: { rounds: 4, work_s: 120, rest_s: 60 } }] }, a[1]];
+    expect(sessionsKey(changed)).not.toBe(sessionsKey(a));
+    expect(sessionsKey([{ ...a[0], title: 'C' }, a[1]])).not.toBe(sessionsKey(a));
+    expect(sessionsKey([{ ...a[0], day: 4 }, a[1]])).not.toBe(sessionsKey(a));
   });
 });
 
