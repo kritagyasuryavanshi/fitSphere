@@ -18,9 +18,8 @@ function Notice({ title, children }: { title: string; children: React.ReactNode 
   );
 }
 
-async function Invite({ params, searchParams }: PageProps<'/join/[code]'>) {
+async function Invite({ params }: PageProps<'/join/[code]'>) {
   const { code } = await params;
-  const { joined } = await searchParams;
   if (!/^[0-9a-f]{32}$/.test(code)) notFound();
   const [viewer, supabase] = await Promise.all([getViewer(), supabaseServer()]);
   const { data, error } = await supabase.rpc('invite_info', { code });
@@ -45,9 +44,26 @@ async function Invite({ params, searchParams }: PageProps<'/join/[code]'>) {
     );
   }
 
-  const enrolled = viewer
-    ? !!(await supabase.from('enrollments').select('id').eq('program_id', info.program_id!).eq('athlete_id', viewer.userId).eq('status', 'active').maybeSingle()).data
-    : false;
+  // What this person's past with the program is, read before showing the button. A failed read throws.
+  let state: 'guest' | 'join' | 'in' | 'removed' | 'own' | 'no_athlete_role' = 'guest';
+  if (viewer) {
+    const [mine, owned] = await Promise.all([
+      supabase.from('enrollments').select('status').eq('program_id', info.program_id!).eq('athlete_id', viewer.userId),
+      supabase.from('programs').select('id').eq('id', info.program_id!).eq('coach_id', viewer.userId),
+    ]);
+    if (mine.error) throw mine.error;
+    if (owned.error) throw owned.error;
+    const statuses = mine.data.map((e) => e.status);
+    state = owned.data.length
+      ? 'own'
+      : statuses.includes('active')
+        ? 'in'
+        : statuses.includes('removed')
+          ? 'removed'
+          : !viewer.roles.includes('athlete')
+            ? 'no_athlete_role'
+            : 'join';
+  }
   const coach = info.coach_name || 'Your coach';
 
   return (
@@ -62,14 +78,20 @@ async function Invite({ params, searchParams }: PageProps<'/join/[code]'>) {
         Sessions appear in Today. {coach} sees your logs and sign-up answers while you are in this program. Leave any time, and their access ends at
         once.
       </p>
-      {joined === '1' || enrolled ? (
+      {state === 'in' ? (
         <div role="status" className="flex flex-col items-start gap-3 bg-success-soft p-5">
           <p className="m-0 text-[16px] font-medium text-success">You are in {info.title}. Your first session is in Today.</p>
           <Link href="/today" className={buttonClass()}>
             Go to Today
           </Link>
         </div>
-      ) : viewer ? (
+      ) : state === 'own' ? (
+        <p className="m-0 bg-mist p-5 text-[16px] font-medium">This is your own program. Share this link with your athletes.</p>
+      ) : state === 'removed' ? (
+        <p className="m-0 bg-mist p-5 text-[16px] font-medium">{coach} removed you from this program, so this link does not work for you.</p>
+      ) : state === 'no_athlete_role' ? (
+        <p className="m-0 bg-mist p-5 text-[16px] font-medium">Programs are for athlete accounts. This account cannot train in one.</p>
+      ) : state === 'join' ? (
         <JoinForm code={code} />
       ) : (
         <div className="flex flex-col items-start gap-3">

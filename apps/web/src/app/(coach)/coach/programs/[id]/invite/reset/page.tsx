@@ -1,9 +1,8 @@
 import { Button, buttonClass } from '@fitsphere/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
-import { supabaseServer } from '@/lib/supabase/server';
+import { ownProgram } from '@/lib/programs';
 import { requireRole } from '@/lib/viewer';
 import { resetInvite } from '../actions';
 
@@ -11,11 +10,7 @@ export const metadata: Metadata = { title: 'Reset the invite link? · FitSphere 
 
 async function Confirm({ params }: { params: PageProps<'/coach/programs/[id]/invite/reset'>['params'] }) {
   const viewer = await requireRole('coach');
-  const { id } = await params;
-  if (!/^[0-9a-f-]{36}$/.test(id)) notFound();
-  const supabase = await supabaseServer();
-  const { data: program } = await supabase.from('programs').select('id, title').eq('id', id).eq('coach_id', viewer.userId).maybeSingle();
-  if (!program) notFound();
+  const program = await ownProgram((await params).id, viewer);
   return (
     <section role="alertdialog" aria-modal="true" aria-labelledby="dlg-title" aria-describedby="dlg-text" className="flex flex-col gap-5 border border-line-strong p-6">
       <h1 id="dlg-title" className="m-0 font-display text-[40px] font-normal uppercase leading-[0.95]">
