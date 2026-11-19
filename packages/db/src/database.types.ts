@@ -355,14 +355,14 @@ isOneToOne: false
                   ]
                 },"credentials": {
                   Row: {
-                    "coach_id": string,"created_at": string,"decided_at": string | null,"decided_by": string | null,"file_path": string,"id": string,"note": string,"status": string,"title": string
+                    "coach_id": string,"created_at": string,"decided_at": string | null,"decided_by": string | null,"file_path": string,"id": string,"id_number": string,"issuer": string,"note": string,"status": string,"title": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "coach_id": string,"created_at"?: string,"decided_at"?: string | null,"decided_by"?: string | null,"file_path": string,"id"?: string,"note"?: string,"status"?: string,"title": string
+                    "coach_id": string,"created_at"?: string,"decided_at"?: string | null,"decided_by"?: string | null,"file_path": string,"id"?: string,"id_number"?: string,"issuer"?: string,"note"?: string,"status"?: string,"title": string
                   }
                   Update: {
-                    "coach_id"?: string,"created_at"?: string,"decided_at"?: string | null,"decided_by"?: string | null,"file_path"?: string,"id"?: string,"note"?: string,"status"?: string,"title"?: string
+                    "coach_id"?: string,"created_at"?: string,"decided_at"?: string | null,"decided_by"?: string | null,"file_path"?: string,"id"?: string,"id_number"?: string,"issuer"?: string,"note"?: string,"status"?: string,"title"?: string
                   }
                   Relationships: [
                     {
@@ -850,14 +850,14 @@ isOneToOne: false
           Views: {
             "public_credentials": {
                   Row: {
-                    "coach_id": string,"decided_at": string | null,"id": string,"title": string
+                    "coach_id": string,"decided_at": string | null,"id": string,"issuer": string,"title": string
                   }
                   ComputedFields: never
                   Insert: {
-                           "coach_id"?: string | null,"decided_at"?: string | null,"id"?: string | null,"title"?: string | null
+                           "coach_id"?: string | null,"decided_at"?: string | null,"id"?: string | null,"issuer"?: string | null,"title"?: string | null
                          }
                         Update: {
-                           "coach_id"?: string | null,"decided_at"?: string | null,"id"?: string | null,"title"?: string | null
+                           "coach_id"?: string | null,"decided_at"?: string | null,"id"?: string | null,"issuer"?: string | null,"title"?: string | null
                          }
                         Relationships: [
                     {
@@ -884,6 +884,11 @@ isOneToOne: false
 "admin_list_people":
 { Args: { "search": string }; Returns: {
               "display_name": string,"email": string,"id": string,"joined": string,"roles": (Database["public"]['Enums']["app_role"])[]
+            }[]
+                           },
+"admin_pending_credentials":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "coach_id": string,"coach_name": string,"created_at": string,"file_path": string,"id": string,"id_number": string,"issuer": string,"title": string
             }[]
                            },
 "admin_set_roles":
@@ -932,6 +937,9 @@ isOneToOne: false
                            },
 "decide_coach_application":
 { Args: { "application": string,"approve": boolean }; Returns: undefined
+                           },
+"decide_credential":
+{ Args: { "approve": boolean,"credential": string,"note": string }; Returns: undefined
                            },
 "delete_my_account":
 { Args: Record<PropertyKey, never>; Returns: undefined
@@ -1112,7 +1120,7 @@ isOneToOne: false
 { Args: { "item": string }; Returns: undefined
                            },
 "submit_credential":
-{ Args: { "file_path": string,"title": string }; Returns: string
+{ Args: { "file_path": string,"id_number"?: string,"issuer"?: string,"title": string }; Returns: string
                            },
 "valid_prescription":
 { Args: { "p": Json,"t": Database["public"]['Enums']["prescription_type"] }; Returns: boolean

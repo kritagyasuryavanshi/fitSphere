@@ -25,11 +25,13 @@ function coachLinks(viewer: Viewer, desktop: boolean): NavItem[] {
         { href: '/coach', label: 'Athletes', icon: 'calendar', exact: true },
         { href: '/coach/programs', label: 'Programs', icon: 'bars' },
         { href: '/coach/lessons', label: desktop ? 'My lessons' : 'Lessons', icon: 'play' },
+        { href: '/coach/credentials', label: 'Credentials', icon: 'bars' },
       ]
     : [];
   // shortcut: the queue count arrives with the review queue (M2); the link shows only for reviewers.
   if (viewer.roles.includes('reviewer')) links.push({ href: '/review', label: desktop ? 'Review queue' : 'Review', icon: 'bars' });
   if (desktop && viewer.roles.includes('admin')) links.push({ href: '/admin/people', label: 'People' });
+  if (desktop && viewer.roles.includes('admin')) links.push({ href: '/admin/credentials', label: 'Credential checks' });
   return links;
 }
 
