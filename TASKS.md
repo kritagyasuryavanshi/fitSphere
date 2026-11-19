@@ -3,7 +3,7 @@
 Build tasks live on the board: `docs/plans/board.json` (rendered at https://claude.ai/artifact/BPCG8ghatzZkV7v1haJ1z1). This file keeps owner-level items only.
 
 ## Now
-- [ ] Owner: in `/permissions` add Deny `Bash(npx supabase db reset --db-url*)`; then let Claude commit `.claude/settings.json`. Delete the stray `.claudesettings.json`.
+- [ ] Owner: delete the stray `.claudesettings.json` in the project folder (the real file is `.claude/settings.json`, now committed).
 - [ ] Owner: install Codex on the WELCOME PC (`npm i -g @openai/codex`, then `codex login`), so every PR gets its independent review on either PC. PRs #22 to #32 had none until session 13.
 - [ ] Owner: rotate the GitHub token, because it appeared in the chat.
 - [ ] Owner: push the `suryavanshi-claude` rulebook commit that brings Codex back (the push from LENOVO gets 403).
@@ -23,6 +23,7 @@ Build tasks live on the board: `docs/plans/board.json` (rendered at https://clau
 - [ ] Owner: decide on Mobbin (optional).
 
 ## Done
+- [x] 2026-11-19: M3-16 in-app notifications and email switches (PR #38), live on production.
 - [x] 2026-11-19: M3-14 feedback emails (PR #37); sending starts once Resend is set up.
 - [x] 2026-11-19: M3-13 athlete detail, coach feedback and replies (PR #36), live on production.
 - [x] 2026-11-19: M3-12 coach dashboard (PR #35), live on production.

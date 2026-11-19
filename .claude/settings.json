@@ -29,7 +29,14 @@
       "Bash(npx turbo:*)",
       "Bash(docker:*)",
       "Bash(python docs/*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+"Bash(npx supabase db push*)",
+      "Bash(npx supabase link*)",
+      "Bash(npx supabase projects*)",
+      "Bash(npx vercel*)",
+      "Bash(vercel*)",
+      "Bash(npx supabase secrets*)",
+      "Bash(npx supabase db query --remote --yes*)"
     ],
     "deny": [
       "Bash(git push --force*)",
@@ -42,15 +49,12 @@
       "Bash(npx supabase projects delete*)",
       "Bash(npx vercel rm*)",
       "Bash(npx vercel remove*)",
-      "Bash(npx vercel project rm*)"
+      "Bash(npx vercel project rm*)",
+      "Bash(npm run db:reset* --linked*)",
+      "Bash(npx supabase db reset --db-url*)"
     ],
     "ask": [
-      "Bash(npx supabase db push*)",
-      "Bash(npx supabase link*)",
-      "Bash(npx supabase projects*)",
-      "Bash(npx vercel*)",
-      "Bash(vercel*)",
-      "Bash(npx supabase secrets*)"
+      
     ]
   },
   "hooks": {

@@ -1170,7 +1170,7 @@
       "deps": [
         "M3-14"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "db+e2e",
       "screens": [
@@ -1181,7 +1181,8 @@
         "Each event shows in the list; unread items are marked; Mark all as read works",
         "Email per event follows the user's switches; payment receipts always go by email",
         "pgTAP: a user reads only their own notifications"
-      ]
+      ],
+      "done_on": "2026-11-19"
     },
     {
       "id": "M3-15",
