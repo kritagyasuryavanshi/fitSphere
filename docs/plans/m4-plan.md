@@ -170,7 +170,7 @@ Every task also needs `npm run verify` and its e2e test to pass.
 - **11a:** pgTAP: after cancel, access lasts until `paid_through`, then stops. A halt makes the engagement lapsed, and each change queues an email. e2e: the cancel flow.
 - **12a:** Unit: `refund_quote` follows the written terms. pgTAP: a processed refund makes the engagement refunded and the payout reversed, and writes `audit_log`.
 - **13a:** Unit: fee and net are exact to the paisa for ₹4,500, ₹1,200 and ₹999.99. pgTAP: a coach sees only their own payouts, and `money_invariants` returns nothing.
-- **19:** pgTAP: deleting an athlete's account keeps orders, payments and refunds, with `athlete_id` set to null. Deletion is blocked while a subscription is active. Suspending a coach cancels their subscriptions.
+- **19:** pgTAP: deleting an athlete's account keeps orders, payments and refunds, with `athlete_id` set to null. Deletion is blocked while a subscription is active. Suspending a coach cancels their subscriptions. Also from the M4-01 review: `deleteAccount` should refuse an admin before it removes their credential files, and should page past 1,000 files.
 - **14:** pgTAP: a review needs a paid, finished period, once per engagement. A coach cannot edit a review and gets one reply.
 - **17:** pgTAP: a second booking of the same slot fails. A stale hold is released.
 - **09b, 11b, 13b:** e2e on a preview with Razorpay test keys and a real test-mode webhook. Check the unverified claims above.

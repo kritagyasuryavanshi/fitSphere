@@ -37,8 +37,16 @@ export async function logOut(): Promise<void> {
 
 /** Runs only from the confirm screen. The database removes the account and everything personal keyed to it. */
 export async function deleteAccount(): Promise<void> {
-  await requireSignedIn();
+  const viewer = await requireSignedIn();
   const supabase = await supabaseServer();
+  // Storage rows do not cascade from the account, and Supabase refuses SQL deletes on them: remove a coach's
+  // credential files (their own folder, allowed by the delete policy) through the Storage API first.
+  const files = await supabase.storage.from('credentials').list(viewer.userId, { limit: 1000 });
+  if (files.error) throw new Error(`Could not list credential files: ${files.error.message}`);
+  if (files.data.length) {
+    const removed = await supabase.storage.from('credentials').remove(files.data.map((f) => `${viewer.userId}/${f.name}`));
+    if (removed.error) throw new Error(`Could not delete credential files: ${removed.error.message}`);
+  }
   const { error } = await supabase.rpc('delete_my_account');
   if (error?.message === 'admin_cannot_delete') redirect('/account/delete?error=admin');
   if (error) throw new Error(`Could not delete the account: ${error.message}`);
