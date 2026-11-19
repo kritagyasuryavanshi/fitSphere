@@ -615,6 +615,64 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"feedback": {
+                  Row: {
+                    "athlete_id": string,"body": string,"coach_id": string | null,"coach_name": string,"created_at": string,"id": string,"log_id": string | null,"program_id": string | null,"program_title": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "athlete_id": string,"body": string,"coach_id"?: string | null,"coach_name"?: string,"created_at"?: string,"id"?: string,"log_id"?: string | null,"program_id"?: string | null,"program_title"?: string
+                  }
+                  Update: {
+                    "athlete_id"?: string,"body"?: string,"coach_id"?: string | null,"coach_name"?: string,"created_at"?: string,"id"?: string,"log_id"?: string | null,"program_id"?: string | null,"program_title"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "feedback_athlete_id_fkey"
+      columns: ["athlete_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "feedback_coach_id_fkey"
+      columns: ["coach_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "feedback_log_id_fkey"
+      columns: ["log_id"]
+isOneToOne: false
+      referencedRelation: "session_logs"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "feedback_program_id_fkey"
+      columns: ["program_id"]
+isOneToOne: false
+      referencedRelation: "programs"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"feedback_replies": {
+                  Row: {
+                    "body": string,"created_at": string,"feedback_id": string,"id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "body": string,"created_at"?: string,"feedback_id": string,"id"?: string
+                  }
+                  Update: {
+                    "body"?: string,"created_at"?: string,"feedback_id"?: string,"id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "feedback_replies_feedback_id_fkey"
+      columns: ["feedback_id"]
+isOneToOne: false
+      referencedRelation: "feedback"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"set_logs": {
                   Row: {
                     "id": string,"item_log_id": string,"load_kg": number | null,"logged_at": string,"reps": number,"rpe": number,"set_no": number
@@ -753,6 +811,12 @@ isOneToOne: false
                            },
 "log_drill":
 { Args: { "effort": number,"item_position": number,"note": string,"on_date": string,"rounds_done": number,"session": string,"technique": number }; Returns: string
+                           },
+"give_feedback":
+{ Args: { "body": string,"enrollment": string,"log"?: string }; Returns: string
+                           },
+"reply_feedback":
+{ Args: { "body": string,"feedback": string }; Returns: string
                            },
 "log_set":
 { Args: { "item_position": number,"load_kg": number,"on_date": string,"reps": number,"rpe": number,"session": string,"set_no": number }; Returns: string

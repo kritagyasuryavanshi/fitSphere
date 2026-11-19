@@ -78,6 +78,9 @@ async function Account() {
       <Link href="/account/programs" className="flex min-h-14 items-center justify-between border-t border-line text-[16px] font-medium">
         My programs <span aria-hidden="true">→</span>
       </Link>
+      <Link href="/account/feedback" className="flex min-h-14 items-center justify-between border-t border-line text-[16px] font-medium">
+        Coach feedback <span aria-hidden="true">→</span>
+      </Link>
       <Link href="/account/saved" className="flex min-h-14 items-center justify-between border-y border-line text-[16px] font-medium">
         Saved and completed lessons <span aria-hidden="true">→</span>
       </Link>

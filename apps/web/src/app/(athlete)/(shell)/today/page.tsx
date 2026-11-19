@@ -85,7 +85,7 @@ async function Today() {
   }
 
   // The schedule first: every published version of the athlete's programs and their sessions, without drills.
-  const [versionRows, categoryRows] = await Promise.all([
+  const [versionRows, categoryRows, latestFeedback] = await Promise.all([
     supabase
       .from('program_versions')
       .select('id, program_id, version, effective_from, title, weeks')
@@ -95,9 +95,19 @@ async function Today() {
       )
       .not('published_at', 'is', null),
     supabase.from('categories').select('id, name'),
+    // The newest coach feedback from the last 14 days; older ones live on the Coach feedback page.
+    supabase
+      .from('feedback')
+      .select('id, body, coach_name, created_at')
+      .eq('athlete_id', viewer.userId)
+      .gte('created_at', addDays(today, -13))
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle(),
   ]);
   if (versionRows.error) throw versionRows.error;
   if (categoryRows.error) throw categoryRows.error;
+  if (latestFeedback.error) throw latestFeedback.error;
   const sessionRows = await supabase
     .from('program_sessions')
     .select('id, version_id, week, day, position, title')
@@ -244,6 +254,18 @@ async function Today() {
           )}
         </section>
       )}
+
+      {latestFeedback.data ? (
+        <section aria-labelledby="coach-feedback" className="flex flex-col gap-2 border-l-4 border-ink bg-mist p-5">
+          <h2 id="coach-feedback" className="m-0 text-[15px] font-semibold">
+            Feedback from {latestFeedback.data.coach_name || 'your coach'}
+          </h2>
+          <p className="m-0 line-clamp-3 whitespace-pre-line text-[16px]">{latestFeedback.data.body}</p>
+          <Link href="/account/feedback" className="self-start text-[15px] font-medium underline underline-offset-4">
+            Read and reply
+          </Link>
+        </section>
+      ) : null}
 
       <Link href="/account/programs" className="self-start text-[15px] font-medium underline underline-offset-4">
         My programs
