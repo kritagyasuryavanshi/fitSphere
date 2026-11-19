@@ -6,6 +6,8 @@ import { Suspense } from 'react';
 import { formatInr } from '@fitsphere/core';
 import { isUuid } from '@/lib/programs';
 import { supabaseServer } from '@/lib/supabase/server';
+import { getViewer } from '@/lib/viewer';
+import { ShortlistButton } from '../shortlist-button';
 
 // Each coach page names its coach, for tabs, search results and link previews.
 export async function generateMetadata({ params }: PageProps<'/coaches/[id]'>): Promise<Metadata> {
@@ -51,6 +53,8 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
     : [];
   const p = profile.data;
   if (!p || !name.data) notFound();
+  const viewer = await getViewer();
+  const listed = viewer ? (await supabase.from('shortlists').select('coach_id').eq('coach_id', id)).data?.length === 1 : false;
 
   return (
     <>
@@ -60,6 +64,11 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
         </p>
         <h1 className="m-0 font-display text-[48px] font-normal uppercase leading-[0.95] md:text-[64px]">{name.data}</h1>
         <p className="m-0 text-[18px]">{p.headline}</p>
+        {viewer?.userId === id ? null : (
+          <div className="self-start">
+            <ShortlistButton coachId={id} on={listed} signedIn={!!viewer} name={name.data} />
+          </div>
+        )}
         <div className="flex flex-wrap gap-2">
           {credentials.data!.length ? <Tag variant="success">Credentials checked</Tag> : <Tag variant="outline">Credentials self-reported</Tag>}
           {p.specialties.map((s) => (
