@@ -1,6 +1,6 @@
 -- M4-05: a live coach's public stats from FitSphere records, compared with values worked out by hand.
 begin;
-select plan(9);
+select plan(10);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('a8000000-0000-0000-0000-0000000000a1', 'cs-coach@t.test', now()),
@@ -68,5 +68,13 @@ set local role anon;
 select is((select string_agg(title || ':' || weeks || ':' || enrolled_now, ',') from public.coach_programs('a8000000-0000-0000-0000-0000000000a1')), 'Fundamentals:1:3',
   'published programs with title, weeks and athletes enrolled now');
 select is((select count(*)::int from public.coach_programs('a8000000-0000-0000-0000-0000000000a2')), 0, 'none for a coach who is not live');
+-- A published program only one client ever joined stays off the public profile: its title could name them.
+reset role;
+insert into public.programs (id, coach_id, category_id, title, weeks) values ('c8000000-0000-0000-0000-0000000000c4', 'a8000000-0000-0000-0000-0000000000a1', 'boxing', 'Priya comeback', 4);
+insert into public.program_versions (program_id, version, published_at, effective_from, weeks, title, summary) values
+  ('c8000000-0000-0000-0000-0000000000c4', 1, now(), public.india_today() - 10, 4, 'Priya comeback', '');
+insert into public.enrollments (program_id, athlete_id, status, start_date) values ('c8000000-0000-0000-0000-0000000000c4', 'b8000000-0000-0000-0000-000000000003', 'active', public.india_today() - 10);
+set local role anon;
+select is((select string_agg(title, ',') from public.coach_programs('a8000000-0000-0000-0000-0000000000a1')), 'Fundamentals', 'a program fewer than 3 athletes joined is not listed');
 select * from finish();
 rollback;

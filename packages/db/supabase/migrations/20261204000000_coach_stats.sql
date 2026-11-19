@@ -82,6 +82,8 @@ as $$
     where pv.program_id = p.id and pv.published_at is not null order by pv.version desc limit 1
   ) v
   where p.coach_id = coach and public.coach_is_live(coach)
+    -- Only programs 3 or more athletes have joined: a program made for one client could name them in its title.
+    and (select count(distinct e.athlete_id) from public.enrollments e where e.program_id = p.id and e.athlete_id <> coach) >= 3
   order by v.title;
 $$;
 
