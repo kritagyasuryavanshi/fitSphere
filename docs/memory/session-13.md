@@ -58,8 +58,11 @@ Follows [[session-12]]. Hub for this work: [[programs]].
 - M4-03, PR #41: `/coach/credentials` (direct browser upload into the private bucket, because Vercel caps server requests at about 4.5 MB) and `/admin/credentials` (X-Verify, 10-minute signed links). `decide_credential`: admins only, never their own, a reject needs a note, every decision in `audit_log`. A pending or checked credential's file is locked (`credential_file_locked` in the storage delete policy); `withdraw_credential` and Remove free it; account deletion withdraws first. All three reviews before merge; 9 findings fixed; a second security look found nothing. 34 of 34 migrations on production.
 - Subagent rate limit hit at the end of the day (resets 00:30 IST).
 
+- M4-02, PR #42: `/coach/profile` (X-CoachProfile) with packages in rupees, weekly slots, the coach agreement (a plain draft, version `draft-2026-11`, pending owner item O-05) and Go live; credentials moved to `/coach/profile/credentials`; `/coaches/[id]` is the first public profile. Going live needs the current agreement, a headline and a live package, and a live profile keeps them (`assert_live_ready`). `coach_is_live` needs the current agreement, so a version bump hides coaches until they accept again; `coach-agreement.test.ts` pins the text to its version. `my_coach_profile` never returns the payout account. All three reviews before merge; 9 findings fixed. 35 of 35 migrations on production.
+- Lesson: `npm run verify` can fail locally when typecheck and build race on `.next/types`; rerun it alone before treating it as a real failure.
+
 ## Next
-1. M4-02 the profile editor (reads the hidden columns through a function), then M4-04 discovery.
+1. M4-04 find a coach (discovery, filters, sort), then M4-05 the public profile with stats.
 2. The demo work: demo accounts with realistic data and one-click entry, then a domain and Resend (owner).
 2. Then M4 (marketplace) only once coaches pay by hand, per the owner's sell-to-coaches-first plan.
 2. Hosting: the owner sets the Supabase Auth URL configuration; then test sign-in on the live site and run the Supabase security advisors once.

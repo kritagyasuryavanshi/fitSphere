@@ -1240,7 +1240,7 @@
         "M4-01",
         "O-05"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "e2e",
       "screens": [
@@ -1251,7 +1251,8 @@
         "Packages with price and live switch; client limit; weekly slots",
         "Coach accepts the coach agreement before going live",
         "End-to-end: edits show on the public profile"
-      ]
+      ],
+      "done_on": "2026-11-20"
     },
     {
       "id": "M4-03",
