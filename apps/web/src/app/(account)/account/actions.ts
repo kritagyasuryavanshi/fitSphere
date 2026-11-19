@@ -41,6 +41,9 @@ export async function deleteAccount(): Promise<void> {
   const supabase = await supabaseServer();
   // Storage rows do not cascade from the account, and Supabase refuses SQL deletes on them: remove a coach's
   // credential files (their own folder, allowed by the delete policy) through the Storage API first.
+  // Withdraw them first: a pending or checked credential's file cannot be deleted (the badge rests on it).
+  const withdrawn = await supabase.rpc('withdraw_my_credentials');
+  if (withdrawn.error) throw new Error(`Could not withdraw credentials: ${withdrawn.error.message}`);
   const files = await supabase.storage.from('credentials').list(viewer.userId, { limit: 1000 });
   if (files.error) throw new Error(`Could not list credential files: ${files.error.message}`);
   if (files.data.length) {
