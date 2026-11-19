@@ -76,6 +76,16 @@ test.describe('program builder', () => {
     await expect(page.getByText('Unsaved changes')).toHaveCount(0);
     await page.goto('/coach/programs');
     await expect(card.getByText('Unpublished changes')).toBeVisible();
+
+    // A draft length change shows on the card only once published: the card keeps the live length.
+    const liveWeeks = (await card.innerText()).match(/\d+ weeks?/)![0];
+    await card.getByRole('link', { name: /Edit.*Boxing Fundamentals/ }).click();
+    await page.getByLabel('Length').selectOption('26');
+    await page.getByRole('button', { name: 'Save draft' }).click();
+    await expect(page.getByText('Draft saved')).toBeVisible();
+    await page.goto('/coach/programs');
+    await expect(card).toContainText(liveWeeks);
+    await expect(card).not.toContainText('26 weeks');
   });
 
   test('an athlete without the coach role cannot open the builder', async ({ page }) => {

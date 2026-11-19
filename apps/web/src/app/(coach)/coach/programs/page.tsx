@@ -16,7 +16,7 @@ async function Programs({ searchParams }: PageProps<'/coach/programs'>) {
     .from('programs')
     // RLS shows the coach only active enrollments in their own programs, so the count is current members.
     .select(
-      'id, title, weeks, updated_at, categories(name), enrollments(count), program_versions(version, published_at, program_sessions(week, day, position, title, session_items(position, item_id, type, prescription, cue)))',
+      'id, title, summary, weeks, updated_at, categories(name), enrollments(count), program_versions(version, published_at, title, summary, weeks, program_sessions(week, day, position, title, session_items(position, item_id, type, prescription, cue)))',
     )
     .eq('coach_id', viewer.userId)
     .order('updated_at', { ascending: false });
@@ -27,7 +27,14 @@ async function Programs({ searchParams }: PageProps<'/coach/programs'>) {
     const draft = p.program_versions.find((v) => !v.published_at);
     const weeksBuilt = new Set(draft?.program_sessions.map((s) => s.week)).size;
     // Publishing copies the live version into the new draft, so they differ only after a real edit.
-    const changed = !!live && !!draft && sessionsKey(draft.program_sessions) !== sessionsKey(live.program_sessions);
+    // The draft's title, summary and weeks sit on programs; the live ones are frozen on the version.
+    const changed =
+      !!live &&
+      !!draft &&
+      (sessionsKey(draft.program_sessions) !== sessionsKey(live.program_sessions) ||
+        p.title !== live.title ||
+        p.summary !== live.summary ||
+        p.weeks !== live.weeks);
     return { ...p, live, weeksBuilt, changed, athletes: p.enrollments[0]?.count ?? 0 };
   });
 
@@ -51,9 +58,9 @@ async function Programs({ searchParams }: PageProps<'/coach/programs'>) {
                 {p.live ? <Tag variant="success">Live · v{p.live.version}</Tag> : <Tag variant="outline">Draft</Tag>}
                 {p.changed ? <Tag variant="warning">Unpublished changes</Tag> : null}
               </div>
-              <h2 className="m-0 font-display text-[28px] font-normal uppercase leading-none">{p.title}</h2>
+              <h2 className="m-0 font-display text-[28px] font-normal uppercase leading-none">{p.live?.title ?? p.title}</h2>
               <p className="m-0 text-[15px] text-muted">
-                {p.categories.name} · {p.live ? `${p.weeks} ${p.weeks === 1 ? 'week' : 'weeks'}` : `${p.weeksBuilt} of ${p.weeks} weeks built`} ·{' '}
+                {p.categories.name} · {p.live ? `${p.live.weeks} ${p.live.weeks === 1 ? 'week' : 'weeks'}` : `${p.weeksBuilt} of ${p.weeks} weeks built`} ·{' '}
                 {p.athletes ? `${p.athletes} ${p.athletes === 1 ? 'athlete' : 'athletes'}` : 'no athletes yet'}
               </p>
               <div className="flex flex-wrap gap-5">

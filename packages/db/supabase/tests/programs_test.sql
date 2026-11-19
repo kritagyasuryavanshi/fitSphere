@@ -59,13 +59,13 @@ select is((select count(*)::int from public.session_items i join public.program_
 select lives_ok(format($$ select public.publish_program(%L) $$, (select id from ids)), 'the coach publishes again');
 select is((select effective_from from public.program_versions where program_id = (select id from ids) and version = 2), (now() at time zone 'Asia/Kolkata')::date + 1, 'a later version starts tomorrow');
 
--- Another coach cannot edit or read the draft; the public reads published versions only.
+-- Another coach cannot edit or read the draft; the public reads no versions.
 select set_config('request.jwt.claims', '{"sub":"d0000000-0000-0000-0000-00000000000d","role":"authenticated"}', true);
 select throws_ok(format($$ select public.save_program_draft(%L, 'Mine', '', 4, '[]') $$, (select id from ids)), '42501', 'not_owner', 'only the owning coach edits a program');
 select is((select count(*)::int from public.program_versions where program_id = (select id from ids) and published_at is null), 0, 'another coach cannot see the draft');
 set local role anon;
 select set_config('request.jwt.claims', '{"role":"anon"}', true);
-select is((select count(*)::int from public.program_versions), 2, 'the public sees the published versions');
+select is((select count(*)::int from public.program_versions), 0, 'the public reads no versions; joining goes through invite_info (M3 review)');
 
 select * from finish();
 rollback;

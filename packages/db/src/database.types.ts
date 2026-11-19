@@ -579,14 +579,14 @@ isOneToOne: false
                   ]
                 },"session_logs": {
                   Row: {
-                    "athlete_id": string,"category_id": string,"completed_at": string | null,"id": string,"note": string,"on_date": string,"program_id": string | null,"session_id": string | null,"started_at": string,"title": string
+                    "athlete_id": string,"category_id": string,"completed_at": string | null,"created_at": string,"id": string,"note": string,"on_date": string,"program_id": string | null,"session_id": string | null,"started_at": string,"title": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "athlete_id": string,"category_id": string,"completed_at"?: string | null,"id"?: string,"note"?: string,"on_date": string,"program_id"?: string | null,"session_id"?: string | null,"started_at"?: string,"title"?: string
+                    "athlete_id": string,"category_id": string,"completed_at"?: string | null,"created_at"?: string,"id"?: string,"note"?: string,"on_date": string,"program_id"?: string | null,"session_id"?: string | null,"started_at"?: string,"title"?: string
                   }
                   Update: {
-                    "athlete_id"?: string,"category_id"?: string,"completed_at"?: string | null,"id"?: string,"note"?: string,"on_date"?: string,"program_id"?: string | null,"session_id"?: string | null,"started_at"?: string,"title"?: string
+                    "athlete_id"?: string,"category_id"?: string,"completed_at"?: string | null,"created_at"?: string,"id"?: string,"note"?: string,"on_date"?: string,"program_id"?: string | null,"session_id"?: string | null,"started_at"?: string,"title"?: string
                   }
                   Relationships: [
                     {
@@ -696,6 +696,9 @@ isOneToOne: false
 "coach_can_read":
 { Args: { "athlete": string }; Returns: boolean
                            },
+"coach_reads_program":
+{ Args: { "athlete": string,"program": string }; Returns: boolean
+                           },
 "complete_about_you":
 { Args: { "birth_date": string,"first_name": string,"sports": (string)[] }; Returns: undefined
                            },
@@ -707,6 +710,9 @@ isOneToOne: false
                            },
 "delete_my_account":
 { Args: Record<PropertyKey, never>; Returns: undefined
+                           },
+"ever_enrolled":
+{ Args: { "program": string }; Returns: boolean
                            },
 "export_my_data":
 { Args: Record<PropertyKey, never>; Returns: Json
