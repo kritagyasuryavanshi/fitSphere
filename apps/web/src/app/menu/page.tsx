@@ -6,14 +6,12 @@ import { Icon } from '@/components/layout/icons';
 export const metadata: Metadata = { title: 'Menu · FitSphere' };
 
 // M-Menu: the visitor menu on phones. A page, not a pop-over, so it needs no script.
+// Only pages that exist; the marketplace (M4) and the AI guide (M5) add theirs.
 const links = [
   { href: '/learn/boxing', label: 'Learn' },
-  { href: '/programs', label: 'Programs' },
-  { href: '/coaches', label: 'Coaches' },
-  { href: '/ask', label: 'Ask AI' },
   { href: '/for-coaches', label: 'For coaches' },
-  { href: '/help', label: 'Help' },
-  { href: '/about', label: 'About' },
+  { href: '/legal/privacy', label: 'Privacy' },
+  { href: '/legal/terms', label: 'Terms' },
 ];
 
 export default function MenuPage() {

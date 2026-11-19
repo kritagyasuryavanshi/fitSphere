@@ -11,13 +11,13 @@ test('a guest sees the public header; on a phone, the menu', async ({ page }, te
     await header.getByRole('link', { name: 'Menu' }).click();
     await expect(page).toHaveURL('/menu');
     const menu = page.getByRole('navigation', { name: 'Menu' });
-    for (const label of ['Learn', 'Programs', 'Coaches', 'Ask AI', 'For coaches', 'Help', 'About']) {
+    for (const label of ['Learn', 'For coaches', 'Privacy', 'Terms']) {
       await expect(menu.getByRole('link', { name: label, exact: true })).toBeVisible();
     }
     await page.getByRole('link', { name: 'Close menu' }).click();
     await expect(page).toHaveURL('/');
   } else {
-    for (const label of ['Learn', 'Programs', 'Coaches', 'Ask AI']) await expect(header.getByRole('link', { name: label })).toBeVisible();
+    for (const label of ['Learn', 'For coaches']) await expect(header.getByRole('link', { name: label })).toBeVisible();
     await expect(header.getByRole('link', { name: 'Join free' })).toBeVisible();
   }
 });
@@ -36,7 +36,7 @@ test('an athlete lands on Today with the athlete header, and bottom tabs on a ph
   const tabs = page.getByRole('navigation', { name: 'App' }).last();
   if (isPhone(testInfo.project.name)) {
     await expect(tabs.getByRole('link', { name: 'Today' })).toHaveAttribute('aria-current', 'page');
-    for (const label of ['Learn', 'Progress', 'Ask AI']) await expect(tabs.getByRole('link', { name: label })).toBeVisible();
+    for (const label of ['Learn', 'Progress']) await expect(tabs.getByRole('link', { name: label })).toBeVisible();
   } else {
     const header = page.getByRole('navigation', { name: 'App' }).first();
     await expect(header.getByRole('link', { name: 'Today' })).toHaveAttribute('aria-current', 'page');
@@ -84,10 +84,10 @@ test('a coach lands on the coach dashboard with the coach header', async ({ page
   await expect(nav.first().getByText('Coach', { exact: true })).toBeVisible();
   if (isPhone(testInfo.project.name)) {
     const tabs = nav.last();
-    for (const label of ['Athletes', 'Clients', 'Programs', 'Lessons']) await expect(tabs.getByRole('link', { name: label })).toBeVisible();
+    for (const label of ['Athletes', 'Programs', 'Lessons']) await expect(tabs.getByRole('link', { name: label })).toBeVisible();
     await expect(tabs.getByRole('link', { name: 'Review' })).toHaveCount(0);
   } else {
-    for (const label of ['Athletes', 'Clients', 'Programs', 'My lessons']) await expect(nav.first().getByRole('link', { name: label })).toBeVisible();
+    for (const label of ['Athletes', 'Programs', 'My lessons']) await expect(nav.first().getByRole('link', { name: label })).toBeVisible();
     await expect(nav.first().getByRole('link', { name: 'People' })).toHaveCount(0);
   }
   // A coach who is not an athlete cannot open athlete pages.

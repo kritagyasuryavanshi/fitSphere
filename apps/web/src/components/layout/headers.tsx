@@ -6,18 +6,16 @@ import { Icon } from './icons';
 import { BottomTabs, HeaderLinks, type NavItem } from './nav-links';
 
 // Header links per audience, from the mockups (C-Landing, C-Today, C-CoachDash, R-Roles, and the phone tab bars).
+// Only pages that exist: Programs and Coaches return with the marketplace (M4), Ask AI with the AI guide (M5).
 const publicLinks: NavItem[] = [
   { href: '/learn/boxing', label: 'Learn' },
-  { href: '/programs', label: 'Programs' },
-  { href: '/coaches', label: 'Coaches' },
-  { href: '/ask', label: 'Ask AI' },
+  { href: '/for-coaches', label: 'For coaches' },
 ];
 
 export const athleteLinks: NavItem[] = [
   { href: '/today', label: 'Today', icon: 'calendar' },
   { href: '/learn/boxing', label: 'Learn', icon: 'play' },
   { href: '/progress', label: 'Progress', icon: 'bars' },
-  { href: '/ask', label: 'Ask AI', icon: 'chat' },
 ];
 
 // Each link shows only to the roles that can open it, so nobody is offered a page that says "not allowed".
@@ -25,7 +23,6 @@ function coachLinks(viewer: Viewer, desktop: boolean): NavItem[] {
   const links: NavItem[] = viewer.roles.includes('coach')
     ? [
         { href: '/coach', label: 'Athletes', icon: 'calendar', exact: true },
-        { href: '/coach/clients', label: 'Clients', icon: 'chat' },
         { href: '/coach/programs', label: 'Programs', icon: 'bars' },
         { href: '/coach/lessons', label: desktop ? 'My lessons' : 'Lessons', icon: 'play' },
       ]

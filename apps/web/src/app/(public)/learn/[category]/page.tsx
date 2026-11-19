@@ -105,7 +105,7 @@ async function Library({ params, searchParams }: PageProps<'/learn/[category]'>)
               {c.name}
             </Link>
           ) : (
-            <span key={c.id} className="inline-flex min-h-11 items-center rounded-pill border border-dashed border-line-strong px-5 text-[16px] font-medium text-faint">
+            <span key={c.id} className="inline-flex min-h-11 items-center rounded-pill border border-dashed border-line-strong px-5 text-[16px] font-medium text-muted">
               {c.name}, coming later
             </span>
           ),
