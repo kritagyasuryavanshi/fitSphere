@@ -667,7 +667,12 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "admin_list_applications":
+            "adherence":
+{ Args: { "athlete": string,"program"?: string }; Returns: {
+              "completed": number,"scheduled": number
+            }[]
+                           },
+"admin_list_applications":
 { Args: Record<PropertyKey, never>; Returns: {
               "city": string,"email": string,"full_name": string,"how_today": string,"id": string,"sport": string,"user_id": string,"work_url": string,"years_coaching": number
             }[]
@@ -711,6 +716,11 @@ isOneToOne: false
                            },
 "grant_role":
 { Args: { "new_role": Database["public"]['Enums']["app_role"],"target": string }; Returns: undefined
+                           },
+"hard_sets_per_muscle":
+{ Args: { "athlete": string,"from_date": string,"log"?: string,"to_date": string }; Returns: {
+              "muscle_group": string,"muscle_id": string,"name": string,"sets": number
+            }[]
                            },
 "has_role":
 { Args: { "wanted": Database["public"]['Enums']["app_role"] }; Returns: boolean
@@ -823,6 +833,11 @@ isOneToOne: false
                            },
 "set_saved":
 { Args: { "item": string,"saved": boolean }; Returns: undefined
+                           },
+"skill_ratings":
+{ Args: { "athlete": string }; Returns: {
+              "item_id": string,"logs": number,"rating": number
+            }[]
                            },
 "submit_coach_application":
 { Args: { "category": string,"city": string,"full_name": string,"how_today": string,"work_url": string,"years": number }; Returns: undefined

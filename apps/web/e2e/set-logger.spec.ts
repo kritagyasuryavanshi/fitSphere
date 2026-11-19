@@ -74,7 +74,9 @@ test.describe('Set logger', () => {
     await expect(p1.getByLabel('Load (kg)')).toHaveValue('');
     await p1.getByLabel('Effort 7 of 10').check({ force: true });
     await p1.getByRole('button', { name: 'Log set 1' }).click();
-    await push.getByRole('form', { name: 'Set 2' }).getByRole('button', { name: 'Log set 2' }).click();
+    const p2 = push.getByRole('form', { name: 'Set 2' });
+    await p2.getByLabel('Effort 6 of 10').check({ force: true });
+    await p2.getByRole('button', { name: 'Log set 2' }).click();
     await push.getByRole('button', { name: 'Finish session' }).click();
 
     // Totals equal the sets just logged: 8 + 8 + 7 reps at 52.5 kg is 1,207.5 kg; push-ups add no load.
@@ -83,6 +85,9 @@ test.describe('Set logger', () => {
     await expect(summary).toContainText('Exercises logged2 / 2');
     await expect(summary).toContainText('Sets5');
     await expect(summary).toContainText('Volume1,207.5 kg');
+    // Hard sets: at least one rep at RPE 7 or more, so the push-up set at 6 does not count. Both train chest first.
+    await expect(summary).toContainText('Hard sets4');
+    await expect(page.getByRole('region', { name: 'Hard sets by muscle' }).getByRole('listitem')).toHaveText(['Chest4 sets']);
     await expect(page.getByRole('row', { name: 'Barbell bench press 8 × 52.5 kg, 8 × 52.5 kg, 7 × 52.5 kg' })).toBeVisible();
     await expect(page.getByRole('row', { name: 'Push-up 10 reps, 10 reps' })).toBeVisible();
     await page.getByRole('link', { name: 'Back to Today' }).click();
@@ -101,7 +106,7 @@ test.describe('Set logger', () => {
       .map((i) => i.set_logs.sort((a, b) => a.set_no - b.set_no).map((s) => `${s.reps}x${s.load_kg ?? 'bw'}@${s.rpe}`));
     expect(byPosition).toEqual([
       ['8x52.5@8', '8x52.5@8', '7x52.5@8'],
-      ['10xbw@7', '10xbw@7'],
+      ['10xbw@7', '10xbw@6'],
     ]);
   });
 });
