@@ -1,7 +1,7 @@
 -- M3-13: coach feedback and athlete replies. Only the program's coach gives feedback, while the athlete is active in
 -- that program; the athlete keeps reading it for good, also after leaving; the coach reads it per program.
 begin;
-select plan(17);
+select plan(18);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('a9000000-0000-0000-0000-0000000000a1', 'coach-f@t.test', now()),
@@ -74,6 +74,7 @@ select set_config('request.jwt.claims', '{"sub":"c9000000-0000-0000-0000-0000000
 select public.leave_program((select v from ids where name = 'ep')::uuid);
 select is((select count(*)::int from public.feedback) + (select count(*)::int from public.feedback_replies), 2, 'after leaving, the athlete still reads the feedback and the reply');
 select is(jsonb_array_length(public.export_my_data() -> 'feedback'), 1, 'and the data download lists it');
+select throws_ok(format($$ select public.reply_feedback(%L, 'Are you there?') $$, (select v from ids where name = 'f')), '42501', 'not_in_program', 'but cannot reply once out of the program: the coach would never see it');
 
 select set_config('request.jwt.claims', '{"sub":"a9000000-0000-0000-0000-0000000000a1","role":"authenticated"}', true);
 select is((select count(*)::int from public.feedback) + (select count(*)::int from public.feedback_replies), 0, 'the coach reads none of it once he leaves');

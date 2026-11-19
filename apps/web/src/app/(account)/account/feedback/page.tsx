@@ -13,12 +13,18 @@ const stamp = new Intl.DateTimeFormat('en-IN', { weekday: 'short', day: 'numeric
 async function Feedback() {
   const viewer = await requireSignedIn();
   const supabase = await supabaseServer();
-  const { data, error } = await supabase
-    .from('feedback')
-    .select('id, body, created_at, coach_name, program_title, feedback_replies(id, body, created_at)')
-    .eq('athlete_id', viewer.userId)
-    .order('created_at', { ascending: false });
+  const [{ data, error }, programs] = await Promise.all([
+    supabase
+      .from('feedback')
+      .select('id, body, created_at, program_id, coach_name, program_title, feedback_replies(id, body, created_at)')
+      .eq('athlete_id', viewer.userId)
+      .order('created_at', { ascending: false }),
+    supabase.rpc('my_programs'),
+  ]);
   if (error) throw error;
+  if (programs.error) throw programs.error;
+  // Replies reach the coach only while the athlete is still in that program.
+  const active = new Set(programs.data.map((p) => p.program_id));
   if (!data.length) {
     return (
       <div className="flex flex-col items-start gap-3 bg-mist p-8">
@@ -46,7 +52,11 @@ async function Feedback() {
                   {r.body}
                 </p>
               ))}
-            <ReplyForm feedback={f.id} coach={coach} />
+            {f.program_id && active.has(f.program_id) ? (
+              <ReplyForm feedback={f.id} coach={coach} />
+            ) : (
+              <p className="m-0 text-[14px] text-muted">You are no longer in this program, so replies are closed.</p>
+            )}
           </li>
         );
       })}

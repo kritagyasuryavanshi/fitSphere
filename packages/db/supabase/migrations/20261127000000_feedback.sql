@@ -66,7 +66,7 @@ begin
 end;
 $$;
 
--- The athlete answers their own feedback. Replies stay possible after leaving: the coach just no longer reads them.
+-- The athlete answers their own feedback, while still in that program: once out, the coach could never read a reply.
 create function public.reply_feedback(feedback uuid, body text)
 returns uuid
 language plpgsql
@@ -79,6 +79,10 @@ declare
 begin
   if not exists (select 1 from public.feedback f where f.id = reply_feedback.feedback and f.athlete_id = auth.uid()) then
     raise exception 'not_allowed' using errcode = '42501';
+  end if;
+  if not exists (select 1 from public.feedback f join public.enrollments e on e.program_id = f.program_id and e.athlete_id = f.athlete_id and e.status = 'active'
+                 where f.id = reply_feedback.feedback) then
+    raise exception 'not_in_program' using errcode = '42501';
   end if;
   if char_length(text_) not between 1 and 1000 then
     raise exception 'bad_reply' using errcode = '22023';

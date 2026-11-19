@@ -13,7 +13,8 @@ export async function giveFeedback(prev: FeedbackState, formData: FormData): Pro
   const enrollment = String(formData.get('enrollment') ?? '');
   const body = String(formData.get('body') ?? '').trim();
   if (!isUuid(enrollment)) return { error: 'This athlete could not be found.' };
-  if (!body || body.length > 2000) return { error: 'Write your feedback, up to 2,000 characters.' };
+  // Count characters as the database does (code points), so emoji are not refused early.
+  if (!body || [...body].length > 2000) return { error: 'Write your feedback, up to 2,000 characters.' };
   const supabase = await supabaseServer();
   const { error } = await supabase.rpc('give_feedback', { enrollment, body });
   if (error) {

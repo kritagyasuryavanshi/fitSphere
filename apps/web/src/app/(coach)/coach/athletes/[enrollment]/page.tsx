@@ -12,6 +12,7 @@ export const metadata: Metadata = { title: 'Athlete · FitSphere Coach' };
 
 const day = new Intl.DateTimeFormat('en-IN', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' });
 const fmt = (iso: string) => day.format(new Date(`${iso.slice(0, 10)}T00:00:00Z`));
+const indiaDay = new Intl.DateTimeFormat('en-IN', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' });
 const stamp = new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', timeZone: 'Asia/Kolkata' });
 const kg = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 });
 
@@ -70,6 +71,8 @@ async function Athlete({ params }: PageProps<'/coach/athletes/[enrollment]'>) {
   for (const r of [profile, basics, prefs, versions, count, logs, feedback]) if (r.error) throw r.error;
 
   const name = profile.data?.display_name || 'Athlete';
+  // Finished sessions only, as the dashboard counts them.
+  const lastDone = logs.data!.find((l) => l.completed_at);
   const current = versionOn(versions.data!.map((v) => ({ ...v, effectiveFrom: v.effective_from! })), today);
   const at = current ? programDay(e.start_date, current.weeks!, today) : null;
   const c = count.data![0];
@@ -86,7 +89,7 @@ async function Athlete({ params }: PageProps<'/coach/athletes/[enrollment]'>) {
       <div className="flex flex-col gap-2">
         <h1 className="m-0 font-display text-[48px] font-normal uppercase leading-[0.95] md:text-[64px]">{name}</h1>
         <p className="m-0 text-[15px] text-muted">
-          {current?.title ?? 'Program'} · {at ? `week ${at.week}` : 'finished'} · joined {fmt(e.joined_at)}
+          {current?.title ?? 'Program'} · {at ? `week ${at.week}` : 'finished'} · joined {indiaDay.format(new Date(e.joined_at))}
         </p>
       </div>
 
@@ -103,8 +106,8 @@ async function Athlete({ params }: PageProps<'/coach/athletes/[enrollment]'>) {
         <div className="flex flex-col gap-1 bg-mist p-4 md:p-5">
           <dt className="text-[14px] text-muted">Last session</dt>
           <dd className="m-0 flex flex-col gap-1">
-            <span className="font-display text-[36px] leading-none md:text-[44px]">{logs.data![0] ? fmt(logs.data![0].on_date) : '–'}</span>
-            <span className="text-[14px] text-ink-soft">{logs.data![0]?.title || 'No log yet'}</span>
+            <span className="font-display text-[36px] leading-none md:text-[44px]">{lastDone ? fmt(lastDone.on_date) : '–'}</span>
+            <span className="text-[14px] text-ink-soft">{lastDone ? lastDone.title || 'Session' : 'None finished yet'}</span>
           </dd>
         </div>
       </dl>

@@ -13,10 +13,12 @@ export async function replyFeedback(prev: ReplyState, formData: FormData): Promi
   const feedback = String(formData.get('feedback') ?? '');
   const body = String(formData.get('body') ?? '').trim();
   if (!isUuid(feedback)) return { error: 'This feedback could not be found.' };
-  if (!body || body.length > 1000) return { error: 'Write your reply, up to 1,000 characters.' };
+  // Count characters as the database does (code points), so emoji are not refused early.
+  if (!body || [...body].length > 1000) return { error: 'Write your reply, up to 1,000 characters.' };
   const supabase = await supabaseServer();
   const { error } = await supabase.rpc('reply_feedback', { feedback, body });
   if (error) {
+    if (error.message.includes('not_in_program')) return { error: 'You are no longer in this program, so your coach would not see a reply.' };
     if (error.message.includes('not_allowed')) return { error: 'This feedback could not be found.' };
     if (error.message.includes('bad_reply')) return { error: 'Write your reply, up to 1,000 characters.' };
     console.error('reply_feedback failed', error.code, error.message);
