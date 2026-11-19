@@ -11,7 +11,7 @@ export const MAX_ATTEMPTS = 5;
 export type Outbox = { claim: (templates: string[], limit: number) => Promise<OutboxRow[]>; markSent: (id: number) => Promise<void> };
 
 /** The templates this sender writes; others stay queued for a sender that knows them. */
-export const TEMPLATES = ['coach_feedback', 'coach_approved', 'coach_declined'];
+export const TEMPLATES = ['coach_feedback', 'new_lesson', 'session_reminder', 'coach_approved', 'coach_declined'];
 
 const str = (v: unknown) => (typeof v === 'string' ? v : '');
 
@@ -31,6 +31,21 @@ export function renderEmail(template: string, data: Record<string, unknown>, ori
         '',
         `You can turn these emails off on that page.`,
       ].join('\n'),
+    };
+  }
+  if (template === 'new_lesson') {
+    const coach = str(data.coach) || 'Your coach';
+    // Only a path inside the site: a stored link is never trusted to point elsewhere.
+    const path = /^\/[a-z0-9/_-]*$/i.test(str(data.link)) ? str(data.link) : '/learn';
+    return {
+      subject: `New lesson from ${coach}: ${str(data.title)}`,
+      text: [`${coach} published a new lesson: ${str(data.title)}.`, '', `Watch it: ${origin}${path}`, '', `Turn these emails off: ${origin}/account/notifications`].join('\n'),
+    };
+  }
+  if (template === 'session_reminder') {
+    return {
+      subject: `Today: ${str(data.what) || 'your session'}`,
+      text: [`Your session is ready: ${str(data.what) || 'today'}.`, '', `Open Today: ${origin}/today`, '', `Turn these emails off: ${origin}/account/notifications`].join('\n'),
     };
   }
   if (template === 'coach_approved') {
