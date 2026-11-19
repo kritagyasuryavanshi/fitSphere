@@ -439,6 +439,38 @@ isOneToOne: true
       referencedColumns: ["id"]
     }
                   ]
+                },"engagements": {
+                  Row: {
+                    "athlete_id": string | null,"cancel_at_period_end": boolean,"coach_id": string | null,"created_at": string,"days_per_week": number,"decided_at": string | null,"ended_at": string | null,"fee_bps": number,"goals": string,"id": string,"package_id": string | null,"package_kind": string,"package_title": string,"paid_through": string | null,"price_paise": number,"share_data": boolean,"start_date": string,"status": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "athlete_id"?: string | null,"cancel_at_period_end"?: boolean,"coach_id"?: string | null,"created_at"?: string,"days_per_week": number,"decided_at"?: string | null,"ended_at"?: string | null,"fee_bps": number,"goals"?: string,"id"?: string,"package_id"?: string | null,"package_kind": string,"package_title": string,"paid_through"?: string | null,"price_paise": number,"share_data"?: boolean,"start_date": string,"status"?: string
+                  }
+                  Update: {
+                    "athlete_id"?: string | null,"cancel_at_period_end"?: boolean,"coach_id"?: string | null,"created_at"?: string,"days_per_week"?: number,"decided_at"?: string | null,"ended_at"?: string | null,"fee_bps"?: number,"goals"?: string,"id"?: string,"package_id"?: string | null,"package_kind"?: string,"package_title"?: string,"paid_through"?: string | null,"price_paise"?: number,"share_data"?: boolean,"start_date"?: string,"status"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "engagements_athlete_id_fkey"
+      columns: ["athlete_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "engagements_coach_id_fkey"
+      columns: ["coach_id"]
+isOneToOne: false
+      referencedRelation: "coach_profiles"
+      referencedColumns: ["coach_id"]
+    },{
+      foreignKeyName: "engagements_package_id_fkey"
+      columns: ["package_id"]
+isOneToOne: false
+      referencedRelation: "packages"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"enrollments": {
                   Row: {
                     "athlete_id": string,"ended_at": string | null,"id": string,"invite_code": string | null,"joined_at": string,"program_id": string,"start_date": string,"status": Database["public"]['Enums']["enrollment_status"]
@@ -960,14 +992,25 @@ isOneToOne: false
               "kind": string,"value": string
             }[]
                            },
+"coach_has_room":
+{ Args: { "coach": string }; Returns: boolean
+                           },
 "coach_is_live":
 { Args: { "coach": string }; Returns: boolean
+                           },
+"coach_places_taken":
+{ Args: { "coach": string }; Returns: number
                            },
 "coach_public_name":
 { Args: { "coach": string }; Returns: string
                            },
 "coach_reads_program":
 { Args: { "athlete": string,"program": string }; Returns: boolean
+                           },
+"coach_requests":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "athlete_name": string,"cancel_at_period_end": boolean,"created_at": string,"days_per_week": number,"engagement_id": string,"goals": string,"package_kind": string,"package_title": string,"paid_through": string,"price_paise": number,"share_data": boolean,"start_date": string,"status": string
+            }[]
                            },
 "coach_stats":
 { Args: { "coach": string }; Returns: {
@@ -991,6 +1034,9 @@ isOneToOne: false
                            },
 "decide_credential":
 { Args: { "approve": boolean,"credential": string,"note": string }; Returns: undefined
+                           },
+"decide_request":
+{ Args: { "accept": boolean,"engagement": string }; Returns: undefined
                            },
 "delete_my_account":
 { Args: Record<PropertyKey, never>; Returns: undefined
@@ -1079,6 +1125,9 @@ isOneToOne: false
 "owns_program":
 { Args: { "program": string }; Returns: boolean
                            },
+"platform_fee_bps":
+{ Args: Record<PropertyKey, never>; Returns: number
+                           },
 "program_invite":
 { Args: { "program": string }; Returns: string
                            },
@@ -1104,6 +1153,9 @@ isOneToOne: false
                            },
 "reply_feedback":
 { Args: { "body": string,"feedback": string }; Returns: string
+                           },
+"request_coaching":
+{ Args: { "days": number,"goals": string,"package": string,"share": boolean,"start": string }; Returns: string
                            },
 "require_published":
 { Args: { "item": string }; Returns: string
@@ -1200,6 +1252,9 @@ isOneToOne: false
                            },
 "withdraw_my_credentials":
 { Args: Record<PropertyKey, never>; Returns: undefined
+                           },
+"withdraw_request":
+{ Args: { "engagement": string }; Returns: undefined
                            }
           }
           Enums: {
