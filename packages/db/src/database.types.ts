@@ -718,7 +718,7 @@ isOneToOne: false
 { Args: { "new_role": Database["public"]['Enums']["app_role"],"target": string }; Returns: undefined
                            },
 "hard_sets_per_muscle":
-{ Args: { "athlete": string,"from_date": string,"to_date": string }; Returns: {
+{ Args: { "athlete": string,"from_date": string,"log"?: string,"to_date": string }; Returns: {
               "muscle_group": string,"muscle_id": string,"name": string,"sets": number
             }[]
                            },

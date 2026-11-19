@@ -87,7 +87,7 @@ test.describe('Set logger', () => {
     await expect(summary).toContainText('Volume1,207.5 kg');
     // Hard sets: at least one rep at RPE 7 or more, so the push-up set at 6 does not count. Both train chest first.
     await expect(summary).toContainText('Hard sets4');
-    await expect(page.getByRole('region', { name: 'Hard sets by muscle today' }).getByRole('listitem')).toHaveText(['Chest4 sets']);
+    await expect(page.getByRole('region', { name: 'Hard sets by muscle' }).getByRole('listitem')).toHaveText(['Chest4 sets']);
     await expect(page.getByRole('row', { name: 'Barbell bench press 8 × 52.5 kg, 8 × 52.5 kg, 7 × 52.5 kg' })).toBeVisible();
     await expect(page.getByRole('row', { name: 'Push-up 10 reps, 10 reps' })).toBeVisible();
     await page.getByRole('link', { name: 'Back to Today' }).click();

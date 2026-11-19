@@ -49,8 +49,8 @@ async function Done({ params, searchParams }: PageProps<'/session/[id]/done'>) {
     supabase.from('session_items').select('position, type, prescription, content_items(title)').eq('session_id', id).order('position'),
     supabase.from('program_sessions').select('week, version_id, program_versions(title)').eq('id', id).maybeSingle(),
     supabase.rpc('my_programs'),
-    // Hard sets per primary muscle from the day's gym logs (rules in docs/plans/m3-metrics.md).
-    gym ? supabase.rpc('hard_sets_per_muscle', { athlete: viewer.userId, from_date: date, to_date: date }) : Promise.resolve({ data: [], error: null }),
+    // Hard sets per primary muscle in this workout (rules in docs/plans/m3-metrics.md).
+    gym ? supabase.rpc('hard_sets_per_muscle', { athlete: viewer.userId, from_date: date, to_date: date, log: log.id }) : Promise.resolve({ data: [], error: null }),
   ]);
   for (const r of [items, session, programs, muscles]) if (r.error) throw r.error;
   const hardSets = log.item_logs.flatMap((l) => l.set_logs).filter(isHardSet).length;
@@ -98,7 +98,8 @@ async function Done({ params, searchParams }: PageProps<'/session/[id]/done'>) {
         {s.technique !== null ? <Stat label="Technique feel" value={String(s.technique)} /> : null}
         {exercises.length ? <Stat label="Sets" value={String(s.sets)} /> : null}
         {exercises.length && s.volumeKg ? <Stat label="Volume" value={`${kgFormat.format(s.volumeKg)} kg`} /> : null}
-        {exercises.length ? <Stat label="Hard sets" value={String(hardSets)} /> : null}
+        {/* Hard sets are a gym metric; S&C and boxing sets never count (docs/plans/m3-metrics.md). */}
+        {gym && exercises.length ? <Stat label="Hard sets" value={String(hardSets)} /> : null}
       </dl>
 
       <div className="flex flex-wrap items-start gap-8">
@@ -171,7 +172,7 @@ async function Done({ params, searchParams }: PageProps<'/session/[id]/done'>) {
           {gym && muscles.data!.length ? (
             <section aria-labelledby="by-muscle" className="flex flex-col gap-3 pt-2">
               <h2 id="by-muscle" className="m-0 text-[20px] font-semibold">
-                Hard sets by muscle today
+                Hard sets by muscle
               </h2>
               <ul className="m-0 flex list-none flex-col gap-3 p-0">
                 {muscles.data!.map((m) => (

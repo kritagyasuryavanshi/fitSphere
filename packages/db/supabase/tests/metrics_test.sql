@@ -1,6 +1,6 @@
 -- M3-10: adherence, hard sets per muscle and skill ratings, with exact values (rules in docs/plans/m3-metrics.md).
 begin;
-select plan(17);
+select plan(19);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('a5000000-0000-0000-0000-0000000000a1', 'coach-a@t.test', now()),
@@ -85,6 +85,14 @@ select is((select string_agg(muscle_id || ':' || sets, ',' order by muscle_id) f
   'chest:3,lats:2', 'bench gives two (not the RPE 6 or the failed set), push-ups one, pulldowns two; boxing''s squats none');
 select is((select string_agg(muscle_id || ':' || sets, ',') from public.hard_sets_per_muscle('c5000000-0000-0000-0000-0000000000c1', public.india_today() - 3, public.india_today())),
   'lats:2', 'only sets inside the dates count');
+select is((select string_agg(muscle_id || ':' || sets, ',') from public.hard_sets_per_muscle('c5000000-0000-0000-0000-0000000000c1', public.india_today() - 5, public.india_today(),
+  (select l.id from public.session_logs l where l.session_id = (select id from sid where program = 'gym' and day = 3)))),
+  'lats:2', 'with a log, only that session''s sets count');
+reset role;
+select throws_ok($$ insert into public.content_muscles (item_id, muscle_id, is_primary) values (pg_temp.item('barbell-bench-press'), 'upper_chest', true) $$,
+  '23505', null, 'an exercise has one primary muscle at most');
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"c5000000-0000-0000-0000-0000000000c1","role":"authenticated"}', true);
 select is((select name || '|' || muscle_group from public.hard_sets_per_muscle('c5000000-0000-0000-0000-0000000000c1', public.india_today() - 5, public.india_today()) where muscle_id = 'lats'),
   'Lats|back', 'with the muscle''s name and group');
 

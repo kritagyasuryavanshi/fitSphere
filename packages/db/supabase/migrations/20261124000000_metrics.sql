@@ -30,9 +30,13 @@ as $$
     and l.on_date = sched.on_date and l.completed_at is not null;
 $$;
 
+-- Each exercise has at most one primary muscle, so a hard set counts once. Every writer so far marks only the first.
+create unique index content_muscles_one_primary on public.content_muscles (item_id) where is_primary;
+
 -- Hard sets (at least one rep at RPE 7 or more) from gym logs between two dates, counted once for the exercise's
--- primary muscle. S&C and boxing logs do not count, whatever the exercise.
-create function public.hard_sets_per_muscle(athlete uuid, from_date date, to_date date)
+-- primary muscle. S&C and boxing logs do not count, whatever the exercise. With a log, only that session's sets.
+-- An exercise whose primary muscle the caller cannot see (not published) adds nothing.
+create function public.hard_sets_per_muscle(athlete uuid, from_date date, to_date date, log uuid default null)
 returns table (muscle_id text, name text, muscle_group text, sets int)
 language sql
 stable
@@ -47,11 +51,13 @@ as $$
   join public.muscles m on m.id = cm.muscle_id
   where l.athlete_id = hard_sets_per_muscle.athlete and l.category_id = 'gym'
     and l.on_date between hard_sets_per_muscle.from_date and hard_sets_per_muscle.to_date
+    and (hard_sets_per_muscle.log is null or l.id = hard_sets_per_muscle.log)
   group by m.id, m.name, m.muscle_group, m.sort
   order by m.sort;
 $$;
 
--- Per drill, the mean technique feel of its last five logs (newest by date, then by save time), to one decimal.
+-- Per drill, the mean technique feel of its last five logs, to one decimal. Newest by date, then by the session's
+-- start, then by position: none of these change when a log is edited, so an edit cannot reorder the window.
 create function public.skill_ratings(athlete uuid)
 returns table (item_id uuid, rating numeric, logs int)
 language sql
@@ -62,7 +68,7 @@ as $$
   select r.item_id, round(avg(r.technique), 1), count(*)::int
   from (
     select i.item_id, i.technique,
-      row_number() over (partition by i.item_id order by l.on_date desc, i.logged_at desc) as n
+      row_number() over (partition by i.item_id order by l.on_date desc, l.started_at desc, i.position desc) as n
     from public.session_logs l
     join public.item_logs i on i.log_id = l.id
     where l.athlete_id = skill_ratings.athlete and i.technique is not null and i.item_id is not null
@@ -71,5 +77,5 @@ as $$
   group by r.item_id;
 $$;
 
-revoke execute on function public.adherence(uuid, uuid), public.hard_sets_per_muscle(uuid, date, date), public.skill_ratings(uuid) from public, anon;
-grant execute on function public.adherence(uuid, uuid), public.hard_sets_per_muscle(uuid, date, date), public.skill_ratings(uuid) to authenticated;
+revoke execute on function public.adherence(uuid, uuid), public.hard_sets_per_muscle(uuid, date, date, uuid), public.skill_ratings(uuid) from public, anon;
+grant execute on function public.adherence(uuid, uuid), public.hard_sets_per_muscle(uuid, date, date, uuid), public.skill_ratings(uuid) to authenticated;
