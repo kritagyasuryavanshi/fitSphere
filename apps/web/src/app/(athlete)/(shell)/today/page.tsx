@@ -40,7 +40,7 @@ function SessionAction({ id, name, canPlay, log }: { id: string; name: string; c
     return (
       <div className="mt-auto flex flex-wrap items-center gap-3">
         <span className="bg-success-soft px-3 py-1.5 text-[14px] font-medium text-success">Done</span>
-        <Link href={`/session/${id}`} className="text-[15px] font-medium underline underline-offset-4">
+        <Link href={`/session/${id}/done`} className="text-[15px] font-medium underline underline-offset-4">
           Review your log<span className="sr-only"> for {name}</span>
         </Link>
       </div>
