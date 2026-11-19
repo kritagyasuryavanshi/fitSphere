@@ -1,18 +1,4 @@
 {
-  "hooks": {
-    "SessionStart": [
-      {
-        "matcher": "startup",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "git fetch -q origin 2>/dev/null; echo \"fitSphere sync: $(git status -sb | head -1)\"; git status --porcelain | head -5; [ -n \"$(git rev-list HEAD..@{u} 2>/dev/null)\" ] && echo 'This PC is BEHIND origin: git pull first, then npm ci if package-lock.json changed.'; true",
-            "timeout": 20
-          }
-        ]
-      }
-    ]
-  },
   "permissions": {
     "allow": [
       "Bash(git status:*)",
@@ -51,11 +37,34 @@
       "Bash(gh pr merge --admin*)",
       "Bash(gh repo delete*)",
       "Bash(gh secret*)",
+      "Bash(npx supabase db reset --linked*)",
+      "Bash(npx supabase db reset --remote*)",
+      "Bash(npx supabase projects delete*)",
+      "Bash(npx vercel rm*)",
+      "Bash(npx vercel remove*)",
+      "Bash(npx vercel project rm*)"
+    ],
+    "ask": [
       "Bash(npx supabase db push*)",
       "Bash(npx supabase link*)",
       "Bash(npx supabase projects*)",
       "Bash(npx vercel*)",
-      "Bash(vercel*)"
+      "Bash(vercel*)",
+      "Bash(npx supabase secrets*)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git fetch -q origin 2>/dev/null; echo \"fitSphere sync: $(git status -sb | head -1)\"; git status --porcelain | head -5; [ -n \"$(git rev-list HEAD..@{u} 2>/dev/null)\" ] && echo 'This PC is BEHIND origin: git pull first, then npm ci if package-lock.json changed.'; true",
+            "timeout": 20
+          }
+        ]
+      }
     ]
   }
 }
