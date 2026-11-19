@@ -1,11 +1,12 @@
 import { indiaToday, isHardSet } from '@fitsphere/core';
-import { buttonClass } from '@fitsphere/ui';
+import { buttonClass, Tag } from '@fitsphere/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import { isUuid } from '@/lib/programs';
 import { isIsoDate } from '@/lib/session-player';
+import { records, sportGroup } from '@/lib/progress';
 import { minutesBetween, summarise, type SummaryItem } from '@/lib/session-summary';
 import { supabaseServer } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/viewer';
@@ -46,7 +47,7 @@ async function Done({ params, searchParams }: PageProps<'/session/[id]/done'>) {
   // The plan, for skipped drills and planned rounds. Published sessions stay readable after the athlete leaves.
   const gym = log.category_id === 'gym';
   const [items, session, programs, muscles] = await Promise.all([
-    supabase.from('session_items').select('position, type, prescription, content_items(title)').eq('session_id', id).order('position'),
+    supabase.from('session_items').select('position, type, item_id, prescription, content_items(title)').eq('session_id', id).order('position'),
     supabase.from('program_sessions').select('week, version_id, program_versions(title)').eq('id', id).maybeSingle(),
     supabase.rpc('my_programs'),
     // Hard sets per primary muscle in this workout (rules in docs/plans/m3-metrics.md).
@@ -78,6 +79,21 @@ async function Done({ params, searchParams }: PageProps<'/session/[id]/done'>) {
     };
   });
   const s = summarise(summaryItems);
+  // New best (rules in docs/plans/m3-metrics.md): this date's best set beats every earlier date's, from all your logs.
+  const exerciseIds = [...new Set(items.data!.filter((it) => it.type === 'sets' && logs.get(it.position)?.set_logs.length).map((it) => it.item_id).filter((x): x is string => !!x))];
+  const history = exerciseIds.length
+    ? await supabase
+        .from('session_logs')
+        .select('on_date, item_logs!inner(item_id, set_logs(reps, load_kg))')
+        .eq('athlete_id', viewer.userId)
+        .lte('on_date', date)
+        // The same sports as the progress page, so both screens agree on a best.
+        .in('category_id', [...sportGroup(log.category_id)])
+        .in('item_logs.item_id', exerciseIds)
+    : { data: [], error: null };
+  if (history.error) throw history.error;
+  const newBest = new Set(records(history.data!, date).filter((r) => r.isNew).map((r) => r.itemId));
+  const itemIds = new Map(items.data!.map((it) => [it.position, it.item_id]));
   const minutes = minutesBetween(log.started_at, log.completed_at);
   const drills = summaryItems.filter((i) => i.type !== 'sets');
   const exercises = summaryItems.filter((i) => i.type === 'sets');
@@ -158,7 +174,10 @@ async function Done({ params, searchParams }: PageProps<'/session/[id]/done'>) {
                   {exercises.map((e) => (
                     <tr key={e.position} className="border-b border-line">
                       <th scope="row" className="py-2.5 pr-3 font-normal">
-                        {e.title}
+                        <span className="inline-flex flex-wrap items-center gap-2">
+                          {e.title}
+                          {newBest.has(itemIds.get(e.position) ?? '') ? <Tag variant="success">New best</Tag> : null}
+                        </span>
                       </th>
                       <td className="py-2.5">
                         {e.log?.sets.length ? e.log.sets.map((x) => (x.loadKg === null ? `${x.reps} reps` : `${x.reps} × ${x.loadKg} kg`)).join(', ') : 'Skipped'}
