@@ -61,8 +61,12 @@ Follows [[session-12]]. Hub for this work: [[programs]].
 - M4-02, PR #42: `/coach/profile` (X-CoachProfile) with packages in rupees, weekly slots, the coach agreement (a plain draft, version `draft-2026-11`, pending owner item O-05) and Go live; credentials moved to `/coach/profile/credentials`; `/coaches/[id]` is the first public profile. Going live needs the current agreement, a headline and a live package, and a live profile keeps them (`assert_live_ready`). `coach_is_live` needs the current agreement, so a version bump hides coaches until they accept again; `coach-agreement.test.ts` pins the text to its version. `my_coach_profile` never returns the payout account. All three reviews before merge; 9 findings fixed. 35 of 35 migrations on production.
 - Lesson: `npm run verify` can fail locally when typecheck and build race on `.next/types`; rerun it alone before treating it as a real failure.
 
+- M4-04, PR #43: `/coaches` (P-Coaches). `find_coaches` (definer, anon) lists live coaches with 8 filters and fixed sort keys only (best, rating, price, checked); any other key is refused, so rank can never be bought. `coach_filter_options` gives every live coach's specialties, cities and languages. Rating is empty until M4-14 redefines `find_coaches`. A price range matches any live monthly package. `FilterForm` now auto-submits choices only, so typed fields wait for the button. Coaches is in the header and the phone menu. 36 of 36 migrations on production.
+- Fixed the verify race for good: in turbo.json, build depends on typecheck in the same package.
+- Lesson: the production `db query --read-only` role cannot run anon-granted functions (42501); check those through the live site.
+
 ## Next
-1. M4-04 find a coach (discovery, filters, sort), then M4-05 the public profile with stats.
+1. M4-05 the public profile with stats, then M4-06 shortlist and compare.
 2. The demo work: demo accounts with realistic data and one-click entry, then a domain and Resend (owner).
 2. Then M4 (marketplace) only once coaches pay by hand, per the owner's sell-to-coaches-first plan.
 2. Hosting: the owner sets the Supabase Auth URL configuration; then test sign-in on the live site and run the Supabase security advisors once.

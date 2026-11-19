@@ -1285,7 +1285,7 @@
       "deps": [
         "M4-02"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "e2e",
       "screens": [
@@ -1295,7 +1295,8 @@
         "Filters: specialty, format, city, price, rating, experience, credentials, language",
         "Sort never uses payment or paid placement",
         "End-to-end: price filter shows only coaches in range"
-      ]
+      ],
+      "done_on": "2026-11-20"
     },
     {
       "id": "M4-05",
