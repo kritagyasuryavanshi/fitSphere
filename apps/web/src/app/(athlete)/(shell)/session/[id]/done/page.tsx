@@ -1,4 +1,4 @@
-import { indiaToday } from '@fitsphere/core';
+import { indiaToday, isHardSet } from '@fitsphere/core';
 import { buttonClass } from '@fitsphere/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -34,7 +34,7 @@ async function Done({ params, searchParams }: PageProps<'/session/[id]/done'>) {
   const supabase = await supabaseServer();
   const { data: log, error } = await supabase
     .from('session_logs')
-    .select('id, program_id, title, category_id, started_at, completed_at, note, item_logs(position, type, rounds_done, rounds_planned, technique, effort, set_logs(set_no, reps, load_kg))')
+    .select('id, program_id, title, category_id, started_at, completed_at, note, item_logs(position, type, rounds_done, rounds_planned, technique, effort, set_logs(set_no, reps, load_kg, rpe))')
     .eq('athlete_id', viewer.userId)
     .eq('session_id', id)
     .eq('on_date', date)
@@ -44,12 +44,17 @@ async function Done({ params, searchParams }: PageProps<'/session/[id]/done'>) {
   if (!log.completed_at) redirect(`/session/${id}?date=${date}`);
 
   // The plan, for skipped drills and planned rounds. Published sessions stay readable after the athlete leaves.
-  const [items, session, programs] = await Promise.all([
+  const gym = log.category_id === 'gym';
+  const [items, session, programs, muscles] = await Promise.all([
     supabase.from('session_items').select('position, type, prescription, content_items(title)').eq('session_id', id).order('position'),
     supabase.from('program_sessions').select('week, version_id, program_versions(title)').eq('id', id).maybeSingle(),
     supabase.rpc('my_programs'),
+    // Hard sets per primary muscle from the day's gym logs (rules in docs/plans/m3-metrics.md).
+    gym ? supabase.rpc('hard_sets_per_muscle', { athlete: viewer.userId, from_date: date, to_date: date }) : Promise.resolve({ data: [], error: null }),
   ]);
-  for (const r of [items, session, programs]) if (r.error) throw r.error;
+  for (const r of [items, session, programs, muscles]) if (r.error) throw r.error;
+  const hardSets = log.item_logs.flatMap((l) => l.set_logs).filter(isHardSet).length;
+  const mostSets = Math.max(1, ...muscles.data!.map((m) => m.sets));
   const coach = programs.data!.find((p) => p.program_id === log.program_id)?.coach_name || 'your coach';
 
   const logs = new Map(log.item_logs.map((l) => [l.position, l]));
@@ -86,13 +91,14 @@ async function Done({ params, searchParams }: PageProps<'/session/[id]/done'>) {
         <h1 className="m-0 font-display text-[48px] font-normal uppercase leading-[0.95] md:text-[64px]">{log.category_id === 'gym' ? 'Workout done.' : 'Session done.'}</h1>
       </div>
 
-      <dl aria-label="Summary" className="m-0 grid grid-cols-2 gap-2 md:grid-cols-4">
+      <dl aria-label="Summary" className="m-0 grid grid-cols-2 gap-2 md:grid-cols-[repeat(auto-fit,minmax(180px,1fr))]">
         {minutes !== null ? <Stat label="Time" value={minutes < 1 ? '<1 min' : `${minutes} min`} /> : null}
         <Stat label={exercises.length && !drills.length ? 'Exercises logged' : 'Logged'} value={`${s.itemsLogged} / ${s.items}`} />
         {s.roundsPlanned ? <Stat label="Rounds" value={`${s.roundsDone} / ${s.roundsPlanned}`} /> : null}
         {s.technique !== null ? <Stat label="Technique feel" value={String(s.technique)} /> : null}
         {exercises.length ? <Stat label="Sets" value={String(s.sets)} /> : null}
         {exercises.length && s.volumeKg ? <Stat label="Volume" value={`${kgFormat.format(s.volumeKg)} kg`} /> : null}
+        {exercises.length ? <Stat label="Hard sets" value={String(hardSets)} /> : null}
       </dl>
 
       <div className="flex flex-wrap items-start gap-8">
@@ -161,6 +167,29 @@ async function Done({ params, searchParams }: PageProps<'/session/[id]/done'>) {
                 </tbody>
               </table>
             </div>
+          ) : null}
+          {gym && muscles.data!.length ? (
+            <section aria-labelledby="by-muscle" className="flex flex-col gap-3 pt-2">
+              <h2 id="by-muscle" className="m-0 text-[20px] font-semibold">
+                Hard sets by muscle today
+              </h2>
+              <ul className="m-0 flex list-none flex-col gap-3 p-0">
+                {muscles.data!.map((m) => (
+                  <li key={m.muscle_id} className="flex flex-col gap-1.5">
+                    <div className="flex justify-between text-[15px]">
+                      <span>{m.name}</span>
+                      <span className="text-muted">
+                        {m.sets} {m.sets === 1 ? 'set' : 'sets'}
+                      </span>
+                    </div>
+                    <div aria-hidden="true" className="h-2 bg-mist">
+                      <div className="h-full bg-ink" style={{ width: `${(m.sets / mostSets) * 100}%` }} />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <p className="m-0 text-[13px] text-muted">A hard set is at least one rep at effort 7 or more, counted for the exercise&rsquo;s main muscle.</p>
+            </section>
           ) : null}
           <p className="m-0 text-[14px] text-muted">Self-reported. {coach === 'your coach' ? 'Your coach sees' : `${coach} sees`} this log and your note.</p>
         </section>

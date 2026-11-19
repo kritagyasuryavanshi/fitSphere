@@ -24,9 +24,10 @@ export function bestOf(type: RecordType, sessions: Session[]): Best | null {
   for (const s of [...sessions].sort((a, b) => a.date.localeCompare(b.date))) {
     for (const set of s.sets) {
       if (set.reps < 1) continue;
-      if (type === 'load' && set.loadKg === null) continue;
       if (type === 'reps' && set.loadKg !== null) continue;
-      const candidate = { value: type === 'load' ? set.loadKg! : set.reps, reps: set.reps, date: s.date };
+      const value = type === 'load' ? set.loadKg : set.reps;
+      if (value === null) continue;
+      const candidate = { value, reps: set.reps, date: s.date };
       if (!best || beats(type, candidate, best)) best = candidate;
     }
   }
