@@ -42,13 +42,14 @@ function result(i: ItemLog) {
 // K-Athlete: one athlete in one of the coach's programs. RLS returns the enrollment only while it is active and the
 // program is the coach's; logs and feedback come through coach_reads_program, profile and answers through coach_can_read.
 async function Athlete({ params }: PageProps<'/coach/athletes/[enrollment]'>) {
-  await requireRole('coach');
+  const viewer = await requireRole('coach');
   const { enrollment: id } = await params;
   if (!isUuid(id)) notFound();
   const supabase = await supabaseServer();
   const { data: e, error } = await supabase.from('enrollments').select('id, athlete_id, program_id, start_date, joined_at').eq('id', id).eq('status', 'active').maybeSingle();
   if (error) throw error;
-  if (!e) notFound();
+  // RLS also returns the viewer's own enrollments as an athlete; this page is for the coach's athletes only.
+  if (!e || e.athlete_id === viewer.userId) notFound();
 
   const today = indiaToday();
   const [profile, basics, prefs, versions, count, logs, feedback] = await Promise.all([
@@ -66,7 +67,14 @@ async function Athlete({ params }: PageProps<'/coach/athletes/[enrollment]'>) {
       .order('on_date', { ascending: false })
       .order('created_at', { ascending: false })
       .limit(20),
-    supabase.from('feedback').select('id, body, created_at, feedback_replies(id, body, created_at)').eq('athlete_id', e.athlete_id).eq('program_id', e.program_id).order('created_at', { ascending: false }),
+    // From this enrollment only, as the logs: an athlete who left and rejoined starts afresh.
+    supabase
+      .from('feedback')
+      .select('id, body, created_at, feedback_replies(id, body, created_at)')
+      .eq('athlete_id', e.athlete_id)
+      .eq('program_id', e.program_id)
+      .gte('created_at', e.joined_at)
+      .order('created_at', { ascending: false }),
   ]);
   for (const r of [profile, basics, prefs, versions, count, logs, feedback]) if (r.error) throw r.error;
 

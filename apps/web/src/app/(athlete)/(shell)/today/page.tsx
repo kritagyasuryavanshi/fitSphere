@@ -58,18 +58,20 @@ async function Today() {
   const viewer = await requireRole('athlete');
   const supabase = await supabaseServer();
   const today = indiaToday();
-  const { data: programs, error } = await supabase.rpc('my_programs');
+  const [{ data: programs, error }, latestFeedback] = await Promise.all([
+    supabase.rpc('my_programs'),
+    // The newest coach feedback from the last 14 days, also after leaving every program; older ones live on Coach feedback.
+    supabase
+      .from('feedback')
+      .select('id, body, coach_name, created_at')
+      .eq('athlete_id', viewer.userId)
+      // From midnight India time 13 days ago, not UTC midnight.
+      .gte('created_at', `${addDays(today, -13)}T00:00:00+05:30`)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+  ]);
   if (error) throw error;
-  // The newest coach feedback from the last 14 days, also after leaving every program; older ones live on Coach feedback.
-  const latestFeedback = await supabase
-    .from('feedback')
-    .select('id, body, coach_name, created_at')
-    .eq('athlete_id', viewer.userId)
-    // From midnight India time 13 days ago, not UTC midnight.
-    .gte('created_at', `${addDays(today, -13)}T00:00:00+05:30`)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
   if (latestFeedback.error) throw latestFeedback.error;
   const feedbackCard = latestFeedback.data ? (
         <section aria-labelledby="coach-feedback" className="flex flex-col gap-2 border-l-4 border-ink bg-mist p-5">
