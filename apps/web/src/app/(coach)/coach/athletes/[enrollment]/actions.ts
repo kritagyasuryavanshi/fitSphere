@@ -1,6 +1,9 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { after } from 'next/server';
+import { sendQueuedEmails } from '@/lib/email-send';
+import { siteOrigin } from '@/lib/site-origin';
 import { isUuid } from '@/lib/programs';
 import { supabaseServer } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/viewer';
@@ -24,5 +27,14 @@ export async function giveFeedback(prev: FeedbackState, formData: FormData): Pro
     return { error: 'We could not send your feedback. Try again.' };
   }
   revalidatePath(`/coach/athletes/${enrollment}`);
+  // The note's email is queued with it; send it after the response, so the coach never waits on the provider.
+  const origin = await siteOrigin();
+  after(async () => {
+    try {
+      await sendQueuedEmails(origin);
+    } catch (e) {
+      console.error('sending queued emails failed', e);
+    }
+  });
   return { sent: (prev.sent ?? 0) + 1 };
 }

@@ -353,6 +353,26 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"email_prefs": {
+                  Row: {
+                    "coach_feedback": boolean,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "coach_feedback"?: boolean,"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "coach_feedback"?: boolean,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "email_prefs_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: true
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"enrollments": {
                   Row: {
                     "athlete_id": string,"ended_at": string | null,"id": string,"invite_code": string | null,"joined_at": string,"program_id": string,"start_date": string,"status": Database["public"]['Enums']["enrollment_status"]
@@ -818,6 +838,11 @@ isOneToOne: false
 "log_set":
 { Args: { "item_position": number,"load_kg": number,"on_date": string,"reps": number,"rpe": number,"session": string,"set_no": number }; Returns: string
                            },
+"my_email_prefs":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "coach_feedback": boolean
+            }[]
+                           },
 "my_programs":
 { Args: Record<PropertyKey, never>; Returns: {
               "category_id": string,"coach_name": string,"enrollment_id": string,"joined_at": string,"program_id": string,"start_date": string,"summary": string,"title": string,"version_id": string,"weeks": number
@@ -906,6 +931,9 @@ isOneToOne: false
                            },
 "set_saved":
 { Args: { "item": string,"saved": boolean }; Returns: undefined
+                           },
+"set_email_pref":
+{ Args: { "enabled": boolean,"kind": string }; Returns: undefined
                            },
 "skill_ratings":
 { Args: { "athlete": string }; Returns: {
