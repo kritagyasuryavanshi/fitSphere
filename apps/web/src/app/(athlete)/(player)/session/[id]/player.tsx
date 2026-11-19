@@ -29,6 +29,8 @@ type Props = {
   /** Last time's sets of each exercise, by position. */
   lastTimes: Record<number, LastTime | null>;
   completed: boolean;
+  /** When the server rendered the player, sent on finishing so the summary's time covers the whole session. */
+  openedAt: string;
 };
 
 const dayName = new Intl.DateTimeFormat('en-IN', { weekday: 'long', day: 'numeric', month: 'short', timeZone: 'UTC' });
@@ -180,7 +182,7 @@ function LogForm({ drill, existing, autoRounds, coach, last, review, onSaved, se
   );
 }
 
-export function Player({ session, date, isToday, title, line, coach, drills, logged, sets, lastTimes, completed }: Props) {
+export function Player({ session, date, isToday, title, line, coach, drills, logged, sets, lastTimes, completed, openedAt }: Props) {
   const [logs, setLogs] = useState(() => new Map(logged.map((l) => [l.position, l])));
   const [setRows, setSetRows] = useState(() => new Map(Object.entries(sets).map(([p, rows]) => [Number(p), rows])));
   // A drill counts as done once logged; an exercise once it has a set.
@@ -206,8 +208,6 @@ export function Player({ session, date, isToday, title, line, coach, drills, log
   const [finishing, startFinish] = useTransition();
   const [announce, setAnnounce] = useState('');
   const hydrated = useHydrated();
-  // When the player opened, sent on finishing so the summary's time covers the whole session.
-  const [openedAt] = useState(() => new Date().toISOString());
   const drill = drills[index];
   const last = index === drills.length - 1;
 

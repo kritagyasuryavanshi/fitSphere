@@ -1,6 +1,6 @@
 -- M3-09: the session's real start time, and a note to the coach that saves with the session.
 begin;
-select plan(11);
+select plan(13);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('a4000000-0000-0000-0000-0000000000a1', 'coach@t.test', now()),
@@ -31,6 +31,10 @@ select set_config('request.jwt.claims', '{"sub":"c4000000-0000-0000-0000-0000000
 select public.join_program((select v from ids where name = 'code'));
 insert into ids select 'log', public.log_drill((select v from ids where name = 's')::uuid, public.india_today(), 1, 3, 4, 7, '');
 
+-- A note waits for the session to be finished.
+select throws_ok(format($$ select public.save_session_note(%L, public.india_today(), 'early') $$, (select v from ids where name = 's')),
+  'P0002', 'no_log', 'an unfinished session takes no note');
+
 -- The player's open time becomes the start, when earlier than the first save and within six hours.
 select public.finish_session((select v from ids where name = 's')::uuid, public.india_today(), now() - interval '36 minutes');
 select is((select round(extract(epoch from completed_at - started_at) / 60)::int from public.session_logs), 36, 'the session took 36 minutes from opening the player');
@@ -44,6 +48,9 @@ select lives_ok(format($$ select public.finish_session(%L, public.india_today())
 select is(public.save_session_note((select v from ids where name = 's')::uuid, public.india_today(), '  Lead foot late on round 2.  '),
   (select v from ids where name = 'log')::uuid, 'saving the note returns the log');
 select is((select note from public.session_logs), 'Lead foot late on round 2.', 'the note is saved, trimmed');
+select public.save_session_note((select v from ids where name = 's')::uuid, public.india_today(), E'\n\tTabbed note\n\n');
+select is((select note from public.session_logs), 'Tabbed note', 'new lines and tabs around the note are dropped too');
+select public.save_session_note((select v from ids where name = 's')::uuid, public.india_today(), 'Lead foot late on round 2.');
 select throws_ok(format($$ select public.save_session_note(%L, public.india_today(), %L) $$, (select v from ids where name = 's'), repeat('x', 1001)),
   '22023', 'bad_note', 'a note over 1000 characters is refused');
 select throws_ok(format($$ select public.save_session_note(%L, public.india_today() - 1, 'x') $$, (select v from ids where name = 's')),
