@@ -53,7 +53,7 @@ Rules that hold everywhere:
 - **Identity:** `profiles`, `user_roles` (admin-granted), `consents` (one row per consent kind, explicit yes or no), `athlete_prefs`, `body_metrics` (optional), `coach_applications`, `audit_log`.
 - **Content:** `categories` (boxing, sc, gym), `disciplines`, `content_items` (skill, drill, exercise; status draft → in_review → changes_requested → published; `is_sample`), `content_steps`, `content_links` (prerequisite, related, supports), `muscles`, `content_muscles`, `saves`, `completions`, `reviews_log`.
 - **Training:** `programs` (versioned), `program_weeks`, `program_sessions`, `session_items` (typed prescription: rounds, time, or sets × reps × load), `invites`, `enrollments` (active, left, removed), `session_logs`, `set_logs`, `feedback`, `feedback_replies`.
-- **Marketplace:** `coach_profiles`, `credentials`, `packages` (price in paise), `availability_slots`, `shortlists`, `hire_requests`, `conversations`, `messages`, `orders`, `payments`, `payment_events` (webhook idempotency), `subscriptions`, `engagements`, `refunds`, `payouts`, `reviews`, `client_stories`.
+- **Marketplace:** `coach_profiles`, `credentials`, `packages` (price in paise), `availability_slots`, `shortlists`, `engagements` (hire requests and paid coaching in one state machine, see `docs/plans/m4-plan.md`), `conversations`, `messages`, `orders`, `payments`, `payment_events` (webhook idempotency), `subscriptions`, `engagements`, `refunds`, `payouts`, `reviews`, `client_stories`.
 - **AI:** `ai_questions` (question, answer, citations, flags), daily limit function.
 
 Key RLS rules (each one has a pgTAP test):
