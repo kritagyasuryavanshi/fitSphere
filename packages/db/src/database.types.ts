@@ -772,8 +772,23 @@ isOneToOne: false
             }[]
                            },
 "claim_emails":
-{ Args: { "max_rows"?: number,"templates": string[] }; Returns: Database["public"]["Tables"]["email_outbox"]["Row"][]
-                           },
+{ Args: { "max_rows"?: number,"templates": (string)[] }; Returns: {
+              "attempts": number,
+"claimed_at": string | null,
+"created_at": string,
+"data": NonNullable<Json>,
+"id": number,
+"sent_at": string | null,
+"template": string,
+"to_email": string,
+"user_id": string | null
+            }[]
+                          SetofOptions: {
+        from: "*"
+        to: "email_outbox"
+        isOneToOne: false
+        isSetofReturn: true
+      } },
 "coach_can_read":
 { Args: { "athlete": string }; Returns: boolean
                            },
@@ -929,14 +944,14 @@ isOneToOne: false
 "set_completed":
 { Args: { "done": boolean,"item": string }; Returns: undefined
                            },
+"set_email_pref":
+{ Args: { "enabled": boolean,"kind": string }; Returns: undefined
+                           },
 "set_my_consent":
 { Args: { "granted": boolean,"purpose": Database["public"]['Enums']["consent_purpose"] }; Returns: undefined
                            },
 "set_saved":
 { Args: { "item": string,"saved": boolean }; Returns: undefined
-                           },
-"set_email_pref":
-{ Args: { "enabled": boolean,"kind": string }; Returns: undefined
                            },
 "skill_ratings":
 { Args: { "athlete": string }; Returns: {
