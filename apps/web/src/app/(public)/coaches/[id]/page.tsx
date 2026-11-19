@@ -23,23 +23,23 @@ export async function generateMetadata({ params }: PageProps<'/coaches/[id]'>): 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 // P-Coach (first version, M4-02): a live coach's public profile. RLS returns only live coaches, their live packages and
-// slots, and checked credentials. Stats and programs come from definer functions over FitSphere records (M4-05).
+// slots, and checked credentials. Stats come from a definer function over FitSphere records (M4-05). Programs are
+// private (invite only), so the portfolio lists published lessons only until coaches can choose to list a program.
 // shortcut: reviews arrive with M4-14 and Hire with M4-07; until then the page says so.
 async function Coach({ params }: PageProps<'/coaches/[id]'>) {
   const { id } = await params;
   if (!isUuid(id)) notFound();
   const supabase = await supabaseServer();
-  const [profile, name, packages, slots, credentials, stats, programs, lessons] = await Promise.all([
+  const [profile, name, packages, slots, credentials, stats, lessons] = await Promise.all([
     supabase.from('coach_profiles').select('headline, philosophy, specialties, languages, formats, city, years').eq('coach_id', id).maybeSingle(),
     supabase.rpc('coach_public_name', { coach: id }),
     supabase.from('packages').select('id, title, kind, price_paise').eq('coach_id', id).eq('live', true).order('price_paise'),
     supabase.from('availability_slots').select('dow, start_time, minutes').eq('coach_id', id).order('dow').order('start_time'),
     supabase.from('public_credentials').select('id, title, issuer').eq('coach_id', id),
     supabase.rpc('coach_stats', { coach: id }).maybeSingle(),
-    supabase.rpc('coach_programs', { coach: id }),
     supabase.from('content_items').select('slug, title, disciplines!inner(category_id)').eq('author_id', id).eq('status', 'published').eq('is_sample', false).order('title').limit(6),
   ]);
-  for (const r of [profile, name, packages, slots, credentials, stats, programs, lessons]) if (r.error) throw r.error;
+  for (const r of [profile, name, packages, slots, credentials, stats, lessons]) if (r.error) throw r.error;
   const st = stats.data;
   const statRows: [string, string][] = st
     ? [
@@ -139,7 +139,7 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
           <p className="m-0 text-[16px] text-ink-soft">{slots.data!.map((s) => `${DAYS[s.dow - 1]} ${s.start_time.slice(0, 5)}`).join(' · ')} (India time)</p>
         </section>
       ) : null}
-      {programs.data!.length || lessons.data!.length ? (
+      {lessons.data!.length ? (
         <section aria-labelledby="portfolio" className="flex flex-col gap-2">
           <h2 id="portfolio" className="m-0 text-[22px] font-semibold">
             Portfolio
@@ -151,14 +151,6 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
                   Lesson: {l.title}
                 </Link>
                 <span className="text-[14px] text-muted">Coach-verified lesson on FitSphere</span>
-              </li>
-            ))}
-            {programs.data!.map((g) => (
-              <li key={g.program_id} className="flex flex-col gap-0.5 border-b border-line py-3">
-                <span className="text-[16px] font-medium">Program: {g.title}</span>
-                <span className="text-[14px] text-muted">
-                  {g.weeks} {g.weeks === 1 ? 'week' : 'weeks'} · {g.enrolled_now} {g.enrolled_now === 1 ? 'athlete' : 'athletes'} enrolled now
-                </span>
               </li>
             ))}
           </ul>

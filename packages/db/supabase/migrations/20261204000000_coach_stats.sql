@@ -1,7 +1,7 @@
 -- M4-05: a live coach's public stats (P-Coach "On FitSphere"), from FitSphere records only: never typed by the coach.
 -- shortcut: counts program enrollments only; M4-07 (engagements) redefines this to add paid coaching clients.
--- The two percentages stay hidden while fewer than 3 athletes count toward them, so no single client's
--- adherence or leaving date can be read off a public page.
+-- Privacy: the two percentages stay hidden while fewer than 5 athletes count toward them, and show to the nearest 10%,
+-- so a public page cannot be read back to one client's adherence or leaving date.
 create function public.coach_stats(coach uuid)
 returns table (athletes int, programs_finished int, stayed_pct int, adherence_pct int)
 language plpgsql
@@ -18,74 +18,61 @@ begin
   end if;
   return query
   with e as (
-    select en.*
+    select en.id, en.program_id, en.athlete_id, en.status, en.start_date, en.joined_at, en.ended_at,
+      -- The last day of the version the athlete started on, and the India date they left (or none).
+      en.start_date + v0.weeks * 7 - 1 as last_day,
+      (en.ended_at at time zone 'Asia/Kolkata')::date as left_on
     from public.enrollments en
     join public.programs p on p.id = en.program_id
+    join public.program_versions v0 on v0.id = public.version_in_effect(en.program_id, en.start_date)
     where p.coach_id = coach and en.athlete_id <> coach
   ),
-  -- Per athlete: when they first joined, and the longest time they stayed in one of this coach's programs.
+  -- Per athlete: how long they have been with this coach, from the first join to the last day in any program.
   a as (
-    select e.athlete_id, min(e.joined_at) as first_joined, max(coalesce(e.ended_at, now()) - e.joined_at) as longest
+    select e.athlete_id, min(e.joined_at) as first_joined, max(coalesce(e.ended_at, now())) - min(e.joined_at) as span
     from e group by e.athlete_id
   ),
-  -- Sessions scheduled for active enrollments up to today, as in public.adherence (20261124000000_metrics.sql).
+  -- Sessions scheduled per enrollment up to today, while it lasted, as in public.adherence (20261124000000_metrics.sql).
+  -- The days stop at the program's end, so a short program costs a few lookups, not 26 weeks of them.
   sched as (
-    select e.athlete_id, s.id as session_id, d.on_date
+    select e.id as enrollment_id, e.athlete_id, e.status, s.id as session_id, d.on_date
     from e
     cross join lateral (
-      select g::date as on_date from generate_series(e.start_date, least(public.india_today(), e.start_date + 26 * 7 - 1), interval '1 day') g
+      select g::date as on_date
+      from generate_series(e.start_date, least(public.india_today(), coalesce(e.left_on, public.india_today()), e.start_date + 26 * 7 - 1,
+        e.start_date + (select max(pv.weeks) from public.program_versions pv where pv.program_id = e.program_id and pv.published_at is not null) * 7 - 1),
+        interval '1 day') g
     ) d
     join public.program_versions v on v.id = public.version_in_effect(e.program_id, d.on_date)
     join public.program_sessions s on s.version_id = v.id and s.week <= v.weeks
       and e.start_date + (s.week - 1) * 7 + (s.day - 1) = d.on_date
-    where e.status = 'active'
   ),
-  adh as (
-    select count(distinct sched.athlete_id)::int as people, count(*)::int as scheduled, count(l.id)::int as completed
+  per as (
+    select sched.enrollment_id, sched.athlete_id, sched.status, count(*)::int as scheduled, count(l.id)::int as completed
     from sched
     left join public.session_logs l on l.athlete_id = sched.athlete_id and l.session_id = sched.session_id
       and l.on_date = sched.on_date and l.completed_at is not null
+    group by sched.enrollment_id, sched.athlete_id, sched.status
+  ),
+  adh as (
+    select count(distinct per.athlete_id)::int as people, coalesce(sum(per.scheduled), 0)::int as scheduled, coalesce(sum(per.completed), 0)::int as completed
+    from per where per.status = 'active'
   ),
   stay as (
-    select count(*)::int as people, count(*) filter (where a.longest >= interval '90 days')::int as stayed
+    select count(*)::int as people, count(*) filter (where a.span >= interval '90 days')::int as stayed
     from a where a.first_joined <= now() - interval '90 days'
   )
   select
     (select count(*)::int from a),
-    -- Finished: still enrolled after the last day of the version they started on.
-    (select count(*)::int from e
-      join public.program_versions v on v.id = public.version_in_effect(e.program_id, e.start_date)
-      where e.status = 'active' and public.india_today() > e.start_date + v.weeks * 7 - 1),
-    case when stay.people >= 3 then round(100.0 * stay.stayed / stay.people)::int end,
-    case when adh.people >= 3 and adh.scheduled > 0 then round(100.0 * adh.completed / adh.scheduled)::int end
+    -- Finished: the enrollment lasted past its last day, and at least half its sessions were done. Leaving later keeps it.
+    (select count(*)::int from e join per on per.enrollment_id = e.id
+      where public.india_today() > e.last_day and (e.left_on is null or e.left_on > e.last_day)
+        and per.scheduled > 0 and per.completed * 2 >= per.scheduled),
+    case when stay.people >= 5 then (round(10.0 * stay.stayed / stay.people) * 10)::int end,
+    case when adh.people >= 5 and adh.scheduled > 0 then (round(10.0 * adh.completed / adh.scheduled) * 10)::int end
   from stay, adh;
 end;
 $$;
 
 revoke all on function public.coach_stats(uuid) from public;
 grant execute on function public.coach_stats(uuid) to anon, authenticated;
-
--- The portfolio's programs on a live coach's public profile: published ones, as frozen on their newest published
--- version, with how many athletes are enrolled now. Programs stay private otherwise (invite only, M3).
-create function public.coach_programs(coach uuid)
-returns table (program_id uuid, title text, weeks smallint, enrolled_now int)
-language sql
-stable
-security definer
-set search_path = ''
-as $$
-  select p.id, v.title, v.weeks,
-    (select count(*)::int from public.enrollments e where e.program_id = p.id and e.status = 'active' and e.athlete_id <> coach)
-  from public.programs p
-  cross join lateral (
-    select pv.title, pv.weeks from public.program_versions pv
-    where pv.program_id = p.id and pv.published_at is not null order by pv.version desc limit 1
-  ) v
-  where p.coach_id = coach and public.coach_is_live(coach)
-    -- Only programs 3 or more athletes have joined: a program made for one client could name them in its title.
-    and (select count(distinct e.athlete_id) from public.enrollments e where e.program_id = p.id and e.athlete_id <> coach) >= 3
-  order by v.title;
-$$;
-
-revoke all on function public.coach_programs(uuid) from public;
-grant execute on function public.coach_programs(uuid) to anon, authenticated;

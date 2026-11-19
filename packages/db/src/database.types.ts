@@ -937,11 +937,6 @@ isOneToOne: false
 "coach_is_live":
 { Args: { "coach": string }; Returns: boolean
                            },
-"coach_programs":
-{ Args: { "coach": string }; Returns: {
-              "enrolled_now": number,"program_id": string,"title": string,"weeks": number
-            }[]
-                           },
 "coach_public_name":
 { Args: { "coach": string }; Returns: string
                            },
