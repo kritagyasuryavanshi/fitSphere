@@ -3,9 +3,9 @@
 import { Checkbox } from '@fitsphere/ui';
 import { useState, useTransition } from 'react';
 import { useHydrated } from '@/lib/use-hydrated';
-import { setFeedbackEmails } from './actions';
+import { setEmailPref, type EmailKind } from './actions';
 
-export function EmailSwitch({ initial }: { initial: boolean }) {
+export function EmailSwitch({ kind, label, initial }: { kind: EmailKind; label: string; initial: boolean }) {
   const hydrated = useHydrated();
   const [on, setOn] = useState(initial);
   const [error, setError] = useState('');
@@ -13,7 +13,7 @@ export function EmailSwitch({ initial }: { initial: boolean }) {
   return (
     <div className="flex flex-col gap-1">
       <Checkbox
-        label="Email me when my coach sends feedback"
+        label={label}
         checked={on}
         disabled={!hydrated || pending}
         onChange={(e) => {
@@ -21,7 +21,7 @@ export function EmailSwitch({ initial }: { initial: boolean }) {
           setOn(next);
           start(async () => {
             // A thrown action (network, expired sign-in) must undo the switch too, or it would show the wrong state.
-            const r = await setFeedbackEmails(next).catch(() => ({ error: 'We could not save this setting. Check your connection and try again.' }));
+            const r = await setEmailPref(kind, next).catch(() => ({ error: 'We could not save this setting. Check your connection and try again.' }));
             if (r.error) {
               setOn(!next);
               setError(r.error);

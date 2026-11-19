@@ -28,16 +28,20 @@ export async function replyFeedback(prev: ReplyState, formData: FormData): Promi
   return { sent: (prev.sent ?? 0) + 1 };
 }
 
-/** The athlete's switch for feedback emails. */
-export async function setFeedbackEmails(enabled: boolean): Promise<{ error?: string }> {
+const EMAIL_KINDS = ['coach_feedback', 'new_lesson', 'session_reminder'] as const;
+export type EmailKind = (typeof EMAIL_KINDS)[number];
+
+/** One email switch (feedback, new lessons, session reminders). The database checks the kind again. */
+export async function setEmailPref(kind: EmailKind, enabled: boolean): Promise<{ error?: string }> {
   await requireSignedIn();
-  if (typeof enabled !== 'boolean') return { error: 'We could not save this setting.' };
+  if (!EMAIL_KINDS.includes(kind) || typeof enabled !== 'boolean') return { error: 'We could not save this setting.' };
   const supabase = await supabaseServer();
-  const { error } = await supabase.rpc('set_email_pref', { kind: 'coach_feedback', enabled });
+  const { error } = await supabase.rpc('set_email_pref', { kind, enabled });
   if (error) {
     console.error('set_email_pref failed', error.code, error.message);
     return { error: 'We could not save this setting. Try again.' };
   }
   revalidatePath('/account/feedback');
+  revalidatePath('/account/notifications');
   return {};
 }

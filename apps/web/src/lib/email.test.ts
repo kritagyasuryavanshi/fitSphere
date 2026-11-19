@@ -105,3 +105,22 @@ describe('drainOutbox failures', () => {
     expect(send).toHaveBeenCalledWith(expect.objectContaining({ id: 7 }));
   });
 });
+
+describe('renderEmail for notifications (M3-16)', () => {
+  it('writes the new lesson email with a link to the lesson', () => {
+    const m = renderEmail('new_lesson', { coach: 'Vikram', title: 'The Jab', link: '/learn/boxing/jab' }, 'https://x');
+    expect(m!.subject).toBe('New lesson from Vikram: The Jab');
+    expect(m!.text).toContain('https://x/learn/boxing/jab');
+  });
+
+  it('writes the session reminder with a link to Today', () => {
+    const m = renderEmail('session_reminder', { what: 'Jab and footwork' }, 'https://x');
+    expect(m!.subject).toBe('Today: Jab and footwork');
+    expect(m!.text).toContain('https://x/today');
+  });
+
+  it('only links inside the site, whatever the stored link says', () => {
+    expect(renderEmail('new_lesson', { coach: 'V', title: 'T', link: 'https://evil.test/x' }, 'https://x')!.text).toContain('https://x/learn');
+  });
+});
+
