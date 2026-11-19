@@ -24,7 +24,7 @@ insert into ids select 'aiba', public.submit_credential('AIBA level 1', 'a500000
 insert into ids select 'cpr', public.submit_credential('CPR', 'a5000000-0000-0000-0000-0000000000a1/cpr.pdf', 'Red Cross', '');
 select is((select issuer || '|' || id_number from public.credentials where id = (select v from ids where name = 'aiba')::uuid), 'AIBA|IN-1234', 'a credential keeps its issuer and ID number');
 reset role;
-update public.coach_profiles set status = 'live' where coach_id = 'a5000000-0000-0000-0000-0000000000a1';
+update public.coach_profiles set status = 'live', agreement_version = public.current_coach_agreement() where coach_id = 'a5000000-0000-0000-0000-0000000000a1';
 set local role authenticated;
 
 -- Not an admin: a coach cannot decide, not even their own.

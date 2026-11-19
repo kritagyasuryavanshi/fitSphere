@@ -54,7 +54,7 @@ reset role;
 set local role anon;
 select is((select count(*)::int from public.coach_profiles), 0, 'a draft profile is not public');
 reset role;
-update public.coach_profiles set status = 'live' where coach_id = 'a4000000-0000-0000-0000-0000000000a1';
+update public.coach_profiles set status = 'live', agreement_version = public.current_coach_agreement() where coach_id = 'a4000000-0000-0000-0000-0000000000a1';
 set local role anon;
 select is((select count(*)::int from public.coach_profiles) || '|' || (select count(*)::int from public.packages), '1|1', 'a live coach and their live package are public');
 select throws_ok($$ select payout_account_id from public.coach_profiles $$, '42501', null, 'a coach''s payout account is never public');

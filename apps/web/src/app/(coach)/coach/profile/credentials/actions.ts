@@ -34,7 +34,7 @@ export async function submitCredential(input: { title: string; issuer: string; i
     if (!known) console.error('submit_credential failed', error.code, error.message);
     return { error: known ? messages[known] : 'We could not save the credential. Try again.' };
   }
-  revalidatePath('/coach/credentials');
+  revalidatePath('/coach/profile/credentials');
   return {};
 }
 
@@ -49,5 +49,5 @@ export async function removeCredential(formData: FormData): Promise<void> {
   if (withdrawn.error) throw new Error(`Could not remove the credential: ${withdrawn.error.message}`);
   const removed = await supabase.storage.from('credentials').remove([data.file_path]);
   if (removed.error) console.error('credential file not removed', removed.error.message);
-  revalidatePath('/coach/credentials');
+  revalidatePath('/coach/profile/credentials');
 }

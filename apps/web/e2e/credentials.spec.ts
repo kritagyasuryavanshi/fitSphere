@@ -20,7 +20,7 @@ test.describe('Credential checks', () => {
     const admin = await createUser(['athlete', 'admin'], { name: 'Asha' });
 
     await signInWithEmail(page, coach.email);
-    await page.goto('/coach/credentials');
+    await page.goto('/coach/profile/credentials');
     await upload(page, `AIBA level 1 coach ${tag}`);
     const mine = page.getByRole('list', { name: 'Your credentials' });
     await expect(mine.getByRole('listitem').first()).toContainText('Waiting for a check');

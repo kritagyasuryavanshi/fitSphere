@@ -871,7 +871,10 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "adherence":
+            "accept_coach_agreement":
+{ Args: { "version": string }; Returns: undefined
+                           },
+"adherence":
 { Args: { "athlete": string,"program"?: string }; Returns: {
               "completed": number,"scheduled": number
             }[]
@@ -896,6 +899,9 @@ isOneToOne: false
                            },
 "apply_sport_answers":
 { Args: { "by_sport": Json,"uid": string }; Returns: undefined
+                           },
+"assert_live_ready":
+{ Args: { "coach": string }; Returns: undefined
                            },
 "author_names":
 { Args: { "ids": (string)[] }; Returns: {
@@ -926,6 +932,9 @@ isOneToOne: false
 "coach_is_live":
 { Args: { "coach": string }; Returns: boolean
                            },
+"coach_public_name":
+{ Args: { "coach": string }; Returns: string
+                           },
 "coach_reads_program":
 { Args: { "athlete": string,"program": string }; Returns: boolean
                            },
@@ -937,6 +946,9 @@ isOneToOne: false
                            },
 "credential_file_locked":
 { Args: { "path": string }; Returns: boolean
+                           },
+"current_coach_agreement":
+{ Args: Record<PropertyKey, never>; Returns: string
                            },
 "decide_coach_application":
 { Args: { "application": string,"approve": boolean }; Returns: undefined
@@ -1001,6 +1013,11 @@ isOneToOne: false
                            },
 "mark_notifications_read":
 { Args: { "ids"?: (number)[] }; Returns: number
+                           },
+"my_coach_profile":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "agreement_accepted_at": string,"agreement_version": string,"city": string,"client_limit": number,"coach_id": string,"formats": (string)[],"headline": string,"languages": (string)[],"philosophy": string,"specialties": (string)[],"status": string,"updated_at": string,"years": number
+            }[]
                            },
 "my_email_prefs":
 { Args: Record<PropertyKey, never>; Returns: {
@@ -1104,6 +1121,9 @@ isOneToOne: false
                            },
 "set_my_consent":
 { Args: { "granted": boolean,"purpose": Database["public"]['Enums']["consent_purpose"] }; Returns: undefined
+                           },
+"set_profile_live":
+{ Args: { "live": boolean }; Returns: undefined
                            },
 "set_saved":
 { Args: { "item": string,"saved": boolean }; Returns: undefined

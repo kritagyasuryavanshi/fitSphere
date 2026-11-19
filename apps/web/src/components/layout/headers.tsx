@@ -25,7 +25,7 @@ function coachLinks(viewer: Viewer, desktop: boolean): NavItem[] {
         { href: '/coach', label: 'Athletes', icon: 'calendar', exact: true },
         { href: '/coach/programs', label: 'Programs', icon: 'bars' },
         { href: '/coach/lessons', label: desktop ? 'My lessons' : 'Lessons', icon: 'play' },
-        { href: '/coach/credentials', label: 'Credentials', icon: 'bars' },
+        { href: '/coach/profile', label: desktop ? 'Marketplace profile' : 'Profile', icon: 'bars' },
       ]
     : [];
   // shortcut: the queue count arrives with the review queue (M2); the link shows only for reviewers.
