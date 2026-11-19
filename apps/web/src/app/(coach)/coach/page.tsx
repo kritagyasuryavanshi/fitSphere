@@ -1,17 +1,19 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { Suspense } from 'react';
+import { supabaseServer } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/viewer';
+import { Dashboard } from './dashboard';
 
-export const metadata: Metadata = { title: 'Set up your camp · FitSphere Coach' };
+export const metadata: Metadata = { title: 'Athletes · FitSphere Coach' };
 
-// K-CoachEmpty: the first-run screen a new coach lands on. The dashboard with athletes (C-CoachDash) replaces it in M3.
-// shortcut: the pages behind each step (profile, packages, programs, invites, lessons) come in M3 and M4; until then
-// each step says "Available soon" instead of linking to a page that does not exist yet.
-const steps = [
+// K-CoachEmpty: the first-run screen for a coach without a program. With one, the dashboard (C-CoachDash) shows.
+// shortcut: profile and packages come in M4; until then those steps say "Available soon".
+const steps: [string, string, string?][] = [
   ['Fill in your profile', 'Photo, headline, how you coach'],
   ['Set your packages and prices', 'Athletes can hire you once one package is live'],
-  ['Build your first program', 'Weeks, sessions, drills from the library'],
-  ['Invite your first athlete', 'Share one link on WhatsApp'],
+  ['Build your first program', 'Weeks, sessions, drills from the library', '/coach/programs/new'],
+  ['Invite your first athlete', 'Share one link on WhatsApp', '/coach/programs'],
 ];
 
 const empties = [
@@ -22,8 +24,12 @@ const empties = [
 
 const soon = <span className="text-[13px] font-medium text-muted">Available soon</span>;
 
-async function FirstRun() {
+async function CoachHome() {
   const viewer = await requireRole('coach');
+  const supabase = await supabaseServer();
+  const { data: programs, error } = await supabase.from('programs').select('id').eq('coach_id', viewer.userId);
+  if (error) throw error;
+  if (programs.length) return <Dashboard supabase={supabase} name={viewer.name} programIds={programs.map((p) => p.id)} />;
   return (
     <main className="mx-auto flex max-w-[1440px] flex-col gap-8 px-4 py-10 md:px-10">
       <div className="flex flex-col gap-2">
@@ -40,14 +46,20 @@ async function FirstRun() {
             <span className="text-[14px] text-muted">0 of 4 done</span>
           </div>
           <ol className="m-0 flex list-none flex-col p-0">
-            {steps.map(([title, hint], i) => (
+            {steps.map(([title, hint, href], i) => (
               <li key={title} className="flex items-center gap-4 border-t border-line py-3">
                 <span className="flex size-8 flex-none items-center justify-center rounded-full border border-line-strong text-[14px] font-semibold">{i + 1}</span>
                 <span className="flex flex-1 flex-col">
                   <span className="text-[16px] font-medium">{title}</span>
                   <span className="text-[14px] text-muted">{hint}</span>
                 </span>
-                {soon}
+                {href ? (
+                  <Link href={href} className="text-[14px] font-medium underline underline-offset-4">
+                    Start<span className="sr-only">: {title}</span>
+                  </Link>
+                ) : (
+                  soon
+                )}
               </li>
             ))}
           </ol>
@@ -74,7 +86,7 @@ async function FirstRun() {
 export default function CoachHomePage() {
   return (
     <Suspense fallback={null}>
-      <FirstRun />
+      <CoachHome />
     </Suspense>
   );
 }

@@ -1104,7 +1104,7 @@
       "deps": [
         "M3-10"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "unit+e2e",
       "screens": [
@@ -1116,7 +1116,8 @@
         "End-to-end: a logged session appears on the board",
         "Phone layout matches the reviewed phone board at 390 px (decision D2)",
         "On phones the adherence board shows stacked cards, as in M-C-CoachDash (decision D3)"
-      ]
+      ],
+      "done_on": "2026-11-19"
     },
     {
       "id": "M3-13",

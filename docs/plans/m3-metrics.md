@@ -27,3 +27,13 @@ The SQL functions run as the caller (security invoker), so row-level security de
 - `/progress` (boxing and S&C) and `/progress/gym`: adherence from SQL `adherence` per program, skill ratings from `skill_ratings`, hard sets per muscle for the Monday to Sunday week from `hard_sets_per_muscle`, and records through `records()` in `apps/web/src/lib/progress.ts`, which only calls `bestOf` and `isNewRecord`.
 - The workout summary marks each exercise whose best on that date beats every earlier date: "New best".
 - Body weight: `log_body_weight` keeps one weight per India day. The athlete and their current coach (`coach_can_read`) read it.
+
+## Coach flags (M3-12)
+
+The coach dashboard raises a flag per athlete and program. Code: `coachFlags` in `apps/web/src/lib/coach-flags.ts`; tests: `coach-flags.test.ts`.
+
+| Flag | Rule |
+|---|---|
+| Missed sessions | The last 3 or more scheduled sessions before today are all unfinished. Today's and later sessions never count, because the athlete can still do them. The schedule covers the last 8 weeks of the current enrollment. No flag once the program has ended. |
+| High effort | Each of the last two finished sessions in the last 14 days has a mean effort of 9 or more. Effort is every drill effort and set RPE in the session; a session with none is skipped. |
+| Reported pain | A pain report in the last 7 days, today included. Pain reports come from the AI guide (journey J6, M5); until then none exist. |
