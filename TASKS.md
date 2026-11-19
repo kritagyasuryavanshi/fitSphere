@@ -23,6 +23,7 @@ Build tasks live on the board: `docs/plans/board.json` (rendered at https://clau
 - [ ] Owner: decide on Mobbin (optional).
 
 ## Done
+- [x] 2026-11-19: M3-14 feedback emails (PR #37); sending starts once Resend is set up.
 - [x] 2026-11-19: M3-13 athlete detail, coach feedback and replies (PR #36), live on production.
 - [x] 2026-11-19: M3-12 coach dashboard (PR #35), live on production.
 - [x] 2026-11-19: Vercel project `fitsphere` live at https://fit-sphere-xi.vercel.app on production Supabase.

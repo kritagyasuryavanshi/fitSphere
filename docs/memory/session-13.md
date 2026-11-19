@@ -40,7 +40,10 @@ Follows [[session-12]]. Hub for this work: [[programs]].
 - C: filled up (391 MB free): Docker went read-only. CI ran the database tests meanwhile; types came from CI's diff. After the owner freed space, a full `wsl --shutdown` was needed to clear the read-only disk ([[lesson-docker-welcome]]).
 - S0-06 done in practice: Vercel builds a preview for every PR.
 
+- M3-14, PR #37 ([[M3-14]]): `email_prefs` switch, `give_feedback` queues the email, `claim_emails` claims atomically (10-minute rest, 5 tries, 7-day staleness, switches checked at sending), `lib/email.ts` and `lib/email-send.ts` (Resend with an idempotency key, paced, 10 s timeout, only with `RESEND_API_KEY`, `EMAIL_FROM` and `NEXT_PUBLIC_SITE_URL`). Codex 2 and `/code-review high` 10 findings, all fixed. Migration pushed before the merge; 31 of 31 match.
+- The owner asked for full autonomy ([[decision-autonomy]]) and a showcase and sellable version: estimate about 1 week to a demo, 2 to 3 weeks to selling to coaches by hand.
+
 ## Next
-1. M3-14 feedback emails (PR #37), then M3-16 notifications and M3-15 the milestone check.
+1. M3-16 notifications, then M3-15; then the demo work: demo accounts with data, a domain, Resend.
 2. Hosting: the owner sets the Supabase Auth URL configuration; then test sign-in on the live site and run the Supabase security advisors once.
 3. Install Codex on the WELCOME PC (`npm i -g @openai/codex`, then `codex login`), so every PR gets its review on either PC.

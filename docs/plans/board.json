@@ -1152,13 +1152,14 @@
       "deps": [
         "M3-13"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "unit",
       "ac": [
         "Unit with a mocked sender: one email per note",
         "No email when the athlete turned the setting off"
-      ]
+      ],
+      "done_on": "2026-11-19"
     },
     {
       "id": "M3-16",
