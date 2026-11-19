@@ -64,7 +64,7 @@ revoke all on function public.coach_places_taken(uuid) from public, anon, authen
 
 alter table public.notifications drop constraint notifications_kind_check;
 alter table public.notifications add constraint notifications_kind_check
-  check (kind in ('coach_feedback', 'new_lesson', 'session_reminder', 'request_accepted', 'payment_due', 'new_request', 'request_declined'));
+  check (kind in ('coach_feedback', 'new_lesson', 'session_reminder', 'request_accepted', 'payment_due', 'new_request', 'request_declined', 'request_withdrawn'));
 
 -- An athlete asks a live coach for a live package. Requests pause while the coach is at the client limit.
 create function public.request_coaching(package uuid, start date, days smallint, goals text, share boolean)
@@ -98,11 +98,12 @@ begin
   end if;
   -- The coach's row lock makes requests and accepts for one coach take turns, so the limit holds.
   select client_limit into lim from public.coach_profiles where coach_id = k.coach_id for update;
-  if public.coach_places_taken(k.coach_id) >= lim then
-    raise exception 'coach_full' using errcode = '22023';
-  end if;
+  -- Before the limit: an athlete whose own request holds the last place is told that, not that the coach is full.
   if exists (select 1 from public.engagements where athlete_id = uid and coach_id = k.coach_id and status in ('requested', 'accepted', 'active', 'cancelling')) then
     raise exception 'already_open' using errcode = '22023';
+  end if;
+  if public.coach_places_taken(k.coach_id) >= lim then
+    raise exception 'coach_full' using errcode = '22023';
   end if;
   insert into public.engagements (athlete_id, coach_id, package_id, package_title, package_kind, price_paise, fee_bps, start_date, days_per_week, goals, share_data)
   values (uid, k.coach_id, k.id, k.title, k.kind, k.price_paise, public.platform_fee_bps(), start, days, btrim(coalesce(goals, '')), share)
@@ -140,15 +141,15 @@ begin
     raise exception 'not_owner' using errcode = '42501';
   end if;
   select client_limit into lim from public.coach_profiles where coach_id = uid for update;
-  -- Read again under the lock: a withdraw or another decision may have come first.
-  select * into g from public.engagements where id = engagement;
+  -- Lock the request too: withdraw_request takes the same row lock, so a withdrawal and a decision take turns.
+  select * into g from public.engagements where id = engagement for update;
   if g.status <> 'requested' then
     raise exception 'not_open' using errcode = '22023';
   end if;
   if accept and public.coach_places_taken(uid) >= lim then
     raise exception 'coach_full' using errcode = '22023';
   end if;
-  update public.engagements set status = case when accept then 'accepted' else 'declined' end, decided_at = now() where id = engagement;
+  update public.engagements set status = case when accept then 'accepted' else 'declined' end, decided_at = now() where id = engagement and status = 'requested';
   if g.athlete_id is not null then
     insert into public.notifications (user_id, kind, title, body, link, ref)
     values (g.athlete_id, case when accept then 'request_accepted' else 'request_declined' end,
@@ -172,14 +173,24 @@ set search_path = ''
 as $$
 declare
   uid uuid := auth.uid();
+  g public.engagements;
 begin
   if uid is null then
     raise exception 'sign in first' using errcode = '42501';
   end if;
   update public.engagements set status = 'withdrawn', ended_at = now()
-  where id = engagement and athlete_id = uid and status in ('requested', 'accepted');
-  if not found then
+  where id = engagement and athlete_id = uid and status in ('requested', 'accepted')
+  returning * into g;
+  if g.id is null then
     raise exception 'not_open' using errcode = '22023';
+  end if;
+  -- The coach learns a place opened, or that a request they had not answered is gone.
+  if g.coach_id is not null then
+    insert into public.notifications (user_id, kind, title, body, link, ref)
+    values (g.coach_id, 'request_withdrawn', 'A request was withdrawn',
+      coalesce(nullif((select display_name from public.profiles where id = uid), ''), 'An athlete') || ' withdrew their request for ' || g.package_title || '.',
+      '/coach/clients', g.id::text)
+    on conflict do nothing;
   end if;
 end;
 $$;
@@ -218,6 +229,23 @@ as $$
 $$;
 revoke all on function public.coach_requests() from public;
 grant execute on function public.coach_requests() to authenticated;
+
+-- Deleting an account closes its open requests, so a coach's place is never held by nobody. Paid engagements
+-- (active, cancelling) are M4-19's: deletion is blocked while a subscription runs.
+create function public.close_requests_on_delete()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  update public.engagements set status = 'withdrawn', ended_at = now() where athlete_id = old.id and status in ('requested', 'accepted');
+  update public.engagements set status = 'declined', decided_at = now() where coach_id = old.id and status in ('requested', 'accepted');
+  return old;
+end;
+$$;
+revoke all on function public.close_requests_on_delete() from public, anon, authenticated;
+create trigger profiles_close_requests before delete on public.profiles for each row execute function public.close_requests_on_delete();
 
 -- export_my_data as in 20261205000000_shortlists.sql, plus the athlete's coaching requests.
 create or replace function public.export_my_data()

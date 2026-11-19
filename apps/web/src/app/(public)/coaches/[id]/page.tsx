@@ -34,7 +34,7 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
   if (!isUuid(id)) notFound();
   const supabase = await supabaseServer();
   const viewer = await getViewer();
-  const [profile, name, packages, slots, credentials, stats, lessons, mine, room] = await Promise.all([
+  const [profile, name, packages, slots, credentials, stats, lessons, mine, room, open] = await Promise.all([
     supabase.from('coach_profiles').select('headline, philosophy, specialties, languages, formats, city, years').eq('coach_id', id).maybeSingle(),
     supabase.rpc('coach_public_name', { coach: id }),
     supabase.from('packages').select('id, title, kind, price_paise').eq('coach_id', id).eq('live', true).order('price_paise'),
@@ -44,8 +44,11 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
     supabase.from('content_items').select('slug, title, disciplines!inner(category_id)').eq('author_id', id).eq('status', 'published').eq('is_sample', false).order('title').limit(6),
     viewer ? supabase.from('shortlists').select('coach_id').eq('coach_id', id) : Promise.resolve({ data: [], error: null }),
     supabase.rpc('coach_has_room', { coach: id }),
+    viewer
+      ? supabase.from('engagements').select('id').eq('athlete_id', viewer.userId).eq('coach_id', id).in('status', ['requested', 'accepted', 'active', 'cancelling'])
+      : Promise.resolve({ data: [], error: null }),
   ]);
-  for (const r of [profile, name, packages, slots, credentials, stats, lessons, mine, room]) if (r.error) throw r.error;
+  for (const r of [profile, name, packages, slots, credentials, stats, lessons, mine, room, open]) if (r.error) throw r.error;
   const st = stats.data;
   const statRows: [string, string][] = st
     ? [
@@ -69,7 +72,11 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
         <p className="m-0 text-[18px]">{p.headline}</p>
         {viewer?.userId === id ? null : (
           <div className="flex flex-wrap items-start gap-3">
-            {room.data ? (
+            {(open.data ?? []).length ? (
+              <Link href="/coaching" className={buttonClass({ size: 'small' })}>
+                View your coaching
+              </Link>
+            ) : room.data ? (
               <Link href={viewer ? `/hire/${id}` : '/sign-in'} className={buttonClass({ size: 'small' })}>
                 Hire {name.data}
               </Link>

@@ -21,11 +21,12 @@ export async function requestCoaching(_prev: HireState, formData: FormData): Pro
   await requireRole('athlete');
   const fields = Object.fromEntries([...formData.entries()].map(([k, v]) => [k, String(v)]));
   const pkg = String(formData.get('package') ?? '');
-  if (!isUuid(pkg)) return { error: messages.bad_request, fields };
+  const start = String(formData.get('start') ?? '');
+  if (!isUuid(pkg) || !/^\d{4}-\d{2}-\d{2}$/.test(start)) return { error: messages.bad_request, fields };
   const supabase = await supabaseServer();
   const { error } = await supabase.rpc('request_coaching', {
     package: pkg,
-    start: String(formData.get('start') ?? ''),
+    start,
     days: Number(formData.get('days')),
     goals: String(formData.get('goals') ?? ''),
     share: formData.get('share') === 'on',

@@ -22,13 +22,15 @@ const STATUS: Record<string, [string, TagVariant]> = {
   refunded: ['Refunded', 'outline'],
 };
 
-// The athlete's hire requests and coaching, newest first. RLS returns only their own.
+// The athlete's hire requests and coaching, newest first. RLS also returns a coach's incoming requests (every coach
+// is an athlete too), so the query keeps the ones where this person is the athlete.
 async function Coaching() {
-  await requireRole('athlete');
+  const viewer = await requireRole('athlete');
   const supabase = await supabaseServer();
   const { data, error } = await supabase
     .from('engagements')
     .select('id, coach_id, package_title, package_kind, price_paise, start_date, status, created_at')
+    .eq('athlete_id', viewer.userId)
     .order('created_at', { ascending: false });
   if (error) throw error;
   if (!data.length) {

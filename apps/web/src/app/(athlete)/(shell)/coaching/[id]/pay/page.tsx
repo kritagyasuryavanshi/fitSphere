@@ -11,11 +11,11 @@ export const metadata: Metadata = { title: 'Pay · FitSphere' };
 
 // shortcut: checkout arrives with M4-09 (the payment core with a test-mode provider); until then this page says so.
 async function Pay({ params }: PageProps<'/coaching/[id]/pay'>) {
-  await requireRole('athlete');
+  const viewer = await requireRole('athlete');
   const { id } = await params;
   if (!isUuid(id)) notFound();
   const supabase = await supabaseServer();
-  const { data, error } = await supabase.from('engagements').select('package_title, price_paise, status').eq('id', id).maybeSingle();
+  const { data, error } = await supabase.from('engagements').select('package_title, price_paise, status').eq('id', id).eq('athlete_id', viewer.userId).maybeSingle();
   if (error) throw error;
   if (!data || data.status !== 'accepted') notFound();
   return (

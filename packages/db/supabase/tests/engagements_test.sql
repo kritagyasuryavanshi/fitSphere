@@ -1,6 +1,6 @@
 -- M4-07: hire requests. A request saves what was asked; the coach accepts or declines; the client limit holds.
 begin;
-select plan(19);
+select plan(23);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('aa000000-0000-0000-0000-0000000000c1', 'en-coach@t.test', now()),
@@ -70,14 +70,25 @@ select throws_ok($$ select public.request_coaching('ab000000-0000-0000-0000-0000
 
 select pg_temp.as_user('aa000000-0000-0000-0000-0000000000b1');
 select is((select status from public.engagements where id = (select id from ids where name = 'kabir')), 'accepted', 'the athlete sees the accept, awaiting payment');
+select throws_ok($$ select public.request_coaching('ab000000-0000-0000-0000-0000000000a1', public.india_today(), 3::smallint, 'again', true) $$,
+  '22023', 'already_open', 'an athlete already with the coach is told so, not that the coach is full');
 select is((select count(*)::int from public.notifications where kind = 'request_accepted'), 1, 'and is told of it');
 select ok((public.export_my_data() -> 'coaching') @> '[{"coach": "Vikram", "status": "accepted"}]', 'the request is in the data download');
 
 -- Kabir withdraws, which frees the place; Vikram declines Neha.
 select lives_ok(format($$ select public.withdraw_request(%L) $$, (select id from ids where name = 'kabir')), 'the athlete withdraws');
 select pg_temp.as_user('aa000000-0000-0000-0000-0000000000c1');
+select is((select count(*)::int from public.notifications where kind = 'request_withdrawn'), 1, 'the coach is told of a withdrawal');
+select throws_ok(format($$ select public.decide_request(%L, true) $$, (select id from ids where name = 'kabir')), '22023', 'not_open', 'a withdrawn request cannot be accepted');
+select pg_temp.as_user('aa000000-0000-0000-0000-0000000000c1');
 select public.decide_request((select id from ids where name = 'neha'), false);
 select is((select string_agg(status, ',' order by status) from public.engagements), 'declined,withdrawn', 'a decline and a withdrawal close the requests');
 
+-- Deleting an account closes its open requests, so a coach's place is never held by nobody.
+select pg_temp.as_user('aa000000-0000-0000-0000-0000000000b3');
+insert into ids select 'ravi', public.request_coaching('ab000000-0000-0000-0000-0000000000a1', public.india_today(), 3::smallint, 'x', true);
+reset role;
+delete from auth.users where id = 'aa000000-0000-0000-0000-0000000000b3';
+select is((select status from public.engagements where id = (select id from ids where name = 'ravi')), 'withdrawn', 'a deleted athlete''s open request is withdrawn');
 select * from finish();
 rollback;

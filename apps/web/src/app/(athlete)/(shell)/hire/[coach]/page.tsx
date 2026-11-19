@@ -16,12 +16,13 @@ async function Hire({ params }: PageProps<'/hire/[coach]'>) {
   const { coach } = await params;
   if (!isUuid(coach)) notFound();
   const supabase = await supabaseServer();
-  const [name, packages, room] = await Promise.all([
+  const [name, packages, room, open] = await Promise.all([
     supabase.rpc('coach_public_name', { coach }),
     supabase.from('packages').select('id, title, kind, price_paise').eq('coach_id', coach).eq('live', true).order('price_paise'),
     supabase.rpc('coach_has_room', { coach }),
+    supabase.from('engagements').select('id').eq('athlete_id', viewer.userId).eq('coach_id', coach).in('status', ['requested', 'accepted', 'active', 'cancelling']),
   ]);
-  for (const r of [name, packages, room]) if (r.error) throw r.error;
+  for (const r of [name, packages, room, open]) if (r.error) throw r.error;
   if (!name.data || viewer.userId === coach) notFound();
   const today = indiaToday();
 
@@ -36,7 +37,15 @@ async function Hire({ params }: PageProps<'/hire/[coach]'>) {
         <li>{name.data} accepts or declines.</li>
         <li>You pay and coaching starts.</li>
       </ol>
-      {room.data ? (
+      {open.data!.length ? (
+        <p className="m-0 text-[16px]">
+          You already have a request or coaching with {name.data}.{' '}
+          <Link href="/coaching" className="underline underline-offset-4">
+            See your coaching
+          </Link>
+          .
+        </p>
+      ) : room.data ? (
         <HireForm
           coachName={name.data}
           today={today}
