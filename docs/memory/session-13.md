@@ -46,6 +46,7 @@ Follows [[session-12]]. Hub for this work: [[programs]].
 - M3-16, PR #38 ([[M3-16]]): `notifications` (own rows, read-only grants) from triggers (feedback, a coach's new lesson) and `queue_session_reminders` (daily cron at 08:30 India time, once per athlete per day, every session named); `/account/notifications` with unread marks, Mark all as read and three email switches (reminders start off); `email_wanted` decides at queueing and sending; a reminder email only goes out on its own day. Security review: no findings. Codex's one finding was wrong (it read 03:00 UTC as 08:30 UTC); `/code-review high` found 6, all fixed. 32 of 32 migrations on production.
 - The owner moved every "ask" rule to "allow" and added the `--db-url` deny; committed so both PCs share it.
 
+- M3-14 after merge: `/security-review` of PR #37 (email_prefs, claim_emails, give_feedback email, Resend sender, cron): no findings. Live check: `/account/feedback` loads; `/api/cron/send-emails` returns 401 without the secret.
 - M3-15, PR #39: the M3 milestone check passed; M3 is done ([[M3-check]]). Live-site QA fixed dead menu links, added privacy and terms pages (they match what coaches can actually read), `/learn`, and a contrast failure.
 
 ## Next
