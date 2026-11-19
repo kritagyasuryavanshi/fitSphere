@@ -1080,7 +1080,7 @@
       "deps": [
         "M3-10"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "e2e",
       "screens": [

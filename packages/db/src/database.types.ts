@@ -748,6 +748,9 @@ isOneToOne: false
 "leave_program":
 { Args: { "enrollment": string }; Returns: undefined
                            },
+"log_body_weight":
+{ Args: { "weight_kg": number }; Returns: string
+                           },
 "log_drill":
 { Args: { "effort": number,"item_position": number,"note": string,"on_date": string,"rounds_done": number,"session": string,"technique": number }; Returns: string
                            },
