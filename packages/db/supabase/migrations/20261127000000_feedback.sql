@@ -33,6 +33,8 @@ create policy feedback_select_coach on public.feedback for select to authenticat
 -- Through the parent's policies, so replies follow the same rule.
 create policy feedback_replies_select on public.feedback_replies for select to authenticated
   using (exists (select 1 from public.feedback f where f.id = feedback_id));
+-- Read-only from clients whatever policies come later: writes go through the functions below.
+revoke all on public.feedback, public.feedback_replies from anon, authenticated;
 grant select on public.feedback, public.feedback_replies to authenticated;
 
 -- The coach of an active enrollment gives feedback, optionally on one of its session logs. Returns the feedback.
