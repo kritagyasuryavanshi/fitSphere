@@ -6,6 +6,8 @@ import { Suspense } from 'react';
 import { FilterForm } from '@/app/(public)/learn/[category]/filter-form';
 import { rupeesToPaise } from '@/lib/money';
 import { supabaseServer } from '@/lib/supabase/server';
+import { getViewer } from '@/lib/viewer';
+import { ShortlistButton } from './shortlist-button';
 
 export const metadata: Metadata = {
   title: 'Find a coach · FitSphere',
@@ -66,7 +68,8 @@ async function Directory({ searchParams }: PageProps<'/coaches'>) {
   const maxPaise = f.max ? rupeesToPaise(f.max) : null;
 
   const supabase = await supabaseServer();
-  const [choices, shown] = await Promise.all([
+  const viewer = await getViewer();
+  const [choices, shown, mine] = await Promise.all([
     supabase.rpc('coach_filter_options'),
     supabase.rpc('find_coaches', {
       specialty: f.specialty,
@@ -80,9 +83,12 @@ async function Directory({ searchParams }: PageProps<'/coaches'>) {
       language: f.language,
       sort: f.sort,
     }),
+    viewer ? supabase.from('shortlists').select('coach_id') : Promise.resolve({ data: [], error: null }),
   ]);
   if (choices.error) throw choices.error;
   if (shown.error) throw shown.error;
+  if (mine.error) throw mine.error;
+  const listed = new Set((mine.data ?? []).map((r) => r.coach_id));
   // Filter choices come from every live coach, so each one can match someone.
   const of = (kind: string): Options => choices.data.filter((o) => o.kind === kind).map((o) => [o.value, o.value] as const);
 
@@ -121,9 +127,16 @@ async function Directory({ searchParams }: PageProps<'/coaches'>) {
       </aside>
 
       <section aria-label="Coaches">
-        <p className="m-0 text-[16px] font-medium text-muted">
-          {shown.data.length} {shown.data.length === 1 ? 'coach' : 'coaches'}
-        </p>
+        <div className="flex flex-wrap items-baseline justify-between gap-3">
+          <p className="m-0 text-[16px] font-medium text-muted">
+            {shown.data.length} {shown.data.length === 1 ? 'coach' : 'coaches'}
+          </p>
+          {viewer ? (
+            <Link href="/shortlist" className="text-[15px] font-medium underline underline-offset-4">
+              Your shortlist
+            </Link>
+          ) : null}
+        </div>
         {shown.data.length ? (
           <ul className="m-0 mt-4 grid list-none gap-6 p-0 lg:grid-cols-2">
             {shown.data.map((c) => (
@@ -151,6 +164,7 @@ async function Directory({ searchParams }: PageProps<'/coaches'>) {
                   {[c.formats.map((x) => (x === 'in_person' ? 'In person' : 'Online')).join(' · '), c.coach_city, c.years ? `${c.years} years` : ''].filter(Boolean).join(' · ')}
                 </p>
                 {c.from_paise !== null ? <p className="m-0 text-[16px] font-medium">From {formatInr(c.from_paise)}/month</p> : null}
+                {viewer?.userId === c.coach_id ? null : <ShortlistButton coachId={c.coach_id} on={listed.has(c.coach_id)} signedIn={!!viewer} name={c.name} />}
               </li>
             ))}
           </ul>

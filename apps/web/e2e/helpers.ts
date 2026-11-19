@@ -149,3 +149,14 @@ export async function createUser(roles: Role[], { stepsDone = 2, name = 'Kabir' 
   if (extra.length) check(await db.from('user_roles').insert(extra.map((role) => ({ user_id: id, role }))));
   return { id, email };
 }
+
+// A live coach straight in the database: the profile editor has its own test (coach-profile.spec.ts).
+export async function liveCoach(name: string, city: string, pricePaise: number) {
+  const coach = await createUser(['athlete', 'coach'], { name });
+  const db = admin();
+  const { data: version } = await db.rpc('current_coach_agreement');
+  const ok = ({ error }: { error: unknown }) => expect(error).toBeNull();
+  ok(await db.from('coach_profiles').insert({ coach_id: coach.id, headline: `${name} coaches boxing`, specialties: ['Boxing'], formats: ['online'], city, years: 6, status: 'live', agreement_version: version }));
+  ok(await db.from('packages').insert({ coach_id: coach.id, title: 'Monthly', kind: 'monthly', price_paise: pricePaise, live: true }));
+  return coach;
+}

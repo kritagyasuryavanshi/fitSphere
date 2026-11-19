@@ -6,6 +6,8 @@ import { Suspense } from 'react';
 import { formatInr } from '@fitsphere/core';
 import { isUuid } from '@/lib/programs';
 import { supabaseServer } from '@/lib/supabase/server';
+import { getViewer } from '@/lib/viewer';
+import { ShortlistButton } from '../shortlist-button';
 
 // Each coach page names its coach, for tabs, search results and link previews.
 export async function generateMetadata({ params }: PageProps<'/coaches/[id]'>): Promise<Metadata> {
@@ -30,7 +32,8 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
   const { id } = await params;
   if (!isUuid(id)) notFound();
   const supabase = await supabaseServer();
-  const [profile, name, packages, slots, credentials, stats, lessons] = await Promise.all([
+  const viewer = await getViewer();
+  const [profile, name, packages, slots, credentials, stats, lessons, mine] = await Promise.all([
     supabase.from('coach_profiles').select('headline, philosophy, specialties, languages, formats, city, years').eq('coach_id', id).maybeSingle(),
     supabase.rpc('coach_public_name', { coach: id }),
     supabase.from('packages').select('id, title, kind, price_paise').eq('coach_id', id).eq('live', true).order('price_paise'),
@@ -38,8 +41,9 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
     supabase.from('public_credentials').select('id, title, issuer').eq('coach_id', id),
     supabase.rpc('coach_stats', { coach: id }).maybeSingle(),
     supabase.from('content_items').select('slug, title, disciplines!inner(category_id)').eq('author_id', id).eq('status', 'published').eq('is_sample', false).order('title').limit(6),
+    viewer ? supabase.from('shortlists').select('coach_id').eq('coach_id', id) : Promise.resolve({ data: [], error: null }),
   ]);
-  for (const r of [profile, name, packages, slots, credentials, stats, lessons]) if (r.error) throw r.error;
+  for (const r of [profile, name, packages, slots, credentials, stats, lessons, mine]) if (r.error) throw r.error;
   const st = stats.data;
   const statRows: [string, string][] = st
     ? [
@@ -51,6 +55,7 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
     : [];
   const p = profile.data;
   if (!p || !name.data) notFound();
+  const listed = (mine.data ?? []).length === 1;
 
   return (
     <>
@@ -60,6 +65,11 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
         </p>
         <h1 className="m-0 font-display text-[48px] font-normal uppercase leading-[0.95] md:text-[64px]">{name.data}</h1>
         <p className="m-0 text-[18px]">{p.headline}</p>
+        {viewer?.userId === id ? null : (
+          <div className="self-start">
+            <ShortlistButton coachId={id} on={listed} signedIn={!!viewer} name={name.data} />
+          </div>
+        )}
         <div className="flex flex-wrap gap-2">
           {credentials.data!.length ? <Tag variant="success">Credentials checked</Tag> : <Tag variant="outline">Credentials self-reported</Tag>}
           {p.specialties.map((s) => (

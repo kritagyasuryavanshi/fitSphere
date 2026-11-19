@@ -819,6 +819,32 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"shortlists": {
+                  Row: {
+                    "athlete_id": string,"coach_id": string,"created_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "athlete_id": string,"coach_id": string,"created_at"?: string
+                  }
+                  Update: {
+                    "athlete_id"?: string,"coach_id"?: string,"created_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "shortlists_athlete_id_fkey"
+      columns: ["athlete_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "shortlists_coach_id_fkey"
+      columns: ["coach_id"]
+isOneToOne: false
+      referencedRelation: "coach_profiles"
+      referencedColumns: ["coach_id"]
+    }
+                  ]
                 },"user_roles": {
                   Row: {
                     "created_at": string,"granted_by": string | null,"role": Database["public"]['Enums']["app_role"],"user_id": string
@@ -979,7 +1005,7 @@ isOneToOne: false
 { Args: Record<PropertyKey, never>; Returns: Json
                            },
 "find_coaches":
-{ Args: { "checked_only"?: boolean,"city"?: string,"experience"?: string,"format"?: string,"language"?: string,"max_paise"?: number,"min_paise"?: number,"min_rating"?: number,"sort"?: string,"specialty"?: string }; Returns: {
+{ Args: { "checked_only"?: boolean,"city"?: string,"experience"?: string,"format"?: string,"ids"?: (string)[],"language"?: string,"max_paise"?: number,"min_paise"?: number,"min_rating"?: number,"sort"?: string,"specialty"?: string }; Returns: {
               "checked": boolean,"coach_city": string,"coach_id": string,"formats": (string)[],"from_paise": number,"headline": string,"languages": (string)[],"name": string,"rating": number,"review_count": number,"specialties": (string)[],"years": number
             }[]
                            },
@@ -1145,6 +1171,9 @@ isOneToOne: false
                            },
 "set_slots":
 { Args: { "slots": Json }; Returns: undefined
+                           },
+"shortlist_coach":
+{ Args: { "coach": string,"on_list": boolean }; Returns: undefined
                            },
 "skill_ratings":
 { Args: { "athlete": string }; Returns: {
