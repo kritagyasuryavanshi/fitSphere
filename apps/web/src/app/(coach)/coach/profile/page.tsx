@@ -59,7 +59,7 @@ async function Editor() {
         <h2 id="creds" className="m-0 text-[22px] font-semibold">
           Credentials
         </h2>
-        <p className="m-0 text-[15px] text-ink-soft">{checked ? `${checked} checked by FitSphere.` : 'None checked yet. Until then your profile shows experience as self-reported.'}</p>
+        <p className="m-0 text-[15px] text-ink-soft">{checked ? `${checked} checked by FitSphere.` : 'None checked yet. Until then your profile shows credentials as self-reported.'}</p>
         <Link href="/coach/profile/credentials" className="self-start text-[15px] font-medium underline underline-offset-4">
           Upload or manage credentials
         </Link>

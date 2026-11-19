@@ -49,7 +49,7 @@ test.describe('Coach marketplace profile', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Vikram' })).toBeVisible();
     await expect(page.getByText('Boxing coach for beginners, 10 years')).toBeVisible();
     await expect(page.getByRole('region', { name: 'Packages' })).toContainText('₹4,500 a month');
-    await expect(page.getByText('Experience self-reported')).toBeVisible();
+    await expect(page.getByText('Credentials self-reported')).toBeVisible();
     await expect(page.getByRole('region', { name: 'Weekly 1:1 slots' })).toContainText('Mon 18:00');
 
     await page.goto('/coach/profile');
