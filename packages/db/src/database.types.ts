@@ -778,7 +778,7 @@ isOneToOne: false
                            },
 "scheduled_session":
 { Args: { "on_date": string,"session": string }; Returns: {
-              "category_id": string,"program_id": string,"title": string
+              "category_id": string,"program_id": string,"program_title": string,"title": string
             }[]
                            },
 "search_content":

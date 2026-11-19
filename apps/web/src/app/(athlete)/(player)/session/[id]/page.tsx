@@ -60,10 +60,14 @@ async function Session({ params, searchParams }: PageProps<'/session/[id]'>) {
   });
   const logged = (log.data?.item_logs ?? []).map((l) => ({ position: l.position, rounds: l.rounds_done, technique: l.technique, effort: l.effort, note: l.note }));
   const name = session.data!.title.trim() || `Week ${session.data!.week}, day ${session.data!.day}`;
-  const line = [program?.title, `week ${session.data!.week}`, program?.coach_name].filter(Boolean).join(' · ');
+  // The title of the version that scheduled this date, which for a past date may not be today's.
+  const line = [sched.program_title, `week ${session.data!.week}`, program?.coach_name].filter(Boolean).join(' · ');
 
   return (
     <Player
+      // Next keeps a visited page's state. Finishing changes the key, so a finished session opens on its summary;
+      // saving a drill does not, so a drill skipped earlier stays skipped.
+      key={`${date}:${!!log.data?.completed_at}`}
       session={id}
       date={date}
       isToday={date === today}

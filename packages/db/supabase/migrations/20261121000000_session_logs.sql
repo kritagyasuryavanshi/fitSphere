@@ -14,6 +14,7 @@ create table public.session_logs (
   on_date date not null,
   title text not null default '' check (char_length(title) <= 120),
   category_id text not null references public.categories (id),
+  -- When the first drill was saved; the player does not record when it was opened.
   started_at timestamptz not null default now(),
   completed_at timestamptz,
   note text not null default '' check (char_length(note) <= 1000),
@@ -57,13 +58,13 @@ grant select on public.session_logs, public.item_logs to authenticated;
 -- The caller's active enrollment that schedules this published session on this date, up to today.
 -- The rule matches Today: the version in effect on the date, and week 1 day 1 on the start date.
 create function public.scheduled_session(session uuid, on_date date)
-returns table (program_id uuid, title text, category_id text)
+returns table (program_id uuid, title text, category_id text, program_title text)
 language sql
 stable
 security definer
 set search_path = ''
 as $$
-  select p.id, s.title, p.category_id
+  select p.id, s.title, p.category_id, v.title
   from public.program_sessions s
   join public.program_versions v on v.id = s.version_id
   join public.programs p on p.id = v.program_id
@@ -100,7 +101,9 @@ begin
     or technique is null or technique not between 1 and 5
     or effort is null or effort not between 1 and 10
     or char_length(coalesce(note, '')) > 500
-    or (it.type = 'rounds' and (rounds_done is null or rounds_done not between 0 and planned)) then
+    -- Sets wait for the set logger (M3-08); a missing round count is a bad prescription, not a server error.
+    or it.type = 'sets'
+    or (it.type = 'rounds' and (planned is null or rounds_done is null or rounds_done not between 0 and planned)) then
     raise exception 'bad_log' using errcode = '22023';
   end if;
 

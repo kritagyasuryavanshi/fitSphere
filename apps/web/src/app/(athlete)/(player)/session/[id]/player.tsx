@@ -37,7 +37,7 @@ function useWakeLock(active: boolean) {
       navigator.wakeLock
         .request('screen')
         .then((l) => {
-          if (stopped) void l.release();
+          if (stopped) void l.release().catch(() => {});
           else lock = l;
         })
         .catch(() => {});
@@ -57,17 +57,27 @@ function useWakeLock(active: boolean) {
 /** Ticks a running timer with the real time passed, so a slept phone catches up. */
 function useTicking(timer: TimerState | null, setTimer: (f: (t: TimerState | null) => TimerState | null) => void) {
   const running = !!timer?.running;
+  const last = useRef(0);
   useEffect(() => {
     if (!running) return;
-    let last = performance.now();
+    last.current = performance.now();
     const id = setInterval(() => {
       const now = performance.now();
-      const passed = now - last;
-      last = now;
+      const passed = now - last.current;
+      last.current = now;
       setTimer((t) => (t ? tick(t, passed) : t));
     }, 200);
     return () => clearInterval(id);
   }, [running, setTimer]);
+  /** Applies the time since the last tick first, so a pause or skip in a throttled background tab loses nothing. */
+  return (change: (t: TimerState) => TimerState) =>
+    setTimer((t) => {
+      if (!t) return t;
+      const now = performance.now();
+      const passed = t.running ? now - last.current : 0;
+      last.current = now;
+      return change(tick(t, passed));
+    });
 }
 
 function phaseLabel(drill: PlayerDrill, t: TimerState | null) {
@@ -86,12 +96,13 @@ function Choice({ name, value, checked, onChange, label, wide }: { name: string;
   );
 }
 
-function LogForm({ drill, existing, autoRounds, coach, last, onSaved, session, date }: {
+function LogForm({ drill, existing, autoRounds, coach, last, review, onSaved, session, date }: {
   drill: PlayerDrill;
   existing: Logged | undefined;
   autoRounds: number;
   coach: string;
   last: boolean;
+  review: boolean;
   onSaved: (l: Logged, finish: boolean) => void;
   session: string;
   date: string;
@@ -173,7 +184,7 @@ function LogForm({ drill, existing, autoRounds, coach, last, onSaved, session, d
           </p>
         ) : null}
         <Button type="button" onClick={save} disabled={!hydrated || pending}>
-          {pending ? 'Saving…' : last ? 'Save and finish' : 'Save and next drill'}
+          {pending ? 'Saving…' : review ? 'Save and back to summary' : last ? 'Save and finish' : 'Save and next drill'}
         </Button>
       </div>
     </section>
@@ -182,12 +193,17 @@ function LogForm({ drill, existing, autoRounds, coach, last, onSaved, session, d
 
 export function Player({ session, date, isToday, title, line, coach, drills, logged, completed }: Props) {
   const [logs, setLogs] = useState(() => new Map(logged.map((l) => [l.position, l])));
+  // A finished session opens on its summary; otherwise at the first drill not logged.
   const [index, setIndex] = useState(() =>
-    firstOpen(
-      drills.map((d) => d.position),
-      logged.map((l) => l.position),
-    ),
+    completed
+      ? drills.length
+      : firstOpen(
+          drills.map((d) => d.position),
+          logged.map((l) => l.position),
+        ),
   );
+  // True while editing a drill chosen on the summary: saving goes back there.
+  const [fromSummary, setFromSummary] = useState(false);
   const [timer, setTimer] = useState<TimerState | null>(null);
   const [elapsed, setElapsed] = useState(0);
   const [finishError, setFinishError] = useState('');
@@ -197,7 +213,7 @@ export function Player({ session, date, isToday, title, line, coach, drills, log
   const drill = drills[index];
   const last = index === drills.length - 1;
 
-  useTicking(timer, setTimer);
+  const change = useTicking(timer, setTimer);
   useWakeLock(!!timer?.running);
 
   // Session time since the player opened.
@@ -221,7 +237,8 @@ export function Player({ session, date, isToday, title, line, coach, drills, log
     // eslint-disable-next-line react-hooks/exhaustive-deps -- runs on the phase change only.
   }, [phaseKey]);
 
-  const goTo = (i: number) => {
+  const goTo = (i: number, review = false) => {
+    setFromSummary(review);
     setTimer(null);
     firstPhase.current = true;
     setIndex(i);
@@ -230,7 +247,8 @@ export function Player({ session, date, isToday, title, line, coach, drills, log
 
   const onSaved = (entry: Logged, finish: boolean) => {
     setLogs((m) => new Map(m).set(entry.position, entry));
-    if (finish) {
+    if (fromSummary) goTo(drills.length);
+    else if (finish) {
       startFinish(async () => {
         const result = await finishSession(session, date);
         if (result && 'error' in result) {
@@ -309,7 +327,7 @@ export function Player({ session, date, isToday, title, line, coach, drills, log
                         type="button"
                         aria-label={!timer ? 'Start timer' : timer.running ? 'Pause' : 'Resume'}
                         disabled={!hydrated}
-                        onClick={() => setTimer((t) => (!t ? startTimer(plan) : t.running ? pause(t) : resume(t)))}
+                        onClick={() => (timer ? change((t) => (t.running ? pause(t) : resume(t))) : setTimer(() => startTimer(plan)))}
                         className="flex size-[72px] items-center justify-center rounded-full bg-volt text-ink focus-visible:outline-paper md:size-16"
                       >
                         {timer?.running ? (
@@ -325,12 +343,12 @@ export function Player({ session, date, isToday, title, line, coach, drills, log
                       </button>
                     ) : null}
                     {timer && timer.phase !== 'done' ? (
-                      <Button variant="ghost" size="small" onClick={() => setTimer((t) => (t ? skip(t) : t))}>
+                      <Button variant="ghost" size="small" onClick={() => change(skip)}>
                         {timer.phase === 'rest' ? 'Skip rest' : drill.type === 'rounds' ? 'End round' : 'End early'}
                       </Button>
                     ) : null}
-                    <Button variant="ghost" size="small" className="border-[#4b4b4d] text-line-strong" onClick={() => goTo(index + 1)}>
-                      {last ? 'Skip to finish' : 'Skip drill'}
+                    <Button variant="ghost" size="small" className="border-[#4b4b4d] text-line-strong" onClick={() => goTo(fromSummary ? drills.length : index + 1)}>
+                      {fromSummary ? 'Back to summary' : last ? 'Skip to finish' : 'Skip drill'}
                     </Button>
                   </div>
                 </div>
@@ -352,13 +370,14 @@ export function Player({ session, date, isToday, title, line, coach, drills, log
               existing={logs.get(drill.position)}
               autoRounds={timer ? roundsCompleted(timer) : Number(drill.prescription.rounds ?? 0)}
               coach={coach}
-              last={last}
+              last={last && !fromSummary}
+              review={fromSummary}
               onSaved={onSaved}
               session={session}
               date={date}
             />
 
-            {drills.length > index + 1 ? (
+            {!fromSummary && drills.length > index + 1 ? (
               <section aria-labelledby="next-title">
                 <h2 id="next-title" className="m-0 text-[15px] font-medium text-faint">
                   Up next
@@ -389,7 +408,7 @@ export function Player({ session, date, isToday, title, line, coach, drills, log
                     {d.title}
                     <span className="block text-[13px] text-faint">{logs.has(d.position) ? 'Logged' : 'Skipped'}</span>
                   </span>
-                  <button type="button" onClick={() => goTo(i)} className="min-h-11 text-[15px] font-medium underline underline-offset-4">
+                  <button type="button" onClick={() => goTo(i, true)} className="min-h-11 text-[15px] font-medium underline underline-offset-4">
                     {logs.has(d.position) ? 'Edit' : 'Log'}
                     <span className="sr-only"> {d.title}</span>
                   </button>

@@ -44,6 +44,7 @@ export async function logDrill(input: DrillLog): Promise<ActionResult> {
     return { error: 'We could not save this drill. Check your connection and try again.' };
   }
   revalidatePath('/today');
+  revalidatePath(`/session/${input.session}`);
   return { ok: true };
 }
 
@@ -60,5 +61,6 @@ export async function finishSession(session: string, date: string): Promise<Acti
     return { error: 'We could not finish this session. Check your connection and try again.' };
   }
   revalidatePath('/today');
+  revalidatePath(`/session/${session}`);
   redirect('/today');
 }

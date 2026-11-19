@@ -1,7 +1,7 @@
 -- M3-07: session logs. The athlete writes their own, for sessions their programs schedule; a coach reads them only
 -- through coach_can_read, and only for programs they own.
 begin;
-select plan(30);
+select plan(31);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('a2000000-0000-0000-0000-0000000000a1', 'coach-a@t.test', now()),
@@ -28,7 +28,8 @@ select public.save_program_draft((select v from ids where name = 'pa')::uuid, 'B
     jsonb_build_object('item', (select id from public.content_items where slug = 'jab'), 'type', 'rounds', 'rounds', 3, 'work_s', 120, 'rest_s', 60),
     jsonb_build_object('item', (select id from public.content_items where slug = 'skipping'), 'type', 'time', 'seconds', 600))),
   jsonb_build_object('week', 1, 'day', 2, 'title', 'Pads', 'items', jsonb_build_array(
-    jsonb_build_object('item', (select id from public.content_items where slug = 'jab'), 'type', 'rounds', 'rounds', 2, 'work_s', 60, 'rest_s', 30)))));
+    jsonb_build_object('item', (select id from public.content_items where slug = 'jab'), 'type', 'rounds', 'rounds', 2, 'work_s', 60, 'rest_s', 30),
+    jsonb_build_object('item', (select id from public.content_items where slug = 'kettlebell-swing'), 'type', 'sets', 'sets', 3, 'reps', 15)))));
 select public.publish_program((select v from ids where name = 'pa')::uuid);
 insert into ids select 'ca', public.program_invite((select v from ids where name = 'pa')::uuid);
 
@@ -88,6 +89,7 @@ select throws_ok(format($$ select public.log_drill(%L, public.india_today() - 1,
 select throws_ok(format($$ select public.log_drill(%L, public.india_today() - 1, 9, 2, 4, 7, '') $$, (select v from ids where name = 'd1')), '22023', 'bad_log', 'a drill that is not in the session is refused');
 select throws_ok(format($$ select public.log_drill(%L, public.india_today() - 1, 1, 2, 4, 7, %L) $$, (select v from ids where name = 'd1'), repeat('x', 501)), '22023', 'bad_log', 'a note over 500 characters is refused');
 select throws_ok(format($$ select public.log_drill(%L, public.india_today(), 1, 2, 4, 7, '') $$, (select v from ids where name = 'd1')), '22023', 'not_scheduled', 'day 1 cannot be logged on day 2''s date');
+select throws_ok(format($$ select public.log_drill(%L, public.india_today(), 2, null, 4, 7, '') $$, (select v from ids where name = 'd2')), '22023', 'bad_log', 'a sets drill waits for the set logger');
 select throws_ok(format($$ select public.log_drill(%L, public.india_today() + 6, 1, 2, 4, 7, '') $$, (select v from ids where name = 'd1')), '22023', 'not_scheduled', 'nor a future date');
 select throws_ok(format($$ select public.log_drill(%L, public.india_today() - 1, 1, 2, 4, 7, '') $$, (select v from ids where name = 'draft')), '22023', 'not_scheduled', 'nor a session in the coach''s unpublished draft');
 select throws_ok(format($$ insert into public.session_logs (athlete_id, on_date, category_id) values (%L, public.india_today(), 'boxing') $$, 'c2000000-0000-0000-0000-0000000000c1'),

@@ -73,6 +73,14 @@ test.describe('Boxing session player', () => {
     await expect(card.getByText('Done', { exact: true })).toBeVisible();
     await expect(card.getByRole('link', { name: /Start session/ })).toHaveCount(0);
 
+    // Review opens on the summary; an edit saves and returns there without leaving the session.
+    await card.getByRole('link', { name: /Review your log/ }).click();
+    await expect(page.getByRole('heading', { name: 'Session done' })).toBeVisible();
+    await page.getByRole('button', { name: 'Edit The Jab' }).click();
+    await log.getByLabel('Effort 8 of 10').check({ force: true });
+    await log.getByRole('button', { name: 'Save and back to summary' }).click();
+    await expect(page.getByRole('heading', { name: 'Session done' })).toBeVisible();
+
     // The saved log is exactly what was entered.
     const { data } = await admin()
       .from('session_logs')
@@ -82,7 +90,7 @@ test.describe('Boxing session player', () => {
     expect(data!.title).toBe('Jab and footwork');
     expect(data!.completed_at).not.toBeNull();
     expect(data!.item_logs.sort((a, b) => a.position - b.position)).toEqual([
-      { position: 1, type: 'rounds', rounds_done: 2, rounds_planned: 2, technique: 4, effort: 7, note: 'Lead foot landing late on round 2.' },
+      { position: 1, type: 'rounds', rounds_done: 2, rounds_planned: 2, technique: 4, effort: 8, note: 'Lead foot landing late on round 2.' },
       { position: 2, type: 'time', rounds_done: null, rounds_planned: null, technique: 3, effort: 6, note: '' },
     ]);
   });
