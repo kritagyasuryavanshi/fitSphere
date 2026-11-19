@@ -7,7 +7,11 @@ import { authorised } from '@/lib/video-check';
 export async function GET(request: Request) {
   await connection();
   if (!authorised(request.headers.get('authorization'), process.env.CRON_SECRET)) return new Response('Not allowed', { status: 401 });
-  const reminded = await queueSessionReminders();
+  // A failing reminder step must not stop the rest of the day's email.
+  const reminded = await queueSessionReminders().catch((e) => {
+    console.error('queueing session reminders failed', e);
+    return null;
+  });
   const result = await sendQueuedEmails();
   return result ? Response.json({ reminded, ...result }) : Response.json({ reminded, skipped: 'email is not configured: RESEND_API_KEY, EMAIL_FROM, NEXT_PUBLIC_SITE_URL or SUPABASE_SECRET_KEY is missing' });
 }

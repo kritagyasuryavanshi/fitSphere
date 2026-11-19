@@ -157,7 +157,7 @@ declare
   r record;
 begin
   for r in
-    select e.athlete_id, min(coalesce(nullif(s.title, ''), v.title)) as what
+    select e.athlete_id, string_agg(distinct coalesce(nullif(s.title, ''), v.title), ' and ') as what
     from public.enrollments e
     join public.program_versions v on v.id = public.version_in_effect(e.program_id, today)
     join public.program_sessions s on s.version_id = v.id and s.week <= v.weeks
@@ -203,7 +203,9 @@ as $$
       and x.created_at > now() - interval '7 days'
       -- The switches count at sending too, so turning one off also stops what was already queued.
       and public.email_wanted(x.user_id, x.template)
-    order by x.created_at
+      -- A reminder says "Today": only its own India day counts, so a late one never goes out.
+      and (x.template <> 'session_reminder' or x.created_at >= (public.india_today()::timestamp at time zone 'Asia/Kolkata'))
+    order by (x.template = 'session_reminder') desc, x.created_at
     limit least(greatest(max_rows, 1), 200)
     for update skip locked
   )

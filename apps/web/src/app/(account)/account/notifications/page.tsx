@@ -15,15 +15,18 @@ const stamp = new Intl.DateTimeFormat('en-IN', { weekday: 'short', day: 'numeric
 async function Notifications() {
   await requireSignedIn();
   const supabase = await supabaseServer();
-  const [list, prefs] = await Promise.all([
+  const [list, prefs, unreadCount] = await Promise.all([
     // shortcut: the newest 50 only; add paging once someone has more.
     supabase.from('notifications').select('id, kind, title, body, link, created_at, read_at').order('created_at', { ascending: false }).limit(50),
     supabase.rpc('my_email_prefs'),
+    // Counted over all of them, as Mark all as read marks all of them, not only the 50 shown.
+    supabase.from('notifications').select('id', { count: 'exact', head: true }).is('read_at', null),
   ]);
   if (list.error) throw list.error;
   if (prefs.error) throw prefs.error;
+  if (unreadCount.error) throw unreadCount.error;
   const p = prefs.data[0];
-  const unread = list.data.filter((n) => !n.read_at).length;
+  const unread = unreadCount.count ?? 0;
   return (
     <>
       {list.data.length ? (
@@ -43,8 +46,8 @@ async function Notifications() {
               <li key={n.id} className="flex flex-col gap-1 border-b border-line py-3">
                 <span className="flex flex-wrap items-center gap-2">
                   {n.read_at ? null : <Tag variant="success">New</Tag>}
-                  {/* Only links inside the site. */}
-                  {n.link.startsWith('/') ? (
+                  {/* Only paths inside the site: never //host or /\host, which browsers treat as another site. */}
+                  {/^\/(?![/\\])/.test(n.link) ? (
                     <Link href={n.link} className={`text-[16px] underline-offset-4 hover:underline ${n.read_at ? '' : 'font-semibold'}`}>
                       {n.title}
                     </Link>

@@ -1,7 +1,7 @@
 -- M3-16: in-app notifications. A user reads only their own. Feedback, a coach's new lesson and today's session each
 -- notify the athlete; email for each follows the athlete's switch.
 begin;
-select plan(14);
+select plan(15);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('ac000000-0000-0000-0000-0000000000a1', 'coach-n@t.test', now()),
@@ -62,6 +62,15 @@ select is(public.queue_session_reminders(), 1, 'the job reminds the athlete with
 select is(public.queue_session_reminders(), 0, 'and only once a day');
 reset role;
 select is((select count(*)::int from public.email_outbox where to_email = 'kabir-n@t.test' and template = 'session_reminder'), 0, 'reminder emails are off by default');
+-- A reminder email is only sent on its own India day: a late one would say "Today" on the wrong day.
+insert into public.email_prefs (user_id, session_reminder) values ('cc000000-0000-0000-0000-0000000000c1', true)
+  on conflict (user_id) do update set session_reminder = true;
+insert into public.email_outbox (user_id, to_email, template, data, created_at) values
+  ('cc000000-0000-0000-0000-0000000000c1', 'late@t.test', 'session_reminder', '{}', now() - interval '1 day'),
+  ('cc000000-0000-0000-0000-0000000000c1', 'ontime@t.test', 'session_reminder', '{}', now());
+set local role service_role;
+select is((select string_agg(to_email, ',') from public.claim_emails(array['session_reminder'], 50)), 'ontime@t.test', 'yesterday''s reminder is never sent');
+reset role;
 
 select * from finish();
 rollback;
