@@ -111,6 +111,8 @@ async function Session({ params, searchParams }: PageProps<'/session/[id]'>) {
       sets={sets}
       lastTimes={lastTimes}
       completed={!!log.data?.completed_at}
+      // The server's clock, not the phone's: the session's time on the summary starts here.
+      openedAt={new Date().toISOString()}
     />
   );
 }

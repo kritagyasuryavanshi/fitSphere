@@ -68,6 +68,19 @@ test.describe('Boxing session player', () => {
     await log.getByLabel('Effort 6 of 10').check({ force: true });
     await log.getByRole('button', { name: 'Save and finish' }).click();
 
+    // The summary's totals come from the saved logs.
+    await expect(page).toHaveURL(/\/session\/[0-9a-f-]+\/done\?date=/);
+    await expect(page.getByRole('heading', { name: 'Session done.' })).toBeVisible();
+    const summary = page.locator('dl[aria-label="Summary"]');
+    await expect(summary).toContainText('Logged2 / 2');
+    await expect(summary).toContainText('Rounds2 / 2');
+    await expect(summary).toContainText('Technique feel3.5');
+    await expect(page.getByRole('row', { name: /The Jab 2 \/ 2 4 7/ })).toBeVisible();
+    await page.getByLabel('A note for Vikram').fill('Lead foot landing late on round 2. Felt better once I slowed down.');
+    await page.getByRole('button', { name: 'Save note' }).click();
+    await expect(page.getByRole('status')).toHaveText('Saved. Vikram sees your note with this session.');
+    await page.getByRole('link', { name: 'Back to Today' }).click();
+
     await expect(page).toHaveURL(/\/today$/);
     const card = page.getByRole('article', { name: 'Jab and footwork' });
     await expect(card.getByText('Done', { exact: true })).toBeVisible();
@@ -75,20 +88,23 @@ test.describe('Boxing session player', () => {
 
     // Review opens on the summary; an edit saves and returns there without leaving the session.
     await card.getByRole('link', { name: /Review your log/ }).click();
-    await expect(page.getByRole('heading', { name: 'Session done' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Session done.' })).toBeVisible();
+    await page.getByRole('link', { name: 'Edit your log' }).click();
+    await expect(page.getByRole('heading', { name: 'Session done', exact: true })).toBeVisible();
     await page.getByRole('button', { name: 'Edit The Jab' }).click();
     await log.getByLabel('Effort 8 of 10').check({ force: true });
     await log.getByRole('button', { name: 'Save and back to summary' }).click();
-    await expect(page.getByRole('heading', { name: 'Session done' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Session done', exact: true })).toBeVisible();
 
     // The saved log is exactly what was entered.
     const { data } = await admin()
       .from('session_logs')
-      .select('title, completed_at, item_logs(position, type, rounds_done, rounds_planned, technique, effort, note)')
+      .select('title, note, completed_at, item_logs(position, type, rounds_done, rounds_planned, technique, effort, note)')
       .eq('athlete_id', await userIdByEmail(email))
       .single();
     expect(data!.title).toBe('Jab and footwork');
     expect(data!.completed_at).not.toBeNull();
+    expect(data!.note).toBe('Lead foot landing late on round 2. Felt better once I slowed down.');
     expect(data!.item_logs.sort((a, b) => a.position - b.position)).toEqual([
       { position: 1, type: 'rounds', rounds_done: 2, rounds_planned: 2, technique: 4, effort: 8, note: 'Lead foot landing late on round 2.' },
       { position: 2, type: 'time', rounds_done: null, rounds_planned: null, technique: 3, effort: 6, note: '' },

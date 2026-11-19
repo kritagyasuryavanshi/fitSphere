@@ -77,6 +77,15 @@ test.describe('Set logger', () => {
     await push.getByRole('form', { name: 'Set 2' }).getByRole('button', { name: 'Log set 2' }).click();
     await push.getByRole('button', { name: 'Finish session' }).click();
 
+    // Totals equal the sets just logged: 8 + 8 + 7 reps at 52.5 kg is 1,207.5 kg; push-ups add no load.
+    await expect(page.getByRole('heading', { name: 'Workout done.' })).toBeVisible();
+    const summary = page.locator('dl[aria-label="Summary"]');
+    await expect(summary).toContainText('Exercises logged2 / 2');
+    await expect(summary).toContainText('Sets5');
+    await expect(summary).toContainText('Volume1,207.5 kg');
+    await expect(page.getByRole('row', { name: 'Barbell bench press 8 × 52.5 kg, 8 × 52.5 kg, 7 × 52.5 kg' })).toBeVisible();
+    await expect(page.getByRole('row', { name: 'Push-up 10 reps, 10 reps' })).toBeVisible();
+    await page.getByRole('link', { name: 'Back to Today' }).click();
     await expect(page).toHaveURL(/\/today$/);
     await expect(page.getByRole('article', { name: 'Upper A' }).getByText('Done', { exact: true })).toBeVisible();
 
