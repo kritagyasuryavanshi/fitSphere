@@ -1262,7 +1262,7 @@
       "deps": [
         "M4-01"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "db+e2e",
       "screens": [
@@ -1272,7 +1272,8 @@
         "Badge shows 'Credentials checked' only after an admin marks it",
         "Reject needs a note the coach sees",
         "Every decision is logged with the admin and date"
-      ]
+      ],
+      "done_on": "2026-11-20"
     },
     {
       "id": "M4-04",

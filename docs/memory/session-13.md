@@ -55,8 +55,11 @@ Follows [[session-12]]. Hub for this work: [[programs]].
 - M4 started. The owner chose to build the full plan (M4, M5, M6) instead of the demo detour. The planner wrote `docs/plans/m4-plan.md`: engagements replace hire_requests; access follows `paid_through`; `apply_payment_event` is the only writer of money state; payouts are held until the refund window closes; about 75% is buildable with a fake provider.
 - M4-01, PR #40: coach_profiles, packages, availability_slots, credentials and a private `credentials` bucket. Column grants keep the payout account, the agreement and the client limit away from clients; live means published and still holding the coach role. Supabase refuses SQL deletes on storage.objects, so `deleteAccount` removes credential files through the Storage API. Security review, Codex and `/code-review high` all ran before merge; 12 findings fixed; a second security look at the fixes found nothing. 33 of 33 migrations on production.
 
+- M4-03, PR #41: `/coach/credentials` (direct browser upload into the private bucket, because Vercel caps server requests at about 4.5 MB) and `/admin/credentials` (X-Verify, 10-minute signed links). `decide_credential`: admins only, never their own, a reject needs a note, every decision in `audit_log`. A pending or checked credential's file is locked (`credential_file_locked` in the storage delete policy); `withdraw_credential` and Remove free it; account deletion withdraws first. All three reviews before merge; 9 findings fixed; a second security look found nothing. 34 of 34 migrations on production.
+- Subagent rate limit hit at the end of the day (resets 00:30 IST).
+
 ## Next
-1. M4-03 credentials and admin checks, then M4-02 the profile editor (it reads the hidden columns through a function).
+1. M4-02 the profile editor (reads the hidden columns through a function), then M4-04 discovery.
 2. The demo work: demo accounts with realistic data and one-click entry, then a domain and Resend (owner).
 2. Then M4 (marketplace) only once coaches pay by hand, per the owner's sell-to-coaches-first plan.
 2. Hosting: the owner sets the Supabase Auth URL configuration; then test sign-in on the live site and run the Supabase security advisors once.
