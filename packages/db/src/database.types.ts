@@ -405,6 +405,32 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"item_logs": {
+                  Row: {
+                    "effort": number,"id": string,"item_id": string | null,"log_id": string,"logged_at": string,"note": string,"position": number,"rounds_done": number | null,"rounds_planned": number | null,"technique": number,"type": Database["public"]['Enums']["prescription_type"]
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "effort": number,"id"?: string,"item_id"?: string | null,"log_id": string,"logged_at"?: string,"note"?: string,"position": number,"rounds_done"?: number | null,"rounds_planned"?: number | null,"technique": number,"type": Database["public"]['Enums']["prescription_type"]
+                  }
+                  Update: {
+                    "effort"?: number,"id"?: string,"item_id"?: string | null,"log_id"?: string,"logged_at"?: string,"note"?: string,"position"?: number,"rounds_done"?: number | null,"rounds_planned"?: number | null,"technique"?: number,"type"?: Database["public"]['Enums']["prescription_type"]
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "item_logs_item_id_fkey"
+      columns: ["item_id"]
+isOneToOne: false
+      referencedRelation: "content_items"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "item_logs_log_id_fkey"
+      columns: ["log_id"]
+isOneToOne: false
+      referencedRelation: "session_logs"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"muscles": {
                   Row: {
                     "id": string,"muscle_group": string,"name": string,"sort": number
@@ -551,6 +577,44 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"session_logs": {
+                  Row: {
+                    "athlete_id": string,"category_id": string,"completed_at": string | null,"id": string,"note": string,"on_date": string,"program_id": string | null,"session_id": string | null,"started_at": string,"title": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "athlete_id": string,"category_id": string,"completed_at"?: string | null,"id"?: string,"note"?: string,"on_date": string,"program_id"?: string | null,"session_id"?: string | null,"started_at"?: string,"title"?: string
+                  }
+                  Update: {
+                    "athlete_id"?: string,"category_id"?: string,"completed_at"?: string | null,"id"?: string,"note"?: string,"on_date"?: string,"program_id"?: string | null,"session_id"?: string | null,"started_at"?: string,"title"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "session_logs_athlete_id_fkey"
+      columns: ["athlete_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "session_logs_category_id_fkey"
+      columns: ["category_id"]
+isOneToOne: false
+      referencedRelation: "categories"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "session_logs_program_id_fkey"
+      columns: ["program_id"]
+isOneToOne: false
+      referencedRelation: "programs"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "session_logs_session_id_fkey"
+      columns: ["session_id"]
+isOneToOne: false
+      referencedRelation: "program_sessions"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"user_roles": {
                   Row: {
                     "created_at": string,"granted_by": string | null,"role": Database["public"]['Enums']["app_role"],"user_id": string
@@ -622,6 +686,9 @@ isOneToOne: false
 "export_my_data":
 { Args: Record<PropertyKey, never>; Returns: Json
                            },
+"finish_session":
+{ Args: { "on_date": string,"session": string }; Returns: string
+                           },
 "grant_role":
 { Args: { "new_role": Database["public"]['Enums']["app_role"],"target": string }; Returns: undefined
                            },
@@ -644,6 +711,9 @@ isOneToOne: false
                            },
 "leave_program":
 { Args: { "enrollment": string }; Returns: undefined
+                           },
+"log_drill":
+{ Args: { "effort": number,"item_position": number,"note": string,"on_date": string,"rounds_done": number,"session": string,"technique": number }; Returns: string
                            },
 "my_programs":
 { Args: Record<PropertyKey, never>; Returns: {
@@ -705,6 +775,11 @@ isOneToOne: false
                            },
 "save_training_basics":
 { Args: { "ai_consent": boolean,"days": number,"equipment": (string)[],"injury_notes": string,"notice": string,"sport_answers": Json }; Returns: undefined
+                           },
+"scheduled_session":
+{ Args: { "on_date": string,"session": string }; Returns: {
+              "category_id": string,"program_id": string,"program_title": string,"title": string
+            }[]
                            },
 "search_content":
 { Args: { "q": string }; Returns: {
