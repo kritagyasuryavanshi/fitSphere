@@ -4,6 +4,9 @@ import Link from 'next/link';
 export const metadata: Metadata = { title: 'Terms of use · FitSphere' };
 
 // Plain terms for the current service (no payments yet; M4 adds marketplace terms). Pending legal review (owner item O-07).
+// An id cannot hold spaces: aria-labelledby would read each word as a separate id.
+const slug = (title: string) => title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+
 const sections: [string, string[]][] = [
   [
     'The service',
@@ -52,8 +55,8 @@ export default function TermsPage() {
       <h1 className="m-0 font-display text-[48px] font-normal uppercase leading-[0.95]">Terms of use</h1>
       <p className="m-0 text-[15px] text-muted">Last updated 19 November 2026.</p>
       {sections.map(([title, items]) => (
-        <section key={title} aria-labelledby={title} className="flex flex-col gap-2">
-          <h2 id={title} className="m-0 text-[20px] font-semibold">
+        <section key={title} aria-labelledby={slug(title)} className="flex flex-col gap-2">
+          <h2 id={slug(title)} className="m-0 text-[20px] font-semibold">
             {title}
           </h2>
           <ul className="m-0 flex flex-col gap-1.5 pl-5 text-[16px] text-ink-soft">

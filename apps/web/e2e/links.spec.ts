@@ -14,3 +14,10 @@ test('public pages link only to pages that exist', async ({ page, request }) => 
     expect(res.status(), href).toBeLessThan(400);
   }
 });
+
+test('the legal pages name each section for screen readers', async ({ page }) => {
+  await page.goto('/legal/privacy');
+  await expect(page.getByRole('region', { name: 'Who sees it' })).toContainText('stops once you have left all of that coach');
+  await page.goto('/legal/terms');
+  await expect(page.getByRole('region', { name: 'Train safely' })).toBeVisible();
+});

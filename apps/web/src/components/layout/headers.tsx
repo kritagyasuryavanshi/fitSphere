@@ -89,7 +89,7 @@ async function PublicRight() {
   );
 }
 
-/** Visitors: Learn, Programs, Coaches, Ask AI; Join free; a menu on phones. */
+/** Visitors: Learn and For coaches; Join free; a menu on phones. */
 export function PublicHeader() {
   return (
     <Frame
@@ -124,7 +124,7 @@ async function AthleteAvatar() {
   );
 }
 
-/** Athletes: Today, Learn, Progress, Ask AI. Phones get the same links as bottom tabs. */
+/** Athletes: Today, Learn and Progress. Phones get the same links as bottom tabs. */
 export function AthleteShell({ children }: { children: ReactNode }) {
   return (
     <>
@@ -173,7 +173,7 @@ async function CoachNav({ part }: { part: 'links' | 'right' | 'tabs' }) {
   );
 }
 
-/** Coaches and admins: Athletes, Clients, Programs, My lessons, the review queue for reviewers, People for admins. */
+/** Coaches and admins: Athletes, Programs, My lessons, the review queue for reviewers, People for admins. */
 export function CoachShell({ children }: { children: ReactNode }) {
   return (
     <>
