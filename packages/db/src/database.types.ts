@@ -935,6 +935,9 @@ isOneToOne: false
 "create_program":
 { Args: { "category": string,"title": string }; Returns: string
                            },
+"credential_file_locked":
+{ Args: { "path": string }; Returns: boolean
+                           },
 "decide_coach_application":
 { Args: { "application": string,"approve": boolean }; Returns: undefined
                            },
@@ -1127,6 +1130,12 @@ isOneToOne: false
                            },
 "version_in_effect":
 { Args: { "on_date": string,"program": string }; Returns: string
+                           },
+"withdraw_credential":
+{ Args: { "credential": string }; Returns: undefined
+                           },
+"withdraw_my_credentials":
+{ Args: Record<PropertyKey, never>; Returns: undefined
                            }
           }
           Enums: {

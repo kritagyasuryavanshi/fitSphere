@@ -37,3 +37,17 @@ export async function submitCredential(input: { title: string; issuer: string; i
   revalidatePath('/coach/credentials');
   return {};
 }
+
+/** Removes a credential: withdraws it (the badge goes), then deletes its file, which the bucket allows only then. */
+export async function removeCredential(formData: FormData): Promise<void> {
+  const viewer = await requireRole('coach');
+  const id = String(formData.get('credential') ?? '');
+  const supabase = await supabaseServer();
+  const { data, error } = await supabase.from('credentials').select('file_path').eq('id', id).eq('coach_id', viewer.userId).maybeSingle();
+  if (error || !data) throw new Error('This credential could not be found.');
+  const withdrawn = await supabase.rpc('withdraw_credential', { credential: id });
+  if (withdrawn.error) throw new Error(`Could not remove the credential: ${withdrawn.error.message}`);
+  const removed = await supabase.storage.from('credentials').remove([data.file_path]);
+  if (removed.error) console.error('credential file not removed', removed.error.message);
+  revalidatePath('/coach/credentials');
+}

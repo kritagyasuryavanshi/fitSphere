@@ -36,21 +36,24 @@ export function UploadForm({ userId }: { userId: string }) {
         if (file.size > MAX_BYTES) return setError('The file is over 10 MB. Upload a smaller scan.');
         setError('');
         setPending(true);
+        const bucket = supabaseBrowser().storage.from('credentials');
+        let uploaded: string | null = null;
         try {
           const ready = await ensureCoachProfile();
           if (ready.error) return setError(ready.error);
           const path = `${userId}/${Date.now()}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
-          const bucket = supabaseBrowser().storage.from('credentials');
           const up = await bucket.upload(path, file, { contentType: file.type });
           if (up.error) return setError('The upload failed. Check your connection and try again.');
+          uploaded = path;
           const saved = await submitCredential({ title, issuer: String(data.get('issuer') ?? '').trim(), idNumber: String(data.get('idNumber') ?? '').trim(), path });
-          if (saved.error) {
-            // The record failed: do not leave an orphan file behind.
-            await bucket.remove([path]);
-            return setError(saved.error);
-          }
+          if (saved.error) throw new Error(saved.error);
+          uploaded = null;
           form.current?.reset();
           setDone(`Sent for checking: ${title}.`);
+        } catch (err) {
+          // A network drop or an expired session: say so, and do not leave an orphan file behind.
+          if (uploaded) await bucket.remove([uploaded]).catch(() => {});
+          setError(err instanceof Error && err.message.length < 120 ? err.message : 'Something went wrong. Check your connection and try again.');
         } finally {
           setPending(false);
         }

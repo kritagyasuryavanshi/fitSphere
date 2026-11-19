@@ -2,6 +2,10 @@
 -- admin checks it against the issuer and marks it checked or rejects it with a note the coach sees. Every decision is
 -- logged with the admin and the date. The public badge reads public_credentials, which lists checked ones only.
 
+-- withdrawn: the coach took it back (or is deleting the account); only then may its file be deleted.
+alter table public.credentials drop constraint credentials_status_check;
+alter table public.credentials add constraint credentials_status_check check (status in ('pending', 'checked', 'rejected', 'withdrawn'));
+
 alter table public.credentials
   add column issuer text not null default '' check (char_length(issuer) <= 120),
   -- The certificate or membership number, for the admin's lookup with the issuer. Never public.
@@ -64,6 +68,10 @@ begin
   if c.id is null then
     raise exception 'not_found' using errcode = 'P0002';
   end if;
+  -- Nobody approves their own work: an admin who is also a coach cannot decide their own credential.
+  if c.coach_id = uid then
+    raise exception 'own_credential' using errcode = '42501';
+  end if;
   if c.status <> 'pending' then
     raise exception 'already_decided' using errcode = '22023';
   end if;
@@ -92,13 +100,57 @@ begin
     from public.credentials c
     join public.coach_profiles cp on cp.coach_id = c.coach_id
     left join public.profiles p on p.id = c.coach_id
-    where c.status = 'pending'
+    where c.status = 'pending' and c.coach_id <> auth.uid()
     order by c.created_at;
 end;
 $$;
 
-revoke execute on function public.submit_credential(text, text, text, text), public.decide_credential(uuid, boolean, text), public.admin_pending_credentials() from public, anon;
-grant execute on function public.submit_credential(text, text, text, text), public.decide_credential(uuid, boolean, text), public.admin_pending_credentials() to authenticated;
+-- The coach takes a credential back (any status). It leaves the public view, and its file may then be deleted.
+create function public.withdraw_credential(credential uuid)
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  update public.credentials set status = 'withdrawn' where id = credential and coach_id = auth.uid();
+  if not found then
+    raise exception 'not_owner' using errcode = '42501';
+  end if;
+end;
+$$;
+
+-- Account deletion: withdraw them all first, so the app may delete the files before the account goes.
+create function public.withdraw_my_credentials()
+returns void
+language sql
+security definer
+set search_path = ''
+as $$
+  update public.credentials set status = 'withdrawn' where coach_id = auth.uid() and status <> 'withdrawn';
+$$;
+
+revoke execute on function public.submit_credential(text, text, text, text), public.decide_credential(uuid, boolean, text), public.admin_pending_credentials(),
+  public.withdraw_credential(uuid), public.withdraw_my_credentials() from public, anon;
+grant execute on function public.submit_credential(text, text, text, text), public.decide_credential(uuid, boolean, text), public.admin_pending_credentials(),
+  public.withdraw_credential(uuid), public.withdraw_my_credentials() to authenticated;
+
+-- A checked (or pending) document cannot be deleted or swapped for another file at the same name: the badge rests on
+-- what the admin looked at. The coach withdraws the credential first, and the badge goes with it.
+create function public.credential_file_locked(path text)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select exists (select 1 from public.credentials where file_path = path and status in ('pending', 'checked'));
+$$;
+revoke execute on function public.credential_file_locked(text) from public, anon;
+grant execute on function public.credential_file_locked(text) to authenticated;
+drop policy credentials_files_delete on storage.objects;
+create policy credentials_files_delete on storage.objects for delete to authenticated
+  using (bucket_id = 'credentials' and (storage.foldername(name))[1] = (select auth.uid())::text and not public.credential_file_locked(name));
 
 -- The public view gains the issuer (the ID number stays private).
 create or replace view public.public_credentials with (security_invoker = false) as

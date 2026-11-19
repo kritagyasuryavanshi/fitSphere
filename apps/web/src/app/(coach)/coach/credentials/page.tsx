@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { supabaseServer } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/viewer';
+import { removeCredential } from './actions';
 import { UploadForm } from './upload-form';
 
 export const metadata: Metadata = { title: 'Credentials · FitSphere Coach' };
@@ -13,18 +14,26 @@ const day = new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short', y
 async function Credentials() {
   const viewer = await requireRole('coach');
   const supabase = await supabaseServer();
-  const { data, error } = await supabase
-    .from('credentials')
-    .select('id, title, issuer, status, note, created_at, decided_at')
-    .eq('coach_id', viewer.userId)
-    .order('created_at', { ascending: false });
+  const [{ data, error }, profile] = await Promise.all([
+    supabase
+      .from('credentials')
+      .select('id, title, issuer, status, note, created_at, decided_at')
+      .eq('coach_id', viewer.userId)
+      .neq('status', 'withdrawn')
+      .order('created_at', { ascending: false }),
+    supabase.from('coach_profiles').select('status').eq('coach_id', viewer.userId).maybeSingle(),
+  ]);
   if (error) throw error;
+  if (profile.error) throw profile.error;
   const checked = data.some((c) => c.status === 'checked');
+  // The public sees the badge only on a live profile (public_credentials needs both).
+  const live = profile.data?.status === 'live';
   return (
     <>
       {checked ? (
-        <p className="m-0 self-start">
+        <p className="m-0 flex flex-wrap items-center gap-2">
           <Tag variant="success">Credentials checked</Tag>
+          <span className="text-[14px] text-muted">{live ? 'Shown on your public profile.' : 'Shows on your public profile once it is live.'}</span>
         </p>
       ) : null}
       {data.length ? (
@@ -41,6 +50,12 @@ async function Credentials() {
                 {c.issuer ? `${c.issuer} · ` : ''}uploaded {day.format(new Date(c.created_at))}
               </span>
               {c.status === 'rejected' && c.note ? <span className="text-[15px] text-ink-soft">Why: {c.note}</span> : null}
+              <form action={removeCredential} className="mt-1">
+                <input type="hidden" name="credential" value={c.id} />
+                <button type="submit" className="min-h-11 text-[14px] font-medium text-danger underline underline-offset-4">
+                  Remove<span className="sr-only">: {c.title}</span>
+                </button>
+              </form>
             </li>
           ))}
         </ul>
