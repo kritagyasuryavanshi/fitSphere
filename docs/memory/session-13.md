@@ -52,8 +52,12 @@ Follows [[session-12]]. Hub for this work: [[programs]].
 - Process miss: M3-14's `/security-review` ran after its merge, not before (no findings). Lesson: for every PR that touches RLS, grants or security-definer functions, start `/security-review` together with Codex and `/code-review`, before the merge.
 - M3-15, PR #39: the M3 milestone check passed; M3 is done ([[M3-check]]). Live-site QA fixed dead menu links, added privacy and terms pages (they match what coaches can actually read), `/learn`, and a contrast failure.
 
+- M4 started. The owner chose to build the full plan (M4, M5, M6) instead of the demo detour. The planner wrote `docs/plans/m4-plan.md`: engagements replace hire_requests; access follows `paid_through`; `apply_payment_event` is the only writer of money state; payouts are held until the refund window closes; about 75% is buildable with a fake provider.
+- M4-01, PR #40: coach_profiles, packages, availability_slots, credentials and a private `credentials` bucket. Column grants keep the payout account, the agreement and the client limit away from clients; live means published and still holding the coach role. Supabase refuses SQL deletes on storage.objects, so `deleteAccount` removes credential files through the Storage API. Security review, Codex and `/code-review high` all ran before merge; 12 findings fixed; a second security look at the fixes found nothing. 33 of 33 migrations on production.
+
 ## Next
-1. The demo work: demo accounts with realistic data and one-click entry, then a domain and Resend (owner).
+1. M4-03 credentials and admin checks, then M4-02 the profile editor (it reads the hidden columns through a function).
+2. The demo work: demo accounts with realistic data and one-click entry, then a domain and Resend (owner).
 2. Then M4 (marketplace) only once coaches pay by hand, per the owner's sell-to-coaches-first plan.
 2. Hosting: the owner sets the Supabase Auth URL configuration; then test sign-in on the live site and run the Supabase security advisors once.
 3. Install Codex on the WELCOME PC (`npm i -g @openai/codex`, then `codex login`), so every PR gets its review on either PC.

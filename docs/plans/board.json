@@ -1220,14 +1220,15 @@
       "deps": [
         "M3-15"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "db",
       "ac": [
         "Prices stored as integer paise",
         "Credential files in a private bucket readable only by the coach and admins",
         "pgTAP: a coach edits only their own profile, packages and slots"
-      ]
+      ],
+      "done_on": "2026-11-19"
     },
     {
       "id": "M4-02",
