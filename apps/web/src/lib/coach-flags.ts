@@ -5,6 +5,7 @@ export type CoachFlag = { type: 'pain' } | { type: 'missed'; count: number } | {
 
 export const MISSED_IN_A_ROW = 3;
 export const HIGH_EFFORT = 9;
+export const EFFORT_WINDOW_DAYS = 14;
 
 type Input = {
   /** Sessions the athlete's programs scheduled, in date order, with whether each was finished. */
@@ -14,11 +15,13 @@ type Input = {
   /** Dates the athlete reported pain. */
   painDates: string[];
   today: string;
+  /** The program is past its last week: its last misses are history, not news. */
+  ended: boolean;
 };
 
 const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / xs.length;
 
-export function coachFlags({ scheduled, finished, painDates, today }: Input): CoachFlag[] {
+export function coachFlags({ scheduled, finished, painDates, today, ended }: Input): CoachFlag[] {
   const flags: CoachFlag[] = [];
   if (painDates.some((d) => d >= addDays(today, -6) && d <= today)) flags.push({ type: 'pain' });
 
@@ -26,10 +29,10 @@ export function coachFlags({ scheduled, finished, painDates, today }: Input): Co
   const past = scheduled.filter((s) => s.date < today);
   let run = 0;
   for (let i = past.length - 1; i >= 0 && !past[i]!.done; i--) run++;
-  if (run >= MISSED_IN_A_ROW) flags.push({ type: 'missed', count: run });
+  if (!ended && run >= MISSED_IN_A_ROW) flags.push({ type: 'missed', count: run });
 
   const lastTwo = finished
-    .filter((s) => s.efforts.length)
+    .filter((s) => s.efforts.length && s.date >= addDays(today, -(EFFORT_WINDOW_DAYS - 1)))
     .sort((a, b) => a.date.localeCompare(b.date))
     .slice(-2);
   if (lastTwo.length === 2 && lastTwo.every((s) => mean(s.efforts) >= HIGH_EFFORT)) flags.push({ type: 'effort' });

@@ -15,8 +15,8 @@ type Db = Awaited<ReturnType<typeof supabaseServer>>;
 
 function flagText(f: CoachFlag, lastLog: string | undefined) {
   if (f.type === 'pain') return ['Reported pain', 'Reported pain in the last 7 days.'];
-  if (f.type === 'missed') return ['Missed sessions', `${f.count} sessions missed in a row. ${lastLog ? `Last log ${fmt(lastLog)}.` : 'No log yet.'}`];
-  return ['High effort', 'Effort 9 or higher in the last two sessions.'];
+  if (f.type === 'missed') return ['Missed sessions', `${f.count} sessions missed in a row. ${lastLog ? `Last finished ${fmt(lastLog)}.` : 'None finished in the last 8 weeks.'}`];
+  return ['High effort', 'Effort 9 or higher in the last two sessions (14 days).'];
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
@@ -34,21 +34,30 @@ export async function Dashboard({ supabase, name, programIds }: { supabase: Db; 
   const since = addDays(today, -LOOKBACK_DAYS);
 
   const [enrollments, versions, logs] = await Promise.all([
-    supabase.from('enrollments').select('id, athlete_id, program_id, start_date').in('program_id', programIds),
+    // RLS already limits a coach to active enrollments; the filter keeps it so whatever other read rule appears.
+    supabase.from('enrollments').select('id, athlete_id, program_id, start_date').in('program_id', programIds).eq('status', 'active'),
     supabase.from('program_versions').select('id, program_id, version, effective_from, title, weeks').in('program_id', programIds).not('published_at', 'is', null),
     // shortcut: loads the coach's logs from the last 8 weeks in one query; page by athlete past a few hundred athletes.
     supabase
       .from('session_logs')
-      .select('athlete_id, program_id, session_id, on_date, completed_at, note, item_logs(effort, set_logs(rpe))')
+      .select('athlete_id, program_id, session_id, on_date, created_at, completed_at, note, item_logs(effort, set_logs(rpe))')
       .in('program_id', programIds)
       .gte('on_date', since)
-      .order('on_date', { ascending: false }),
+      .order('on_date', { ascending: false })
+      .order('created_at', { ascending: false }),
   ]);
   for (const r of [enrollments, versions, logs]) if (r.error) throw r.error;
   const rows = enrollments.data!;
+  const byProgram = (programId: string) => versions.data!.filter((v) => v.program_id === programId).map((v) => ({ ...v, effectiveFrom: v.effective_from! }));
+  // Only the versions in effect somewhere in the window, so republished programs do not pile up rows.
+  const used = new Set<string>();
+  for (const e of rows) for (let d = e.start_date > since ? e.start_date : since; d <= week[6]!.date; d = addDays(d, 1)) {
+    const v = versionOn(byProgram(e.program_id), d);
+    if (v) used.add(v.id);
+  }
   const [sessions, profiles, counts] = await Promise.all([
-    versions.data!.length
-      ? supabase.from('program_sessions').select('id, version_id, week, day, position').in('version_id', versions.data!.map((v) => v.id))
+    used.size
+      ? supabase.from('program_sessions').select('id, version_id, week, day, position').in('version_id', [...used])
       : Promise.resolve({ data: [], error: null }),
     rows.length ? supabase.from('profiles').select('id, display_name').in('id', [...new Set(rows.map((e) => e.athlete_id))]) : Promise.resolve({ data: [], error: null }),
     // shortcut: one adherence() call per enrollment; move to a set-returning SQL function past ~50 athletes.
@@ -59,8 +68,9 @@ export async function Dashboard({ supabase, name, programIds }: { supabase: Db; 
   const names = new Map(profiles.data!.map((p) => [p.id, p.display_name || 'Athlete']));
   const board = rows
     .map((e, i) => {
-      const own = versions.data!.filter((v) => v.program_id === e.program_id).map((v) => ({ ...v, effectiveFrom: v.effective_from! }));
-      const mine = logs.data!.filter((l) => l.athlete_id === e.athlete_id && l.program_id === e.program_id);
+      const own = byProgram(e.program_id);
+      // From this enrollment only: an athlete who left and rejoined starts afresh.
+      const mine = logs.data!.filter((l) => l.athlete_id === e.athlete_id && l.program_id === e.program_id && l.on_date >= e.start_date);
       const doneKey = new Set(mine.filter((l) => l.completed_at).map((l) => `${l.session_id}|${l.on_date}`));
       // Sessions this enrollment scheduled from the later of its start and the lookback, to the end of this week.
       const scheduled: { date: string; done: boolean }[] = [];
@@ -71,7 +81,7 @@ export async function Dashboard({ supabase, name, programIds }: { supabase: Db; 
         for (const s of sessionsOn([plan], d)) scheduled.push({ date: d, done: doneKey.has(`${s.id}|${d}`) });
       }
       const finished = mine.filter((l) => l.completed_at).map((l) => ({ date: l.on_date, efforts: l.item_logs.flatMap((i) => [...(i.effort ? [i.effort] : []), ...i.set_logs.map((x) => x.rpe)]) }));
-      const lastLog = mine[0]?.on_date;
+      const lastLog = mine.find((l) => l.completed_at)?.on_date;
       const current = versionOn(own, today);
       const at = current ? programDay(e.start_date, current.weeks!, today) : null;
       const c = counts[i]!.data![0];
@@ -84,8 +94,9 @@ export async function Dashboard({ supabase, name, programIds }: { supabase: Db; 
         thisWeek: scheduled.filter((s) => s.date >= week[0]!.date),
         note: mine.find((l) => l.note.trim())?.note.trim(),
         lastLog,
+        lastActivity: mine[0]?.on_date,
         // shortcut: pain reports come from the AI guide (journey J6, M5); until then no pain dates exist.
-        flags: coachFlags({ scheduled, finished, painDates: [], today }),
+        flags: coachFlags({ scheduled, finished, painDates: [], today, ended: !at }),
       };
     })
     .sort((a, b) => b.flags.length - a.flags.length || a.name.localeCompare(b.name));
@@ -133,6 +144,7 @@ export async function Dashboard({ supabase, name, programIds }: { supabase: Db; 
                 <li key={`${a.id}-${a.flag.type}`} className="flex flex-col gap-1 border-l-4 border-danger bg-mist p-4">
                   <span className="text-[13px] font-semibold uppercase tracking-wide text-danger">{label}</span>
                   <span className="text-[17px] font-medium">{a.name}</span>
+                  <span className="text-[14px] text-muted">{a.program}</span>
                   <span className="text-[15px] text-ink-soft">{text}</span>
                 </li>
               );
@@ -179,7 +191,7 @@ export async function Dashboard({ supabase, name, programIds }: { supabase: Db; 
                 </span>
                 <span className="col-span-2 flex flex-col text-[15px] text-ink-soft md:col-span-1">
                   <span className="text-[13px] text-muted md:sr-only">Latest note</span>
-                  {b.note ?? (b.lastLog ? `No note · last log ${fmt(b.lastLog)}` : 'No log in the last 8 weeks')}
+                  {b.note ?? (b.lastActivity ? `No note · last log ${fmt(b.lastActivity)}` : 'No log in the last 8 weeks')}
                 </span>
               </li>
             ))}

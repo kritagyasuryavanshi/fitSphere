@@ -34,6 +34,6 @@ The coach dashboard raises a flag per athlete and program. Code: `coachFlags` in
 
 | Flag | Rule |
 |---|---|
-| Missed sessions | The last 3 or more scheduled sessions before today are all unfinished. Today's and later sessions never count, because the athlete can still do them. The schedule covers the last 8 weeks. |
-| High effort | Each of the last two finished sessions has a mean effort of 9 or more. Effort is every drill effort and set RPE in the session; a session with none is skipped. |
+| Missed sessions | The last 3 or more scheduled sessions before today are all unfinished. Today's and later sessions never count, because the athlete can still do them. The schedule covers the last 8 weeks of the current enrollment. No flag once the program has ended. |
+| High effort | Each of the last two finished sessions in the last 14 days has a mean effort of 9 or more. Effort is every drill effort and set RPE in the session; a session with none is skipped. |
 | Reported pain | A pain report in the last 7 days, today included. Pain reports come from the AI guide (journey J6, M5); until then none exist. |

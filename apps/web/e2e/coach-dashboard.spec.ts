@@ -53,7 +53,7 @@ test.describe('Coach dashboard', () => {
     await expect(nehaRow).toContainText('100%');
 
     const attention = page.getByRole('region', { name: 'Needs your attention' });
-    await expect(attention.getByRole('listitem').filter({ hasText: 'Ravi' })).toContainText('3 sessions missed in a row. No log yet.');
-    await expect(attention.getByRole('listitem').filter({ hasText: 'Neha' })).toContainText('Effort 9 or higher in the last two sessions.');
+    await expect(attention.getByRole('listitem').filter({ hasText: 'Ravi' })).toContainText('3 sessions missed in a row. None finished in the last 8 weeks.');
+    await expect(attention.getByRole('listitem').filter({ hasText: 'Neha' })).toContainText('Effort 9 or higher in the last two sessions (14 days).');
   });
 });

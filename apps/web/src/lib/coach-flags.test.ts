@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { coachFlags } from './coach-flags';
 
 const today = '2026-11-19';
-const none = { scheduled: [], finished: [], painDates: [], today };
+const none = { scheduled: [], finished: [], painDates: [], today, ended: false };
 
 describe('coachFlags', () => {
   it('flags three missed sessions in a row, counting the whole run', () => {
@@ -70,7 +70,18 @@ describe('coachFlags', () => {
       finished: [{ date: '2026-11-08', efforts: [9] }, { date: '2026-11-09', efforts: [9] }],
       painDates: [today],
       today,
+      ended: false,
     });
     expect(flags.map((f) => f.type)).toEqual(['pain', 'missed', 'effort']);
+  });
+
+  it('drops the missed flag once the program has ended', () => {
+    const scheduled = [1, 2, 3].map((d) => ({ date: `2026-11-0${d}`, done: false }));
+    expect(coachFlags({ ...none, scheduled, ended: true })).toEqual([]);
+  });
+
+  it('counts high effort only from sessions in the last 14 days', () => {
+    expect(coachFlags({ ...none, finished: [{ date: '2026-11-05', efforts: [10] }, { date: '2026-11-18', efforts: [10] }] })).toEqual([]);
+    expect(coachFlags({ ...none, finished: [{ date: '2026-11-06', efforts: [10] }, { date: '2026-11-18', efforts: [10] }] })).toEqual([{ type: 'effort' }]);
   });
 });
