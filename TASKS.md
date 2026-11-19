@@ -3,6 +3,7 @@
 Build tasks live on the board: `docs/plans/board.json` (rendered at https://claude.ai/artifact/BPCG8ghatzZkV7v1haJ1z1). This file keeps owner-level items only.
 
 ## Now
+- [ ] Owner: install Codex on the WELCOME PC (`npm i -g @openai/codex`, then `codex login`), so every PR gets its independent review on either PC. PRs #22 to #32 had none until session 13.
 - [ ] Owner: rotate the GitHub token, because it appeared in the chat.
 - [ ] Owner: push the `suryavanshi-claude` rulebook commit that brings Codex back (the push from LENOVO gets 403).
 - [ ] Owner: push the rulebook, and switch off unused plugins. The tooling audit lists the steps: https://claude.ai/artifact/NAWsRxJUah4godqxBrXA6T.
@@ -21,6 +22,7 @@ Build tasks live on the board: `docs/plans/board.json` (rendered at https://clau
 - [ ] Owner: decide on Mobbin (optional).
 
 ## Done
+- [x] 2026-11-19: M3 review on LENOVO (Codex, Claude, Ponytail): nine fixes merged, incl. coach log access per program and private programs (PR #33).
 - [x] 2026-11-19: M3-07 to M3-10: boxing player, set logger, done summaries and metrics (PRs #29 to #32).
 - [x] 2026-11-19: M3-02 to M3-04 and M3-06: builder, invites, enrollments, Today (PRs #24 to #28).
 - [x] 2026-11-13: M2 Library done: save and complete, skill path, coach editor, review queue, daily video check, milestone check (PRs #17 to #21).
