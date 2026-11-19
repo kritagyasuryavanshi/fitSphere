@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import type { Numbers, PrescriptionType } from '@/lib/program-draft';
 import { isUuid } from '@/lib/programs';
-import { isIsoDate, playable } from '@/lib/session-player';
+import { isIsoDate, lastTime, playable } from '@/lib/session-player';
 import { supabaseServer } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/viewer';
 import { Player, type PlayerDrill } from './player';
@@ -30,12 +30,12 @@ async function Session({ params, searchParams }: PageProps<'/session/[id]'>) {
     supabase.from('program_sessions').select('week, day, title').eq('id', id).single(),
     supabase
       .from('session_items')
-      .select('position, type, prescription, cue, content_items(title, slug, status, disciplines(category_id))')
+      .select('position, type, prescription, cue, item_id, content_items(title, slug, status, disciplines(category_id))')
       .eq('session_id', id)
       .order('position'),
     supabase
       .from('session_logs')
-      .select('id, completed_at, item_logs(position, rounds_done, technique, effort, note)')
+      .select('id, completed_at, item_logs(position, type, rounds_done, technique, effort, note, set_logs(set_no, reps, load_kg, rpe))')
       .eq('athlete_id', viewer.userId)
       .eq('session_id', id)
       .eq('on_date', date)
@@ -58,7 +58,32 @@ async function Session({ params, searchParams }: PageProps<'/session/[id]'>) {
       href: live ? `/learn/${c.disciplines!.category_id}/${c.slug}` : null,
     };
   });
-  const logged = (log.data?.item_logs ?? []).map((l) => ({ position: l.position, rounds: l.rounds_done, technique: l.technique, effort: l.effort, note: l.note }));
+  const itemLogs = log.data?.item_logs ?? [];
+  const logged = itemLogs
+    .filter((l) => l.type !== 'sets')
+    .map((l) => ({ position: l.position, rounds: l.rounds_done, technique: l.technique!, effort: l.effort!, note: l.note }));
+  const sets = Object.fromEntries(
+    itemLogs
+      .filter((l) => l.type === 'sets')
+      .map((l) => [l.position, l.set_logs.map((x) => ({ setNo: x.set_no, reps: x.reps, loadKg: x.load_kg === null ? null : Number(x.load_kg), rpe: x.rpe }))]),
+  );
+
+  // Last time's sets of each exercise: the athlete's own earlier logs of the same library item, up to this date.
+  const exerciseItems = [...new Set(items.data!.filter((i) => i.type === 'sets').map((i) => i.item_id))];
+  const history = exerciseItems.length
+    ? await supabase
+        .from('session_logs')
+        .select('id, on_date, started_at, item_logs!inner(item_id, set_logs(set_no, reps, load_kg))')
+        .eq('athlete_id', viewer.userId)
+        .lte('on_date', date)
+        .in('item_logs.item_id', exerciseItems)
+        .order('on_date', { ascending: false })
+        .limit(60)
+    : { data: [], error: null };
+  if (history.error) throw history.error;
+  const lastTimes = Object.fromEntries(
+    items.data!.filter((i) => i.type === 'sets').map((i) => [i.position, lastTime(history.data, i.item_id, log.data?.id ?? null)]),
+  );
   const name = session.data!.title.trim() || `Week ${session.data!.week}, day ${session.data!.day}`;
   // The title of the version that scheduled this date, which for a past date may not be today's.
   const line = [sched.program_title, `week ${session.data!.week}`, program?.coach_name].filter(Boolean).join(' · ');
@@ -76,6 +101,8 @@ async function Session({ params, searchParams }: PageProps<'/session/[id]'>) {
       coach={program?.coach_name || 'Your coach'}
       drills={drills}
       logged={logged}
+      sets={sets}
+      lastTimes={lastTimes}
       completed={!!log.data?.completed_at}
     />
   );

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { firstOpen, isIsoDate, playable, timerPlan } from './session-player';
+import { firstOpen, isIsoDate, lastTime, parseLoad, playable, timerPlan } from './session-player';
 
 describe('timerPlan', () => {
   it('times rounds as work and rest, and a timed drill as one round without rest', () => {
@@ -12,10 +12,45 @@ describe('timerPlan', () => {
 });
 
 describe('playable', () => {
-  it('plays a session of rounds and timed drills only', () => {
+  it('plays any session with drills or exercises', () => {
     expect(playable([{ type: 'rounds' }, { type: 'time' }])).toBe(true);
-    expect(playable([{ type: 'rounds' }, { type: 'sets' }])).toBe(false);
+    expect(playable([{ type: 'rounds' }, { type: 'sets' }])).toBe(true);
     expect(playable([])).toBe(false);
+  });
+});
+
+describe('lastTime', () => {
+  const bench = 'bench';
+  const history = [
+    { id: 'now', on_date: '2026-11-19', started_at: '2026-11-19T10:00:00Z', item_logs: [{ item_id: bench, set_logs: [{ set_no: 1, reps: 8, load_kg: 55 }] }] },
+    { id: 'b', on_date: '2026-11-16', started_at: '2026-11-16T10:00:00Z', item_logs: [{ item_id: bench, set_logs: [{ set_no: 2, reps: 7, load_kg: 50 }, { set_no: 1, reps: 8, load_kg: 50 }] }] },
+    { id: 'a', on_date: '2026-11-12', started_at: '2026-11-12T10:00:00Z', item_logs: [{ item_id: bench, set_logs: [{ set_no: 1, reps: 8, load_kg: 45 }] }] },
+    { id: 'c', on_date: '2026-11-17', started_at: '2026-11-17T10:00:00Z', item_logs: [{ item_id: 'row', set_logs: [{ set_no: 1, reps: 10, load_kg: 40 }] }, { item_id: bench, set_logs: [] }] },
+  ];
+  it('takes the latest other session with sets of the same exercise, in set order', () => {
+    expect(lastTime(history, bench, 'now')).toEqual({ date: '2026-11-16', sets: [{ reps: 8, loadKg: 50 }, { reps: 7, loadKg: 50 }] });
+  });
+  it('skips logs of the exercise without sets, and is null for a first time', () => {
+    expect(lastTime(history, 'row', 'c')).toBeNull();
+    expect(lastTime(history, 'squat', 'now')).toBeNull();
+  });
+  it('reads loads that PostgREST sends as strings', () => {
+    expect(lastTime([{ id: 'x', on_date: '2026-11-01', started_at: '', item_logs: [{ item_id: bench, set_logs: [{ set_no: 1, reps: 5, load_kg: '52.50' as unknown as number }] }] }], bench, 'now')?.sets[0]?.loadKg).toBe(52.5);
+  });
+});
+
+describe('parseLoad', () => {
+  it('reads kilograms with up to two decimals, blank as bodyweight', () => {
+    expect(parseLoad('52.5')).toBe(52.5);
+    expect(parseLoad(' 0 ')).toBe(0);
+    expect(parseLoad('')).toBeNull();
+    expect(parseLoad('500')).toBe(500);
+  });
+  it('refuses anything else', () => {
+    expect(parseLoad('500.5')).toBeUndefined();
+    expect(parseLoad('52.345')).toBeUndefined();
+    expect(parseLoad('-5')).toBeUndefined();
+    expect(parseLoad('52,5')).toBeUndefined();
   });
 });
 

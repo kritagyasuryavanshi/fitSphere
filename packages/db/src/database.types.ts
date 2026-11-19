@@ -407,14 +407,14 @@ isOneToOne: false
                   ]
                 },"item_logs": {
                   Row: {
-                    "effort": number,"id": string,"item_id": string | null,"log_id": string,"logged_at": string,"note": string,"position": number,"rounds_done": number | null,"rounds_planned": number | null,"technique": number,"type": Database["public"]['Enums']["prescription_type"]
+                    "effort": number | null,"id": string,"item_id": string | null,"log_id": string,"logged_at": string,"note": string,"position": number,"rounds_done": number | null,"rounds_planned": number | null,"technique": number | null,"type": Database["public"]['Enums']["prescription_type"]
                   }
                   ComputedFields: never
                   Insert: {
-                    "effort": number,"id"?: string,"item_id"?: string | null,"log_id": string,"logged_at"?: string,"note"?: string,"position": number,"rounds_done"?: number | null,"rounds_planned"?: number | null,"technique": number,"type": Database["public"]['Enums']["prescription_type"]
+                    "effort"?: number | null,"id"?: string,"item_id"?: string | null,"log_id": string,"logged_at"?: string,"note"?: string,"position": number,"rounds_done"?: number | null,"rounds_planned"?: number | null,"technique"?: number | null,"type": Database["public"]['Enums']["prescription_type"]
                   }
                   Update: {
-                    "effort"?: number,"id"?: string,"item_id"?: string | null,"log_id"?: string,"logged_at"?: string,"note"?: string,"position"?: number,"rounds_done"?: number | null,"rounds_planned"?: number | null,"technique"?: number,"type"?: Database["public"]['Enums']["prescription_type"]
+                    "effort"?: number | null,"id"?: string,"item_id"?: string | null,"log_id"?: string,"logged_at"?: string,"note"?: string,"position"?: number,"rounds_done"?: number | null,"rounds_planned"?: number | null,"technique"?: number | null,"type"?: Database["public"]['Enums']["prescription_type"]
                   }
                   Relationships: [
                     {
@@ -615,6 +615,26 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"set_logs": {
+                  Row: {
+                    "id": string,"item_log_id": string,"load_kg": number | null,"logged_at": string,"reps": number,"rpe": number,"set_no": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: string,"item_log_id": string,"load_kg"?: number | null,"logged_at"?: string,"reps": number,"rpe": number,"set_no": number
+                  }
+                  Update: {
+                    "id"?: string,"item_log_id"?: string,"load_kg"?: number | null,"logged_at"?: string,"reps"?: number,"rpe"?: number,"set_no"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "set_logs_item_log_id_fkey"
+      columns: ["item_log_id"]
+isOneToOne: false
+      referencedRelation: "item_logs"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"user_roles": {
                   Row: {
                     "created_at": string,"granted_by": string | null,"role": Database["public"]['Enums']["app_role"],"user_id": string
@@ -714,6 +734,9 @@ isOneToOne: false
                            },
 "log_drill":
 { Args: { "effort": number,"item_position": number,"note": string,"on_date": string,"rounds_done": number,"session": string,"technique": number }; Returns: string
+                           },
+"log_set":
+{ Args: { "item_position": number,"load_kg": number,"on_date": string,"reps": number,"rpe": number,"session": string,"set_no": number }; Returns: string
                            },
 "my_programs":
 { Args: Record<PropertyKey, never>; Returns: {

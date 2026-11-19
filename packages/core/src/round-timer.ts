@@ -36,6 +36,9 @@ export function tick(t: TimerState, elapsedMs: number): TimerState {
 export const pause = (t: TimerState): TimerState => ({ ...t, running: false });
 export const resume = (t: TimerState): TimerState => (t.phase === 'done' ? t : { ...t, running: true });
 
+/** More time on the current phase, as "Add 30 s" on a rest. */
+export const addTime = (t: TimerState, ms: number): TimerState => (t.phase === 'done' ? t : { ...t, remainingMs: t.remainingMs + ms });
+
 /** Skip rest starts the next round; during work it ends the round early. A paused timer stays paused. */
 export function skip(t: TimerState): TimerState {
   const next = advance(t);
