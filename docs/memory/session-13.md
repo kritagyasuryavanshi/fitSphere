@@ -48,6 +48,7 @@ Follows [[session-12]]. Hub for this work: [[programs]].
 
 - M3-14 after merge: `/security-review` of PR #37 (email_prefs, claim_emails, give_feedback email, Resend sender, cron): no findings. Live check: `/account/feedback` loads; `/api/cron/send-emails` returns 401 without the secret.
 - Final M3 production check: 4 new tables, 8 functions and 2 triggers present; RLS on notifications; /account/notifications, /account/feedback, /coach, /progress/gym and /legal/privacy load; the menu links only to real pages.
+- Live e2e: `links.spec.ts` run against https://fit-sphere-xi.vercel.app (temporary config, no web server, read-only): 4 of 4 pass on desktop and phone. Signed-in e2e stays on a production build locally and on CI, so production never gets test accounts or data.
 - Process miss: M3-14's `/security-review` ran after its merge, not before (no findings). Lesson: for every PR that touches RLS, grants or security-definer functions, start `/security-review` together with Codex and `/code-review`, before the merge.
 - M3-15, PR #39: the M3 milestone check passed; M3 is done ([[M3-check]]). Live-site QA fixed dead menu links, added privacy and terms pages (they match what coaches can actually read), `/learn`, and a contrast failure.
 
