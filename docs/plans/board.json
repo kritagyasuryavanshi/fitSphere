@@ -1308,7 +1308,7 @@
         "M4-04",
         "M4-03"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "db+e2e",
       "screens": [
@@ -1318,6 +1318,29 @@
         "Stats come from SQL views over engagements and logs; pgTAP compares them to hand-computed values",
         "Packages, slots, portfolio and reviews from the database",
         "Shows 'self-reported' for anything not checked"
+      ],
+      "done_on": "2026-11-20"
+    },
+    {
+      "id": "M4-05b",
+      "phase": "M4",
+      "title": "Coaches choose programs to list on their public profile",
+      "priority": "P2",
+      "size": "S",
+      "deps": [
+        "M4-05"
+      ],
+      "status": "todo",
+      "owner": "claude",
+      "test": "db+e2e",
+      "screens": [
+        "P-Coach",
+        "X-CoachProfile"
+      ],
+      "ac": [
+        "A program shows on the public profile only after its coach ticks 'Show on my profile'",
+        "Listed programs show title, weeks and athletes enrolled now, with the 5-athlete floor on the count",
+        "End-to-end: an unticked program never shows; a ticked one does"
       ]
     },
     {

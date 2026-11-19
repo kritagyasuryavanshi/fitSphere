@@ -65,8 +65,12 @@ Follows [[session-12]]. Hub for this work: [[programs]].
 - Fixed the verify race for good: in turbo.json, build depends on typecheck in the same package.
 - Lesson: the production `db query --read-only` role cannot run anon-granted functions (42501); check those through the live site.
 
+- M4-05, PR #44: `coach_stats` (definer, anon) gives athletes coached, programs finished, stayed 3+ months and average adherence from enrollments and logs. Finished means the enrollment ran past its last day with at least half its sessions done. The percentages need 5 athletes and show to the nearest 10%. `/coaches/[id]` shows the stats, a portfolio of published lessons, an empty reviews section and years marked self-reported. 37 of 37 migrations on production.
+- Decision: programs stay off the public profile. They are invite only (M3), and a program made for one client can name them in its title. New task M4-05b lets a coach choose to list a program.
+- Lesson: a public aggregate needs a floor and rounding. 3 people let 0% or 100% show each person's outcome, and day-to-day changes show a newcomer's.
+
 ## Next
-1. M4-05 the public profile with stats, then M4-06 shortlist and compare.
+1. M4-06 shortlist and compare, then M4-07 hire, accept and decline.
 2. The demo work: demo accounts with realistic data and one-click entry, then a domain and Resend (owner).
 2. Then M4 (marketplace) only once coaches pay by hand, per the owner's sell-to-coaches-first plan.
 2. Hosting: the owner sets the Supabase Auth URL configuration; then test sign-in on the live site and run the Supabase security advisors once.
