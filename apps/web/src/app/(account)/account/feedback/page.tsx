@@ -26,7 +26,7 @@ async function Feedback() {
   if (error) throw error;
   if (programs.error) throw programs.error;
   if (prefs.error) throw prefs.error;
-  const emailSwitch = <EmailSwitch initial={prefs.data[0]?.coach_feedback ?? true} />;
+  const emailSwitch = <EmailSwitch kind="coach_feedback" label="Email me when my coach sends feedback" initial={prefs.data[0]?.coach_feedback ?? true} />;
   // Replies reach the coach only while the athlete is still in that program.
   const active = new Set(programs.data.map((p) => p.program_id));
   if (!data.length) {

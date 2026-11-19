@@ -23,6 +23,15 @@ async function resend(m: Email) {
   if (!res.ok) throw new Error(`resend ${res.status}`);
 }
 
+/** The daily reminder job: notifies (and, if wanted, emails) athletes with a session today. Returns how many. */
+export async function queueSessionReminders() {
+  if (!process.env.SUPABASE_SECRET_KEY) return null;
+  const db = createDbClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? '', process.env.SUPABASE_SECRET_KEY);
+  const { data, error } = await db.rpc('queue_session_reminders');
+  if (error) throw error;
+  return data;
+}
+
 /**
  * Sends what waits in email_outbox. Without RESEND_API_KEY, EMAIL_FROM and NEXT_PUBLIC_SITE_URL nothing is sent and
  * every email stays queued (for up to 7 days). Links use the configured site address, never a request's host, so one

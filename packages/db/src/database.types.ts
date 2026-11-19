@@ -355,14 +355,14 @@ isOneToOne: false
                   ]
                 },"email_prefs": {
                   Row: {
-                    "coach_feedback": boolean,"updated_at": string,"user_id": string
+                    "coach_feedback": boolean,"new_lesson": boolean,"session_reminder": boolean,"updated_at": string,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "coach_feedback"?: boolean,"updated_at"?: string,"user_id": string
+                    "coach_feedback"?: boolean,"new_lesson"?: boolean,"session_reminder"?: boolean,"updated_at"?: string,"user_id": string
                   }
                   Update: {
-                    "coach_feedback"?: boolean,"updated_at"?: string,"user_id"?: string
+                    "coach_feedback"?: boolean,"new_lesson"?: boolean,"session_reminder"?: boolean,"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     {
@@ -522,6 +522,26 @@ isOneToOne: false
                   }
                   Relationships: [
                     
+                  ]
+                },"notifications": {
+                  Row: {
+                    "body": string,"created_at": string,"id": number,"kind": string,"link": string,"read_at": string | null,"ref": string | null,"title": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "body"?: string,"created_at"?: string,"id"?: never,"kind": string,"link"?: string,"read_at"?: string | null,"ref"?: string | null,"title": string,"user_id": string
+                  }
+                  Update: {
+                    "body"?: string,"created_at"?: string,"id"?: never,"kind"?: string,"link"?: string,"read_at"?: string | null,"ref"?: string | null,"title"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "notifications_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
                   ]
                 },"profiles": {
                   Row: {
@@ -807,6 +827,9 @@ isOneToOne: false
 "delete_my_account":
 { Args: Record<PropertyKey, never>; Returns: undefined
                            },
+"email_wanted":
+{ Args: { "person": string,"template": string }; Returns: boolean
+                           },
 "ever_enrolled":
 { Args: { "program": string }; Returns: boolean
                            },
@@ -856,9 +879,12 @@ isOneToOne: false
 "log_set":
 { Args: { "item_position": number,"load_kg": number,"on_date": string,"reps": number,"rpe": number,"session": string,"set_no": number }; Returns: string
                            },
+"mark_notifications_read":
+{ Args: { "ids"?: (number)[] }; Returns: number
+                           },
 "my_email_prefs":
 { Args: Record<PropertyKey, never>; Returns: {
-              "coach_feedback": boolean
+              "coach_feedback": boolean,"new_lesson": boolean,"session_reminder": boolean
             }[]
                            },
 "my_programs":
@@ -888,6 +914,9 @@ isOneToOne: false
                            },
 "publish_program":
 { Args: { "program": string }; Returns: number
+                           },
+"queue_session_reminders":
+{ Args: Record<PropertyKey, never>; Returns: number
                            },
 "record_consent":
 { Args: { "answer": boolean,"notice": string,"uid": string,"what": Database["public"]['Enums']["consent_purpose"] }; Returns: undefined
