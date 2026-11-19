@@ -1352,7 +1352,7 @@
       "deps": [
         "M4-05"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "e2e",
       "screens": [
@@ -1363,7 +1363,8 @@
         "Shortlist is private to the athlete",
         "Compare shows the same rows as the mockup for up to 3 coaches",
         "End-to-end: shortlist two coaches, then compare"
-      ]
+      ],
+      "done_on": "2026-11-20"
     },
     {
       "id": "M4-07",

@@ -69,8 +69,11 @@ Follows [[session-12]]. Hub for this work: [[programs]].
 - Decision: programs stay off the public profile. They are invite only (M3), and a program made for one client can name them in its title. New task M4-05b lets a coach choose to list a program.
 - Lesson: a public aggregate needs a floor and rounding. 3 people let 0% or 100% show each person's outcome, and day-to-day changes show a newcomer's.
 
+- M4-06, PR #45: `shortlists` with owner-only RLS, written through `shortlist_coach` (athletes only, live coaches only, never yourself, at most 20 live, with a per-athlete lock). `find_coaches` takes `ids`. `/shortlist` has Compare selected and Remove, and Remove lists every saved coach, so one who stops being live never gets stuck. `/coaches/compare` shows the mockup rows for up to 3 coaches. The shortlist is in the data download. 38 of 38 migrations on production.
+- Lesson: anything keyed to "live" coaches must handle a coach who stops being live. A new agreement version hides them all at once.
+
 ## Next
-1. M4-06 shortlist and compare, then M4-07 hire, accept and decline.
+1. M4-07 hire, accept and decline, with the client limit (engagements).
 2. The demo work: demo accounts with realistic data and one-click entry, then a domain and Resend (owner).
 2. Then M4 (marketplace) only once coaches pay by hand, per the owner's sell-to-coaches-first plan.
 2. Hosting: the owner sets the Supabase Auth URL configuration; then test sign-in on the live site and run the Supabase security advisors once.
