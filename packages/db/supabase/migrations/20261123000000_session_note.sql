@@ -32,8 +32,9 @@ begin
 end;
 $$;
 
--- The athlete's note to their coach on a session they logged. Only the athlete writes it; the coach reads it
--- under the session log's policy.
+-- The athlete's note to their coach on a session they finished. Only the athlete writes it; the coach reads it
+-- under the session log's policy. Leading and trailing whitespace of any kind (spaces, new lines, tabs) is dropped,
+-- as String.trim does in the app.
 create function public.save_session_note(session uuid, on_date date, note text)
 returns uuid
 language plpgsql
@@ -42,13 +43,14 @@ set search_path = ''
 as $$
 declare
   log uuid;
-  body text := btrim(coalesce(note, ''));
+  body text := regexp_replace(coalesce(note, ''), '^\s+|\s+$', '', 'g');
 begin
   if char_length(body) > 1000 then
     raise exception 'bad_note' using errcode = '22023';
   end if;
   update public.session_logs l set note = body
   where l.athlete_id = auth.uid() and l.session_id = session and l.on_date = save_session_note.on_date
+    and l.completed_at is not null
   returning l.id into log;
   if log is null then
     raise exception 'no_log' using errcode = 'P0002';

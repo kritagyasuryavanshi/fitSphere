@@ -60,7 +60,8 @@ async function Done({ params, searchParams }: PageProps<'/session/[id]/done'>) {
       position: it.position,
       title: it.content_items?.title ?? 'No longer in the library',
       type: it.type,
-      plannedRounds: it.type === 'rounds' ? Number(p.rounds) : null,
+      // The log keeps the rounds planned when it was saved; a skipped drill falls back to the plan.
+      plannedRounds: it.type === 'rounds' ? (l?.rounds_planned ?? (Number.isInteger(Number(p.rounds)) ? Number(p.rounds) : null)) : null,
       log: l
         ? {
             roundsDone: l.rounds_done,
@@ -124,8 +125,8 @@ async function Done({ params, searchParams }: PageProps<'/session/[id]/done'>) {
                       <th scope="row" className="py-2.5 pr-3 font-normal">
                         {d.title}
                       </th>
-                      <td className="py-2.5 pr-3">{d.type === 'rounds' ? `${d.log?.roundsDone ?? 0} / ${d.plannedRounds}` : d.log ? 'Done' : '–'}</td>
-                      <td className="py-2.5 pr-3">{d.log?.technique ?? 'Skipped'}</td>
+                      <td className="py-2.5 pr-3">{d.type === 'rounds' ? `${d.log?.roundsDone ?? 0} / ${d.plannedRounds ?? '–'}` : d.log ? 'Done' : '–'}</td>
+                      <td className="py-2.5 pr-3">{d.log ? (d.log.technique ?? '–') : 'Skipped'}</td>
                       <td className="py-2.5">{d.log?.effort ?? '–'}</td>
                     </tr>
                   ))}

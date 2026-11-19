@@ -35,12 +35,12 @@ function Header({ today, line }: { today: string; line: string }) {
 }
 
 // The player runs rounds and timed drills; a session with sets waits for the set logger.
-function SessionAction({ id, name, canPlay, log }: { id: string; name: string; canPlay: boolean; log?: { completed_at: string | null } }) {
+function SessionAction({ id, name, date, canPlay, log }: { id: string; name: string; date: string; canPlay: boolean; log?: { completed_at: string | null } }) {
   if (log?.completed_at) {
     return (
       <div className="mt-auto flex flex-wrap items-center gap-3">
         <span className="bg-success-soft px-3 py-1.5 text-[14px] font-medium text-success">Done</span>
-        <Link href={`/session/${id}/done`} className="text-[15px] font-medium underline underline-offset-4">
+        <Link href={`/session/${id}/done?date=${date}`} className="text-[15px] font-medium underline underline-offset-4">
           Review your log<span className="sr-only"> for {name}</span>
         </Link>
       </div>
@@ -227,7 +227,7 @@ async function Today() {
                       );
                     })}
                   </ol>
-                  <SessionAction id={s.id} name={name} canPlay={playable(items)} log={logRows.data.find((l) => l.session_id === s.id)} />
+                  <SessionAction id={s.id} name={name} date={today} canPlay={playable(items)} log={logRows.data.find((l) => l.session_id === s.id)} />
                 </article>
               </li>
             );

@@ -14,8 +14,10 @@ export async function saveNote(session: string, date: string, note: string): Pro
   if (!isUuid(session) || !isIsoDate(date) || typeof note !== 'string') return { error: 'We could not save your note.' };
   if (note.trim().length > 1000) return { error: 'Keep the note under 1,000 characters.' };
   const supabase = await supabaseServer();
-  const { error } = await supabase.rpc('save_session_note', { session, on_date: date, note });
+  const { error } = await supabase.rpc('save_session_note', { session, on_date: date, note: note.trim() });
   if (error) {
+    if (error.message.includes('bad_note')) return { error: 'Keep the note under 1,000 characters.' };
+    if (error.message.includes('no_log')) return { error: 'This session has no finished log to add a note to.' };
     console.error('save_session_note failed', error.code, error.message);
     return { error: 'We could not save your note. Check your connection and try again.' };
   }
