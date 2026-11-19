@@ -707,7 +707,7 @@ isOneToOne: false
 { Args: Record<PropertyKey, never>; Returns: Json
                            },
 "finish_session":
-{ Args: { "on_date": string,"session": string }; Returns: string
+{ Args: { "on_date": string,"opened_at"?: string,"session": string }; Returns: string
                            },
 "grant_role":
 { Args: { "new_role": Database["public"]['Enums']["app_role"],"target": string }; Returns: undefined
@@ -795,6 +795,9 @@ isOneToOne: false
                            },
 "save_program_draft":
 { Args: { "program": string,"sessions": Json,"summary": string,"title": string,"weeks": number }; Returns: undefined
+                           },
+"save_session_note":
+{ Args: { "note": string,"on_date": string,"session": string }; Returns: string
                            },
 "save_training_basics":
 { Args: { "ai_consent": boolean,"days": number,"equipment": (string)[],"injury_notes": string,"notice": string,"sport_answers": Json }; Returns: undefined

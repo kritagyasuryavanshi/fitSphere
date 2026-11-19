@@ -85,12 +85,13 @@ export async function logSet(input: SetLog): Promise<ActionResult> {
   return { ok: true };
 }
 
-/** Marks the session done and returns to Today. */
-export async function finishSession(session: string, date: string): Promise<ActionResult> {
+/** Marks the session done and opens its summary. openedAt is when the player opened, for the session's time. */
+export async function finishSession(session: string, date: string, openedAt?: string): Promise<ActionResult> {
   await requireRole('athlete');
   if (!isUuid(session) || !isIsoDate(date)) return { error: 'We could not finish this session.' };
+  const opened = openedAt && !Number.isNaN(Date.parse(openedAt)) ? new Date(openedAt).toISOString() : undefined;
   const supabase = await supabaseServer();
-  const { error } = await supabase.rpc('finish_session', { session, on_date: date });
+  const { error } = await supabase.rpc('finish_session', { session, on_date: date, opened_at: opened });
   if (error) {
     if (error.message.includes('nothing_logged')) return { error: 'Log at least one drill to finish the session.' };
     if (error.message.includes('not_scheduled')) return { error: 'This session is no longer in your programs.' };
@@ -99,5 +100,5 @@ export async function finishSession(session: string, date: string): Promise<Acti
   }
   revalidatePath('/today');
   revalidatePath(`/session/${session}`);
-  redirect('/today');
+  redirect(`/session/${session}/done?date=${date}`);
 }

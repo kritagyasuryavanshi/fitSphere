@@ -206,6 +206,8 @@ export function Player({ session, date, isToday, title, line, coach, drills, log
   const [finishing, startFinish] = useTransition();
   const [announce, setAnnounce] = useState('');
   const hydrated = useHydrated();
+  // When the player opened, sent on finishing so the summary's time covers the whole session.
+  const [openedAt] = useState(() => new Date().toISOString());
   const drill = drills[index];
   const last = index === drills.length - 1;
 
@@ -246,7 +248,7 @@ export function Player({ session, date, isToday, title, line, coach, drills, log
     if (fromSummary) goTo(drills.length);
     else if (finish) {
       startFinish(async () => {
-        const result = await finishSession(session, date);
+        const result = await finishSession(session, date, openedAt);
         if (result && 'error' in result) {
           setFinishError(result.error);
           goTo(drills.length);
@@ -257,7 +259,7 @@ export function Player({ session, date, isToday, title, line, coach, drills, log
 
   const finish = () =>
     startFinish(async () => {
-      const result = await finishSession(session, date);
+      const result = await finishSession(session, date, openedAt);
       if (result && 'error' in result) {
         setFinishError(result.error);
         goTo(drills.length);
