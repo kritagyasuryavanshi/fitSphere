@@ -44,6 +44,30 @@ $$;
 revoke execute on function public.my_email_prefs(), public.set_email_pref(text, boolean) from public, anon;
 grant execute on function public.my_email_prefs(), public.set_email_pref(text, boolean) to authenticated;
 
+-- The sender claims a batch before sending, so two runs at once (the coach's action and the daily catch-up) never
+-- send the same email. A claimed email that was not marked sent rests 10 minutes, so a failing email cannot block the
+-- ones behind it, and it is given up after 5 tries. Only the server's secret key may claim.
+alter table public.email_outbox add column claimed_at timestamptz, add column attempts smallint not null default 0;
+create function public.claim_emails(templates text[], max_rows int default 50)
+returns setof public.email_outbox
+language sql
+security definer
+set search_path = ''
+as $$
+  update public.email_outbox o set claimed_at = now(), attempts = o.attempts + 1
+  where o.id in (
+    select x.id from public.email_outbox x
+    where x.sent_at is null and x.template = any(templates) and x.attempts < 5
+      and (x.claimed_at is null or x.claimed_at < now() - interval '10 minutes')
+    order by x.created_at
+    limit least(greatest(max_rows, 1), 200)
+    for update skip locked
+  )
+  returning o.*;
+$$;
+revoke execute on function public.claim_emails(text[], int) from public, anon, authenticated;
+grant execute on function public.claim_emails(text[], int) to service_role;
+
 -- give_feedback as in 20261127000000_feedback.sql, plus the email.
 create or replace function public.give_feedback(enrollment uuid, body text, log uuid default null)
 returns uuid

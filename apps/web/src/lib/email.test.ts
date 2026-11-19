@@ -15,7 +15,7 @@ function fakeDb(rows: OutboxRow[]) {
   return {
     marked,
     db: {
-      unsent: async (limit: number) => rows.filter((r) => !marked.includes(r.id)).slice(0, limit),
+      claim: async (templates: string[], limit: number) => rows.filter((r) => !marked.includes(r.id) && templates.includes(r.template)).slice(0, limit),
       markSent: async (id: number) => {
         marked.push(id);
       },
@@ -42,10 +42,10 @@ describe('drainOutbox', () => {
     expect(marked).toEqual([2]);
   });
 
-  it('leaves an email with an unknown template queued, unsent, for a sender that knows it', async () => {
+  it('never claims an email with an unknown template, so it stays queued for a sender that knows it', async () => {
     const { db, marked } = fakeDb([row(1, 'neha@t.test', { template: 'no_such_template' }), row(2, 'ravi@t.test')]);
     const send = vi.fn(async () => {});
-    expect(await drainOutbox(db, send)).toEqual({ sent: 1, failed: 0, skipped: 1 });
+    expect(await drainOutbox(db, send)).toEqual({ sent: 1, failed: 0, skipped: 0 });
     expect(send).toHaveBeenCalledTimes(1);
     expect(marked).toEqual([2]);
   });

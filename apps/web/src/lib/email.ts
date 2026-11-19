@@ -3,7 +3,11 @@
 
 export type OutboxRow = { id: number; to_email: string; template: string; data: Record<string, unknown> };
 export type Email = { to: string; subject: string; text: string };
-export type Outbox = { unsent: (limit: number) => Promise<OutboxRow[]>; markSent: (id: number) => Promise<void> };
+/** claim reserves a batch atomically (claim_emails in the database), so two runs never get the same row. */
+export type Outbox = { claim: (templates: string[], limit: number) => Promise<OutboxRow[]>; markSent: (id: number) => Promise<void> };
+
+/** The templates this sender writes; others stay queued for a sender that knows them. */
+export const TEMPLATES = ['coach_feedback', 'coach_approved', 'coach_declined'];
 
 const str = (v: unknown) => (typeof v === 'string' ? v : '');
 
@@ -42,11 +46,11 @@ export function renderEmail(template: string, data: Record<string, unknown>, ori
 
 /**
  * Sends queued emails one by one. A sent email is marked at once, so a crash part-way never sends it twice on the
- * next run; a failed send stays queued for the next run. An unknown template stays queued for a sender that knows it.
+ * next run; a failed send stays queued and is retried after a rest. Unknown templates are never claimed.
  */
 export async function drainOutbox(db: Outbox, send: (m: Email) => Promise<void>, origin = '', limit = 50) {
   const result = { sent: 0, failed: 0, skipped: 0 };
-  for (const row of await db.unsent(limit)) {
+  for (const row of await db.claim(TEMPLATES, limit)) {
     const email = renderEmail(row.template, row.data, origin);
     if (!email) {
       result.skipped++;

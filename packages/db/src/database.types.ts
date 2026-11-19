@@ -335,14 +335,14 @@ isOneToOne: false
                   ]
                 },"email_outbox": {
                   Row: {
-                    "created_at": string,"data": NonNullable<Json>,"id": number,"sent_at": string | null,"template": string,"to_email": string,"user_id": string | null
+                    "attempts": number,"claimed_at": string | null,"created_at": string,"data": NonNullable<Json>,"id": number,"sent_at": string | null,"template": string,"to_email": string,"user_id": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"data"?: NonNullable<Json>,"id"?: never,"sent_at"?: string | null,"template": string,"to_email": string,"user_id"?: string | null
+                    "attempts"?: number,"claimed_at"?: string | null,"created_at"?: string,"data"?: NonNullable<Json>,"id"?: never,"sent_at"?: string | null,"template": string,"to_email": string,"user_id"?: string | null
                   }
                   Update: {
-                    "created_at"?: string,"data"?: NonNullable<Json>,"id"?: never,"sent_at"?: string | null,"template"?: string,"to_email"?: string,"user_id"?: string | null
+                    "attempts"?: number,"claimed_at"?: string | null,"created_at"?: string,"data"?: NonNullable<Json>,"id"?: never,"sent_at"?: string | null,"template"?: string,"to_email"?: string,"user_id"?: string | null
                   }
                   Relationships: [
                     {
@@ -770,6 +770,9 @@ isOneToOne: false
 { Args: { "ids": (string)[] }; Returns: {
               "display_name": string,"id": string
             }[]
+                           },
+"claim_emails":
+{ Args: { "max_rows"?: number,"templates": string[] }; Returns: Database["public"]["Tables"]["email_outbox"]["Row"][]
                            },
 "coach_can_read":
 { Args: { "athlete": string }; Returns: boolean

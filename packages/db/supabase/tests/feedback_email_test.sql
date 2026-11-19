@@ -1,6 +1,6 @@
 -- M3-14: feedback queues one email to the athlete, unless they turned feedback emails off.
 begin;
-select plan(7);
+select plan(12);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('ab000000-0000-0000-0000-0000000000a1', 'coach-e@t.test', now()),
@@ -44,6 +44,22 @@ select set_config('request.jwt.claims', '{"sub":"ab000000-0000-0000-0000-0000000
 select public.give_feedback((select v from ids where name = 'e')::uuid, 'Second note.', null);
 reset role;
 select is((select count(*)::int from public.email_outbox where to_email = 'kabir-e@t.test'), 1, 'no email once the athlete turned the setting off');
+
+-- The sender claims emails atomically, so two runs at once never send the same one.
+set local role service_role;
+select is((select count(*)::int from public.claim_emails(array['coach_feedback'], 50)), 1, 'a run claims the waiting email');
+select is((select count(*)::int from public.claim_emails(array['coach_feedback'], 50)), 0, 'a second run at the same time gets nothing');
+select is((select count(*)::int from public.claim_emails(array['coach_approved'], 50)), 0, 'a run only claims templates it knows');
+reset role;
+-- A failed send stays unsent; after its 10-minute rest it can be claimed again, up to 5 tries.
+update public.email_outbox set claimed_at = now() - interval '11 minutes' where to_email = 'kabir-e@t.test';
+set local role service_role;
+select is((select count(*)::int from public.claim_emails(array['coach_feedback'], 50)), 1, 'an unsent email is retried after its rest');
+reset role;
+update public.email_outbox set claimed_at = now() - interval '11 minutes', attempts = 5 where to_email = 'kabir-e@t.test';
+set local role service_role;
+select is((select count(*)::int from public.claim_emails(array['coach_feedback'], 50)), 0, 'and given up after 5 tries');
+reset role;
 
 select * from finish();
 rollback;

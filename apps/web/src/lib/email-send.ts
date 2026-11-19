@@ -21,8 +21,8 @@ export async function sendQueuedEmails(origin: string) {
   const db = createDbClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? '', process.env.SUPABASE_SECRET_KEY);
   return drainOutbox(
     {
-      unsent: async (limit) => {
-        const { data, error } = await db.from('email_outbox').select('id, to_email, template, data').is('sent_at', null).order('created_at').limit(limit);
+      claim: async (templates, limit) => {
+        const { data, error } = await db.rpc('claim_emails', { templates, max_rows: limit });
         if (error) throw error;
         return data as OutboxRow[];
       },
