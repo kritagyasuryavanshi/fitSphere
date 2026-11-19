@@ -83,6 +83,26 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"availability_slots": {
+                  Row: {
+                    "coach_id": string,"dow": number,"id": string,"minutes": number,"start_time": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "coach_id": string,"dow": number,"id"?: string,"minutes": number,"start_time": string
+                  }
+                  Update: {
+                    "coach_id"?: string,"dow"?: number,"id"?: string,"minutes"?: number,"start_time"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "availability_slots_coach_id_fkey"
+      columns: ["coach_id"]
+isOneToOne: false
+      referencedRelation: "coach_profiles"
+      referencedColumns: ["coach_id"]
+    }
+                  ]
                 },"body_metrics": {
                   Row: {
                     "height_cm": number | null,"id": string,"measured_at": string,"user_id": string,"weight_kg": number | null
@@ -145,6 +165,26 @@ isOneToOne: false
       foreignKeyName: "coach_applications_user_id_fkey"
       columns: ["user_id"]
 isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"coach_profiles": {
+                  Row: {
+                    "agreement_accepted_at": string | null,"agreement_version": string | null,"city": string,"client_limit": number,"coach_id": string,"formats": (string)[],"headline": string,"languages": (string)[],"payout_account_id": string | null,"philosophy": string,"specialties": (string)[],"status": string,"updated_at": string,"years": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "agreement_accepted_at"?: string | null,"agreement_version"?: string | null,"city"?: string,"client_limit"?: number,"coach_id": string,"formats"?: (string)[],"headline"?: string,"languages"?: (string)[],"payout_account_id"?: string | null,"philosophy"?: string,"specialties"?: (string)[],"status"?: string,"updated_at"?: string,"years"?: number
+                  }
+                  Update: {
+                    "agreement_accepted_at"?: string | null,"agreement_version"?: string | null,"city"?: string,"client_limit"?: number,"coach_id"?: string,"formats"?: (string)[],"headline"?: string,"languages"?: (string)[],"payout_account_id"?: string | null,"philosophy"?: string,"specialties"?: (string)[],"status"?: string,"updated_at"?: string,"years"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "coach_profiles_coach_id_fkey"
+      columns: ["coach_id"]
+isOneToOne: true
       referencedRelation: "profiles"
       referencedColumns: ["id"]
     }
@@ -310,6 +350,32 @@ isOneToOne: false
       columns: ["item_id"]
 isOneToOne: false
       referencedRelation: "content_items"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"credentials": {
+                  Row: {
+                    "coach_id": string,"created_at": string,"decided_at": string | null,"decided_by": string | null,"file_path": string,"id": string,"note": string,"status": string,"title": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "coach_id": string,"created_at"?: string,"decided_at"?: string | null,"decided_by"?: string | null,"file_path": string,"id"?: string,"note"?: string,"status"?: string,"title": string
+                  }
+                  Update: {
+                    "coach_id"?: string,"created_at"?: string,"decided_at"?: string | null,"decided_by"?: string | null,"file_path"?: string,"id"?: string,"note"?: string,"status"?: string,"title"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "credentials_coach_id_fkey"
+      columns: ["coach_id"]
+isOneToOne: false
+      referencedRelation: "coach_profiles"
+      referencedColumns: ["coach_id"]
+    },{
+      foreignKeyName: "credentials_decided_by_fkey"
+      columns: ["decided_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
       referencedColumns: ["id"]
     }
                   ]
@@ -543,6 +609,26 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"packages": {
+                  Row: {
+                    "coach_id": string,"created_at": string,"currency": string,"id": string,"kind": string,"live": boolean,"price_paise": number,"title": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "coach_id": string,"created_at"?: string,"currency"?: string,"id"?: string,"kind": string,"live"?: boolean,"price_paise": number,"title": string
+                  }
+                  Update: {
+                    "coach_id"?: string,"created_at"?: string,"currency"?: string,"id"?: string,"kind"?: string,"live"?: boolean,"price_paise"?: number,"title"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "packages_coach_id_fkey"
+      columns: ["coach_id"]
+isOneToOne: false
+      referencedRelation: "coach_profiles"
+      referencedColumns: ["coach_id"]
+    }
+                  ]
                 },"profiles": {
                   Row: {
                     "created_at": string,"date_of_birth": string | null,"display_name": string,"id": string,"updated_at": string
@@ -762,7 +848,27 @@ isOneToOne: false
                 }
           }
           Views: {
-            [_ in never]: never
+            "public_credentials": {
+                  Row: {
+                    "coach_id": string,"decided_at": string | null,"id": string,"title": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                           "coach_id"?: string | null,"decided_at"?: string | null,"id"?: string | null,"title"?: string | null
+                         }
+                        Update: {
+                           "coach_id"?: string | null,"decided_at"?: string | null,"id"?: string | null,"title"?: string | null
+                         }
+                        Relationships: [
+                    {
+      foreignKeyName: "credentials_coach_id_fkey"
+      columns: ["coach_id"]
+isOneToOne: false
+      referencedRelation: "coach_profiles"
+      referencedColumns: ["coach_id"]
+    }
+                  ]
+                }
           }
           Functions: {
             "adherence":
@@ -811,6 +917,9 @@ isOneToOne: false
       } },
 "coach_can_read":
 { Args: { "athlete": string }; Returns: boolean
+                           },
+"coach_is_live":
+{ Args: { "coach": string }; Returns: boolean
                            },
 "coach_reads_program":
 { Args: { "athlete": string,"program": string }; Returns: boolean
@@ -945,8 +1054,14 @@ isOneToOne: false
 "save_body_metrics":
 { Args: { "ai_consent": boolean,"height_cm": number,"notice": string,"sport_answers": Json,"weight_kg": number }; Returns: undefined
                            },
+"save_coach_profile":
+{ Args: { "city": string,"client_limit": number,"formats": (string)[],"headline": string,"languages": (string)[],"philosophy": string,"specialties": (string)[],"years": number }; Returns: undefined
+                           },
 "save_content_draft":
 { Args: { "discipline": string,"duration_min": number,"equipment": (string)[],"item": string,"kind": Database["public"]['Enums']["content_kind"],"level": Database["public"]['Enums']["content_level"],"mistakes": string,"muscles": (string)[],"prerequisites": (string)[],"safety": string,"steps": (string)[],"summary": string,"supports": (string)[],"title": string,"video_id": string }; Returns: string
+                           },
+"save_package":
+{ Args: { "kind": string,"live": boolean,"package": string,"price_paise": number,"title": string }; Returns: string
                            },
 "save_program_draft":
 { Args: { "program": string,"sessions": Json,"summary": string,"title": string,"weeks": number }; Returns: undefined
@@ -982,6 +1097,9 @@ isOneToOne: false
 "set_saved":
 { Args: { "item": string,"saved": boolean }; Returns: undefined
                            },
+"set_slots":
+{ Args: { "slots": Json }; Returns: undefined
+                           },
 "skill_ratings":
 { Args: { "athlete": string }; Returns: {
               "item_id": string,"logs": number,"rating": number
@@ -992,6 +1110,9 @@ isOneToOne: false
                            },
 "submit_content":
 { Args: { "item": string }; Returns: undefined
+                           },
+"submit_credential":
+{ Args: { "file_path": string,"title": string }; Returns: string
                            },
 "valid_prescription":
 { Args: { "p": Json,"t": Database["public"]['Enums']["prescription_type"] }; Returns: boolean
