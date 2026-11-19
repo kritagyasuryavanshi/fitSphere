@@ -55,6 +55,16 @@ async function Editor() {
         />
       </section>
 
+      <section aria-labelledby="creds" className="flex flex-col gap-2">
+        <h2 id="creds" className="m-0 text-[22px] font-semibold">
+          Credentials
+        </h2>
+        <p className="m-0 text-[15px] text-ink-soft">{checked ? `${checked} checked by FitSphere.` : 'None checked yet. Until then your profile shows experience as self-reported.'}</p>
+        <Link href="/coach/profile/credentials" className="self-start text-[15px] font-medium underline underline-offset-4">
+          Upload or manage credentials
+        </Link>
+      </section>
+
       {p ? (
         <>
           <section aria-labelledby="packages" className="flex flex-col gap-1">
@@ -75,16 +85,6 @@ async function Editor() {
             <SlotsEditor initial={slots.data!.map((s) => ({ dow: s.dow, start: s.start_time.slice(0, 5), minutes: s.minutes }))} />
           </section>
 
-          <section aria-labelledby="creds" className="flex flex-col gap-2">
-            <h2 id="creds" className="m-0 text-[22px] font-semibold">
-              Credentials
-            </h2>
-            <p className="m-0 text-[15px] text-ink-soft">{checked ? `${checked} checked by FitSphere.` : 'None checked yet. Until then your profile shows experience as self-reported.'}</p>
-            <Link href="/coach/credentials" className="self-start text-[15px] font-medium underline underline-offset-4">
-              Upload or manage credentials
-            </Link>
-          </section>
-
           <section aria-labelledby="agreement" className="flex flex-col gap-3 border border-line p-5">
             <h2 id="agreement" className="m-0 text-[22px] font-semibold">
               Coach agreement
@@ -102,10 +102,14 @@ async function Editor() {
 
           <section aria-labelledby="publish" className="flex flex-col gap-2">
             <h2 id="publish" className="m-0 text-[22px] font-semibold">
-              {live ? 'Your profile is live' : 'Go live'}
+              {live ? 'Your profile is live' : p.status === 'suspended' ? 'Your profile is suspended' : 'Go live'}
             </h2>
             <p className="m-0 text-[15px] text-ink-soft">
-              {live ? 'Athletes can find you and hire you.' : 'To go live you need a headline, at least one live package, and the accepted agreement.'}
+              {live
+                ? 'Athletes can find you and hire you.'
+                : p.status === 'suspended'
+                  ? 'FitSphere suspended your profile, so athletes cannot find you. Contact FitSphere to resolve it.'
+                  : 'To go live you need a headline, at least one live package, and the accepted agreement.'}
             </p>
             {p.status === 'suspended' ? null : <LiveForm live={live} />}
           </section>

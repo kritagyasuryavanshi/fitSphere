@@ -12,11 +12,14 @@ export type FormState = { error?: string; saved?: string; fields?: Record<string
 
 const typed = (f: FormData) => Object.fromEntries([...f.entries()].filter(([, v]) => typeof v === 'string').map(([k, v]) => [k, String(v)]));
 
-const list = (v: FormDataEntryValue | null) =>
-  String(v ?? '')
+// Comma-separated, trimmed, without repeats (case-insensitive): each shows as one tag on the public profile.
+const list = (v: FormDataEntryValue | null) => {
+  const seen = new Set<string>();
+  return String(v ?? '')
     .split(',')
     .map((x) => x.trim())
-    .filter(Boolean);
+    .filter((x) => x && !seen.has(x.toLowerCase()) && seen.add(x.toLowerCase()));
+};
 
 const messages: Record<string, string> = {
   bad_profile: 'Check the fields: up to 10 specialties and languages, each up to 40 characters; years 0 to 60; client limit 1 to 100.',
@@ -27,6 +30,8 @@ const messages: Record<string, string> = {
   headline_needed: 'Add a headline before you go live.',
   package_needed: 'Add at least one live package before you go live.',
   suspended: 'Your profile is suspended. Contact FitSphere.',
+  live_needs_headline: 'A live profile needs a headline. Hide your profile first to clear it.',
+  live_needs_package: 'A live profile needs at least one live package. Hide your profile first, or keep another package live.',
   bad_version: 'The agreement changed. Reload the page and read the new version.',
 };
 const fail = (e: { message: string; code?: string }, what: string): FormState => {

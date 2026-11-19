@@ -6,7 +6,18 @@ import { formatInr } from '@fitsphere/core';
 import { isUuid } from '@/lib/programs';
 import { supabaseServer } from '@/lib/supabase/server';
 
-export const metadata: Metadata = { title: 'Coach · FitSphere' };
+// Each coach page names its coach, for tabs, search results and link previews.
+export async function generateMetadata({ params }: PageProps<'/coaches/[id]'>): Promise<Metadata> {
+  const { id } = await params;
+  if (!isUuid(id)) return { title: 'Coach · FitSphere' };
+  const supabase = await supabaseServer();
+  const [name, profile] = await Promise.all([
+    supabase.rpc('coach_public_name', { coach: id }),
+    supabase.from('coach_profiles').select('headline').eq('coach_id', id).maybeSingle(),
+  ]);
+  if (!name.data) return { title: 'Coach · FitSphere' };
+  return { title: `${name.data} · Coach on FitSphere`, description: profile.data?.headline || undefined };
+}
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 

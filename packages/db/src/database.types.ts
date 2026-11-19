@@ -900,6 +900,9 @@ isOneToOne: false
 "apply_sport_answers":
 { Args: { "by_sport": Json,"uid": string }; Returns: undefined
                            },
+"assert_live_ready":
+{ Args: { "coach": string }; Returns: undefined
+                           },
 "author_names":
 { Args: { "ids": (string)[] }; Returns: {
               "display_name": string,"id": string
@@ -1013,27 +1016,9 @@ isOneToOne: false
                            },
 "my_coach_profile":
 { Args: Record<PropertyKey, never>; Returns: {
-              "agreement_accepted_at": string | null,
-"agreement_version": string | null,
-"city": string,
-"client_limit": number,
-"coach_id": string,
-"formats": (string)[],
-"headline": string,
-"languages": (string)[],
-"payout_account_id": string | null,
-"philosophy": string,
-"specialties": (string)[],
-"status": string,
-"updated_at": string,
-"years": number
+              "agreement_accepted_at": string,"agreement_version": string,"city": string,"client_limit": number,"coach_id": string,"formats": (string)[],"headline": string,"languages": (string)[],"philosophy": string,"specialties": (string)[],"status": string,"updated_at": string,"years": number
             }[]
-                          SetofOptions: {
-        from: "*"
-        to: "coach_profiles"
-        isOneToOne: false
-        isSetofReturn: true
-      } },
+                           },
 "my_email_prefs":
 { Args: Record<PropertyKey, never>; Returns: {
               "coach_feedback": boolean,"new_lesson": boolean,"session_reminder": boolean

@@ -1,7 +1,7 @@
 -- M4-02: a coach reads their own full profile, accepts the current coach agreement, and only then goes live, with a
 -- headline and at least one live package. A suspended coach cannot publish.
 begin;
-select plan(14);
+select plan(19);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('a6000000-0000-0000-0000-0000000000a1', 'coach-p@t.test', now()),
@@ -33,7 +33,23 @@ select is(public.coach_public_name('b6000000-0000-0000-0000-0000000000b1'), null
 reset role;
 set local role authenticated;
 select set_config('request.jwt.claims', '{"sub":"a6000000-0000-0000-0000-0000000000a1","role":"authenticated"}', true);
+-- While live, a coach cannot break what going live needed.
+select throws_ok($$ select public.save_coach_profile('', 'Shape first.', array['boxing'], array['English'], array['online'], 'Pune', 10, 8) $$, '22023', 'live_needs_headline',
+  'a live coach cannot clear the headline');
+select throws_ok(format($$ select public.save_package(%L, 'Monthly coaching', 'monthly', 450000, false) $$, (select id from public.packages where coach_id = 'a6000000-0000-0000-0000-0000000000a1' limit 1)),
+  '22023', 'live_needs_package', 'nor turn off the last live package');
+select throws_ok($$ select payout_account_id from public.my_coach_profile() $$, '42703', null, 'my_coach_profile never returns the payout account');
+-- A new agreement version takes coaches on the old one out of public view until they accept again.
+reset role;
+update public.coach_profiles set agreement_version = 'older-version' where coach_id = 'a6000000-0000-0000-0000-0000000000a1';
+set local role anon;
+select is((select count(*)::int from public.coach_profiles where coach_id = 'a6000000-0000-0000-0000-0000000000a1'), 0, 'a coach on an old agreement is not public');
+reset role;
+update public.coach_profiles set agreement_version = public.current_coach_agreement() where coach_id = 'a6000000-0000-0000-0000-0000000000a1';
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"a6000000-0000-0000-0000-0000000000a1","role":"authenticated"}', true);
 select lives_ok($$ select public.set_profile_live(false) $$, 'the coach can unpublish');
+select lives_ok($$ select public.save_coach_profile('', 'Shape first.', array['boxing'], array['English'], array['online'], 'Pune', 10, 8) $$, 'a hidden profile may have a blank headline');
 
 -- Suspended by an admin: the coach cannot publish again.
 reset role;
