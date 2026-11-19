@@ -72,8 +72,12 @@ Follows [[session-12]]. Hub for this work: [[programs]].
 - M4-06, PR #45: `shortlists` with owner-only RLS, written through `shortlist_coach` (athletes only, live coaches only, never yourself, at most 20 live, with a per-athlete lock). `find_coaches` takes `ids`. `/shortlist` has Compare selected and Remove, and Remove lists every saved coach, so one who stops being live never gets stuck. `/coaches/compare` shows the mockup rows for up to 3 coaches. The shortlist is in the data download. 38 of 38 migrations on production.
 - Lesson: anything keyed to "live" coaches must handle a coach who stops being live. A new agreement version hides them all at once.
 
+- M4-07, PR #46: `engagements` holds the whole hire state machine. A request copies the package, its price and `platform_fee_bps()`. That fee is a 15% default until O-05, and it lives in one function. Requests and accepts lock the coach's row, and an accept also locks the request, so the client limit and withdrawals stay consistent. Deleting an account closes its open requests through a trigger on profiles. The pages are `/hire/[coach]`, `/coaching` with Withdraw and Pay (the Pay page waits for M4-09), and `/coach/clients`. 39 of 39 migrations on production.
+- Lesson: every coach also has the athlete role, so a "mine" query over a two-party table must filter by the side it means (`athlete_id = me`), not trust RLS.
+- Follow-ups recorded: M4-10 adds paid clients to `coach_stats`; M4-19 blocks deletion during a paid engagement.
+
 ## Next
-1. M4-07 hire, accept and decline, with the client limit (engagements).
+1. M4-08 messages, then M4-09a the payment core with a fake provider. That one needs the fee confirmed (O-05) before real money.
 2. The demo work: demo accounts with realistic data and one-click entry, then a domain and Resend (owner).
 2. Then M4 (marketplace) only once coaches pay by hand, per the owner's sell-to-coaches-first plan.
 2. Hosting: the owner sets the Supabase Auth URL configuration; then test sign-in on the live site and run the Supabase security advisors once.

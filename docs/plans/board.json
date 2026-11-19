@@ -1375,7 +1375,7 @@
       "deps": [
         "M4-05"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "db+e2e",
       "screens": [
@@ -1387,7 +1387,8 @@
         "Requests pause automatically when the coach hits the client limit",
         "End-to-end: athlete requests; coach accepts; athlete sees Pay",
         "On phones Clients shows stacked cards, as in M-X-CoachRequests (decision D3)"
-      ]
+      ],
+      "done_on": "2026-11-20"
     },
     {
       "id": "M4-08",
@@ -1450,7 +1451,8 @@
       "ac": [
         "An active engagement gives the coach the same access as an enrollment",
         "Access ends when the engagement ends or is refunded",
-        "The coach can assign a program to the client"
+        "The coach can assign a program to the client",
+        "coach_stats counts paid coaching clients (active engagements) as well as program enrollments"
       ]
     },
     {
