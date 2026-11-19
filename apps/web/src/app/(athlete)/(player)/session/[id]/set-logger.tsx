@@ -54,6 +54,7 @@ export function SetLogger({
   nextLabel,
   onChange,
   onNext,
+  finishing,
 }: {
   drill: PlayerDrill;
   initial: SetRow[];
@@ -64,12 +65,14 @@ export function SetLogger({
   nextLabel: (allDone: boolean) => string;
   onChange: (rows: SetRow[]) => void;
   onNext: () => void;
+  /** True while the player finishes the session, so the last button cannot be tapped twice. */
+  finishing: boolean;
 }) {
   const hydrated = useHydrated();
   const planned = Number(drill.prescription.sets);
   const topReps = Number(drill.prescription.reps);
   const coachLoad = drill.prescription.load_kg ?? null;
-  const target = last ? nextTarget(topReps, last.sets) : null;
+  const target = last ? nextTarget(topReps, planned, last.sets) : null;
 
   const [rows, setRows] = useState(() => [...initial].sort((a, b) => a.setNo - b.setNo));
   const openSet = (list: SetRow[]) => {
@@ -102,7 +105,7 @@ export function SetLogger({
     if (!restDone) return;
     navigator.vibrate?.([200, 100, 200]);
   }, [restDone]);
-  const announce = restDone && current ? `Rest over. Set ${current}.` : '';
+  const announce = restDone && openSet(rows) ? `Rest over. Set ${openSet(rows)}.` : '';
 
   const edit = (n: number | null) => {
     setCurrent(n);
@@ -123,6 +126,8 @@ export function SetLogger({
     if (!rpe) return setError('Pick how hard the set was.');
     setError('');
     const row: SetRow = { setNo: current, reps: r, loadKg: l, rpe };
+    // A rest follows the set in progress; correcting an earlier set leaves any rest as it is.
+    const wasOpen = current === openSet(rows);
     start(async () => {
       const result = await logSet({ session, date, position: drill.position, ...row });
       if ('error' in result) {
@@ -135,15 +140,18 @@ export function SetLogger({
       const open = openSet(next);
       setCurrent(open);
       if (open) {
-        setReps(String(topReps));
+        const v = startValues(open, next);
+        setReps(v.reps);
         setRpe(row.rpe);
-        setLoad(load);
-        setRest(startTimer({ rounds: 1, workS: REST_S, restS: 0 }));
+        setLoad(wasOpen ? load : v.load);
+        if (wasOpen) setRest(startTimer({ rounds: 1, workS: REST_S, restS: 0 }));
       } else setRest(null);
     });
   };
 
-  const allDone = openSet(rows) === null;
+  const nextOpen = openSet(rows);
+  const allDone = nextOpen === null;
+  const editing = current !== null && rows.some((r) => r.setNo === current);
 
   return (
     <section aria-labelledby="sets-title" className="flex min-w-0 flex-[2_1_420px] flex-col gap-5 bg-paper p-5 text-ink md:p-8">
@@ -214,10 +222,10 @@ export function SetLogger({
         </tbody>
       </table>
 
-      {rest && current ? (
+      {rest && nextOpen ? (
         <div className="flex flex-wrap items-center justify-between gap-4 bg-ink p-4 text-paper">
           <div>
-            <p className="m-0 text-[14px] text-line-strong">{rest.phase === 'done' ? 'Rest over' : `Rest before set ${current}`}</p>
+            <p className="m-0 text-[14px] text-line-strong">{rest.phase === 'done' ? 'Rest over' : `Rest before set ${nextOpen}`}</p>
             <p role="timer" aria-label="Rest left" className="m-0 font-display text-[48px] leading-none tabular-nums">
               {clock(rest.remainingMs)}
             </p>
@@ -264,9 +272,16 @@ export function SetLogger({
               {error}
             </p>
           ) : null}
-          <Button type="submit" disabled={!hydrated || pending} className="self-start">
-            {pending ? 'Saving…' : `Log set ${current}`}
-          </Button>
+          <div className="flex flex-wrap items-center gap-4">
+            <Button type="submit" disabled={!hydrated || pending}>
+              {pending ? 'Saving…' : editing ? `Save set ${current}` : `Log set ${current}`}
+            </Button>
+            {editing ? (
+              <button type="button" onClick={() => edit(nextOpen)} className="min-h-11 text-[15px] font-medium underline underline-offset-4">
+                Cancel
+              </button>
+            ) : null}
+          </div>
         </form>
       ) : (
         <div className="flex flex-wrap items-center gap-3">
@@ -281,8 +296,8 @@ export function SetLogger({
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
         <p className="m-0 text-[14px] text-muted">Self-reported · {coach} sees this log</p>
-        <Button variant={allDone ? 'ink' : 'light'} onClick={onNext} disabled={!hydrated || pending}>
-          {nextLabel(allDone)}
+        <Button variant={allDone ? 'ink' : 'light'} onClick={onNext} disabled={!hydrated || pending || finishing}>
+          {finishing ? 'Finishing…' : nextLabel(allDone)}
         </Button>
       </div>
     </section>

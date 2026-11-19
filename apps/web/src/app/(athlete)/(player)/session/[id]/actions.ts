@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { isUuid } from '@/lib/programs';
-import { isIsoDate } from '@/lib/session-player';
+import { isIsoDate, isLoad } from '@/lib/session-player';
 import { supabaseServer } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/viewer';
 
@@ -59,7 +59,7 @@ export async function logSet(input: SetLog): Promise<ActionResult> {
     !whole(input.position, 1, 1000) ||
     !whole(input.setNo, 1, 20) ||
     !whole(input.reps, 0, 200) ||
-    !(input.loadKg === null || (typeof input.loadKg === 'number' && input.loadKg >= 0 && input.loadKg <= 500 && Math.round(input.loadKg * 100) === input.loadKg * 100)) ||
+    !(input.loadKg === null || (typeof input.loadKg === 'number' && isLoad(input.loadKg))) ||
     !whole(input.rpe, 1, 10)
   ) {
     return { error: 'Enter reps from 0 to 200, a load up to 500 kg with at most two decimals, and how hard it was.' };
