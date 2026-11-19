@@ -46,7 +46,10 @@ Follows [[session-12]]. Hub for this work: [[programs]].
 - M3-16, PR #38 ([[M3-16]]): `notifications` (own rows, read-only grants) from triggers (feedback, a coach's new lesson) and `queue_session_reminders` (daily cron at 08:30 India time, once per athlete per day, every session named); `/account/notifications` with unread marks, Mark all as read and three email switches (reminders start off); `email_wanted` decides at queueing and sending; a reminder email only goes out on its own day. Security review: no findings. Codex's one finding was wrong (it read 03:00 UTC as 08:30 UTC); `/code-review high` found 6, all fixed. 32 of 32 migrations on production.
 - The owner moved every "ask" rule to "allow" and added the `--db-url` deny; committed so both PCs share it.
 
+- M3-15, PR #39: the M3 milestone check passed; M3 is done ([[M3-check]]). Live-site QA fixed dead menu links, added privacy and terms pages (they match what coaches can actually read), `/learn`, and a contrast failure.
+
 ## Next
-1. M3-15 the milestone check (one e2e journey plus `/qa` on the live site); then the demo work: demo accounts with data, a domain, Resend.
+1. The demo work: demo accounts with realistic data and one-click entry, then a domain and Resend (owner).
+2. Then M4 (marketplace) only once coaches pay by hand, per the owner's sell-to-coaches-first plan.
 2. Hosting: the owner sets the Supabase Auth URL configuration; then test sign-in on the live site and run the Supabase security advisors once.
 3. Install Codex on the WELCOME PC (`npm i -g @openai/codex`, then `codex login`), so every PR gets its review on either PC.

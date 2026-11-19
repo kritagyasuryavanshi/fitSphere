@@ -23,6 +23,7 @@ Build tasks live on the board: `docs/plans/board.json` (rendered at https://clau
 - [ ] Owner: decide on Mobbin (optional).
 
 ## Done
+- [x] 2026-11-19: M3 Coach-Led Training done: milestone check and live-site QA (PR #39).
 - [x] 2026-11-19: M3-16 in-app notifications and email switches (PR #38), live on production.
 - [x] 2026-11-19: M3-14 feedback emails (PR #37); sending starts once Resend is set up.
 - [x] 2026-11-19: M3-13 athlete detail, coach feedback and replies (PR #36), live on production.
