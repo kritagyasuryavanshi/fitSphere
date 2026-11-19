@@ -8,7 +8,7 @@ import { Icon, type IconName } from './icons';
 export type NavItem = { href: string; label: string; icon?: IconName; badge?: number; exact?: boolean };
 
 // A link is current on its own path and below it, so /coach/athletes/1 keeps "Athletes" marked.
-// An exact link (like /coach) is current only on its own path, so it does not light up on /coach/clients.
+// An exact link (like /coach) is current only on its own path, so it does not light up on /coach/programs.
 function isCurrent(pathname: string, item: NavItem) {
   return pathname === item.href || (!item.exact && pathname.startsWith(`${item.href}/`));
 }
