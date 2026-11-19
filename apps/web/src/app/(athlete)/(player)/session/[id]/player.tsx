@@ -1,14 +1,16 @@
 'use client';
 
-import { clock, pause, resume, roundsCompleted, skip, startTimer, tick, type TimerState } from '@fitsphere/core';
+import { clock, pause, resume, roundsCompleted, skip, startTimer, type TimerState } from '@fitsphere/core';
 import { Button, buttonClass } from '@fitsphere/ui';
 import Link from 'next/link';
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { Icon } from '@/components/layout/icons';
 import { describePrescription, type Numbers, type PrescriptionType } from '@/lib/program-draft';
-import { firstOpen, timerPlan } from '@/lib/session-player';
+import { firstOpen, type LastTime, timerPlan } from '@/lib/session-player';
 import { useHydrated } from '@/lib/use-hydrated';
 import { finishSession, logDrill } from './actions';
+import { SetLogger, type SetRow } from './set-logger';
+import { useTicking, useWakeLock } from './timer-hooks';
 
 export type PlayerDrill = { position: number; type: PrescriptionType; prescription: Numbers; cue: string; title: string; href: string | null };
 type Logged = { position: number; rounds: number | null; technique: number; effort: number; note: string };
@@ -22,62 +24,49 @@ type Props = {
   coach: string;
   drills: PlayerDrill[];
   logged: Logged[];
+  /** Sets already logged, by exercise position. */
+  sets: Record<number, SetRow[]>;
+  /** Last time's sets of each exercise, by position. */
+  lastTimes: Record<number, LastTime | null>;
   completed: boolean;
 };
 
 const dayName = new Intl.DateTimeFormat('en-IN', { weekday: 'long', day: 'numeric', month: 'short', timeZone: 'UTC' });
 
-/** Keeps the screen on while active, where the browser supports it. The lock drops when the tab hides, so it is taken again on return. */
-function useWakeLock(active: boolean) {
-  useEffect(() => {
-    if (!active || typeof navigator === 'undefined' || !('wakeLock' in navigator)) return;
-    let lock: WakeLockSentinel | null = null;
-    let stopped = false;
-    const take = () =>
-      navigator.wakeLock
-        .request('screen')
-        .then((l) => {
-          if (stopped) void l.release().catch(() => {});
-          else lock = l;
-        })
-        .catch(() => {});
-    void take();
-    const onShow = () => {
-      if (document.visibilityState === 'visible' && (!lock || lock.released)) void take();
-    };
-    document.addEventListener('visibilitychange', onShow);
-    return () => {
-      stopped = true;
-      document.removeEventListener('visibilitychange', onShow);
-      void lock?.release().catch(() => {});
-    };
-  }, [active]);
+function UpNext({ drills }: { drills: PlayerDrill[] }) {
+  if (!drills.length) return null;
+  return (
+    <section aria-labelledby="next-title">
+      <h2 id="next-title" className="m-0 text-[15px] font-medium text-faint">
+        Up next
+      </h2>
+      <ol className="m-0 mt-3 grid list-none grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-2 p-0">
+        {drills.map((d) => (
+          <li key={d.position} className="bg-[#1b1b1b] p-3">
+            <p className="m-0 text-[15px] font-medium">{d.title}</p>
+            <p className="m-0 mt-0.5 text-[13px] text-faint">{describePrescription(d.type, d.prescription)}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
 }
 
-/** Ticks a running timer with the real time passed, so a slept phone catches up. */
-function useTicking(timer: TimerState | null, setTimer: (f: (t: TimerState | null) => TimerState | null) => void) {
-  const running = !!timer?.running;
-  const last = useRef(0);
-  useEffect(() => {
-    if (!running) return;
-    last.current = performance.now();
-    const id = setInterval(() => {
-      const now = performance.now();
-      const passed = now - last.current;
-      last.current = now;
-      setTimer((t) => (t ? tick(t, passed) : t));
-    }, 200);
-    return () => clearInterval(id);
-  }, [running, setTimer]);
-  /** Applies the time since the last tick first, so a pause or skip in a throttled background tab loses nothing. */
-  return (change: (t: TimerState) => TimerState) =>
-    setTimer((t) => {
-      if (!t) return t;
-      const now = performance.now();
-      const passed = t.running ? now - last.current : 0;
-      last.current = now;
-      return change(tick(t, passed));
-    });
+function DrillPanel({ drill }: { drill: PlayerDrill }) {
+  return (
+    <section aria-label={drill.type === 'sets' ? 'Exercise' : 'Drill'} className="flex min-h-[200px] min-w-0 flex-[3_1_560px] flex-col justify-end gap-4 bg-[#1b1b1b] p-5 md:min-h-[420px] md:p-8">
+      <p className="m-0 text-[14px] font-medium text-line">Now</p>
+      <h1 className="m-0 break-words font-display text-[52px] font-normal uppercase leading-[0.9] md:text-[clamp(56px,6vw,96px)]">{drill.title}</h1>
+      <p className="m-0 text-[15px] text-faint">{describePrescription(drill.type, drill.prescription)}</p>
+      {drill.cue && drill.type === 'sets' ? <p className="m-0 text-[16px]">{drill.cue}</p> : null}
+      {drill.href ? (
+        <a href={drill.href} target="_blank" rel="noopener" className={`${buttonClass({ variant: 'light', size: 'small' })} self-start`}>
+          {drill.type === 'sets' ? 'How to do it' : 'Watch demo'}
+          <span className="sr-only"> (opens in a new tab)</span>
+        </a>
+      ) : null}
+    </section>
+  );
 }
 
 function phaseLabel(drill: PlayerDrill, t: TimerState | null) {
@@ -191,15 +180,22 @@ function LogForm({ drill, existing, autoRounds, coach, last, review, onSaved, se
   );
 }
 
-export function Player({ session, date, isToday, title, line, coach, drills, logged, completed }: Props) {
+export function Player({ session, date, isToday, title, line, coach, drills, logged, sets, lastTimes, completed }: Props) {
   const [logs, setLogs] = useState(() => new Map(logged.map((l) => [l.position, l])));
+  const [setRows, setSetRows] = useState(() => new Map(Object.entries(sets).map(([p, rows]) => [Number(p), rows])));
+  // A drill counts as done once logged; an exercise once it has a set.
+  const isDone = (d: PlayerDrill) => (d.type === 'sets' ? (setRows.get(d.position)?.length ?? 0) > 0 : logs.has(d.position));
+  const doneCount = drills.filter(isDone).length;
   // A finished session opens on its summary; otherwise at the first drill not logged.
   const [index, setIndex] = useState(() =>
     completed
       ? drills.length
       : firstOpen(
           drills.map((d) => d.position),
-          logged.map((l) => l.position),
+          // An exercise is open until all its planned sets are logged.
+          drills
+            .filter((d) => (d.type === 'sets' ? (sets[d.position]?.length ?? 0) >= Number(d.prescription.sets) : logged.some((l) => l.position === d.position)))
+            .map((d) => d.position),
         ),
   );
   // True while editing a drill chosen on the summary: saving goes back there.
@@ -262,11 +258,14 @@ export function Player({ session, date, isToday, title, line, coach, drills, log
   const finish = () =>
     startFinish(async () => {
       const result = await finishSession(session, date);
-      if (result && 'error' in result) setFinishError(result.error);
+      if (result && 'error' in result) {
+        setFinishError(result.error);
+        goTo(drills.length);
+      }
     });
 
   const plan = drill ? timerPlan(drill.type, drill.prescription) : null;
-  const progress = Math.round((logs.size / drills.length) * 100);
+  const progress = Math.round((doneCount / drills.length) * 100);
   const lineWithDate = isToday ? line : `${line} · for ${dayName.format(new Date(`${date}T00:00:00Z`))}`;
 
   return (
@@ -284,7 +283,7 @@ export function Player({ session, date, isToday, title, line, coach, drills, log
             <p className="m-0 mt-0.5 truncate text-[12px] text-faint md:text-[13px]">{lineWithDate}</p>
           </div>
           <span className="text-right text-[12px] font-medium md:text-[15px]">
-            {drill ? `Drill ${index + 1} of ${drills.length}` : 'Finish'}
+            {drill ? `${drill.type === 'sets' ? 'Exercise' : 'Drill'} ${index + 1} of ${drills.length}` : 'Finish'}
             {hydrated ? <span className="hidden md:inline"> · {clock(elapsed)} elapsed</span> : null}
           </span>
         </div>
@@ -298,19 +297,35 @@ export function Player({ session, date, isToday, title, line, coach, drills, log
       </p>
 
       <main className="mx-auto flex w-full max-w-[1440px] flex-col gap-8 px-4 pb-16 pt-5 md:px-10 md:pt-8">
-        {drill && plan ? (
+        {drill && !plan ? (
+          <>
+          <div className="flex flex-wrap items-start gap-6 md:gap-8">
+            <DrillPanel drill={drill} />
+            <SetLogger
+              key={drill.position}
+              drill={drill}
+              initial={setRows.get(drill.position) ?? []}
+              last={lastTimes[drill.position] ?? null}
+              coach={coach}
+              session={session}
+              date={date}
+              nextLabel={(allDone) => (fromSummary ? 'Back to summary' : !last ? (allDone ? 'Next exercise' : 'Skip exercise') : allDone ? 'Finish session' : 'Skip to finish')}
+              finishing={finishing}
+              onChange={(rows) => setSetRows((m) => new Map(m).set(drill.position, rows))}
+              onNext={() => {
+                const allDone = (setRows.get(drill.position)?.length ?? 0) >= Number(drill.prescription.sets);
+                if (fromSummary || !last) goTo(fromSummary ? drills.length : index + 1);
+                else if (allDone) finish();
+                else goTo(drills.length);
+              }}
+            />
+          </div>
+          {!fromSummary ? <UpNext drills={drills.slice(index + 1)} /> : null}
+          </>
+        ) : drill && plan ? (
           <>
             <div className="flex flex-wrap items-stretch gap-6 md:gap-8">
-              <section aria-label="Drill" className="flex min-h-[200px] min-w-0 flex-[3_1_560px] flex-col justify-end gap-4 bg-[#1b1b1b] p-5 md:min-h-[420px] md:p-8">
-                <p className="m-0 text-[14px] font-medium text-line">Now</p>
-                <h1 className="m-0 break-words font-display text-[52px] font-normal uppercase leading-[0.9] md:text-[clamp(56px,6vw,96px)]">{drill.title}</h1>
-                <p className="m-0 text-[15px] text-faint">{describePrescription(drill.type, drill.prescription)}</p>
-                {drill.href ? (
-                  <a href={drill.href} target="_blank" rel="noopener" className={`${buttonClass({ variant: 'light', size: 'small' })} self-start`}>
-                    Watch demo<span className="sr-only"> (opens in a new tab)</span>
-                  </a>
-                ) : null}
-              </section>
+              <DrillPanel drill={drill} />
 
               <section aria-label="Round timer" className="flex min-w-0 flex-[2_1_380px] flex-col gap-6">
                 <div className="flex flex-col items-center gap-2 bg-[#1b1b1b] p-6 text-center md:items-start md:p-8 md:text-left">
@@ -377,21 +392,7 @@ export function Player({ session, date, isToday, title, line, coach, drills, log
               date={date}
             />
 
-            {!fromSummary && drills.length > index + 1 ? (
-              <section aria-labelledby="next-title">
-                <h2 id="next-title" className="m-0 text-[15px] font-medium text-faint">
-                  Up next
-                </h2>
-                <ol className="m-0 mt-3 grid list-none grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-2 p-0">
-                  {drills.slice(index + 1).map((d) => (
-                    <li key={d.position} className="bg-[#1b1b1b] p-3">
-                      <p className="m-0 text-[15px] font-medium">{d.title}</p>
-                      <p className="m-0 mt-0.5 text-[13px] text-faint">{describePrescription(d.type, d.prescription)}</p>
-                    </li>
-                  ))}
-                </ol>
-              </section>
-            ) : null}
+            {!fromSummary ? <UpNext drills={drills.slice(index + 1)} /> : null}
           </>
         ) : (
           <section aria-labelledby="end-title" className="flex flex-col items-start gap-5 bg-[#1b1b1b] p-6 md:p-10">
@@ -399,17 +400,26 @@ export function Player({ session, date, isToday, title, line, coach, drills, log
               {completed ? 'Session done' : 'Finish the session'}
             </h1>
             <p className="m-0 text-[16px] text-line">
-              {logs.size} of {drills.length} {drills.length === 1 ? 'drill' : 'drills'} logged.
+              {doneCount} of {drills.length} logged.
             </p>
             <ol className="m-0 flex w-full max-w-xl list-none flex-col p-0">
               {drills.map((d, i) => (
                 <li key={d.position} className="flex items-center justify-between gap-3 border-b border-[#2b2b2d] py-2.5">
                   <span className="text-[16px]">
                     {d.title}
-                    <span className="block text-[13px] text-faint">{logs.has(d.position) ? 'Logged' : 'Skipped'}</span>
+                    <span className="block text-[13px] text-faint">
+                      {d.type === 'sets'
+                        ? (() => {
+                            const n = setRows.get(d.position)?.length ?? 0;
+                            return n ? `${n} ${n === 1 ? 'set' : 'sets'} logged` : 'Skipped';
+                          })()
+                        : logs.has(d.position)
+                          ? 'Logged'
+                          : 'Skipped'}
+                    </span>
                   </span>
                   <button type="button" onClick={() => goTo(i, true)} className="min-h-11 text-[15px] font-medium underline underline-offset-4">
-                    {logs.has(d.position) ? 'Edit' : 'Log'}
+                    {isDone(d) ? 'Edit' : 'Log'}
                     <span className="sr-only"> {d.title}</span>
                   </button>
                 </li>
@@ -424,12 +434,12 @@ export function Player({ session, date, isToday, title, line, coach, drills, log
               <Link href="/today" className={buttonClass({ variant: 'volt' })}>
                 Back to Today
               </Link>
-            ) : logs.size ? (
+            ) : doneCount ? (
               <Button variant="volt" onClick={finish} disabled={!hydrated || finishing}>
                 {finishing ? 'Finishing…' : 'Finish session'}
               </Button>
             ) : (
-              <p className="m-0 text-[15px] text-faint">Log at least one drill to finish.</p>
+              <p className="m-0 text-[15px] text-faint">Log at least one drill or set to finish.</p>
             )}
           </section>
         )}

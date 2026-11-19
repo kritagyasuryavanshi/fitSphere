@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { clock, pause, resume, roundsCompleted, skip, startTimer, tick } from './round-timer';
+import { addTime, clock, pause, resume, roundsCompleted, skip, startTimer, tick } from './round-timer';
 
 const plan = { rounds: 3, workS: 120, restS: 45 };
 
@@ -70,6 +70,12 @@ describe('round timer', () => {
     expect(roundsCompleted(tick(startTimer(plan), 130_000))).toBe(1);
     expect(roundsCompleted(tick(startTimer(plan), 170_000))).toBe(1);
     expect(roundsCompleted(tick(startTimer(plan), 10_000_000))).toBe(3);
+  });
+
+  it('adds time to the current phase, for "Add 30 s" on a rest, and not once done', () => {
+    expect(addTime(tick(startTimer({ rounds: 1, workS: 90, restS: 0 }), 60_000), 30_000)).toMatchObject({ phase: 'work', remainingMs: 60_000 });
+    const done = tick(startTimer(plan), 10_000_000);
+    expect(addTime(done, 30_000)).toEqual(done);
   });
 
   it('shows the clock as m:ss, rounding up so 0:00 means the end', () => {

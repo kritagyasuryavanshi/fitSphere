@@ -8,8 +8,49 @@ export function timerPlan(type: PrescriptionType, p: Numbers): TimerPlan | null 
   return null;
 }
 
-/** The boxing player runs sessions of rounds and timed drills. Sets need the set logger. */
-export const playable = (items: { type: string }[]) => items.length > 0 && items.every((i) => i.type === 'rounds' || i.type === 'time');
+/** The player runs any session with something in it: a timer for rounds and timed drills, the set logger for sets. */
+export const playable = (items: { type: string }[]) => items.length > 0;
+
+type HistoryLog = {
+  id: string;
+  on_date: string;
+  started_at: string;
+  item_logs: { item_id: string | null; position: number; set_logs: { set_no: number; reps: number; load_kg: number | null }[] }[];
+};
+export type LastTime = { date: string; sets: { reps: number; loadKg: number | null }[] };
+
+/**
+ * Last time's sets of an exercise: the latest other session log where it has sets. When the exercise was in that
+ * session more than once, one block only: the one at the same position, else the one with the most sets.
+ */
+export function lastTime(history: HistoryLog[], itemId: string, currentLogId: string | null, position?: number): LastTime | null {
+  const sorted = [...history].sort((a, b) => b.on_date.localeCompare(a.on_date) || b.started_at.localeCompare(a.started_at));
+  for (const log of sorted) {
+    if (log.id === currentLogId) continue;
+    const blocks = log.item_logs.filter((i) => i.item_id === itemId && i.set_logs.length);
+    const block = blocks.find((b) => b.position === position) ?? [...blocks].sort((a, b) => b.set_logs.length - a.set_logs.length)[0];
+    const sets = block?.set_logs ?? [];
+    if (sets.length) {
+      return {
+        date: log.on_date,
+        sets: [...sets].sort((a, b) => a.set_no - b.set_no).map((s) => ({ reps: s.reps, loadKg: s.load_kg === null ? null : Number(s.load_kg) })),
+      };
+    }
+  }
+  return null;
+}
+
+/** A load the database stores: 0 to 500 kg with at most two decimals, allowing for floating point (1.1 * 100). */
+export const isLoad = (n: number) => Number.isFinite(n) && n >= 0 && n <= 500 && Math.abs(Math.round(n * 100) - n * 100) < 1e-6;
+
+/** Kilograms as typed: blank is bodyweight (null); otherwise 0 to 500 with up to two decimals, else undefined. */
+export function parseLoad(text: string): number | null | undefined {
+  const t = text.trim();
+  if (!t) return null;
+  if (!/^\d{1,3}(\.\d{1,2})?$/.test(t)) return undefined;
+  const n = Number(t);
+  return n <= 500 ? n : undefined;
+}
 
 /** The index of the first drill without a log; the length when every drill is logged. */
 export function firstOpen(positions: number[], logged: number[]) {
