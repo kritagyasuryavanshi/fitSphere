@@ -29,7 +29,7 @@ describe('drainOutbox', () => {
     const send = vi.fn(async () => {});
     expect(await drainOutbox(db, send)).toEqual({ sent: 2, failed: 0, skipped: 0 });
     expect(send).toHaveBeenCalledTimes(2);
-    expect(send).toHaveBeenNthCalledWith(1, expect.objectContaining({ to: 'neha@t.test', subject: 'Vikram sent you feedback' }));
+    expect(send).toHaveBeenNthCalledWith(1, expect.objectContaining({ id: 1, to: 'neha@t.test', subject: 'Vikram sent you feedback' }));
     expect(marked).toEqual([1, 2]);
   });
 
@@ -69,5 +69,39 @@ describe('renderEmail', () => {
   it('writes the coach application decisions already queued since M1', () => {
     expect(renderEmail('coach_approved', { name: 'Vikram' }, 'https://x')).toEqual({ subject: 'You are a FitSphere coach', text: expect.stringContaining('https://x/coach') });
     expect(renderEmail('coach_declined', { name: 'Vikram' }, 'https://x')!.subject).toBe('Your FitSphere coach application');
+  });
+});
+
+describe('drainOutbox failures', () => {
+  it('logs a failed send with its reason, and says when an email is given up', async () => {
+    const { db } = fakeDb([row(1, 'neha@t.test', { attempts: 5 })]);
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+    await drainOutbox(db, async () => {
+      throw new Error('resend 403');
+    });
+    expect(log).toHaveBeenCalledWith(expect.stringContaining('gave up'), 1, 'coach_feedback', 'resend 403');
+    log.mockRestore();
+  });
+
+  it('keeps going when marking one email sent fails', async () => {
+    const { db, marked } = fakeDb([row(1, 'neha@t.test'), row(2, 'ravi@t.test')]);
+    const markSent = db.markSent;
+    db.markSent = async (id: number) => {
+      if (id === 1) throw new Error('db blip');
+      await markSent(id);
+    };
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const send = vi.fn(async () => {});
+    expect(await drainOutbox(db, send)).toEqual({ sent: 2, failed: 0, skipped: 0 });
+    expect(send).toHaveBeenCalledTimes(2);
+    expect(marked).toEqual([2]);
+    log.mockRestore();
+  });
+
+  it('passes each email its outbox id, so the provider can refuse a repeat', async () => {
+    const { db } = fakeDb([row(7, 'neha@t.test')]);
+    const send = vi.fn(async () => {});
+    await drainOutbox(db, send);
+    expect(send).toHaveBeenCalledWith(expect.objectContaining({ id: 7 }));
   });
 });

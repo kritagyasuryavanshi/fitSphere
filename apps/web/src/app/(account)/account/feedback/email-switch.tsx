@@ -20,7 +20,8 @@ export function EmailSwitch({ initial }: { initial: boolean }) {
           const next = e.target.checked;
           setOn(next);
           start(async () => {
-            const r = await setFeedbackEmails(next);
+            // A thrown action (network, expired sign-in) must undo the switch too, or it would show the wrong state.
+            const r = await setFeedbackEmails(next).catch(() => ({ error: 'We could not save this setting. Check your connection and try again.' }));
             if (r.error) {
               setOn(!next);
               setError(r.error);

@@ -1,6 +1,6 @@
 -- M3-14: feedback queues one email to the athlete, unless they turned feedback emails off.
 begin;
-select plan(12);
+select plan(14);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('ab000000-0000-0000-0000-0000000000a1', 'coach-e@t.test', now()),
@@ -45,8 +45,20 @@ select public.give_feedback((select v from ids where name = 'e')::uuid, 'Second 
 reset role;
 select is((select count(*)::int from public.email_outbox where to_email = 'kabir-e@t.test'), 1, 'no email once the athlete turned the setting off');
 
--- The sender claims emails atomically, so two runs at once never send the same one.
+-- The first email was queued while the switch was on; with it off now, it is not sent either.
 set local role service_role;
+select is((select count(*)::int from public.claim_emails(array['coach_feedback'], 50)), 0, 'an email queued before the switch went off is not sent');
+reset role;
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"cb000000-0000-0000-0000-0000000000c1","role":"authenticated"}', true);
+select public.set_email_pref('coach_feedback', true);
+reset role;
+-- An email over 7 days old is stale and never goes out.
+insert into public.email_outbox (to_email, template, data, created_at) values ('old@t.test', 'coach_approved', '{}', now() - interval '8 days');
+set local role service_role;
+select is((select count(*)::int from public.claim_emails(array['coach_approved'], 50)), 0, 'an email older than 7 days is never claimed');
+
+-- The sender claims emails atomically, so two runs at once never send the same one.
 select is((select count(*)::int from public.claim_emails(array['coach_feedback'], 50)), 1, 'a run claims the waiting email');
 select is((select count(*)::int from public.claim_emails(array['coach_feedback'], 50)), 0, 'a second run at the same time gets nothing');
 select is((select count(*)::int from public.claim_emails(array['coach_approved'], 50)), 0, 'a run only claims templates it knows');

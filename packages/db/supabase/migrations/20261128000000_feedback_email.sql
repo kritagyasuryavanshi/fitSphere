@@ -8,6 +8,8 @@ create table public.email_prefs (
 );
 alter table public.email_prefs enable row level security;
 create policy email_prefs_select_own on public.email_prefs for select to authenticated using (user_id = (select auth.uid()));
+-- Read-only from clients whatever policies come later: writes go through set_email_pref.
+revoke all on public.email_prefs from anon, authenticated;
 grant select on public.email_prefs to authenticated;
 
 -- The caller's switches, with the defaults when they never changed one.
@@ -59,6 +61,11 @@ as $$
     select x.id from public.email_outbox x
     where x.sent_at is null and x.template = any(templates) and x.attempts < 5
       and (x.claimed_at is null or x.claimed_at < now() - interval '10 minutes')
+      -- Stale after 7 days: news that old would mislead (an approval since revoked, say).
+      and x.created_at > now() - interval '7 days'
+      -- The switch counts at sending too, so turning it off also stops what was already queued.
+      and not (x.template = 'coach_feedback' and exists (
+        select 1 from public.email_prefs p where p.user_id = x.user_id and not p.coach_feedback))
     order by x.created_at
     limit least(greatest(max_rows, 1), 200)
     for update skip locked

@@ -1,8 +1,12 @@
 // The email outbox sender (M3-14). Database functions queue rows in email_outbox in the same transaction as the event;
 // this drains them. The provider is injected, so tests use a fake and production uses Resend once a key exists.
 
-export type OutboxRow = { id: number; to_email: string; template: string; data: Record<string, unknown> };
-export type Email = { to: string; subject: string; text: string };
+export type OutboxRow = { id: number; to_email: string; template: string; data: Record<string, unknown>; attempts?: number };
+/** id is the outbox row, so the provider can refuse a repeat (an idempotency key). */
+export type Email = { id: number; to: string; subject: string; text: string };
+
+/** claim_emails gives up on an email after this many tries. */
+export const MAX_ATTEMPTS = 5;
 /** claim reserves a batch atomically (claim_emails in the database), so two runs never get the same row. */
 export type Outbox = { claim: (templates: string[], limit: number) => Promise<OutboxRow[]>; markSent: (id: number) => Promise<void> };
 
@@ -12,7 +16,7 @@ export const TEMPLATES = ['coach_feedback', 'coach_approved', 'coach_declined'];
 const str = (v: unknown) => (typeof v === 'string' ? v : '');
 
 /** Subject and plain-text body for a queued template; null for a template this sender does not know. */
-export function renderEmail(template: string, data: Record<string, unknown>, origin: string): Omit<Email, 'to'> | null {
+export function renderEmail(template: string, data: Record<string, unknown>, origin: string): Omit<Email, 'id' | 'to'> | null {
   if (template === 'coach_feedback') {
     const coach = str(data.coach) || 'Your coach';
     const program = str(data.program);
@@ -57,13 +61,20 @@ export async function drainOutbox(db: Outbox, send: (m: Email) => Promise<void>,
       continue;
     }
     try {
-      await send({ to: row.to_email, ...email });
-    } catch {
+      await send({ id: row.id, to: row.to_email, ...email });
+    } catch (e) {
       result.failed++;
+      const reason = e instanceof Error ? e.message : String(e);
+      console.error((row.attempts ?? 0) >= MAX_ATTEMPTS ? 'email failed and gave up' : 'email failed, will retry', row.id, row.template, reason);
       continue;
     }
-    await db.markSent(row.id);
     result.sent++;
+    // Sent already: a failed mark must not stop the run. The idempotency key stops the provider sending it twice.
+    try {
+      await db.markSent(row.id);
+    } catch (e) {
+      console.error('email sent but not marked', row.id, e instanceof Error ? e.message : String(e));
+    }
   }
   return result;
 }
