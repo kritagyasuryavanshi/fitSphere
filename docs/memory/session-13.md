@@ -33,7 +33,10 @@ Follows [[session-12]]. Hub for this work: [[programs]].
 
 - Vercel: the owner imported the repo as `fitsphere` (Root Directory `apps/web`). Claude installed the Vercel CLI, set the 4 variables by piping values from the Supabase CLI (none shown in chat), and redeployed: the first build had no variables and returned 500. Live site reads production data ([[env-production]]).
 
+- M3-12, PR #35 ([[M3-12]]): coach dashboard at `/coach` with stat tiles, flags (`coachFlags` in `lib/coach-flags.ts`) and the weekly board; phones get stacked cards. Codex and `/code-review high` found 9; all fixed: 1,000-row cap, rejoined athletes, stale flags, wording, program on flag cards. Pain flag has no source until M5.
+- The owner approved merging on green CI and review, which deploys production ([[decision-merge-deploys]]). Sleep is off on AC power on the LENOVO PC.
+
 ## Next
-1. M3-12 coach dashboard (adherence board and flags), on the same M3-10 functions.
+1. M3-13 athlete detail, feedback and replies; it adds the row actions on the dashboard.
 2. Hosting: the owner sets the Supabase Auth URL configuration; then test sign-in on the live site and run the Supabase security advisors once.
 3. Install Codex on the WELCOME PC (`npm i -g @openai/codex`, then `codex login`), so every PR gets its review on either PC.
