@@ -31,7 +31,9 @@ Follows [[session-12]]. Hub for this work: [[programs]].
 ## Done (hosting)
 - Production Supabase project `fitSphere` (`mxrwjhdqglozdxsgtjgw`, Mumbai) created by the owner. The owner linked it from `packages\db` and pushed all 29 migrations with `--remote`. `migration list --remote` shows 29 of 29 matching.
 
+- Vercel: the owner imported the repo as `fitsphere` (Root Directory `apps/web`). Claude installed the Vercel CLI, set the 4 variables by piping values from the Supabase CLI (none shown in chat), and redeployed: the first build had no variables and returned 500. Live site reads production data ([[env-production]]).
+
 ## Next
 1. M3-12 coach dashboard (adherence board and flags), on the same M3-10 functions.
-2. Hosting: Vercel next. The owner links the repo and sets the environment variables; deploy with the owner's OK. Run the Supabase security advisors on production once.
+2. Hosting: the owner sets the Supabase Auth URL configuration; then test sign-in on the live site and run the Supabase security advisors once.
 3. Install Codex on the WELCOME PC (`npm i -g @openai/codex`, then `codex login`), so every PR gets its review on either PC.
