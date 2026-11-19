@@ -17,6 +17,7 @@ Follows [[session-12]]. Hub for this work: [[programs]].
 - M3-11, PR #34 ([[M3-11]]): `/progress` (boxing and S&C) and `/progress/gym` from the M3-10 functions; `records()` in `lib/progress.ts`; `log_body_weight` (one per India day, keeps the last height, locks the profile row against double saves); the coach reads body weight through `coach_can_read`; "New best" on the workout summary. Codex and `/code-review high` found 9; fixed 7, rejected 2 with evidence.
 
 ## Bugs and errors
+- The first production push ran against the local stack: Supabase CLI v3 needs `--remote` ([[lesson-supabase-remote-flag]]).
 - Codex's two Today findings were wrong: Today uses each date's version, and `my_programs()` has no date filter.
 - Port 3000 was taken on this PC, so e2e ran on 3123 and the 23 sign-up and sign-in tests failed on the email redirect ([[lesson-prod-build-e2e]]).
 
@@ -27,7 +28,10 @@ Follows [[session-12]]. Hub for this work: [[programs]].
 - Programs are not public. The old rule let anyone, even a guest, read every published program. No screen needed it, and joining goes through `invite_info`. M4 can open a deliberate public view if the marketplace needs one.
 - Load validation stays in its three places (client, action, database); only the whole-number check is shared now.
 
+## Done (hosting)
+- Production Supabase project `fitSphere` (`mxrwjhdqglozdxsgtjgw`, Mumbai) created by the owner. The owner linked it from `packages\db` and pushed all 29 migrations with `--remote`. `migration list --remote` shows 29 of 29 matching.
+
 ## Next
 1. M3-12 coach dashboard (adherence board and flags), on the same M3-10 functions.
-2. Hosting: the owner creates the Supabase project (Mumbai) and signs in the CLIs; then link, push migrations and deploy, with the owner's OK at each live step (O-02).
+2. Hosting: Vercel next. The owner links the repo and sets the environment variables; deploy with the owner's OK. Run the Supabase security advisors on production once.
 3. Install Codex on the WELCOME PC (`npm i -g @openai/codex`, then `codex login`), so every PR gets its review on either PC.

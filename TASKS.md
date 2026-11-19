@@ -7,7 +7,7 @@ Build tasks live on the board: `docs/plans/board.json` (rendered at https://clau
 - [ ] Owner: rotate the GitHub token, because it appeared in the chat.
 - [ ] Owner: push the `suryavanshi-claude` rulebook commit that brings Codex back (the push from LENOVO gets 403).
 - [ ] Owner: push the rulebook, and switch off unused plugins. The tooling audit lists the steps: https://claude.ai/artifact/NAWsRxJUah4godqxBrXA6T.
-- [ ] Owner: create the Supabase project `fitsphere` in Mumbai (Free plan; keep the DB password in a password manager), run `! npx supabase login` and `! npx vercel login`, and send the project Reference ID. Accounts exist. Anthropic API and Google OAuth still to create (O-02). This blocks preview deploys (S0-06) and Google sign-in.
+- [ ] Owner: Vercel: run `npx.cmd vercel login` in PowerShell, then link the repo; set the environment variables Claude lists. Anthropic API and Google OAuth still to create (O-02). This blocks preview deploys (S0-06) and Google sign-in.
 - [ ] Owner: answer Q-01 to Q-15 in `docs/architecture/risks-and-gaps.md`, or accept the defaults (O-09).
 - [ ] Owner: decide on branch protection for `main`. It needs GitHub Pro (paid) or a public repo. Until then, merge only on a green CI run.
 - [ ] Owner: meet one boxing coach and one S&C coach this week (the assignment in the design doc).
@@ -22,6 +22,7 @@ Build tasks live on the board: `docs/plans/board.json` (rendered at https://clau
 - [ ] Owner: decide on Mobbin (optional).
 
 ## Done
+- [x] 2026-11-19: Production Supabase project `mxrwjhdqglozdxsgtjgw` (Mumbai) created; all 29 migrations pushed.
 - [x] 2026-11-19: M3-11 progress pages, body weight log and New best (PR #34).
 - [x] 2026-11-19: M3 review on LENOVO (Codex, Claude, Ponytail): nine fixes merged, incl. coach log access per program and private programs (PR #33).
 - [x] 2026-11-19: M3-07 to M3-10: boxing player, set logger, done summaries and metrics (PRs #29 to #32).
