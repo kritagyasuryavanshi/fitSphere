@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { describePrescription, type Numbers, type PrescriptionType } from '@/lib/program-draft';
+import { playable } from '@/lib/session-player';
 import { supabaseServer } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/viewer';
 import { InviteLinkForm } from './invite-link-form';
@@ -30,6 +31,26 @@ function Header({ today, line }: { today: string; line: string }) {
       </p>
       <h1 className="m-0 font-display text-[48px] font-normal uppercase leading-[0.95] md:text-[64px]">Today</h1>
     </div>
+  );
+}
+
+// The player runs rounds and timed drills; a session with sets waits for the set logger.
+function SessionAction({ id, name, canPlay, log }: { id: string; name: string; canPlay: boolean; log?: { completed_at: string | null } }) {
+  if (log?.completed_at) {
+    return (
+      <div className="mt-auto flex flex-wrap items-center gap-3">
+        <span className="bg-success-soft px-3 py-1.5 text-[14px] font-medium text-success">Done</span>
+        <Link href={`/session/${id}`} className="text-[15px] font-medium underline underline-offset-4">
+          Review your log<span className="sr-only"> for {name}</span>
+        </Link>
+      </div>
+    );
+  }
+  if (!canPlay) return null;
+  return (
+    <Link href={`/session/${id}`} aria-label={`${log ? 'Continue session' : 'Start session'}: ${name}`} className={`${buttonClass()} mt-auto self-start`}>
+      {log ? 'Continue session' : 'Start session'}
+    </Link>
   );
 }
 
@@ -120,6 +141,19 @@ async function Today() {
         )
     : { data: [], error: null };
   if (itemRows.error) throw itemRows.error;
+  // Today's logs decide Start, Continue or Done on each card.
+  const logRows = todays.length
+    ? await supabase
+        .from('session_logs')
+        .select('session_id, completed_at')
+        .eq('athlete_id', viewer.userId)
+        .eq('on_date', today)
+        .in(
+          'session_id',
+          todays.map((s) => s.id),
+        )
+    : { data: [], error: null };
+  if (logRows.error) throw logRows.error;
 
   return (
     <>
@@ -193,6 +227,7 @@ async function Today() {
                       );
                     })}
                   </ol>
+                  <SessionAction id={s.id} name={name} canPlay={playable(items)} log={logRows.data.find((l) => l.session_id === s.id)} />
                 </article>
               </li>
             );
