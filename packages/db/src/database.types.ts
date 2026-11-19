@@ -943,6 +943,11 @@ isOneToOne: false
 "coach_reads_program":
 { Args: { "athlete": string,"program": string }; Returns: boolean
                            },
+"coach_stats":
+{ Args: { "coach": string }; Returns: {
+              "adherence_pct": number,"athletes": number,"programs_finished": number,"stayed_pct": number
+            }[]
+                           },
 "complete_about_you":
 { Args: { "birth_date": string,"first_name": string,"sports": (string)[] }; Returns: undefined
                            },
