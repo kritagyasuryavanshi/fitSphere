@@ -11,15 +11,25 @@ export function timerPlan(type: PrescriptionType, p: Numbers): TimerPlan | null 
 /** The player runs any session with something in it: a timer for rounds and timed drills, the set logger for sets. */
 export const playable = (items: { type: string }[]) => items.length > 0;
 
-type HistoryLog = { id: string; on_date: string; started_at: string; item_logs: { item_id: string | null; set_logs: { set_no: number; reps: number; load_kg: number | null }[] }[] };
+type HistoryLog = {
+  id: string;
+  on_date: string;
+  started_at: string;
+  item_logs: { item_id: string | null; position: number; set_logs: { set_no: number; reps: number; load_kg: number | null }[] }[];
+};
 export type LastTime = { date: string; sets: { reps: number; loadKg: number | null }[] };
 
-/** Last time's sets of an exercise: the latest other session log where it has sets. */
-export function lastTime(history: HistoryLog[], itemId: string, currentLogId: string | null): LastTime | null {
+/**
+ * Last time's sets of an exercise: the latest other session log where it has sets. When the exercise was in that
+ * session more than once, one block only: the one at the same position, else the one with the most sets.
+ */
+export function lastTime(history: HistoryLog[], itemId: string, currentLogId: string | null, position?: number): LastTime | null {
   const sorted = [...history].sort((a, b) => b.on_date.localeCompare(a.on_date) || b.started_at.localeCompare(a.started_at));
   for (const log of sorted) {
     if (log.id === currentLogId) continue;
-    const sets = log.item_logs.filter((i) => i.item_id === itemId).flatMap((i) => i.set_logs);
+    const blocks = log.item_logs.filter((i) => i.item_id === itemId && i.set_logs.length);
+    const block = blocks.find((b) => b.position === position) ?? [...blocks].sort((a, b) => b.set_logs.length - a.set_logs.length)[0];
+    const sets = block?.set_logs ?? [];
     if (sets.length) {
       return {
         date: log.on_date,
@@ -29,6 +39,9 @@ export function lastTime(history: HistoryLog[], itemId: string, currentLogId: st
   }
   return null;
 }
+
+/** A load the database stores: 0 to 500 kg with at most two decimals, allowing for floating point (1.1 * 100). */
+export const isLoad = (n: number) => Number.isFinite(n) && n >= 0 && n <= 500 && Math.abs(Math.round(n * 100) - n * 100) < 1e-6;
 
 /** Kilograms as typed: blank is bodyweight (null); otherwise 0 to 500 with up to two decimals, else undefined. */
 export function parseLoad(text: string): number | null | undefined {

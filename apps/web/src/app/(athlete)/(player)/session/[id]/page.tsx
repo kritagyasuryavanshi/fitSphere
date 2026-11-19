@@ -70,19 +70,26 @@ async function Session({ params, searchParams }: PageProps<'/session/[id]'>) {
 
   // Last time's sets of each exercise: the athlete's own earlier logs of the same library item, up to this date.
   const exerciseItems = [...new Set(items.data!.filter((i) => i.type === 'sets').map((i) => i.item_id))];
-  const history = exerciseItems.length
-    ? await supabase
+  // One query per exercise, newest first: the latest two logs with its sets are enough to skip the current one.
+  const histories = await Promise.all(
+    exerciseItems.map((item) =>
+      supabase
         .from('session_logs')
-        .select('id, on_date, started_at, item_logs!inner(item_id, set_logs(set_no, reps, load_kg))')
+        .select('id, on_date, started_at, item_logs!inner(item_id, position, set_logs!inner(set_no, reps, load_kg))')
         .eq('athlete_id', viewer.userId)
         .lte('on_date', date)
-        .in('item_logs.item_id', exerciseItems)
+        .eq('item_logs.item_id', item)
         .order('on_date', { ascending: false })
-        .limit(60)
-    : { data: [], error: null };
-  if (history.error) throw history.error;
+        .order('started_at', { ascending: false })
+        .limit(2),
+    ),
+  );
+  for (const h of histories) if (h.error) throw h.error;
+  const history = new Map(exerciseItems.map((item, n) => [item, histories[n]!.data!]));
   const lastTimes = Object.fromEntries(
-    items.data!.filter((i) => i.type === 'sets').map((i) => [i.position, lastTime(history.data, i.item_id, log.data?.id ?? null)]),
+    items.data!
+      .filter((i) => i.type === 'sets')
+      .map((i) => [i.position, lastTime(history.get(i.item_id) ?? [], i.item_id, log.data?.id ?? null, i.position)]),
   );
   const name = session.data!.title.trim() || `Week ${session.data!.week}, day ${session.data!.day}`;
   // The title of the version that scheduled this date, which for a past date may not be today's.

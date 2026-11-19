@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { firstOpen, isIsoDate, lastTime, parseLoad, playable, timerPlan } from './session-player';
+import { firstOpen, isIsoDate, isLoad, lastTime, parseLoad, playable, timerPlan } from './session-player';
 
 describe('timerPlan', () => {
   it('times rounds as work and rest, and a timed drill as one round without rest', () => {
@@ -22,20 +22,47 @@ describe('playable', () => {
 describe('lastTime', () => {
   const bench = 'bench';
   const history = [
-    { id: 'now', on_date: '2026-11-19', started_at: '2026-11-19T10:00:00Z', item_logs: [{ item_id: bench, set_logs: [{ set_no: 1, reps: 8, load_kg: 55 }] }] },
-    { id: 'b', on_date: '2026-11-16', started_at: '2026-11-16T10:00:00Z', item_logs: [{ item_id: bench, set_logs: [{ set_no: 2, reps: 7, load_kg: 50 }, { set_no: 1, reps: 8, load_kg: 50 }] }] },
-    { id: 'a', on_date: '2026-11-12', started_at: '2026-11-12T10:00:00Z', item_logs: [{ item_id: bench, set_logs: [{ set_no: 1, reps: 8, load_kg: 45 }] }] },
-    { id: 'c', on_date: '2026-11-17', started_at: '2026-11-17T10:00:00Z', item_logs: [{ item_id: 'row', set_logs: [{ set_no: 1, reps: 10, load_kg: 40 }] }, { item_id: bench, set_logs: [] }] },
+    { id: 'now', on_date: '2026-11-19', started_at: '2026-11-19T10:00:00Z', item_logs: [{ item_id: bench, position: 1, set_logs: [{ set_no: 1, reps: 8, load_kg: 55 }] }] },
+    { id: 'b', on_date: '2026-11-16', started_at: '2026-11-16T10:00:00Z', item_logs: [{ item_id: bench, position: 1, set_logs: [{ set_no: 2, reps: 7, load_kg: 50 }, { set_no: 1, reps: 8, load_kg: 50 }] }] },
+    { id: 'a', on_date: '2026-11-12', started_at: '2026-11-12T10:00:00Z', item_logs: [{ item_id: bench, position: 1, set_logs: [{ set_no: 1, reps: 8, load_kg: 45 }] }] },
+    { id: 'c', on_date: '2026-11-17', started_at: '2026-11-17T10:00:00Z', item_logs: [{ item_id: 'row', position: 1, set_logs: [{ set_no: 1, reps: 10, load_kg: 40 }] }, { item_id: bench, position: 2, set_logs: [] }] },
   ];
   it('takes the latest other session with sets of the same exercise, in set order', () => {
     expect(lastTime(history, bench, 'now')).toEqual({ date: '2026-11-16', sets: [{ reps: 8, loadKg: 50 }, { reps: 7, loadKg: 50 }] });
   });
+  it('takes one block when the exercise was in the session twice: the same position, else the biggest', () => {
+    const twice = [
+      {
+        id: 'x',
+        on_date: '2026-11-18',
+        started_at: '',
+        item_logs: [
+          { item_id: bench, position: 1, set_logs: [{ set_no: 1, reps: 8, load_kg: 60 }, { set_no: 2, reps: 8, load_kg: 60 }] },
+          { item_id: bench, position: 4, set_logs: [{ set_no: 1, reps: 12, load_kg: 40 }, { set_no: 2, reps: 12, load_kg: 40 }, { set_no: 3, reps: 12, load_kg: 40 }] },
+        ],
+      },
+    ];
+    expect(lastTime(twice, bench, 'now', 1)?.sets).toEqual([{ reps: 8, loadKg: 60 }, { reps: 8, loadKg: 60 }]);
+    expect(lastTime(twice, bench, 'now', 4)?.sets.map((s) => s.reps)).toEqual([12, 12, 12]);
+    expect(lastTime(twice, bench, 'now', 2)?.sets.map((s) => s.reps)).toEqual([12, 12, 12]);
+  });
+
   it('skips logs of the exercise without sets, and is null for a first time', () => {
     expect(lastTime(history, 'row', 'c')).toBeNull();
     expect(lastTime(history, 'squat', 'now')).toBeNull();
   });
   it('reads loads that PostgREST sends as strings', () => {
-    expect(lastTime([{ id: 'x', on_date: '2026-11-01', started_at: '', item_logs: [{ item_id: bench, set_logs: [{ set_no: 1, reps: 5, load_kg: '52.50' as unknown as number }] }] }], bench, 'now')?.sets[0]?.loadKg).toBe(52.5);
+    expect(lastTime([{ id: 'x', on_date: '2026-11-01', started_at: '', item_logs: [{ item_id: bench, position: 1, set_logs: [{ set_no: 1, reps: 5, load_kg: '52.50' as unknown as number }] }] }], bench, 'now')?.sets[0]?.loadKg).toBe(52.5);
+  });
+});
+
+describe('isLoad', () => {
+  it('accepts every two-decimal load, including ones floating point gets wrong', () => {
+    for (const n of [1.1, 0.57, 4.35, 0.55, 52.5, 0, 500]) expect(isLoad(n)).toBe(true);
+    for (let c = 0; c <= 50000; c++) if (!isLoad(c / 100)) throw new Error(`refused ${c / 100}`);
+  });
+  it('refuses more decimals, negatives and over 500', () => {
+    for (const n of [52.345, -0.5, 500.01, Number.NaN]) expect(isLoad(n)).toBe(false);
   });
 });
 

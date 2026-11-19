@@ -312,6 +312,7 @@ export function Player({ session, date, isToday, title, line, coach, drills, log
               session={session}
               date={date}
               nextLabel={(allDone) => (fromSummary ? 'Back to summary' : !last ? (allDone ? 'Next exercise' : 'Skip exercise') : allDone ? 'Finish session' : 'Skip to finish')}
+              finishing={finishing}
               onChange={(rows) => setSetRows((m) => new Map(m).set(drill.position, rows))}
               onNext={() => {
                 const allDone = (setRows.get(drill.position)?.length ?? 0) >= Number(drill.prescription.sets);
