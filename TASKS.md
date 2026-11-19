@@ -21,6 +21,8 @@ Build tasks live on the board: `docs/plans/board.json` (rendered at https://clau
 - [ ] Owner: decide on Mobbin (optional).
 
 ## Done
+- [x] 2026-11-19: M3-07 to M3-10: boxing player, set logger, done summaries and metrics (PRs #29 to #32).
+- [x] 2026-11-19: M3-02 to M3-04 and M3-06: builder, invites, enrollments, Today (PRs #24 to #28).
 - [x] 2026-11-13: M2 Library done: save and complete, skill path, coach editor, review queue, daily video check, milestone check (PRs #17 to #21).
 - [x] 2026-11-13: M2-01 to M2-05: content schema, sample content, library, lesson pages and search (PRs #12 to #16).
 - [x] 2026-11-13: PRs #1 to #11 merged; CI on main green.

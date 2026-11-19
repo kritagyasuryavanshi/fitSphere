@@ -988,7 +988,7 @@
       "deps": [
         "M3-06"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "unit+e2e",
       "screens": [
@@ -1000,7 +1000,8 @@
         "Logs rounds done, technique feel 1–5, effort 1–10 and a note",
         "Screen stays awake while the timer runs where the browser allows",
         "End-to-end: log a full session"
-      ]
+      ],
+      "done_on": "2026-11-19"
     },
     {
       "id": "M3-08",
@@ -1011,7 +1012,7 @@
       "deps": [
         "M3-06"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "unit+e2e",
       "screens": [
@@ -1023,7 +1024,8 @@
         "Shows last time's sets for the same exercise",
         "Unit: if every set hit the top of the rep range, suggest +2.5 kg; otherwise keep the weight",
         "End-to-end: log a gym workout"
-      ]
+      ],
+      "done_on": "2026-11-19"
     },
     {
       "id": "M3-09",
@@ -1035,7 +1037,7 @@
         "M3-07",
         "M3-08"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "unit",
       "screens": [
@@ -1045,7 +1047,8 @@
       "ac": [
         "Unit: totals equal the saved logs exactly",
         "A note to the coach saves with the session"
-      ]
+      ],
+      "done_on": "2026-11-19"
     },
     {
       "id": "M3-10",
@@ -1057,7 +1060,7 @@
         "M3-07",
         "M3-08"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "unit+db",
       "ac": [
@@ -1065,7 +1068,8 @@
         "Adherence = sessions completed ÷ sessions scheduled up to today",
         "Sets per muscle count only hard sets from gym logs",
         "Skill rating = average of the last 5 technique logs"
-      ]
+      ],
+      "done_on": "2026-11-19"
     },
     {
       "id": "M3-11",
@@ -1086,7 +1090,8 @@
       "ac": [
         "Every number traces to M3-10 functions",
         "Body weight shows only to the athlete and their current coach",
-        "End-to-end: progress numbers equal the logged data"
+        "End-to-end: progress numbers equal the logged data",
+        "Shows a \"New best\" from bestOf/isNewRecord (packages/core metrics.ts) on the gym summary and progress page (moved from M3-09)"
       ]
     },
     {
