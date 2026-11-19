@@ -3,12 +3,12 @@
 Build tasks live on the board: `docs/plans/board.json` (rendered at https://claude.ai/artifact/BPCG8ghatzZkV7v1haJ1z1). This file keeps owner-level items only.
 
 ## Now
-- [ ] Owner: in `/permissions` add Deny `Bash(npx supabase db reset --db-url*)` and `Bash(npm run db:reset* --linked*)`; then let Claude commit `.claude/settings.json` so the WELCOME PC gets the same rules. Delete the stray `.claudesettings.json`.
+- [ ] Owner: in `/permissions` add Deny `Bash(npx supabase db reset --db-url*)`; then let Claude commit `.claude/settings.json`. Delete the stray `.claudesettings.json`.
 - [ ] Owner: install Codex on the WELCOME PC (`npm i -g @openai/codex`, then `codex login`), so every PR gets its independent review on either PC. PRs #22 to #32 had none until session 13.
 - [ ] Owner: rotate the GitHub token, because it appeared in the chat.
 - [ ] Owner: push the `suryavanshi-claude` rulebook commit that brings Codex back (the push from LENOVO gets 403).
 - [ ] Owner: push the rulebook, and switch off unused plugins. The tooling audit lists the steps: https://claude.ai/artifact/NAWsRxJUah4godqxBrXA6T.
-- [ ] Owner: Supabase → Authentication → URL Configuration: Site URL `https://fit-sphere-xi.vercel.app`; Redirect URLs `https://fit-sphere-xi.vercel.app/**` and `https://*-kritagyasuryavanshis-projects.vercel.app/**`. Anthropic API and Google OAuth still to create (O-02). This blocks preview deploys (S0-06) and Google sign-in.
+- [ ] Owner: email: a Resend account and a verified sending domain, then `RESEND_API_KEY`, `EMAIL_FROM` and `NEXT_PUBLIC_SITE_URL` in Vercel. Until then emails wait in the queue (up to 7 days). Anthropic API and Google OAuth still to create (O-02). This blocks preview deploys (S0-06) and Google sign-in.
 - [ ] Owner: answer Q-01 to Q-15 in `docs/architecture/risks-and-gaps.md`, or accept the defaults (O-09).
 - [ ] Owner: decide on branch protection for `main`. It needs GitHub Pro (paid) or a public repo. Until then, merge only on a green CI run.
 - [ ] Owner: meet one boxing coach and one S&C coach this week (the assignment in the design doc).
@@ -23,6 +23,7 @@ Build tasks live on the board: `docs/plans/board.json` (rendered at https://clau
 - [ ] Owner: decide on Mobbin (optional).
 
 ## Done
+- [x] 2026-11-19: M3-13 athlete detail, coach feedback and replies (PR #36), live on production.
 - [x] 2026-11-19: M3-12 coach dashboard (PR #35), live on production.
 - [x] 2026-11-19: Vercel project `fitsphere` live at https://fit-sphere-xi.vercel.app on production Supabase.
 - [x] 2026-11-19: Production Supabase project `mxrwjhdqglozdxsgtjgw` (Mumbai) created; all 29 migrations pushed.

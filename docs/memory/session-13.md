@@ -36,7 +36,11 @@ Follows [[session-12]]. Hub for this work: [[programs]].
 - M3-12, PR #35 ([[M3-12]]): coach dashboard at `/coach` with stat tiles, flags (`coachFlags` in `lib/coach-flags.ts`) and the weekly board; phones get stacked cards. Codex and `/code-review high` found 9; all fixed: 1,000-row cap, rejoined athletes, stale flags, wording, program on flag cards. Pain flag has no source until M5.
 - The owner approved merging on green CI and review, which deploys production ([[decision-merge-deploys]]). Sleep is off on AC power on the LENOVO PC.
 
+- M3-13, PR #36 ([[M3-13]]): `feedback` and `feedback_replies` (write only through `give_feedback` and `reply_feedback`; read-only grants), the coach athlete page `/coach/athletes/[enrollment]`, Coach feedback `/account/feedback`, the newest feedback on Today. Replies close once the athlete leaves. Security review: no findings; Codex and two `/code-review high` passes: fixed 12. Migration pushed to production with the owner's approval before the merge; 30 of 30 match.
+- C: filled up (391 MB free): Docker went read-only. CI ran the database tests meanwhile; types came from CI's diff. After the owner freed space, a full `wsl --shutdown` was needed to clear the read-only disk ([[lesson-docker-welcome]]).
+- S0-06 done in practice: Vercel builds a preview for every PR.
+
 ## Next
-1. M3-13 athlete detail, feedback and replies; it adds the row actions on the dashboard.
+1. M3-14 feedback emails (PR #37), then M3-16 notifications and M3-15 the milestone check.
 2. Hosting: the owner sets the Supabase Auth URL configuration; then test sign-in on the live site and run the Supabase security advisors once.
 3. Install Codex on the WELCOME PC (`npm i -g @openai/codex`, then `codex login`), so every PR gets its review on either PC.

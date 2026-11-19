@@ -322,14 +322,15 @@
         "S0-05",
         "O-02"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "manual",
       "ac": [
         "Each pull request gets a preview URL",
         "Preview uses a separate Supabase project from production",
         "Production deploy needs the owner's approval"
-      ]
+      ],
+      "done_on": "2026-11-19"
     },
     {
       "id": "S0-07",
@@ -1128,7 +1129,7 @@
       "deps": [
         "M3-12"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "e2e",
       "screens": [
@@ -1139,7 +1140,8 @@
         "Coach sees logs and sign-up answers for an enrolled athlete only",
         "End-to-end: coach sends feedback; athlete sees it in Today and Coach feedback and replies; coach sees the reply",
         "pgTAP (moved from M3-04): feedback stays visible to the athlete after they leave or are removed; the coach reads it only through coach_can_read"
-      ]
+      ],
+      "done_on": "2026-11-19"
     },
     {
       "id": "M3-14",
