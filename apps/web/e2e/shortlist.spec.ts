@@ -1,10 +1,10 @@
 import { expect, test } from '@playwright/test';
-import { liveCoach, signInAs } from './helpers';
+import { admin, liveCoach, signInAs } from './helpers';
 
 test('an athlete shortlists two coaches, then compares them', async ({ page }) => {
   const city = `Comparepur ${Date.now()}`;
   await liveCoach('Farah', city, 400000);
-  await liveCoach('Gautam', city, 700000);
+  const gautam = await liveCoach('Gautam', city, 700000);
   await liveCoach('Hema', city, 500000);
 
   // A guest is asked to sign in first.
@@ -18,9 +18,7 @@ test('an athlete shortlists two coaches, then compares them', async ({ page }) =
   await expect(results.getByRole('button', { name: 'Shortlisted Farah' })).toHaveAttribute('aria-pressed', 'true');
   await results.getByRole('button', { name: 'Shortlist Gautam' }).click();
   await expect(results.getByRole('button', { name: 'Shortlisted Gautam' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Your shortlist (2)' })).toBeVisible();
-
-  await page.getByRole('link', { name: 'Your shortlist (2)' }).click();
+  await page.getByRole('link', { name: 'Your shortlist' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Shortlist' })).toBeVisible();
   await expect(page.getByText('Only you see your shortlist. Coaches are not told.')).toBeVisible();
   await page.getByLabel('Compare Farah').check();
@@ -38,4 +36,11 @@ test('an athlete shortlists two coaches, then compares them', async ({ page }) =
   await page.getByRole('region', { name: 'Remove from shortlist' }).getByRole('button', { name: 'Shortlisted Farah' }).click();
   await expect(page.getByLabel('Compare Farah')).toHaveCount(0);
   await expect(page.getByLabel('Compare Gautam')).toBeVisible();
+
+  // A coach who stops being live can still be removed, by a placeholder name.
+  expect((await admin().from('coach_profiles').update({ status: 'draft' }).eq('coach_id', gautam.id)).error).toBeNull();
+  await page.goto('/shortlist');
+  await expect(page.getByText('None of your shortlisted coaches is listed right now.')).toBeVisible();
+  await page.getByRole('button', { name: 'Shortlisted a coach no longer listed' }).click();
+  await expect(page.getByText('No coaches yet.')).toBeVisible();
 });

@@ -25,7 +25,7 @@ async function Shortlist() {
   if (!shown.length) {
     return (
       <p className="m-0 text-[16px]">
-        No coaches yet.{' '}
+        {ids.length ? 'None of your shortlisted coaches is listed right now.' : 'No coaches yet.'}{' '}
         <Link href="/coaches" className="underline underline-offset-4">
           Find a coach
         </Link>{' '}
@@ -73,16 +73,17 @@ async function Remove() {
   const { data: rows, error } = await supabase.from('shortlists').select('coach_id');
   if (error) throw error;
   if (!rows.length) return null;
-  const { data: coaches, error: e2 } = await supabase.rpc('find_coaches', { ids: rows.map((r) => r.coach_id) });
-  if (e2) throw e2;
+  // Every saved coach, live or not: one who is no longer listed can still be removed.
+  const names = await Promise.all(rows.map((r) => supabase.rpc('coach_public_name', { coach: r.coach_id })));
+  for (const n of names) if (n.error) throw n.error;
   return (
     <section aria-labelledby="remove" className="flex flex-col gap-2">
       <h2 id="remove" className="m-0 text-[18px] font-semibold">
         Remove from shortlist
       </h2>
       <div className="flex flex-wrap gap-2">
-        {coaches.map((c) => (
-          <ShortlistButton key={c.coach_id} coachId={c.coach_id} on signedIn name={c.name} />
+        {rows.map((r, i) => (
+          <ShortlistButton key={r.coach_id} coachId={r.coach_id} on signedIn name={names[i].data ?? 'a coach no longer listed'} />
         ))}
       </div>
     </section>

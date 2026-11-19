@@ -13,7 +13,8 @@ revoke all on public.shortlists from anon, authenticated;
 grant select on public.shortlists to authenticated;
 create policy shortlists_select_own on public.shortlists for select to authenticated using (athlete_id = (select auth.uid()));
 
--- Adds (on) or removes (off) a coach. Only live coaches go on, never yourself, at most 20.
+-- Adds (on) or removes (off) a coach. Athletes only. Only live coaches go on, never yourself, at most 20 live ones: a coach
+-- who stops being live stays on the list, so it can be removed, but no longer takes a place.
 create function public.shortlist_coach(coach uuid, on_list boolean)
 returns void
 language plpgsql
@@ -26,6 +27,12 @@ begin
   if uid is null then
     raise exception 'sign in first' using errcode = '42501';
   end if;
+  if on_list is null then
+    raise exception 'bad_input' using errcode = '22023';
+  end if;
+  if not public.has_role('athlete') then
+    raise exception 'not_athlete' using errcode = '42501';
+  end if;
   if not on_list then
     delete from public.shortlists where athlete_id = uid and coach_id = coach;
     return;
@@ -36,7 +43,9 @@ begin
   if not public.coach_is_live(coach) then
     raise exception 'not_live' using errcode = '22023';
   end if;
-  if (select count(*) from public.shortlists where athlete_id = uid and coach_id <> coach) >= 20 then
+  -- One change at a time per athlete, so two quick taps cannot pass the cap together.
+  perform pg_advisory_xact_lock(hashtext('shortlist:' || uid::text));
+  if (select count(*) from public.shortlists where athlete_id = uid and coach_id <> coach and public.coach_is_live(coach_id)) >= 20 then
     raise exception 'shortlist_full' using errcode = '22023';
   end if;
   insert into public.shortlists (athlete_id, coach_id) values (uid, coach) on conflict do nothing;

@@ -133,7 +133,7 @@ async function Directory({ searchParams }: PageProps<'/coaches'>) {
           </p>
           {viewer ? (
             <Link href="/shortlist" className="text-[15px] font-medium underline underline-offset-4">
-              Your shortlist ({listed.size})
+              Your shortlist
             </Link>
           ) : null}
         </div>

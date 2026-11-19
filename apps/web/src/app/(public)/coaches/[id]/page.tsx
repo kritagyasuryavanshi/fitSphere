@@ -32,7 +32,8 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
   const { id } = await params;
   if (!isUuid(id)) notFound();
   const supabase = await supabaseServer();
-  const [profile, name, packages, slots, credentials, stats, lessons] = await Promise.all([
+  const viewer = await getViewer();
+  const [profile, name, packages, slots, credentials, stats, lessons, mine] = await Promise.all([
     supabase.from('coach_profiles').select('headline, philosophy, specialties, languages, formats, city, years').eq('coach_id', id).maybeSingle(),
     supabase.rpc('coach_public_name', { coach: id }),
     supabase.from('packages').select('id, title, kind, price_paise').eq('coach_id', id).eq('live', true).order('price_paise'),
@@ -40,8 +41,9 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
     supabase.from('public_credentials').select('id, title, issuer').eq('coach_id', id),
     supabase.rpc('coach_stats', { coach: id }).maybeSingle(),
     supabase.from('content_items').select('slug, title, disciplines!inner(category_id)').eq('author_id', id).eq('status', 'published').eq('is_sample', false).order('title').limit(6),
+    viewer ? supabase.from('shortlists').select('coach_id').eq('coach_id', id) : Promise.resolve({ data: [], error: null }),
   ]);
-  for (const r of [profile, name, packages, slots, credentials, stats, lessons]) if (r.error) throw r.error;
+  for (const r of [profile, name, packages, slots, credentials, stats, lessons, mine]) if (r.error) throw r.error;
   const st = stats.data;
   const statRows: [string, string][] = st
     ? [
@@ -53,8 +55,7 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
     : [];
   const p = profile.data;
   if (!p || !name.data) notFound();
-  const viewer = await getViewer();
-  const listed = viewer ? (await supabase.from('shortlists').select('coach_id').eq('coach_id', id)).data?.length === 1 : false;
+  const listed = (mine.data ?? []).length === 1;
 
   return (
     <>

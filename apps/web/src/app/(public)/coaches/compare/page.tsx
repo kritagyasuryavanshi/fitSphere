@@ -11,7 +11,8 @@ export const metadata: Metadata = { title: 'Compare coaches · FitSphere' };
 // messages (M4-08) and intro calls with 1:1 booking (M4-17); until then those rows say so.
 async function Compare({ searchParams }: PageProps<'/coaches/compare'>) {
   const raw = (await searchParams).ids;
-  const ids = [...new Set((Array.isArray(raw) ? raw : raw ? [raw] : []).filter(isUuid))].slice(0, 3);
+  const chosen = [...new Set((Array.isArray(raw) ? raw : raw ? [raw] : []).filter(isUuid))];
+  const ids = chosen.slice(0, 3);
   if (!ids.length) {
     return (
       <p className="m-0 text-[16px]">
@@ -37,6 +38,17 @@ async function Compare({ searchParams }: PageProps<'/coaches/compare'>) {
     const c = coaches.data.find((x) => x.coach_id === id);
     return c ? [{ c, stats: stats[i].data, single: Math.min(...singles.data.filter((p) => p.coach_id === id).map((p) => p.price_paise)) }] : [];
   });
+  if (!cols.length) {
+    return (
+      <p className="m-0 text-[16px]">
+        These coaches are not listed right now. Choose others from your{' '}
+        <Link href="/shortlist" className="underline underline-offset-4">
+          shortlist
+        </Link>
+        .
+      </p>
+    );
+  }
   const later = 'Not tracked yet';
   const rows: [string, (col: (typeof cols)[number]) => ReactNode][] = [
     ['Best for', ({ c }) => c.specialties.slice(0, 3).join(', ') || c.headline],
@@ -62,6 +74,7 @@ async function Compare({ searchParams }: PageProps<'/coaches/compare'>) {
 
   return (
     <div className="overflow-x-auto">
+      {chosen.length > 3 ? <p className="m-0 mb-4 text-[15px]">You chose {chosen.length} coaches. These are the first 3.</p> : null}
       <table className="w-full min-w-[640px] border-collapse text-left text-[15px]">
         <caption className="sr-only">Coaches compared</caption>
         <thead>
