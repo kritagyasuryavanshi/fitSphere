@@ -6,6 +6,7 @@ import { Suspense } from 'react';
 import { formatInr } from '@fitsphere/core';
 import { isUuid } from '@/lib/programs';
 import { supabaseServer } from '@/lib/supabase/server';
+import { buttonClass } from '@fitsphere/ui';
 import { getViewer } from '@/lib/viewer';
 import { ShortlistButton } from '../shortlist-button';
 
@@ -27,13 +28,13 @@ const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 // P-Coach (first version, M4-02): a live coach's public profile. RLS returns only live coaches, their live packages and
 // slots, and checked credentials. Stats come from a definer function over FitSphere records (M4-05). Programs are
 // private (invite only), so the portfolio lists published lessons only until coaches can choose to list a program.
-// shortcut: reviews arrive with M4-14 and Hire with M4-07; until then the page says so.
+// shortcut: reviews arrive with M4-14; until then the page says so.
 async function Coach({ params }: PageProps<'/coaches/[id]'>) {
   const { id } = await params;
   if (!isUuid(id)) notFound();
   const supabase = await supabaseServer();
   const viewer = await getViewer();
-  const [profile, name, packages, slots, credentials, stats, lessons, mine] = await Promise.all([
+  const [profile, name, packages, slots, credentials, stats, lessons, mine, room] = await Promise.all([
     supabase.from('coach_profiles').select('headline, philosophy, specialties, languages, formats, city, years').eq('coach_id', id).maybeSingle(),
     supabase.rpc('coach_public_name', { coach: id }),
     supabase.from('packages').select('id, title, kind, price_paise').eq('coach_id', id).eq('live', true).order('price_paise'),
@@ -42,8 +43,9 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
     supabase.rpc('coach_stats', { coach: id }).maybeSingle(),
     supabase.from('content_items').select('slug, title, disciplines!inner(category_id)').eq('author_id', id).eq('status', 'published').eq('is_sample', false).order('title').limit(6),
     viewer ? supabase.from('shortlists').select('coach_id').eq('coach_id', id) : Promise.resolve({ data: [], error: null }),
+    supabase.rpc('coach_has_room', { coach: id }),
   ]);
-  for (const r of [profile, name, packages, slots, credentials, stats, lessons, mine]) if (r.error) throw r.error;
+  for (const r of [profile, name, packages, slots, credentials, stats, lessons, mine, room]) if (r.error) throw r.error;
   const st = stats.data;
   const statRows: [string, string][] = st
     ? [
@@ -66,7 +68,14 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
         <h1 className="m-0 font-display text-[48px] font-normal uppercase leading-[0.95] md:text-[64px]">{name.data}</h1>
         <p className="m-0 text-[18px]">{p.headline}</p>
         {viewer?.userId === id ? null : (
-          <div className="self-start">
+          <div className="flex flex-wrap items-start gap-3">
+            {room.data ? (
+              <Link href={viewer ? `/hire/${id}` : '/sign-in'} className={buttonClass({ size: 'small' })}>
+                Hire {name.data}
+              </Link>
+            ) : (
+              <p className="m-0 text-[15px] text-muted">Not taking new clients right now.</p>
+            )}
             <ShortlistButton coachId={id} on={listed} signedIn={!!viewer} name={name.data} />
           </div>
         )}
