@@ -1092,7 +1092,8 @@
         "Body weight shows only to the athlete and their current coach",
         "End-to-end: progress numbers equal the logged data",
         "Shows a \"New best\" from bestOf/isNewRecord (packages/core metrics.ts) on the gym summary and progress page (moved from M3-09)"
-      ]
+      ],
+      "done_on": "2026-11-19"
     },
     {
       "id": "M3-12",
