@@ -204,6 +204,8 @@ export function Player({ session, date, isToday, title, line, coach, drills, log
   const [fromSummary, setFromSummary] = useState(false);
   const [timer, setTimer] = useState<TimerState | null>(null);
   const [elapsed, setElapsed] = useState(0);
+  // Each save re-renders the page with a new openedAt; keep the first, when the player really opened.
+  const [opened] = useState(openedAt);
   const [finishError, setFinishError] = useState('');
   const [finishing, startFinish] = useTransition();
   const [announce, setAnnounce] = useState('');
@@ -246,20 +248,13 @@ export function Player({ session, date, isToday, title, line, coach, drills, log
   const onSaved = (entry: Logged, finish: boolean) => {
     setLogs((m) => new Map(m).set(entry.position, entry));
     if (fromSummary) goTo(drills.length);
-    else if (finish) {
-      startFinish(async () => {
-        const result = await finishSession(session, date, openedAt);
-        if (result && 'error' in result) {
-          setFinishError(result.error);
-          goTo(drills.length);
-        }
-      });
-    } else goTo(index + 1);
+    else if (finish) finishNow();
+    else goTo(index + 1);
   };
 
-  const finish = () =>
+  const finishNow = () =>
     startFinish(async () => {
-      const result = await finishSession(session, date, openedAt);
+      const result = await finishSession(session, date, opened);
       if (result && 'error' in result) {
         setFinishError(result.error);
         goTo(drills.length);
@@ -317,7 +312,7 @@ export function Player({ session, date, isToday, title, line, coach, drills, log
               onNext={() => {
                 const allDone = (setRows.get(drill.position)?.length ?? 0) >= Number(drill.prescription.sets);
                 if (fromSummary || !last) goTo(fromSummary ? drills.length : index + 1);
-                else if (allDone) finish();
+                else if (allDone) finishNow();
                 else goTo(drills.length);
               }}
             />
@@ -437,7 +432,7 @@ export function Player({ session, date, isToday, title, line, coach, drills, log
                 Back to Today
               </Link>
             ) : doneCount ? (
-              <Button variant="volt" onClick={finish} disabled={!hydrated || finishing}>
+              <Button variant="volt" onClick={finishNow} disabled={!hydrated || finishing}>
                 {finishing ? 'Finishing…' : 'Finish session'}
               </Button>
             ) : (

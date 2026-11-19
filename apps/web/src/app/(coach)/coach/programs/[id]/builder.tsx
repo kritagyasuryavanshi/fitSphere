@@ -56,6 +56,10 @@ export function Builder({ program, sessions: initial, library, saved }: { progra
     setSessionsRaw(next);
   };
   const submitting = useRef(false);
+  // A save that returns an error leaves the edits unsaved, so the leave warning comes back on.
+  useEffect(() => {
+    if (!pending) submitting.current = false;
+  }, [pending, state]);
 
   useEffect(() => {
     if (!dirty) return;

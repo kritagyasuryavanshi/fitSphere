@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { whole } from '@/lib/program-draft';
 import { isUuid } from '@/lib/programs';
 import { isIsoDate, isLoad } from '@/lib/session-player';
 import { supabaseServer } from '@/lib/supabase/server';
@@ -10,7 +11,6 @@ import { requireRole } from '@/lib/viewer';
 export type DrillLog = { session: string; date: string; position: number; rounds: number | null; technique: number; effort: number; note: string };
 export type ActionResult = { error: string } | { ok: true };
 
-const whole = (n: unknown, min: number, max: number) => Number.isInteger(n) && (n as number) >= min && (n as number) <= max;
 
 /** Saves one drill. The database checks the session is scheduled for this athlete on this date. */
 export async function logDrill(input: DrillLog): Promise<ActionResult> {

@@ -35,7 +35,8 @@ export function startingNumbers(type: PrescriptionType): Numbers {
   return { rounds: { rounds: 3, work_s: 120, rest_s: 60 }, time: { seconds: 60 }, sets: { sets: 3, reps: 10, load_kg: null } }[type];
 }
 
-const whole = (v: number | undefined, min: number, max: number) => Number.isInteger(v) && (v as number) >= min && (v as number) <= max;
+/** A whole number from min to max; anything else, including undefined, is false. */
+export const whole = (v: unknown, min: number, max: number) => Number.isInteger(v) && (v as number) >= min && (v as number) <= max;
 
 /** The first number out of range, as a sentence, or null when the database will accept it. */
 export function prescriptionError(p: Prescription): string | null {
