@@ -13,3 +13,4 @@ What it caught:
 - A tap before hydration is sent twice (native submit, then React's replay). Submit buttons use `useHydrated()` from `apps/web/src/lib/use-hydrated.ts`.
 - The suite signs up more than 30 users in 5 minutes; local `config.toml` raises the auth rate limits. Production limits live in the dashboard.
 - Stale `.next/dev/types` break `npm run build` after a route moves. Start the dev server once (any e2e run) to refresh them.
+- `E2E_PORT` moves the app, but sign-up and sign-in email links still point to port 3000 (the Supabase site URL). On another port those 23 tests fail on the redirect, not on the code. Free port 3000 or rely on CI ([[session-13]]).
