@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { supabaseServer } from '@/lib/supabase/server';
 import { requireSignedIn } from '@/lib/viewer';
+import { EmailSwitch } from './email-switch';
 import { ReplyForm } from './reply-form';
 
 export const metadata: Metadata = { title: 'Coach feedback · FitSphere' };
@@ -13,27 +14,35 @@ const stamp = new Intl.DateTimeFormat('en-IN', { weekday: 'short', day: 'numeric
 async function Feedback() {
   const viewer = await requireSignedIn();
   const supabase = await supabaseServer();
-  const [{ data, error }, programs] = await Promise.all([
+  const [{ data, error }, programs, prefs] = await Promise.all([
     supabase
       .from('feedback')
       .select('id, body, created_at, program_id, coach_name, program_title, feedback_replies(id, body, created_at)')
       .eq('athlete_id', viewer.userId)
       .order('created_at', { ascending: false }),
     supabase.rpc('my_programs'),
+    supabase.rpc('my_email_prefs'),
   ]);
   if (error) throw error;
   if (programs.error) throw programs.error;
+  if (prefs.error) throw prefs.error;
+  const emailSwitch = <EmailSwitch initial={prefs.data[0]?.coach_feedback ?? true} />;
   // Replies reach the coach only while the athlete is still in that program.
   const active = new Set(programs.data.map((p) => p.program_id));
   if (!data.length) {
     return (
+      <>
+      {emailSwitch}
       <div className="flex flex-col items-start gap-3 bg-mist p-8">
         <p className="m-0 text-[18px] font-medium">No feedback yet</p>
         <p className="m-0 text-[16px] text-muted">When your coach sends feedback on your training, it shows here and on Today.</p>
       </div>
+      </>
     );
   }
   return (
+    <>
+    {emailSwitch}
     <ul aria-label="Coach feedback" className="m-0 flex list-none flex-col gap-6 p-0">
       {data.map((f) => {
         const coach = f.coach_name || 'Your coach';
@@ -61,6 +70,7 @@ async function Feedback() {
         );
       })}
     </ul>
+    </>
   );
 }
 

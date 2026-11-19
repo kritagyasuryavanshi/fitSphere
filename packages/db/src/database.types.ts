@@ -335,20 +335,40 @@ isOneToOne: false
                   ]
                 },"email_outbox": {
                   Row: {
-                    "created_at": string,"data": NonNullable<Json>,"id": number,"sent_at": string | null,"template": string,"to_email": string,"user_id": string | null
+                    "attempts": number,"claimed_at": string | null,"created_at": string,"data": NonNullable<Json>,"id": number,"sent_at": string | null,"template": string,"to_email": string,"user_id": string | null
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"data"?: NonNullable<Json>,"id"?: never,"sent_at"?: string | null,"template": string,"to_email": string,"user_id"?: string | null
+                    "attempts"?: number,"claimed_at"?: string | null,"created_at"?: string,"data"?: NonNullable<Json>,"id"?: never,"sent_at"?: string | null,"template": string,"to_email": string,"user_id"?: string | null
                   }
                   Update: {
-                    "created_at"?: string,"data"?: NonNullable<Json>,"id"?: never,"sent_at"?: string | null,"template"?: string,"to_email"?: string,"user_id"?: string | null
+                    "attempts"?: number,"claimed_at"?: string | null,"created_at"?: string,"data"?: NonNullable<Json>,"id"?: never,"sent_at"?: string | null,"template"?: string,"to_email"?: string,"user_id"?: string | null
                   }
                   Relationships: [
                     {
       foreignKeyName: "email_outbox_user_id_fkey"
       columns: ["user_id"]
 isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"email_prefs": {
+                  Row: {
+                    "coach_feedback": boolean,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "coach_feedback"?: boolean,"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "coach_feedback"?: boolean,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "email_prefs_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: true
       referencedRelation: "profiles"
       referencedColumns: ["id"]
     }
@@ -751,6 +771,24 @@ isOneToOne: false
               "display_name": string,"id": string
             }[]
                            },
+"claim_emails":
+{ Args: { "max_rows"?: number,"templates": (string)[] }; Returns: {
+              "attempts": number,
+"claimed_at": string | null,
+"created_at": string,
+"data": NonNullable<Json>,
+"id": number,
+"sent_at": string | null,
+"template": string,
+"to_email": string,
+"user_id": string | null
+            }[]
+                          SetofOptions: {
+        from: "*"
+        to: "email_outbox"
+        isOneToOne: false
+        isSetofReturn: true
+      } },
 "coach_can_read":
 { Args: { "athlete": string }; Returns: boolean
                            },
@@ -817,6 +855,11 @@ isOneToOne: false
                            },
 "log_set":
 { Args: { "item_position": number,"load_kg": number,"on_date": string,"reps": number,"rpe": number,"session": string,"set_no": number }; Returns: string
+                           },
+"my_email_prefs":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "coach_feedback": boolean
+            }[]
                            },
 "my_programs":
 { Args: Record<PropertyKey, never>; Returns: {
@@ -900,6 +943,9 @@ isOneToOne: false
                            },
 "set_completed":
 { Args: { "done": boolean,"item": string }; Returns: undefined
+                           },
+"set_email_pref":
+{ Args: { "enabled": boolean,"kind": string }; Returns: undefined
                            },
 "set_my_consent":
 { Args: { "granted": boolean,"purpose": Database["public"]['Enums']["consent_purpose"] }; Returns: undefined

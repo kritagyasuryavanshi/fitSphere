@@ -1,6 +1,8 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { after } from 'next/server';
+import { sendQueuedEmails } from '@/lib/email-send';
 import { requireRole, type Role } from '@/lib/viewer';
 import { supabaseServer } from '@/lib/supabase/server';
 
@@ -52,4 +54,12 @@ export async function decideApplication(formData: FormData): Promise<void> {
   // Another admin may have decided first; the list then shows that, so it is not an error here.
   if (error && error.message !== 'already_decided') throw new Error(`Could not save the decision: ${error.message}`);
   revalidatePath('/admin/people');
+  // The decision email is queued with it; send it after the response, as feedback does.
+  after(async () => {
+    try {
+      await sendQueuedEmails();
+    } catch (e) {
+      console.error('sending queued emails failed', e);
+    }
+  });
 }
