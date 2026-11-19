@@ -17,7 +17,7 @@ test('a guest sees the public header; on a phone, the menu', async ({ page }, te
     await page.getByRole('link', { name: 'Close menu' }).click();
     await expect(page).toHaveURL('/');
   } else {
-    for (const label of ['Learn', 'For coaches']) await expect(header.getByRole('link', { name: label })).toBeVisible();
+    for (const label of ['Learn', 'Coaches', 'For coaches']) await expect(header.getByRole('link', { name: label, exact: true })).toBeVisible();
     await expect(header.getByRole('link', { name: 'Join free' })).toBeVisible();
   }
 });

@@ -968,6 +968,11 @@ isOneToOne: false
 "export_my_data":
 { Args: Record<PropertyKey, never>; Returns: Json
                            },
+"find_coaches":
+{ Args: { "checked_only"?: boolean,"city"?: string,"experience"?: string,"format"?: string,"language"?: string,"max_paise"?: number,"min_paise"?: number,"min_rating"?: number,"sort"?: string,"specialty"?: string }; Returns: {
+              "checked": boolean,"coach_city": string,"coach_id": string,"formats": (string)[],"from_paise": number,"headline": string,"languages": (string)[],"name": string,"rating": number,"review_count": number,"specialties": (string)[],"years": number
+            }[]
+                           },
 "finish_session":
 { Args: { "on_date": string,"opened_at"?: string,"session": string }; Returns: string
                            },
