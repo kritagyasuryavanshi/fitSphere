@@ -26,15 +26,19 @@ const EXPERIENCE = [
 ] as const;
 
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v)?.trim() || undefined;
-const distinct = (lists: string[][]) => [...new Map(lists.flat().map((s) => [s.toLowerCase(), s])).values()].sort((a, b) => a.localeCompare(b));
 
-function Select({ name, label, value, options }: { name: string; label: string; value?: string; options: readonly (readonly [string, string])[] }) {
+type Options = readonly (readonly [string, string])[];
+
+function Select({ name, label, value, options, empty = 'Any' }: { name: string; label: string; value?: string; options: Options; empty?: string }) {
+  // A value from the URL shows as chosen whatever its letter case; one no live coach has any more still shows, so it can be cleared.
+  const match = value ? options.find(([v]) => v.toLowerCase() === value.toLowerCase()) : undefined;
+  const list = value && !match ? [...options, [value, value] as const] : options;
   return (
     <label className="flex flex-col gap-1.5 text-[15px] font-medium">
       {label}
-      <select name={name} defaultValue={value ?? ''} className="min-h-11 border border-line-strong bg-paper px-3 text-[15px] font-normal">
-        <option value="">Any</option>
-        {options.map(([v, l]) => (
+      <select name={name} defaultValue={match?.[0] ?? value ?? ''} className="min-h-11 border border-line-strong bg-paper px-3 text-[15px] font-normal">
+        <option value="">{empty}</option>
+        {list.map(([v, l]) => (
           <option key={v} value={v}>
             {l}
           </option>
@@ -62,8 +66,8 @@ async function Directory({ searchParams }: PageProps<'/coaches'>) {
   const maxPaise = f.max ? rupeesToPaise(f.max) : null;
 
   const supabase = await supabaseServer();
-  const [all, shown] = await Promise.all([
-    supabase.rpc('find_coaches'),
+  const [choices, shown] = await Promise.all([
+    supabase.rpc('coach_filter_options'),
     supabase.rpc('find_coaches', {
       specialty: f.specialty,
       format: f.format,
@@ -77,22 +81,19 @@ async function Directory({ searchParams }: PageProps<'/coaches'>) {
       sort: f.sort,
     }),
   ]);
-  if (all.error) throw all.error;
+  if (choices.error) throw choices.error;
   if (shown.error) throw shown.error;
-  // Filter choices come from live coaches, so every choice can match someone.
-  const specialties = distinct(all.data.map((c) => c.specialties));
-  const cities = distinct(all.data.map((c) => (c.coach_city ? [c.coach_city] : [])));
-  const languages = distinct(all.data.map((c) => c.languages));
-  const pair = (v: string) => [v, v] as const;
+  // Filter choices come from every live coach, so each one can match someone.
+  const of = (kind: string): Options => choices.data.filter((o) => o.kind === kind).map((o) => [o.value, o.value] as const);
 
   return (
     <div className="mt-8 grid gap-10 md:grid-cols-[280px_1fr]">
       <aside aria-label="Filters">
         <FilterForm>
           <div className="flex flex-col gap-4">
-            <Select name="specialty" label="Specialty" value={f.specialty} options={specialties.map(pair)} />
+            <Select name="specialty" label="Specialty" value={f.specialty} options={of('specialty')} />
             <Select name="format" label="Format" value={f.format} options={[['online', 'Online'], ['in_person', 'In person']]} />
-            <Select name="city" label="City" value={f.city} options={cities.map(pair)} />
+            <Select name="city" label="City" value={f.city} options={of('city')} />
             <fieldset className="m-0 flex flex-col gap-1.5 border-0 p-0">
               <legend className="pb-1.5 text-[15px] font-medium">Monthly price</legend>
               <div className="flex gap-2">
@@ -113,8 +114,8 @@ async function Directory({ searchParams }: PageProps<'/coaches'>) {
               <input type="checkbox" name="checked" defaultChecked={f.checked} className="size-[18px] accent-ink" />
               Credentials checked
             </label>
-            <Select name="language" label="Language" value={f.language} options={languages.map(pair)} />
-            <Select name="sort" label="Sort by" value={f.sort === 'best' ? undefined : f.sort} options={SORTS.slice(1)} />
+            <Select name="language" label="Language" value={f.language} options={of('language')} />
+            <Select name="sort" label="Sort by" value={f.sort === 'best' ? undefined : f.sort} options={SORTS.slice(1)} empty="Best match" />
           </div>
         </FilterForm>
       </aside>

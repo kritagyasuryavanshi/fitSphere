@@ -31,7 +31,7 @@ begin
   end if;
   return query
   with c as (
-    select p.coach_id, pr.display_name as name, p.headline, p.specialties, p.formats, p.city, p.years, p.languages,
+    select p.coach_id, coalesce(nullif(pr.display_name, ''), 'Coach') as name, p.headline, p.specialties, p.formats, p.city, p.years, p.languages,
       (select min(k.price_paise) from public.packages k where k.coach_id = p.coach_id and k.live and k.kind = 'monthly') as from_paise,
       exists (select 1 from public.credentials cr where cr.coach_id = p.coach_id and cr.status = 'checked') as checked,
       -- shortcut: no reviews until M4-14, which redefines this function with the verified rating and count.
@@ -45,8 +45,10 @@ begin
   where (find_coaches.specialty is null or exists (select 1 from unnest(c.specialties) s where lower(s) = lower(btrim(find_coaches.specialty))))
     and (find_coaches.format is null or find_coaches.format = any (c.formats))
     and (find_coaches.city is null or lower(c.city) = lower(btrim(find_coaches.city)))
-    and (min_paise is null or c.from_paise >= min_paise)
-    and (max_paise is null or c.from_paise <= max_paise)
+    -- Any live monthly package in the range counts; the card still shows the lowest.
+    and ((min_paise is null and max_paise is null) or exists (
+      select 1 from public.packages k where k.coach_id = c.coach_id and k.live and k.kind = 'monthly'
+        and (min_paise is null or k.price_paise >= min_paise) and (max_paise is null or k.price_paise <= max_paise)))
     and (min_rating is null or c.rating >= min_rating)
     and (experience is null
       or (experience = '<5' and c.years < 5)
@@ -65,3 +67,25 @@ $$;
 
 revoke all on function public.find_coaches(text, text, text, bigint, bigint, numeric, text, boolean, text, text) from public;
 grant execute on function public.find_coaches(text, text, text, bigint, bigint, numeric, text, boolean, text, text) to anon, authenticated;
+
+-- The directory's filter choices: every specialty, city and language of a live coach, without repeats (any letter case).
+create function public.coach_filter_options()
+returns table (kind text, value text)
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select distinct on (o.kind, lower(o.value)) o.kind, o.value
+  from public.coach_profiles p
+  cross join lateral (
+    select 'specialty' as kind, s as value from unnest(p.specialties) s
+    union all select 'language', l from unnest(p.languages) l
+    union all select 'city', p.city where btrim(p.city) <> ''
+  ) o
+  where public.coach_is_live(p.coach_id)
+  order by o.kind, lower(o.value), o.value;
+$$;
+
+revoke all on function public.coach_filter_options() from public;
+grant execute on function public.coach_filter_options() to anon, authenticated;

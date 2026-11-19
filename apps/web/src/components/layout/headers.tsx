@@ -92,7 +92,7 @@ async function PublicRight() {
   );
 }
 
-/** Visitors: Learn and For coaches; Join free; a menu on phones. */
+/** Visitors: Learn, Coaches and For coaches; Join free; a menu on phones. */
 export function PublicHeader() {
   return (
     <Frame

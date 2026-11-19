@@ -47,7 +47,7 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
         <h1 className="m-0 font-display text-[48px] font-normal uppercase leading-[0.95] md:text-[64px]">{name.data}</h1>
         <p className="m-0 text-[18px]">{p.headline}</p>
         <div className="flex flex-wrap gap-2">
-          {credentials.data!.length ? <Tag variant="success">Credentials checked</Tag> : <Tag variant="outline">Experience self-reported</Tag>}
+          {credentials.data!.length ? <Tag variant="success">Credentials checked</Tag> : <Tag variant="outline">Credentials self-reported</Tag>}
           {p.specialties.map((s) => (
             <Tag key={s} variant="outline">
               {s}

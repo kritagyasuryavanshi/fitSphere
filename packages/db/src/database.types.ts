@@ -929,6 +929,11 @@ isOneToOne: false
 "coach_can_read":
 { Args: { "athlete": string }; Returns: boolean
                            },
+"coach_filter_options":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "kind": string,"value": string
+            }[]
+                           },
 "coach_is_live":
 { Args: { "coach": string }; Returns: boolean
                            },
