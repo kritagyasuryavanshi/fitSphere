@@ -1,7 +1,7 @@
 ---
 name: session-13
 type: session
-description: 2026-11-19: LENOVO PC caught up; Codex, Claude and Ponytail reviews of M3-01 to M3-10, nine fixes in PR #33; M3-11 progress pages in PR #34
+description: 2026-11-19: LENOVO PC caught up; independent review of M3-01 to M3-10 (PR #33); M3-11 to M3-16 and the M3-15 check (PRs #34 to #39); production on Supabase and Vercel; M3 done
 updated: 2026-11-19
 date: 2026-11-19
 pc: lenovo

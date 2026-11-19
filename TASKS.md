@@ -3,7 +3,6 @@
 Build tasks live on the board: `docs/plans/board.json` (rendered at https://claude.ai/artifact/BPCG8ghatzZkV7v1haJ1z1). This file keeps owner-level items only.
 
 ## Now
-- [ ] Owner: delete the stray `.claudesettings.json` in the project folder (the real file is `.claude/settings.json`, now committed).
 - [ ] Owner: install Codex on the WELCOME PC (`npm i -g @openai/codex`, then `codex login`), so every PR gets its independent review on either PC. PRs #22 to #32 had none until session 13.
 - [ ] Owner: rotate the GitHub token, because it appeared in the chat.
 - [ ] Owner: push the `suryavanshi-claude` rulebook commit that brings Codex back (the push from LENOVO gets 403).
@@ -15,7 +14,7 @@ Build tasks live on the board: `docs/plans/board.json` (rendered at https://clau
 
 ## Next
 - [ ] Release gate, before sign-in goes live: turn on "Confirm email" in the hosted Supabase project, set custom SMTP, add Turnstile CAPTCHA to sign-in, set `NEXT_PUBLIC_SITE_URL`, list only our own domains in the redirect allow-list, and set auth rate limits in the dashboard (local config raises them for tests).
-- [ ] Release gate, video check (M2-10): set `CRON_SECRET` in Vercel, confirm the daily cron in `apps/web/vercel.json` shows in the Vercel project, and set `SUPABASE_SECRET_KEY` for the route.
+- [ ] Owner: check that the 2 daily jobs (`/api/cron/check-videos`, `/api/cron/send-emails`) show in Vercel → fitsphere → Settings → Cron Jobs. `CRON_SECRET` and `SUPABASE_SECRET_KEY` are already set.
 - [ ] Owner, before M4 (marketplace): confirm the payment provider (recommended Razorpay), set the fee %, refund and cancel terms, register the business and GST, and sign a coach agreement.
 - [ ] Owner: decide on nutrition for fat-loss users (meal plans or calorie targets are out of v1 for now).
 
