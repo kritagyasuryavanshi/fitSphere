@@ -46,9 +46,12 @@ test.describe('Progress', () => {
     await weight.getByLabel("Today's weight (kg)").fill('72.45');
     await weight.getByRole('button', { name: 'Log weight' }).click();
     await expect(weight.getByText('Enter your weight in kg, from 20 to 400, with at most one decimal.')).toBeVisible();
+    await expect(weight.getByLabel("Today's weight (kg)")).toHaveValue('72.45');
     await weight.getByLabel("Today's weight (kg)").fill('72.4');
     await weight.getByRole('button', { name: 'Log weight' }).click();
     await expect(weight.getByText('Saved 72.4 kg for today.')).toBeVisible();
+    await expect(weight.getByLabel("Today's weight (kg)")).toHaveValue('');
+    await expect(weight).toContainText('Latest, Today');
     await expect(weight.getByRole('list', { name: 'Recent weights' })).toContainText('72.4 kg');
     const { data: rows } = await db.from('body_metrics').select('weight_kg').eq('user_id', athlete).not('weight_kg', 'is', null);
     expect(rows!.map((r) => Number(r.weight_kg))).toEqual([72.4]);
@@ -57,9 +60,8 @@ test.describe('Progress', () => {
     await page.goto(`/session/${session!.id}/done?date=${india()}`);
     await expect(page.getByRole('row', { name: /Barbell bench press/ })).toContainText('New best');
 
-    // Boxing and S&C has no program here.
-    await page.getByRole('link', { name: 'Progress' }).first().click();
-    await expect(page).toHaveURL(/\/progress$/);
-    await expect(page.getByText('No boxing or S&C program yet.', { exact: false })).toBeVisible();
+    // The Progress tab opens gym progress for an athlete with only gym programs.
+    await page.goto('/progress');
+    await expect(page).toHaveURL(/\/progress\/gym$/);
   });
 });

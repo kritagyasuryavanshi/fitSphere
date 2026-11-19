@@ -1,14 +1,16 @@
 import { adherence, calendarWeek, indiaToday } from '@fitsphere/core';
 import { Tag } from '@fitsphere/ui';
 import Link from 'next/link';
-import { records } from '@/lib/progress';
+import { redirect } from 'next/navigation';
+import { records, SPORT_GROUPS as SPORTS } from '@/lib/progress';
 import { supabaseServer } from '@/lib/supabase/server';
 import { WeightForm } from './weight-form';
 
 // C-Progress and G-Progress. Every number comes from the M3-10 rules (docs/plans/m3-metrics.md): SQL adherence,
 // hard_sets_per_muscle and skill_ratings, and bestOf / isNewRecord through lib/progress.ts.
-const SPORTS = { training: ['boxing', 'sc'], gym: ['gym'] } as const;
 const shortDate = new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short', timeZone: 'UTC' });
+const indiaDay = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' });
+const indiaShort = new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' });
 const kg = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 });
 const when = (date: string, today: string) => (date === today ? 'Today' : shortDate.format(new Date(`${date}T00:00:00Z`)));
 const bestText = (r: { type: 'load' | 'reps'; value: number; reps: number }) => (r.type === 'load' ? `${kg.format(r.value)} kg × ${r.reps}` : `${r.value} reps`);
@@ -35,9 +37,12 @@ export async function ProgressView({ sport, userId }: { sport: keyof typeof SPOR
   const { data: programs, error } = await supabase.rpc('my_programs');
   if (error) throw error;
   const mine = programs.filter((p) => (SPORTS[sport] as readonly string[]).includes(p.category_id));
+  // The Progress tab opens here; a gym-only athlete goes straight to their gym progress.
+  if (sport === 'training' && !mine.length && programs.some((p) => p.category_id === 'gym')) redirect('/progress/gym');
 
   const [counts, history, ratings, muscles, weights] = await Promise.all([
     Promise.all(mine.map((p) => supabase.rpc('adherence', { athlete: userId, program: p.program_id }))),
+    // shortcut: loads every log of the group, capped at 1,000 by the API; move records into SQL once an athlete nears that.
     supabase
       .from('session_logs')
       .select('on_date, item_logs!inner(item_id, type, content_items(title), set_logs(reps, load_kg))')
@@ -176,14 +181,14 @@ export async function ProgressView({ sport, userId }: { sport: keyof typeof SPOR
                 <p className="m-0 flex flex-col gap-1">
                   <span className="font-display text-[36px] leading-none">{kg.format(bw[0]!.kg)} kg</span>
                   <span className="text-[14px] text-ink-soft">
-                    Latest, {when(bw[0]!.at.slice(0, 10), today)}
+                    Latest, {when(indiaDay.format(new Date(bw[0]!.at)), today)}
                     {bwChange !== null ? ` · ${bwChange === 0 ? 'no change' : `${bwChange > 0 ? 'up' : 'down'} ${kg.format(Math.abs(bwChange))} kg`} over your last ${bw.length} entries` : ''}
                   </span>
                 </p>
                 <ul aria-label="Recent weights" className="m-0 flex list-none flex-col border-t border-line p-0 text-[15px]">
                   {bw.map((w) => (
                     <li key={w.at} className="flex justify-between border-b border-line py-2">
-                      <span>{new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short', timeZone: 'Asia/Kolkata' }).format(new Date(w.at))}</span>
+                      <span>{indiaShort.format(new Date(w.at))}</span>
                       <span>{kg.format(w.kg)} kg</span>
                     </li>
                   ))}

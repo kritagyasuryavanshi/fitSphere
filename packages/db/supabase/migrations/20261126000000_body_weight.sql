@@ -11,14 +11,20 @@ declare
   uid uuid := public.require_step1();
   today_row uuid;
 begin
+  -- One save at a time per athlete, so two quick taps cannot both insert today's row. A unique index cannot do
+  -- this: sign-up step 3 (save_body_metrics) may also write a row today.
+  perform 1 from public.profiles where id = uid for update;
   if weight_kg is null or weight_kg < 20 or weight_kg > 400 or weight_kg <> round(weight_kg, 1) then
     raise exception 'bad_weight' using errcode = '22023';
   end if;
   select id into today_row from public.body_metrics
   where user_id = uid and (measured_at at time zone 'Asia/Kolkata')::date = public.india_today()
-  order by measured_at desc limit 1 for update;
+  order by measured_at desc limit 1;
   if today_row is null then
-    insert into public.body_metrics (user_id, weight_kg) values (uid, weight_kg) returning id into today_row;
+    -- Keep the last height, so sign-up step 3, which shows the latest row, still shows it.
+    insert into public.body_metrics (user_id, weight_kg, height_cm)
+    values (uid, weight_kg, (select height_cm from public.body_metrics where user_id = uid and height_cm is not null order by measured_at desc limit 1))
+    returning id into today_row;
   else
     update public.body_metrics set weight_kg = log_body_weight.weight_kg, measured_at = clock_timestamp() where id = today_row;
   end if;

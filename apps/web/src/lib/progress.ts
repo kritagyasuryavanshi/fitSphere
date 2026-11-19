@@ -5,6 +5,10 @@ type HistoryLog = {
   on_date: string;
   item_logs: { item_id: string | null; set_logs: { reps: number; load_kg: number | string | null }[] }[];
 };
+/** Progress pages group sports: boxing with S&C, gym on its own. Records compare only within a group. */
+export const SPORT_GROUPS = { training: ['boxing', 'sc'], gym: ['gym'] } as const;
+export const sportGroup = (category: string) => (category === 'gym' ? SPORT_GROUPS.gym : SPORT_GROUPS.training);
+
 export type ExerciseRecord = { itemId: string; type: RecordType; best: Best; first: Best; isNew: boolean };
 
 /**

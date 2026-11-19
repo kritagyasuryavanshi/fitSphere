@@ -1,6 +1,6 @@
 -- M3-11: the body weight log. The athlete logs one weight per India day; only they and their current coach read it.
 begin;
-select plan(9);
+select plan(10);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('a8000000-0000-0000-0000-0000000000a1', 'coach-w@t.test', now()),
@@ -9,6 +9,8 @@ insert into auth.users (id, email, email_confirmed_at) values
 insert into public.user_roles (user_id, role) values ('a8000000-0000-0000-0000-0000000000a1', 'coach'), ('b8000000-0000-0000-0000-0000000000b1', 'coach');
 update public.profiles set display_name = 'Kabir', date_of_birth = '1998-06-12' where id = 'c8000000-0000-0000-0000-0000000000c1';
 insert into public.athlete_basics (user_id, days_per_week) values ('c8000000-0000-0000-0000-0000000000c1', 3);
+-- Sign-up step 3, two days ago.
+insert into public.body_metrics (user_id, weight_kg, height_cm, measured_at) values ('c8000000-0000-0000-0000-0000000000c1', 73.0, 175.0, now() - interval '2 days');
 
 create temp table ids (name text primary key, v text);
 grant all on ids to authenticated;
@@ -27,12 +29,13 @@ insert into ids select 'e', public.join_program((select v from ids where name = 
 
 select lives_ok($$ select public.log_body_weight(72.4) $$, 'the athlete logs a weight');
 select lives_ok($$ select public.log_body_weight(72.1) $$, 'and logs again the same day');
-select is((select string_agg(weight_kg::text, ',') from public.body_metrics), '72.1', 'one weight per day: the second replaces the first');
+select is((select string_agg(weight_kg::text, ',' order by measured_at) from public.body_metrics), '73.0,72.1', 'one weight per day: the second replaces the first, and the sign-up entry stays');
+select is((select height_cm from public.body_metrics order by measured_at desc limit 1), 175.0, 'the new entry keeps the height, so sign-up step 3 still shows it');
 select throws_ok($$ select public.log_body_weight(19.9) $$, '22023', 'bad_weight', 'a weight under 20 kg is refused');
 select throws_ok($$ select public.log_body_weight(72.45) $$, '22023', 'bad_weight', 'more than one decimal is refused');
 
 select set_config('request.jwt.claims', '{"sub":"a8000000-0000-0000-0000-0000000000a1","role":"authenticated"}', true);
-select is((select count(*)::int from public.body_metrics where user_id = 'c8000000-0000-0000-0000-0000000000c1'), 1, 'his coach reads his body weight');
+select is((select count(*)::int from public.body_metrics where user_id = 'c8000000-0000-0000-0000-0000000000c1'), 2, 'his coach reads his body weight');
 select set_config('request.jwt.claims', '{"sub":"b8000000-0000-0000-0000-0000000000b1","role":"authenticated"}', true);
 select is((select count(*)::int from public.body_metrics), 0, 'another coach does not');
 

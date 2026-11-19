@@ -6,7 +6,7 @@ import { notFound, redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import { isUuid } from '@/lib/programs';
 import { isIsoDate } from '@/lib/session-player';
-import { records } from '@/lib/progress';
+import { records, sportGroup } from '@/lib/progress';
 import { minutesBetween, summarise, type SummaryItem } from '@/lib/session-summary';
 import { supabaseServer } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/viewer';
@@ -87,6 +87,8 @@ async function Done({ params, searchParams }: PageProps<'/session/[id]/done'>) {
         .select('on_date, item_logs!inner(item_id, set_logs(reps, load_kg))')
         .eq('athlete_id', viewer.userId)
         .lte('on_date', date)
+        // The same sports as the progress page, so both screens agree on a best.
+        .in('category_id', [...sportGroup(log.category_id)])
         .in('item_logs.item_id', exerciseIds)
     : { data: [], error: null };
   if (history.error) throw history.error;
