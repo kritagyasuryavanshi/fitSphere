@@ -143,7 +143,9 @@ export async function Dashboard({ supabase, name, programIds }: { supabase: Db; 
               return (
                 <li key={`${a.id}-${a.flag.type}`} className="flex flex-col gap-1 border-l-4 border-danger bg-mist p-4">
                   <span className="text-[13px] font-semibold uppercase tracking-wide text-danger">{label}</span>
-                  <span className="text-[17px] font-medium">{a.name}</span>
+                  <Link href={`/coach/athletes/${a.id}`} className="text-[17px] font-medium underline underline-offset-4">
+                    {a.name}
+                  </Link>
                   <span className="text-[14px] text-muted">{a.program}</span>
                   <span className="text-[15px] text-ink-soft">{text}</span>
                 </li>
@@ -176,7 +178,10 @@ export async function Dashboard({ supabase, name, programIds }: { supabase: Db; 
                 key={b.id}
                 className="grid grid-cols-2 gap-x-4 gap-y-2 border border-line p-4 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,0.7fr)_minmax(0,2fr)] md:items-center md:border-0 md:border-b md:px-0 md:py-3"
               >
-                <span className="col-span-2 text-[16px] font-medium md:col-span-1">{b.name}</span>
+                <Link href={`/coach/athletes/${b.id}`} className="col-span-2 text-[16px] font-medium underline-offset-4 hover:underline md:col-span-1">
+                  {b.name}
+                  <span className="sr-only">: open logs and give feedback</span>
+                </Link>
                 <span className="flex flex-col text-[15px]">
                   <span className="text-[13px] text-muted md:sr-only">Program</span>
                   {b.program} · {b.where}

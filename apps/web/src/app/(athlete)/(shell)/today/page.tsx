@@ -58,13 +58,38 @@ async function Today() {
   const viewer = await requireRole('athlete');
   const supabase = await supabaseServer();
   const today = indiaToday();
-  const { data: programs, error } = await supabase.rpc('my_programs');
+  const [{ data: programs, error }, latestFeedback] = await Promise.all([
+    supabase.rpc('my_programs'),
+    // The newest coach feedback from the last 14 days, also after leaving every program; older ones live on Coach feedback.
+    supabase
+      .from('feedback')
+      .select('id, body, coach_name, created_at')
+      .eq('athlete_id', viewer.userId)
+      // From midnight India time 13 days ago, not UTC midnight.
+      .gte('created_at', `${addDays(today, -13)}T00:00:00+05:30`)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+  ]);
   if (error) throw error;
+  if (latestFeedback.error) throw latestFeedback.error;
+  const feedbackCard = latestFeedback.data ? (
+        <section aria-labelledby="coach-feedback" className="flex flex-col gap-2 border-l-4 border-ink bg-mist p-5">
+          <h2 id="coach-feedback" className="m-0 text-[15px] font-semibold">
+            Feedback from {latestFeedback.data.coach_name || 'your coach'}
+          </h2>
+          <p className="m-0 line-clamp-3 whitespace-pre-line text-[16px]">{latestFeedback.data.body}</p>
+          <Link href="/account/feedback" className="self-start text-[15px] font-medium underline underline-offset-4">
+            Read and reply
+          </Link>
+        </section>
+  ) : null;
 
   if (!programs.length) {
     return (
       <>
         <Header today={today} line={`Welcome, ${viewer.name}`} />
+        {feedbackCard}
         <section aria-labelledby="none" className="flex flex-col items-start gap-4 bg-mist p-6 md:p-8">
           <h2 id="none" className="m-0 font-display text-[32px] font-normal uppercase leading-none">
             No program yet
@@ -244,6 +269,8 @@ async function Today() {
           )}
         </section>
       )}
+
+      {feedbackCard}
 
       <Link href="/account/programs" className="self-start text-[15px] font-medium underline underline-offset-4">
         My programs
