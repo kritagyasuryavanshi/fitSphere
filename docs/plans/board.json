@@ -1399,7 +1399,7 @@
       "deps": [
         "M4-07"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "db+e2e",
       "screens": [
@@ -1409,7 +1409,8 @@
         "pgTAP: only the two people in a conversation can read it",
         "New messages appear within 10 seconds",
         "Shows the warning about paying outside FitSphere"
-      ]
+      ],
+      "done_on": "2026-11-20"
     },
     {
       "id": "M4-09",

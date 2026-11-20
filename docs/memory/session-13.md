@@ -76,8 +76,13 @@ Follows [[session-12]]. Hub for this work: [[programs]].
 - Lesson: every coach also has the athlete role, so a "mine" query over a two-party table must filter by the side it means (`athlete_id = me`), not trust RLS.
 - Follow-ups recorded: M4-10 adds paid clients to `coach_stats`; M4-19 blocks deletion during a paid engagement.
 
+- M4-08, PR #47: `conversations` and `messages` are readable only by the two people. A conversation opens by engagement id, for either party only. It turns read-only once every engagement between the pair was declined, withdrawn or expired, or the coach is suspended. Deleting an account erases that person's messages and any conversation left empty. An open chat re-reads every 4 seconds; switching to Realtime is a noted shortcut. The page shows the latest 200 messages. The data download has whole conversations. 40 of 40 migrations on production.
+- Lesson: a browser sends a line break as `
+`. Normalise it before any length check, and trim all whitespace, not only spaces.
+- Stopped here, per the M4 goal: M4-09a turns `fee_bps` into money, so it needs owner item O-05 (the fee, the refund terms and the payout hold) or the owner's "use the defaults".
+
 ## Next
-1. M4-08 messages, then M4-09a the payment core with a fake provider. That one needs the fee confirmed (O-05) before real money.
+1. When the owner answers O-05: M4-09a, the payment core with a fake provider. M4-09b needs Razorpay test keys.
 2. The demo work: demo accounts with realistic data and one-click entry, then a domain and Resend (owner).
 2. Then M4 (marketplace) only once coaches pay by hand, per the owner's sell-to-coaches-first plan.
 2. Hosting: the owner sets the Supabase Auth URL configuration; then test sign-in on the live site and run the Supabase security advisors once.
