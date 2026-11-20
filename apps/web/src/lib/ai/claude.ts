@@ -28,7 +28,8 @@ export function claudeModel(apiKey: string): Model {
       if (response.stop_reason !== 'end_turn') return null;
       try {
         // parsed_output throws when the reply does not match the schema.
-        return response.parsed_output ?? null;
+        const parsed = response.parsed_output;
+        return parsed ? { ...parsed, usage: { input_tokens: response.usage.input_tokens, output_tokens: response.usage.output_tokens } } : null;
       } catch {
         return null;
       }

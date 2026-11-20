@@ -37,15 +37,17 @@ export type AiProfile = {
 };
 
 /** needs_referral: the model judged the question to need a doctor or physiotherapist. */
-export type ModelReply = { answer: string; cited: string[]; needs_referral?: boolean };
+export type ModelReply = { answer: string; cited: string[]; needs_referral?: boolean; usage?: { input_tokens: number; output_tokens: number } };
 /** null: the model declined or could not finish. A thrown error is treated the same way. */
 export type Model = { answer(prompt: { system: string; user: string }): Promise<ModelReply | null> };
 
 export type Answer = {
   label: typeof AI_LABEL;
-  kind: 'answer' | 'no_source' | 'referral' | 'refused' | 'unavailable';
+  kind: 'answer' | 'no_source' | 'referral' | 'refused' | 'unavailable' | 'limit';
   text: string;
   citations: { id: string; title: string; href: string }[];
+  /** The tokens the model used, for the usage log. Never shown to the athlete. */
+  usage?: { input_tokens: number; output_tokens: number };
 };
 
 const NO_SOURCE =
@@ -144,16 +146,18 @@ export async function answerQuestion(
     return null;
   });
   if (!reply) return fixed('unavailable', UNAVAILABLE);
-  if (reply.needs_referral) return fixed('referral', REFERRAL);
+  // A model answer costs tokens whatever the code then does with it, so its usage rides along on every outcome.
+  const usage = reply.usage;
+  if (reply.needs_referral) return { ...fixed('referral', REFERRAL), usage };
   const byId = new Map(sources.map((s) => [s.item_id, s]));
   const cited = [...new Set(reply.cited)].map((id) => byId.get(id)).filter((s) => s !== undefined);
-  if (!cited.length || !reply.answer.trim()) return fixed('no_source', NO_SOURCE);
+  if (!cited.length || !reply.answer.trim()) return { ...fixed('no_source', NO_SOURCE), usage };
   const citations = cited.map((s) => ({ id: s.item_id, title: s.title, href: `/learn/${s.category_id}/${s.slug}` }));
   // Every number in the answer must come from a cited source; otherwise the athlete gets the sources' own words.
   const known = numbers(cited.map((s) => [s.title, s.summary, s.steps ?? '', JSON.stringify(s.dose ?? []), s.mistakes, s.safety].join(' ')).join(' '));
   const invented = [...numbers(reply.answer)].some((n) => !known.has(n));
   const text = invented ? `Here is what the library says. ${cited.map((s) => `${s.title}: ${s.summary}`).join(' ')}` : reply.answer.trim();
-  return { label: AI_LABEL, kind: 'answer', text, citations };
+  return { label: AI_LABEL, kind: 'answer', text, citations, usage };
 }
 
 /** The test and no-key model: it quotes the best source and cites it. No network, no cost. */

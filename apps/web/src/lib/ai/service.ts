@@ -2,13 +2,21 @@ import { createDbClient } from '@fitsphere/db';
 import type { Viewer } from '@/lib/viewer';
 import { supabaseServer } from '@/lib/supabase/server';
 import { answerQuestion, healthConsented, profileFor, type Answer, type Model, type Source } from './answer';
+import { costMicroUsd, reservationRefusal } from './usage';
 
 /**
- * Answers a signed-in athlete's question. Their profile is read as them (RLS: their own rows only); retrieval runs
- * with the service role, which is the only role allowed to call retrieve_for_ai.
+ * Answers a signed-in athlete's question. It first takes one of today's questions (the 11th is refused with a clear
+ * reply), then reads their profile as them (RLS: their own rows only), retrieves with the service role (the only role
+ * allowed to call retrieve_for_ai), and logs the answer with its tokens and cost.
  */
-export async function askGuide(viewer: Viewer, question: string, model: Model): Promise<Answer> {
+export async function askGuide(viewer: Viewer, question: string, model: Model, limit: number): Promise<Answer> {
   const supabase = await supabaseServer();
+  const reserved = await supabase.rpc('reserve_ai_question', { question });
+  if (reserved.error) {
+    const refusal = reservationRefusal(reserved.error.message, limit);
+    if (refusal) return refusal;
+    throw reserved.error;
+  }
   const [prefs, basics, consent, notice] = await Promise.all([
     supabase.from('athlete_prefs').select('category_id, answers').eq('user_id', viewer.userId),
     supabase.from('athlete_basics').select('days_per_week, equipment, injury_notes').eq('user_id', viewer.userId).maybeSingle(),
@@ -27,7 +35,7 @@ export async function askGuide(viewer: Viewer, question: string, model: Model): 
   });
 
   const db = createDbClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? '', process.env.SUPABASE_SECRET_KEY ?? '');
-  return answerQuestion(question, profile, {
+  const answer = await answerQuestion(question, profile, {
     model,
     retrieve: async (q) => {
       const { data, error } = await db.rpc('retrieve_for_ai', { question: q, k: 5 });
@@ -35,4 +43,15 @@ export async function askGuide(viewer: Viewer, question: string, model: Model): 
       return data as Source[];
     },
   });
+  const { usage, ...shown } = answer;
+  const logged = await db.rpc('finish_ai_question', {
+    question_id: reserved.data,
+    answer_kind: shown.kind,
+    answer_body: { text: shown.text, citations: shown.citations } as never,
+    input_tokens: usage?.input_tokens ?? 0,
+    output_tokens: usage?.output_tokens ?? 0,
+    cost_micro_usd: costMicroUsd(usage),
+  });
+  if (logged.error) console.error('finish_ai_question failed', logged.error.code, logged.error.message);
+  return shown;
 }
