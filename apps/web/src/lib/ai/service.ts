@@ -25,17 +25,19 @@ export async function askGuide(viewer: Viewer, question: string, model: Model): 
     const args = {
       question_id: reserved.data,
       answer_kind: a.kind,
-      answer_body: { text: a.text, citations: a.citations } as never,
+      // pain: only a described symptom records a pain report for the coach (finish_ai_question checks it).
+      answer_body: { text: a.text, citations: a.citations, ...(a.pain ? { pain: true } : {}) } as never,
       input_tokens: a.usage?.input_tokens ?? 0,
       output_tokens: a.usage?.output_tokens ?? 0,
       cost_micro_usd: costMicroUsd(a.usage),
     };
-    // One retry: a delivered answer must count, and its cost must be logged.
+    // One retry: a delivered answer must count, and its cost must be logged. True once it is saved.
     for (let attempt = 0; attempt < 2; attempt++) {
       const { error } = await db.rpc('finish_ai_question', args);
-      if (!error) return;
+      if (!error) return true;
       console.error('finish_ai_question failed', error.code, error.message);
     }
+    return false;
   };
 
   let answer: Answer;
@@ -45,10 +47,12 @@ export async function askGuide(viewer: Viewer, question: string, model: Model): 
     await finish({ label: AI_LABEL, kind: 'unavailable', text: '', citations: [] });
     throw e;
   }
-  await finish(answer);
-  const { usage: _usage, ...shown } = answer;
+  const saved = await finish(answer);
+  const { usage: _usage, pain: _pain, ...shown } = answer;
   void _usage;
-  return { id: reserved.data, answer: shown };
+  void _pain;
+  // Only a saved answer can be shown from the history; otherwise the caller shows it at once.
+  return { id: saved && shown.kind !== 'unavailable' ? reserved.data : null, answer: shown };
 }
 
 async function answerFor(viewer: Viewer, question: string, model: Model, supabase: Awaited<ReturnType<typeof supabaseServer>>, db: ReturnType<typeof createDbClient>): Promise<Answer> {

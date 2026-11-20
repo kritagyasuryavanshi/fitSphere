@@ -50,11 +50,13 @@ begin
     raise exception 'not_athlete' using errcode = '42501';
   end if;
   perform pg_advisory_xact_lock(hashtext('today_extras:' || uid::text));
+  -- New published items only (ones already on today do not take a place), up to the 10 places a day.
   with fresh as (
     insert into public.today_extras (athlete_id, item_id)
     select uid, c.id from public.content_items c
     where c.id = any (coalesce(items, '{}')) and c.status = 'published'
-      and (select count(*) from public.today_extras t where t.athlete_id = uid and t.on_date = public.india_today()) < 10
+      and not exists (select 1 from public.today_extras t where t.athlete_id = uid and t.on_date = public.india_today() and t.item_id = c.id)
+    order by c.id
     limit greatest(0, 10 - (select count(*) from public.today_extras t where t.athlete_id = uid and t.on_date = public.india_today()))::int
     on conflict do nothing
     returning 1
@@ -99,8 +101,9 @@ begin
     cost_micro_usd = greatest(coalesce(finish_ai_question.cost_micro_usd, 0), 0),
     answered_at = now()
   where a.id = question_id and a.status = 'pending';
-  -- A pain or injury question (the guide's referral) tells the athlete's coach, through the dashboard's pain flag.
-  if found and answer_kind = 'referral' then
+  -- A referral where the athlete described a symptom they have now ("pain": true, set by the answer service) tells
+  -- their coach, through the dashboard's pain flag. A referral for a question about injuries in general does not.
+  if found and answer_kind = 'referral' and answer_body ->> 'pain' = 'true' then
     insert into public.pain_reports (athlete_id, question_id)
     select a.user_id, a.id from public.ai_questions a where a.id = question_id
     on conflict do nothing;

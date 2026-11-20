@@ -92,6 +92,7 @@ export async function Dashboard({ supabase, name, programIds }: { supabase: Db; 
       const c = counts[i]!.data![0];
       return {
         id: e.id,
+        athleteId: e.athlete_id,
         name: names.get(e.athlete_id) ?? 'Athlete',
         program: current?.title ?? 'Program',
         where: at ? `wk ${at.week}` : 'finished',
@@ -109,7 +110,11 @@ export async function Dashboard({ supabase, name, programIds }: { supabase: Db; 
   const loggedThisWeek = logs.data!.filter((l) => l.completed_at && l.on_date >= week[0]!.date).length;
   const percents = board.map((b) => b.percent).filter((p): p is number => p !== null);
   const average = percents.length ? Math.floor(percents.reduce((a, b) => a + b, 0) / percents.length) : null;
-  const attention = board.flatMap((b) => b.flags.map((f) => ({ ...b, flag: f })));
+  // Pain is about the athlete, not a program: once per athlete, even if they are in two of this coach's programs.
+  const painShown = new Set<string>();
+  const attention = board.flatMap((b) =>
+    b.flags.filter((f) => f.type !== 'pain' || (!painShown.has(b.athleteId) && !!painShown.add(b.athleteId))).map((f) => ({ ...b, flag: f })),
+  );
 
   return (
     <main className="mx-auto flex w-full max-w-[1440px] flex-col gap-8 px-4 pb-24 pt-8 md:px-10">

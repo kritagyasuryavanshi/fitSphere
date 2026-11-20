@@ -1,7 +1,7 @@
 -- M5-04: the Ask AI screen's data. A referral (a pain question) records a pain report the athlete's coach sees; Add to
 -- Today puts published lessons on the athlete's day; the screen shows the questions left today.
 begin;
-select plan(12);
+select plan(14);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('b4000000-0000-0000-0000-0000000000a1', 'ask-kabir@t.test', now()),
@@ -26,15 +26,18 @@ select pg_temp.as_user('b4000000-0000-0000-0000-0000000000a1');
 
 select is(public.ai_questions_left(), 10, 'ten questions left at the start of the day');
 insert into ids select 'pain', public.reserve_ai_question('My right shoulder hurts after bag work');
-select is(public.ai_questions_left(), 9, 'one fewer after asking');
+insert into ids select 'topic', public.reserve_ai_question('Does the jab strain the shoulder?');
+select is(public.ai_questions_left(), 8, 'one fewer for each question asked');
 
 -- The referral records a pain report.
 reset role;
 set local role service_role;
-select public.finish_ai_question((select id from ids where name = 'pain'), 'referral', '{"text": "See a doctor or physiotherapist."}'::jsonb, 0, 0, 0);
+select public.finish_ai_question((select id from ids where name = 'pain'), 'referral', '{"text": "See a doctor or physiotherapist.", "pain": true}'::jsonb, 0, 0, 0);
+-- A referral for a question that describes no symptom tells the coach nothing.
+select public.finish_ai_question((select id from ids where name = 'topic'), 'referral', '{"text": "See a doctor or physiotherapist."}'::jsonb, 0, 0, 0);
 reset role;
 set local role authenticated;
-select is((select count(*)::int from public.pain_reports), 1, 'a pain question records a pain report the athlete can see');
+select is((select count(*)::int from public.pain_reports), 1, 'only a described symptom records a pain report, which the athlete can see');
 select is((select reported_on from public.pain_reports), public.india_today(), 'dated today, India time');
 select pg_temp.as_user('b4000000-0000-0000-0000-0000000000c1');
 select is((select count(*)::int from public.pain_reports where athlete_id = 'b4000000-0000-0000-0000-0000000000a1'), 1, 'the athlete''s coach sees it');
@@ -51,6 +54,14 @@ select is(public.add_to_today(array['b6000000-0000-0000-0000-000000000001'::uuid
 select is((select item_id from public.today_extras where on_date = public.india_today()), 'b6000000-0000-0000-0000-000000000001'::uuid, 'it is on today');
 select throws_ok($$ insert into public.today_extras (athlete_id, item_id) values ('b4000000-0000-0000-0000-0000000000a1', 'b6000000-0000-0000-0000-000000000002') $$,
   '42501', null, 'no direct writes');
+-- At most 10 a day; ones already on today do not take the places of new ones.
+reset role;
+insert into public.content_items (id, discipline_id, kind, slug, title, status, published_at)
+  select ('b6000000-0000-0000-0000-' || lpad(n::text, 12, '0'))::uuid, (select id from d), 'drill', 'ask-many-' || n, 'Drill ' || n, 'published', now() from generate_series(10, 20) n;
+set local role authenticated;
+select is(public.add_to_today(array(select ('b6000000-0000-0000-0000-' || lpad(n::text, 12, '0'))::uuid from generate_series(10, 17) n)), 8, 'eight more go on (nine today)');
+select is(public.add_to_today(array['b6000000-0000-0000-0000-000000000001'::uuid, 'b6000000-0000-0000-0000-000000000018'::uuid, 'b6000000-0000-0000-0000-000000000019'::uuid]), 1,
+  'the tenth place goes to a new item, not one already on today; then today is full');
 select pg_temp.as_user('b4000000-0000-0000-0000-0000000000a2');
 select is((select count(*)::int from public.today_extras), 0, 'someone else sees none of it');
 

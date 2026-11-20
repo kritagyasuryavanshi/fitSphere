@@ -19,7 +19,15 @@ export async function ask(_prev: AskState, formData: FormData): Promise<AskState
   if (question.length > 500) return { error: 'Keep your question to 500 characters.', draft: question };
   const model = aiModel();
   if (!model) return { error: 'The AI guide is not switched on yet.', draft: question };
-  const { id, answer } = await askGuide(viewer, question, model);
+  let result: Awaited<ReturnType<typeof askGuide>>;
+  try {
+    result = await askGuide(viewer, question, model);
+  } catch (e) {
+    console.error('askGuide failed', e instanceof Error ? e.message : e);
+    return { error: 'I could not answer that just now. Try again in a moment.', draft: question };
+  }
+  const { id, answer } = result;
+  // No saved answer to show from the history (the limit, a failure): show it here, keeping what was typed.
   if (!id) return { answer, draft: question };
   revalidatePath('/ask');
   redirect(`/ask?q=${id}`);
@@ -30,11 +38,14 @@ export async function addToToday(formData: FormData): Promise<void> {
   await requireRole('athlete');
   const items = formData.getAll('item').map(String).filter(isUuid).slice(0, 10);
   const back = String(formData.get('question') ?? '');
+  let added = 0;
   if (items.length) {
     const supabase = await supabaseServer();
-    const { error } = await supabase.rpc('add_to_today', { items });
+    const { data, error } = await supabase.rpc('add_to_today', { items });
     if (error) throw error;
+    added = data ?? 0;
     revalidatePath('/today');
   }
-  redirect(isUuid(back) ? `/ask?q=${back}&added=1` : '/ask');
+  // added: how many went on today, so the page says what really happened.
+  redirect(isUuid(back) ? `/ask?q=${back}&added=${added}` : '/ask');
 }

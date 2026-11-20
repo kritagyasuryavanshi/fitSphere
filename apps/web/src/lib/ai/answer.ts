@@ -49,6 +49,11 @@ export type Answer = {
   kind: 'answer' | 'no_source' | 'referral' | 'refused' | 'unavailable' | 'limit';
   text: string;
   citations: { id: string; title: string; href: string }[];
+  /**
+   * On a referral: the athlete described a symptom they have now (or the model flagged one). Only then is a pain report
+   * recorded for their coach; a question about injuries in general is referred but tells the coach nothing.
+   */
+  pain?: boolean;
   /** The tokens the model used, for the usage log. Never shown to the athlete. */
   usage?: { input_tokens: number; output_tokens: number };
 };
@@ -66,7 +71,8 @@ const INJURY =
 // "How do I avoid / prevent ..." is a training question the library answers, unless the athlete also describes a
 // symptom they have now.
 const PREVENTION = /\b(avoid|prevent(ing)?|reduce\s+the\s+risk|stay\s+safe|protect)\b/i;
-const CURRENT_SYMPTOM = /\b(my\s+\w+\s+(hurts?|aches?|is\s+(sore|swollen|painful|numb))|i\s+(have|feel|felt|got|pulled|rolled|sprained|strained|twisted|hurt|injured|tore))\b/i;
+const CURRENT_SYMPTOM =
+  /\bmy\s+(\w+\s+){0,3}(hurts?|aches?|clicks?|pops?|is\s+(sore|swollen|painful|numb)|feels?\s+(sore|numb|weak))\b|\bi\s+(have|feel|felt|got|pulled|rolled|sprained|strained|twisted|hurt|injured|tore)\b|\b(pains?|aches?|swelling|numbness|tingling)\s+(in|on)\s+my\b/i;
 // Requests the guide refuses outright.
 const UNSAFE =
   /\b(steroids?|sarms?|anabolics?|testosterone|trt|hgh|growth\s+hormone|peds?|peptides?|insulin|tren(bolone)?|clen(buterol)?|diet\s+pills?|fat\s+burners?|laxatives?|diuretics?|crash\s+diet|water\s+cut|purg(e|ing)|starv(e|ing)|make\s+weight\s+by\s+not\s+(eating|drinking))\b|\bdehydrat\w*\b.*\b(on\s+purpose|to\s+make\s+weight|myself)\b|\bcut\s+\d+\s*(kg|kgs|kilos?|lbs?|pounds)\b.*\bweigh-?in\b/i;
@@ -140,7 +146,7 @@ export async function answerQuestion(
   deps: { retrieve: (q: string) => Promise<Source[]>; model: Model },
 ): Promise<Answer> {
   const kind = classifyQuestion(question);
-  if (kind === 'injury') return fixed('referral', REFERRAL);
+  if (kind === 'injury') return { ...fixed('referral', REFERRAL), pain: CURRENT_SYMPTOM.test(question) };
   if (kind === 'unsafe') return fixed('refused', REFUSED);
   const sources = await deps.retrieve(question);
   if (!sources.length) return fixed('no_source', NO_SOURCE);
@@ -152,7 +158,7 @@ export async function answerQuestion(
   // A model answer costs tokens whatever the code then does with it, so its usage rides along on every outcome.
   const usage = reply.usage;
   if (reply.unavailable) return { ...fixed('unavailable', UNAVAILABLE), usage };
-  if (reply.needs_referral) return { ...fixed('referral', REFERRAL), usage };
+  if (reply.needs_referral) return { ...fixed('referral', REFERRAL), pain: true, usage };
   const byId = new Map(sources.map((s) => [s.item_id, s]));
   const cited = [...new Set(reply.cited)].map((id) => byId.get(id)).filter((s) => s !== undefined);
   if (!cited.length || !reply.answer.trim()) return { ...fixed('no_source', NO_SOURCE), usage };

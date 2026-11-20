@@ -21,7 +21,7 @@ async function Ask({ searchParams }: PageProps<'/ask'>) {
   const { q, added } = await searchParams;
   const supabase = await supabaseServer();
   const [history, left, limit] = await Promise.all([
-    supabase.from('ai_questions').select('id, question, kind, answer, created_at').neq('status', 'failed').order('created_at', { ascending: false }).limit(30),
+    supabase.from('ai_questions').select('id, question, kind, answer, created_at').eq('status', 'answered').order('created_at', { ascending: false }).limit(30),
     supabase.rpc('ai_questions_left'),
     supabase.rpc('ai_daily_limit'),
   ]);
@@ -101,17 +101,21 @@ async function Ask({ searchParams }: PageProps<'/ask'>) {
                     {citations.length === 1 ? 'Add to Today' : 'Add all to Today'}
                   </button>
                 </form>
-                {added ? (
+                {added === undefined ? null : Number(added) > 0 ? (
                   <p role="status" className="m-0 text-[14px] text-success">
                     Added to <Link href="/today" className="underline underline-offset-4">Today</Link>.
                   </p>
-                ) : null}
+                ) : (
+                  <p role="status" className="m-0 text-[14px] text-muted">
+                    Already on <Link href="/today" className="underline underline-offset-4">Today</Link>, or Today is full (10 a day).
+                  </p>
+                )}
               </section>
             ) : null}
           </article>
         ) : null}
 
-        {on ? <AskForm left={left.data ?? 0} limit={limit.data ?? 10} /> : <p className="m-0 text-[15px] text-muted">The AI guide is not switched on yet.</p>}
+        {on ? <AskForm key={chosen?.id ?? 'none'} left={left.data ?? 0} limit={limit.data ?? 10} /> : <p className="m-0 text-[15px] text-muted">The AI guide is not switched on yet.</p>}
       </div>
     </div>
   );
