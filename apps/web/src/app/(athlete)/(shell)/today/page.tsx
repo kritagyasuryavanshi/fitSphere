@@ -279,12 +279,46 @@ async function Today() {
   );
 }
 
+// Lessons the athlete added from the AI guide today (M5-04). RLS shows each athlete only their own.
+async function AddedToday() {
+  const viewer = await requireRole('athlete');
+  const supabase = await supabaseServer();
+  const { data, error } = await supabase
+    .from('today_extras')
+    .select('item_id, content_items(slug, title, disciplines(category_id))')
+    .eq('athlete_id', viewer.userId)
+    .eq('on_date', indiaToday())
+    .order('created_at');
+  if (error) throw error;
+  const items = data.flatMap((d) => (d.content_items ? [d.content_items] : []));
+  if (!items.length) return null;
+  return (
+    <section aria-labelledby="added" className="flex flex-col gap-2">
+      <h2 id="added" className="m-0 text-[20px] font-semibold">
+        Added from Ask AI
+      </h2>
+      <ul className="m-0 flex list-none flex-col border-t border-line p-0">
+        {items.map((c) => (
+          <li key={c.slug} className="border-b border-line">
+            <Link href={`/learn/${c.disciplines.category_id}/${c.slug}`} className="flex min-h-12 items-center text-[16px] font-medium">
+              {c.title}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 // C-Today and G-Today (one screen for every sport), T-TodayEmpty when there is no program.
 export default function TodayPage() {
   return (
     <main className="mx-auto flex w-full max-w-[1200px] flex-col gap-6 px-4 pb-24 pt-8 md:px-10">
       <Suspense fallback={null}>
         <Today />
+      </Suspense>
+      <Suspense fallback={null}>
+        <AddedToday />
       </Suspense>
     </main>
   );

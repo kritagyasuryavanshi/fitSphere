@@ -6,7 +6,7 @@ import { Icon } from './icons';
 import { BottomTabs, HeaderLinks, type NavItem } from './nav-links';
 
 // Header links per audience, from the mockups (C-Landing, C-Today, C-CoachDash, R-Roles, and the phone tab bars).
-// Only pages that exist: Programs returns with the marketplace (M4), Ask AI with the AI guide (M5).
+// Only pages that exist: Programs returns with the marketplace (M4).
 const publicLinks: NavItem[] = [
   { href: '/learn/boxing', label: 'Learn' },
   { href: '/coaches', label: 'Coaches' },
@@ -18,6 +18,7 @@ export const athleteLinks: NavItem[] = [
   { href: '/learn/boxing', label: 'Learn', icon: 'play' },
   { href: '/progress', label: 'Progress', icon: 'bars' },
   { href: '/coaching', label: 'Coaching', icon: 'calendar' },
+  { href: '/ask', label: 'Ask AI', icon: 'chat' },
 ];
 
 // Each link shows only to the roles that can open it, so nobody is offered a page that says "not allowed".

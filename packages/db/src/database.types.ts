@@ -753,6 +753,32 @@ isOneToOne: false
       referencedColumns: ["coach_id"]
     }
                   ]
+                },"pain_reports": {
+                  Row: {
+                    "athlete_id": string,"created_at": string,"id": string,"question_id": string | null,"reported_on": string,"source": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "athlete_id": string,"created_at"?: string,"id"?: string,"question_id"?: string | null,"reported_on"?: string,"source"?: string
+                  }
+                  Update: {
+                    "athlete_id"?: string,"created_at"?: string,"id"?: string,"question_id"?: string | null,"reported_on"?: string,"source"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "pain_reports_athlete_id_fkey"
+      columns: ["athlete_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "pain_reports_question_id_fkey"
+      columns: ["question_id"]
+isOneToOne: true
+      referencedRelation: "ai_questions"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"payment_events": {
                   Row: {
                     "id": number,"note": string | null,"payload": NonNullable<Json>,"provider_event_id": string,"received_at": string,"result": string | null,"type": string
@@ -1043,6 +1069,32 @@ isOneToOne: false
       referencedColumns: ["coach_id"]
     }
                   ]
+                },"today_extras": {
+                  Row: {
+                    "athlete_id": string,"created_at": string,"item_id": string,"on_date": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "athlete_id": string,"created_at"?: string,"item_id": string,"on_date"?: string
+                  }
+                  Update: {
+                    "athlete_id"?: string,"created_at"?: string,"item_id"?: string,"on_date"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "today_extras_athlete_id_fkey"
+      columns: ["athlete_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "today_extras_item_id_fkey"
+      columns: ["item_id"]
+isOneToOne: false
+      referencedRelation: "content_items"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"user_roles": {
                   Row: {
                     "created_at": string,"granted_by": string | null,"role": Database["public"]['Enums']["app_role"],"user_id": string
@@ -1098,6 +1150,9 @@ isOneToOne: false
             "accept_coach_agreement":
 { Args: { "version": string }; Returns: undefined
                            },
+"add_to_today":
+{ Args: { "items": (string)[] }; Returns: number
+                           },
 "adherence":
 { Args: { "athlete": string,"program"?: string }; Returns: {
               "completed": number,"scheduled": number
@@ -1122,6 +1177,9 @@ isOneToOne: false
 { Args: { "expected_roles": (Database["public"]['Enums']["app_role"])[],"new_roles": (Database["public"]['Enums']["app_role"])[],"target": string }; Returns: undefined
                            },
 "ai_daily_limit":
+{ Args: Record<PropertyKey, never>; Returns: number
+                           },
+"ai_questions_left":
 { Args: Record<PropertyKey, never>; Returns: number
                            },
 "apply_payment_event":

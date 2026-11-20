@@ -24,7 +24,7 @@ export default defineConfig({
     url: `http://localhost:${port}`,
     reuseExistingServer: !process.env.CI,
     // Turns on the test-only /auth/confirm sign-in route (see src/app/auth/confirm/route.ts).
-    // The fake payment provider, never in production (lib/payments).
-    env: { E2E_AUTH_CONFIRM: '1', PAYMENTS_PROVIDER: 'fake', PAYMENTS_WEBHOOK_SECRET: 'e2e-webhook-secret' },
+    // The fake AI answerer and the fake payment provider, never in production (lib/ai/model.ts, lib/payments).
+    env: { E2E_AUTH_CONFIRM: '1', AI_PROVIDER: 'fake', PAYMENTS_PROVIDER: 'fake', PAYMENTS_WEBHOOK_SECRET: 'e2e-webhook-secret' },
   },
 });

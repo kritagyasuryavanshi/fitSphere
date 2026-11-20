@@ -89,6 +89,19 @@ describe('the AI answer service', () => {
     expect(called).toBe(false);
   });
 
+  it('marks a referral as a pain report only when the athlete describes a symptom they have now', async () => {
+    for (const q of ['My right shoulder hurts after bag work', 'sharp pains in my elbow after sparring', 'I pulled a muscle in my back', 'my knee aches when I squat']) {
+      const a = await answerQuestion(q, profile, deps([guard]));
+      expect(a.kind, q).toBe('referral');
+      expect(a.pain, q).toBe(true);
+    }
+    const topic = await answerQuestion('Does the jab strain the shoulder?', profile, deps([guard]));
+    expect(topic.kind).toBe('referral');
+    expect(topic.pain).toBe(false);
+    const flagged = await answerQuestion('my wrist clicks when I punch', profile, deps([guard], reply({ answer: 'x', cited: [guard.item_id], needs_referral: true })));
+    expect(flagged.pain).toBe(true);
+  });
+
   it('answers prevention questions from the library, instead of referring them', () => {
     expect(classifyQuestion('How do I avoid shoulder injury when punching?')).toBe('ok');
     expect(classifyQuestion('how to prevent knee pain when squatting')).toBe('ok');
