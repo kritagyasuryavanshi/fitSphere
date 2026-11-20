@@ -70,3 +70,15 @@ export async function saveProgram(_prev: ProgramState, formData: FormData): Prom
   }
   redirect(`/coach/programs/${id}?saved=1`);
 }
+
+/** Lists or unlists a published program on the coach's public profile. Nothing is listed by default. */
+export async function setProgramListed(formData: FormData): Promise<void> {
+  await requireRole('coach');
+  const program = String(formData.get('program') ?? '');
+  if (!isUuid(program)) return;
+  const supabase = await supabaseServer();
+  const { error } = await supabase.rpc('set_program_listed', { program, listed: formData.get('listed') === 'true' });
+  // The page shows the stored state, so a refused change (not_owner, not_published) simply leaves it as it was.
+  if (error) console.error('set_program_listed failed', error.code, error.message);
+  revalidatePath(`/coach/programs/${program}`);
+}

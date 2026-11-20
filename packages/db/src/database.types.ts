@@ -769,14 +769,14 @@ isOneToOne: false
                   ]
                 },"programs": {
                   Row: {
-                    "category_id": string,"coach_id": string | null,"created_at": string,"id": string,"summary": string,"title": string,"updated_at": string,"weeks": number
+                    "category_id": string,"coach_id": string | null,"created_at": string,"id": string,"show_on_profile": boolean,"summary": string,"title": string,"updated_at": string,"weeks": number
                   }
                   ComputedFields: never
                   Insert: {
-                    "category_id": string,"coach_id"?: string | null,"created_at"?: string,"id"?: string,"summary"?: string,"title": string,"updated_at"?: string,"weeks"?: number
+                    "category_id": string,"coach_id"?: string | null,"created_at"?: string,"id"?: string,"show_on_profile"?: boolean,"summary"?: string,"title": string,"updated_at"?: string,"weeks"?: number
                   }
                   Update: {
-                    "category_id"?: string,"coach_id"?: string | null,"created_at"?: string,"id"?: string,"summary"?: string,"title"?: string,"updated_at"?: string,"weeks"?: number
+                    "category_id"?: string,"coach_id"?: string | null,"created_at"?: string,"id"?: string,"show_on_profile"?: boolean,"summary"?: string,"title"?: string,"updated_at"?: string,"weeks"?: number
                   }
                   Relationships: [
                     {
@@ -1053,6 +1053,11 @@ isOneToOne: false
 "coach_places_taken":
 { Args: { "coach": string }; Returns: number
                            },
+"coach_programs":
+{ Args: { "coach": string }; Returns: {
+              "enrolled_band": number,"program_id": string,"title": string,"weeks": number
+            }[]
+                           },
 "coach_public_name":
 { Args: { "coach": string }; Returns: string
                            },
@@ -1283,6 +1288,9 @@ isOneToOne: false
                            },
 "set_profile_live":
 { Args: { "live": boolean }; Returns: undefined
+                           },
+"set_program_listed":
+{ Args: { "listed": boolean,"program": string }; Returns: undefined
                            },
 "set_saved":
 { Args: { "item": string,"saved": boolean }; Returns: undefined
