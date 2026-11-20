@@ -26,7 +26,7 @@ export function claudeModel(apiKey: string): Model {
         messages: [{ role: 'user', content: user }],
         output_config: { effort: 'low', format: betaZodOutputFormat(Reply) },
       });
-      const usage = { input_tokens: response.usage.input_tokens, output_tokens: response.usage.output_tokens };
+      const usage = { input_tokens: response.usage.input_tokens, output_tokens: response.usage.output_tokens, provider: 'claude' as const };
       const unavailable = { answer: '', cited: [], unavailable: true, usage };
       if (response.stop_reason !== 'end_turn') return unavailable;
       try {

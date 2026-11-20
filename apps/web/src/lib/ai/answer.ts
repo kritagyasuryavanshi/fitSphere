@@ -36,11 +36,20 @@ export type AiProfile = {
   injuryNotes?: string;
 };
 
+/** The tokens one model reply used, and which provider served it (it sets the price). */
+export type Usage = { input_tokens: number; output_tokens: number; provider?: 'claude' | 'gemini' };
+
 /**
- * needs_referral: the model judged the question to need a doctor or physiotherapist. unavailable: a paid reply that
+ * needs_referral: the model judged the question to need a doctor or physiotherapist. unavailable: a model reply that
  * ended badly (cut short, refused, or not matching the schema); it still carries its usage, so the log is never short.
  */
-export type ModelReply = { answer: string; cited: string[]; needs_referral?: boolean; unavailable?: boolean; usage?: { input_tokens: number; output_tokens: number } };
+export type ModelReply = {
+  answer: string;
+  cited: string[];
+  needs_referral?: boolean;
+  unavailable?: boolean;
+  usage?: Usage;
+};
 /** null: the model declined or could not finish. A thrown error is treated the same way. */
 export type Model = { answer(prompt: { system: string; user: string }): Promise<ModelReply | null> };
 
@@ -55,7 +64,7 @@ export type Answer = {
    */
   pain?: boolean;
   /** The tokens the model used, for the usage log. Never shown to the athlete. */
-  usage?: { input_tokens: number; output_tokens: number };
+  usage?: Usage;
 };
 
 const NO_SOURCE =

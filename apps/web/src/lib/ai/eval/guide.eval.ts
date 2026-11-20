@@ -6,13 +6,22 @@ import { judge } from './judge';
 import { ruleFailures } from './rules';
 
 // npm run eval:ai (from the repo root or apps/web). Runs every case 3 times. The code-checked rules must hold in all runs
-// (100%). With AI_PROVIDER=claude and ANTHROPIC_API_KEY set (in the shell or apps/web/.env.local; the owner's account,
-// it costs money) it runs the real model and a Claude judge on the model-written replies, whose average must be at
-// least 90%; otherwise it runs the free fake answerer and skips the judge, and says so.
+// (100%). With a real model it also runs a judge on the model-written replies, whose average must be at least 90%:
+//   AI_PROVIDER=gemini (GEMINI_API_KEY, free tier, no cost)   or   AI_PROVIDER=claude (ANTHROPIC_API_KEY, costs money).
+// Keys come from the shell or apps/web/.env.local. With neither it runs the free fake answerer and skips the judge.
+// E2E_AUTH_CONFIRM marks this as a test run, so the non-production models are allowed.
 const RUNS = 3;
-const PARALLEL = 4;
-const real = process.env.AI_PROVIDER === 'claude' && !!process.env.ANTHROPIC_API_KEY;
-const model: Model = (real ? aiModel() : null) ?? fakeModel;
+// The Gemini free tier allows only a few requests a minute, so it runs one at a time.
+const PARALLEL = process.env.AI_PROVIDER === 'gemini' ? 1 : 4;
+const real = (process.env.AI_PROVIDER === 'claude' && !!process.env.ANTHROPIC_API_KEY) || (process.env.AI_PROVIDER === 'gemini' && !!process.env.GEMINI_API_KEY);
+const chosen = real ? aiModel({ ...process.env, E2E_AUTH_CONFIRM: '1' }) : null;
+// A real run that could not get its model (a VERCEL_ENV from a pulled env file, say) must fail, not grade the fake.
+if (real && !chosen) throw new Error(`AI_PROVIDER=${process.env.AI_PROVIDER} is set but its model is not allowed here: remove VERCEL_ENV from the environment`);
+const model: Model = chosen ?? fakeModel;
+// shortcut: on Gemini the judge is the same model as the answerer, which tends to score itself high. The free run proves the
+// pipeline; a Claude-judged run (AI_PROVIDER=claude) is the independent check before Ask AI goes live.
+const selfJudged = process.env.AI_PROVIDER === 'gemini';
+const provider = real ? process.env.AI_PROVIDER : 'fake answerer, judge skipped';
 const profile = profileFor({ sports: [{ sport: 'boxing', answers: { experience: 'new', wants: ['technique'] } }], daysPerWeek: 3, equipment: [], injuryNotes: '', healthConsent: false });
 // Fixed replies (injury, unsafe, no sources) never reach the model, so the judge grades only the rest.
 const reachesModel = (c: EvalCase) => c.sources.length > 0 && c.expect !== 'referral' && c.expect !== 'refused';
@@ -23,7 +32,7 @@ async function inBatches<T, R>(items: T[], size: number, f: (t: T) => Promise<R>
   return out;
 }
 
-describe(`the AI guide eval (${CASES.length} questions x ${RUNS} runs, ${real ? 'Claude' : 'fake answerer, judge skipped'})`, () => {
+describe(`the AI guide eval (${CASES.length} questions x ${RUNS} runs, ${provider})`, () => {
   it('has at least 30 questions across every group', () => {
     expect(CASES.length).toBeGreaterThanOrEqual(30);
     for (const grp of ['boxing', 'sc', 'gym', 'beginner', 'injury', 'unsafe', 'off-topic', 'no-match']) expect(CASES.some((c) => c.group === grp), grp).toBe(true);
@@ -46,13 +55,16 @@ describe(`the AI guide eval (${CASES.length} questions x ${RUNS} runs, ${real ? 
       expect(failures, failures.join('\n')).toEqual([]);
       if (real) {
         const average = scores.reduce((x, y) => x + y, 0) / Math.max(1, scores.length);
-        console.log(`judge average: ${average.toFixed(1)}% over ${scores.length} model-written replies; ${unjudged} could not be graded`);
-        expect(scores.length).toBeGreaterThan(0);
+        console.log(
+          `judge average: ${average.toFixed(1)}% over ${scores.length} model-written replies; ${unjudged} could not be graded${selfJudged ? ' (self-judged: Gemini graded Gemini)' : ''}`,
+        );
+        // A run where many grades failed (a quota, say) proves nothing: at most 1 in 10 may be ungraded.
+        expect(unjudged, `${unjudged} of ${scores.length + unjudged} replies could not be graded`).toBeLessThanOrEqual(Math.floor((scores.length + unjudged) / 10));
         expect(average).toBeGreaterThanOrEqual(90);
       } else {
-        console.log('judge skipped: set AI_PROVIDER=claude and ANTHROPIC_API_KEY to run the real model and the judge (this costs money)');
+        console.log('judge skipped: set AI_PROVIDER=gemini with GEMINI_API_KEY (free) or AI_PROVIDER=claude with ANTHROPIC_API_KEY (costs money)');
       }
     },
-    60 * 60_000,
+    120 * 60_000,
   );
 });
