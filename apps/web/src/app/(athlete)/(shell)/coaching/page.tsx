@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { supabaseServer } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/viewer';
+import { openConversation } from '@/app/(account)/messages/actions';
 import { withdrawRequest } from './actions';
 
 export const metadata: Metadata = { title: 'Your coaching · FitSphere' };
@@ -51,6 +52,8 @@ async function Coaching() {
     <ul className="m-0 flex list-none flex-col gap-4 p-0">
       {data.map((g, i) => {
         const [label, variant] = STATUS[g.status] ?? [g.status, 'outline'];
+        // One conversation per coach, so one Message button: on the newest engagement with them.
+        const firstWithCoach = data.findIndex((x) => x.coach_id === g.coach_id) === i;
         const coach = names[i].data ?? 'Your coach';
         return (
           <li key={g.id} className="flex flex-col gap-2 border border-line p-5">
@@ -71,6 +74,14 @@ async function Coaching() {
                 Pay {formatInr(g.price_paise)}
               </Link>
             ) : null}
+            {g.coach_id && firstWithCoach ? (
+              <form action={openConversation}>
+                <input type="hidden" name="engagement" value={g.id} />
+                <button type="submit" className="text-[15px] font-medium underline underline-offset-4">
+                  Message {coach}
+                </button>
+              </form>
+            ) : null}
             {g.status === 'requested' || g.status === 'accepted' ? (
               <form action={withdrawRequest}>
                 <input type="hidden" name="engagement" value={g.id} />
@@ -89,7 +100,12 @@ async function Coaching() {
 export default function CoachingPage() {
   return (
     <main className="mx-auto flex w-full max-w-[880px] flex-col gap-6 px-4 pb-24 pt-8 md:px-10">
-      <h1 className="m-0 font-display text-[48px] font-normal uppercase leading-[0.95]">Your coaching</h1>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <h1 className="m-0 font-display text-[48px] font-normal uppercase leading-[0.95]">Your coaching</h1>
+        <Link href="/messages" className="text-[15px] font-medium underline underline-offset-4">
+          Messages
+        </Link>
+      </div>
       <Suspense fallback={null}>
         <Coaching />
       </Suspense>

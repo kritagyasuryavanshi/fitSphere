@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { supabaseServer } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/viewer';
+import { openConversation } from '@/app/(account)/messages/actions';
 import { DecideForm } from './decide-form';
 
 export const metadata: Metadata = { title: 'Clients · FitSphere Coach' };
@@ -55,6 +56,12 @@ async function Clients() {
                 {r.goals ? <p className="m-0 whitespace-pre-line text-[16px]">“{r.goals}”</p> : null}
                 <p className="m-0 text-[13px] text-muted">{r.share_data ? 'Shares training logs while a client.' : 'Does not share training logs.'}</p>
                 {r.status === 'requested' ? <DecideForm engagementId={r.engagement_id} athlete={r.athlete_name} /> : <p className="m-0 text-[15px] font-medium">Accepted · awaiting payment</p>}
+                <form action={openConversation}>
+                  <input type="hidden" name="engagement" value={r.engagement_id} />
+                  <button type="submit" className="text-[15px] font-medium underline underline-offset-4">
+                    Message {r.athlete_name}
+                  </button>
+                </form>
               </li>
             ))}
           </ul>
@@ -69,12 +76,20 @@ async function Clients() {
         </h2>
         {paying.length ? (
           // Stacked cards on phones, a table from md up (decision D3).
-          <ul className="m-0 grid list-none gap-3 p-0 md:grid-cols-[1fr_1fr_auto] md:gap-0">
+          <ul className="m-0 grid list-none gap-3 p-0 md:grid-cols-[1fr_1fr_auto] md:gap-x-4 md:gap-y-0">
             {paying.map((r) => (
               <li key={r.engagement_id} className="contents">
                 <span className="border-line font-medium md:border-b md:py-3">{r.athlete_name}</span>
                 <span className="border-line text-muted md:border-b md:py-3">{r.package_title}</span>
-                <span className="border-line md:border-b md:py-3">{r.cancel_at_period_end ? `Cancels ${r.paid_through}` : r.paid_through ? `Renews ${r.paid_through}` : ''}</span>
+                <span className="flex flex-wrap gap-4 border-line md:border-b md:py-3">
+                  {r.cancel_at_period_end ? `Cancels ${r.paid_through}` : r.paid_through ? `Renews ${r.paid_through}` : ''}
+                  <form action={openConversation}>
+                    <input type="hidden" name="engagement" value={r.engagement_id} />
+                    <button type="submit" className="font-medium underline underline-offset-4">
+                      Message {r.athlete_name}
+                    </button>
+                  </form>
+                </span>
               </li>
             ))}
           </ul>
@@ -91,9 +106,14 @@ export default function ClientsPage() {
     <main className="mx-auto flex w-full max-w-[1100px] flex-col gap-8 px-4 pb-24 pt-8 md:px-10">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <h1 className="m-0 font-display text-[48px] font-normal uppercase leading-[0.95]">Clients</h1>
-        <Link href="/coach/profile" className="text-[15px] font-medium underline underline-offset-4">
-          Edit profile and prices
-        </Link>
+        <div className="flex flex-wrap gap-4">
+          <Link href="/messages" className="text-[15px] font-medium underline underline-offset-4">
+            Messages
+          </Link>
+          <Link href="/coach/profile" className="text-[15px] font-medium underline underline-offset-4">
+            Edit profile and prices
+          </Link>
+        </div>
       </div>
       <Suspense fallback={null}>
         <Clients />
