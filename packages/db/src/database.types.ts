@@ -23,7 +23,27 @@ export type Database = {
           }
         },"public": {
           Tables: {
-            "athlete_basics": {
+            "ai_questions": {
+                  Row: {
+                    "answer": Json | null,"answered_at": string | null,"asked_on": string,"cost_micro_usd": number,"created_at": string,"id": string,"input_tokens": number,"kind": string | null,"output_tokens": number,"question": string,"status": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "answer"?: Json | null,"answered_at"?: string | null,"asked_on"?: string,"cost_micro_usd"?: number,"created_at"?: string,"id"?: string,"input_tokens"?: number,"kind"?: string | null,"output_tokens"?: number,"question": string,"status"?: string,"user_id": string
+                  }
+                  Update: {
+                    "answer"?: Json | null,"answered_at"?: string | null,"asked_on"?: string,"cost_micro_usd"?: number,"created_at"?: string,"id"?: string,"input_tokens"?: number,"kind"?: string | null,"output_tokens"?: number,"question"?: string,"status"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "ai_questions_user_id_fkey"
+      columns: ["user_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"athlete_basics": {
                   Row: {
                     "days_per_week": number,"equipment": (string)[],"injury_notes": string,"updated_at": string,"user_id": string
                   }
@@ -1101,6 +1121,9 @@ isOneToOne: false
 "admin_set_roles":
 { Args: { "expected_roles": (Database["public"]['Enums']["app_role"])[],"new_roles": (Database["public"]['Enums']["app_role"])[],"target": string }; Returns: undefined
                            },
+"ai_daily_limit":
+{ Args: Record<PropertyKey, never>; Returns: number
+                           },
 "apply_payment_event":
 { Args: { "body": Json,"event_id": string,"event_type": string }; Returns: string
                            },
@@ -1217,6 +1240,9 @@ isOneToOne: false
 { Args: { "checked_only"?: boolean,"city"?: string,"experience"?: string,"format"?: string,"ids"?: (string)[],"language"?: string,"max_paise"?: number,"min_paise"?: number,"min_rating"?: number,"sort"?: string,"specialty"?: string }; Returns: {
               "checked": boolean,"coach_city": string,"coach_id": string,"formats": (string)[],"from_paise": number,"headline": string,"languages": (string)[],"name": string,"rating": number,"review_count": number,"specialties": (string)[],"years": number
             }[]
+                           },
+"finish_ai_question":
+{ Args: { "answer_body": Json,"answer_kind": string,"cost_micro_usd": number,"input_tokens": number,"output_tokens": number,"question_id": string }; Returns: undefined
                            },
 "finish_session":
 { Args: { "on_date": string,"opened_at"?: string,"session": string }; Returns: string
@@ -1344,6 +1370,9 @@ isOneToOne: false
                            },
 "require_step1":
 { Args: Record<PropertyKey, never>; Returns: string
+                           },
+"reserve_ai_question":
+{ Args: { "question": string }; Returns: string
                            },
 "reset_invite":
 { Args: { "program": string }; Returns: string

@@ -8,7 +8,8 @@ const Reply = z.object({ answer: z.string(), cited: z.array(z.string()), needs_r
 /**
  * The real model: Claude Opus 5.5 through the Anthropic SDK, with a structured reply ({answer, cited}). Effort low:
  * short, grounded chat answers. Server-side refusal fallbacks are on ("default" routes by refusal category). A refusal
- * that survives them, a reply cut short, or one that fails the schema returns null; the service then answers neutrally.
+ * that survives them, a reply cut short, or one that fails the schema comes back unavailable with its usage, so the
+ * cost is still logged; the service then answers neutrally.
  */
 // shortcut: never run against the live API in tests (it costs money per question); exercise it once the owner adds
 // ANTHROPIC_API_KEY, and check the structured reply and fallbacks together on a real request.
@@ -25,12 +26,15 @@ export function claudeModel(apiKey: string): Model {
         messages: [{ role: 'user', content: user }],
         output_config: { effort: 'low', format: betaZodOutputFormat(Reply) },
       });
-      if (response.stop_reason !== 'end_turn') return null;
+      const usage = { input_tokens: response.usage.input_tokens, output_tokens: response.usage.output_tokens };
+      const unavailable = { answer: '', cited: [], unavailable: true, usage };
+      if (response.stop_reason !== 'end_turn') return unavailable;
       try {
         // parsed_output throws when the reply does not match the schema.
-        return response.parsed_output ?? null;
+        const parsed = response.parsed_output;
+        return parsed ? { ...parsed, usage } : unavailable;
       } catch {
-        return null;
+        return unavailable;
       }
     },
   };

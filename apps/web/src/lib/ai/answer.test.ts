@@ -126,6 +126,12 @@ describe('the AI answer service', () => {
     }
   });
 
+  it('keeps the tokens of a paid reply that ended badly, so the usage log is never short', async () => {
+    const a = await answerQuestion('how do I keep my guard up', profile, deps([guard], reply({ answer: '', cited: [], unavailable: true, usage: { input_tokens: 900, output_tokens: 16000 } })));
+    expect(a.kind).toBe('unavailable');
+    expect(a.usage).toEqual({ input_tokens: 900, output_tokens: 16000 });
+  });
+
   it('maps the answers sign-up saves to level and goals', () => {
     expect(profile.sports).toEqual([
       { sport: 'boxing', level: 'few_classes', goals: ['technique', 'fitness'] },
