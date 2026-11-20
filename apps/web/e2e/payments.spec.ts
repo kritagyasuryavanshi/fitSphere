@@ -14,7 +14,7 @@ test('an athlete pays for accepted coaching with the fake provider, and coaching
   await page.getByRole('link', { name: 'Pay ₹4,500' }).click();
   await expect(page.getByText('Test mode: no real money moves.')).toBeVisible();
   await page.getByRole('button', { name: 'Pay ₹4,500' }).click();
-  await expect(page.getByRole('status')).toContainText('Payment received. Coaching starts');
+  await expect(page.getByRole('status')).toContainText(/Payment received\. Coaching runs \d{4}-\d{2}-\d{2} to \d{4}-\d{2}-\d{2}\./);
 
   // The database agrees: the order is paid, and the coach's payout is the price less the 15% fee.
   const { data: g } = await admin().from('engagements').select('id, status').eq('coach_id', coach.id).single();
