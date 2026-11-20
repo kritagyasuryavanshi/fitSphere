@@ -693,6 +693,26 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"orders": {
+                  Row: {
+                    "amount_paise": number,"created_at": string,"currency": string,"engagement_id": string,"fee_bps": number,"id": string,"kind": string,"paid_at": string | null,"period_end": string,"period_start": string,"provider_order_id": string | null,"status": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "amount_paise": number,"created_at"?: string,"currency"?: string,"engagement_id": string,"fee_bps": number,"id"?: string,"kind"?: string,"paid_at"?: string | null,"period_end": string,"period_start": string,"provider_order_id"?: string | null,"status"?: string
+                  }
+                  Update: {
+                    "amount_paise"?: number,"created_at"?: string,"currency"?: string,"engagement_id"?: string,"fee_bps"?: number,"id"?: string,"kind"?: string,"paid_at"?: string | null,"period_end"?: string,"period_start"?: string,"provider_order_id"?: string | null,"status"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "orders_engagement_id_fkey"
+      columns: ["engagement_id"]
+isOneToOne: false
+      referencedRelation: "engagements"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"packages": {
                   Row: {
                     "coach_id": string,"created_at": string,"currency": string,"id": string,"kind": string,"live": boolean,"price_paise": number,"title": string
@@ -711,6 +731,80 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "coach_profiles"
       referencedColumns: ["coach_id"]
+    }
+                  ]
+                },"payment_events": {
+                  Row: {
+                    "id": number,"note": string | null,"payload": NonNullable<Json>,"provider_event_id": string,"received_at": string,"result": string | null,"type": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: never,"note"?: string | null,"payload": NonNullable<Json>,"provider_event_id": string,"received_at"?: string,"result"?: string | null,"type": string
+                  }
+                  Update: {
+                    "id"?: never,"note"?: string | null,"payload"?: NonNullable<Json>,"provider_event_id"?: string,"received_at"?: string,"result"?: string | null,"type"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"payment_settings": {
+                  Row: {
+                    "fake_allowed": boolean,"id": boolean
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "fake_allowed"?: boolean,"id"?: boolean
+                  }
+                  Update: {
+                    "fake_allowed"?: boolean,"id"?: boolean
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"payments": {
+                  Row: {
+                    "amount_paise": number,"captured_at": string,"currency": string,"id": string,"order_id": string,"provider_payment_id": string,"status": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "amount_paise": number,"captured_at"?: string,"currency": string,"id"?: string,"order_id": string,"provider_payment_id": string,"status": string
+                  }
+                  Update: {
+                    "amount_paise"?: number,"captured_at"?: string,"currency"?: string,"id"?: string,"order_id"?: string,"provider_payment_id"?: string,"status"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "payments_order_id_fkey"
+      columns: ["order_id"]
+isOneToOne: false
+      referencedRelation: "orders"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"payouts": {
+                  Row: {
+                    "coach_id": string | null,"created_at": string,"fee_paise": number,"gross_paise": number,"hold_until": string,"id": string,"net_paise": number,"payment_id": string,"provider_transfer_id": string | null,"status": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "coach_id"?: string | null,"created_at"?: string,"fee_paise": number,"gross_paise": number,"hold_until": string,"id"?: string,"net_paise": number,"payment_id": string,"provider_transfer_id"?: string | null,"status"?: string
+                  }
+                  Update: {
+                    "coach_id"?: string | null,"created_at"?: string,"fee_paise"?: number,"gross_paise"?: number,"hold_until"?: string,"id"?: string,"net_paise"?: number,"payment_id"?: string,"provider_transfer_id"?: string | null,"status"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "payouts_coach_id_fkey"
+      columns: ["coach_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payouts_payment_id_fkey"
+      columns: ["payment_id"]
+isOneToOne: true
+      referencedRelation: "payments"
+      referencedColumns: ["id"]
     }
                   ]
                 },"profiles": {
@@ -1007,11 +1101,17 @@ isOneToOne: false
 "admin_set_roles":
 { Args: { "expected_roles": (Database["public"]['Enums']["app_role"])[],"new_roles": (Database["public"]['Enums']["app_role"])[],"target": string }; Returns: undefined
                            },
+"apply_payment_event":
+{ Args: { "body": Json,"event_id": string,"event_type": string }; Returns: string
+                           },
 "apply_sport_answers":
 { Args: { "by_sport": Json,"uid": string }; Returns: undefined
                            },
 "assert_live_ready":
 { Args: { "coach": string }; Returns: undefined
+                           },
+"attach_provider_order":
+{ Args: { "order_": string,"provider_order": string }; Returns: string
                            },
 "author_names":
 { Args: { "ids": (string)[] }; Returns: {
@@ -1110,6 +1210,9 @@ isOneToOne: false
 "export_my_data":
 { Args: Record<PropertyKey, never>; Returns: Json
                            },
+"fee_paise":
+{ Args: { "bps": number,"gross": number }; Returns: number
+                           },
 "find_coaches":
 { Args: { "checked_only"?: boolean,"city"?: string,"experience"?: string,"format"?: string,"ids"?: (string)[],"language"?: string,"max_paise"?: number,"min_paise"?: number,"min_rating"?: number,"sort"?: string,"specialty"?: string }; Returns: {
               "checked": boolean,"coach_city": string,"coach_id": string,"formats": (string)[],"from_paise": number,"headline": string,"languages": (string)[],"name": string,"rating": number,"review_count": number,"specialties": (string)[],"years": number
@@ -1161,6 +1264,14 @@ isOneToOne: false
 "mark_notifications_read":
 { Args: { "ids"?: (number)[] }; Returns: number
                            },
+"money_invariants":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "ref": string,"rule": string
+            }[]
+                           },
+"month_period_end":
+{ Args: { "start": string }; Returns: string
+                           },
 "my_coach_profile":
 { Args: Record<PropertyKey, never>; Returns: {
               "agreement_accepted_at": string,"agreement_version": string,"city": string,"client_limit": number,"coach_id": string,"formats": (string)[],"headline": string,"languages": (string)[],"philosophy": string,"specialties": (string)[],"status": string,"updated_at": string,"years": number
@@ -1192,6 +1303,9 @@ isOneToOne: false
                            },
 "owns_program":
 { Args: { "program": string }; Returns: boolean
+                           },
+"payout_hold_days":
+{ Args: Record<PropertyKey, never>; Returns: number
                            },
 "platform_fee_bps":
 { Args: Record<PropertyKey, never>; Returns: number
@@ -1309,6 +1423,11 @@ isOneToOne: false
 "skill_ratings":
 { Args: { "athlete": string }; Returns: {
               "item_id": string,"logs": number,"rating": number
+            }[]
+                           },
+"start_checkout":
+{ Args: { "athlete": string,"engagement": string }; Returns: {
+              "amount_paise": number,"order_id": string,"provider_order_id": string
             }[]
                            },
 "submit_coach_application":
