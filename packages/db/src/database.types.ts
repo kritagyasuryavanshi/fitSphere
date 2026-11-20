@@ -1348,6 +1348,11 @@ isOneToOne: false
 "reset_invite":
 { Args: { "program": string }; Returns: string
                            },
+"retrieve_for_ai":
+{ Args: { "k"?: number,"question": string }; Returns: {
+              "category_id": string,"dose": Json,"item_id": string,"kind": Database["public"]['Enums']["content_kind"],"mistakes": string,"rank": number,"safety": string,"slug": string,"steps": string,"summary": string,"title": string
+            }[]
+                           },
 "review_content":
 { Args: { "approve": boolean,"item": string,"note": string }; Returns: undefined
                            },
