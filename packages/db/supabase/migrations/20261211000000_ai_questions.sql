@@ -18,7 +18,8 @@ create table public.ai_questions (
   user_id uuid not null references public.profiles (id) on delete cascade,
   asked_on date not null default public.india_today(),
   question text not null check (char_length(question) between 1 and 500),
-  -- pending: being answered; answered; failed: the guide could not answer, so it does not use up a question.
+  -- pending: being answered; answered; failed: the guide could not answer and no tokens were used, so it gives the
+  -- question back. A failure that used tokens is marked answered: it cost money, so it counts.
   status text not null default 'pending' check (status in ('pending', 'answered', 'failed')),
   kind text check (kind in ('answer', 'no_source', 'referral', 'refused', 'unavailable')),
   answer jsonb,
@@ -37,8 +38,9 @@ grant select on public.ai_questions to authenticated;
 grant all on public.ai_questions to service_role;
 create policy ai_questions_select_own on public.ai_questions for select to authenticated using (user_id = (select auth.uid()));
 
--- Takes one of today's questions for the signed-in athlete, or refuses the one past the limit. Answered questions count,
--- and so do ones being answered now; a failed answer, or one stuck for 5 minutes, gives the question back.
+-- Takes one of today's questions for the signed-in athlete, or refuses the one past the limit. Every question counts
+-- except a failure that cost nothing; a question being answered counts too (the server always finishes what it
+-- reserves). However questions end, at most twice the limit can be started in a day, so failures cannot run up cost.
 create function public.reserve_ai_question(question text)
 returns uuid
 language plpgsql
@@ -61,9 +63,8 @@ begin
   end if;
   -- One at a time per athlete, so two quick questions cannot both take the last place.
   perform pg_advisory_xact_lock(hashtext('ai_questions:' || uid::text));
-  if (select count(*) from public.ai_questions a
-      where a.user_id = uid and a.asked_on = public.india_today()
-        and (a.status = 'answered' or (a.status = 'pending' and a.created_at > now() - interval '5 minutes'))) >= public.ai_daily_limit() then
+  if (select count(*) filter (where a.status <> 'failed') >= public.ai_daily_limit() or count(*) >= 2 * public.ai_daily_limit()
+      from public.ai_questions a where a.user_id = uid and a.asked_on = public.india_today()) then
     raise exception 'ai_daily_limit' using errcode = '22023';
   end if;
   insert into public.ai_questions (user_id, question) values (uid, q) returning id into id_;
@@ -73,7 +74,8 @@ $$;
 revoke all on function public.reserve_ai_question(text) from public;
 grant execute on function public.reserve_ai_question(text) to authenticated;
 
--- Service role only: records the answer and what it used. An unavailable answer marks the question failed.
+-- Service role only: records the answer and what it used. An unavailable answer that used no tokens marks the question
+-- failed (given back); one that used tokens still counts.
 create function public.finish_ai_question(question_id uuid, answer_kind text, answer_body jsonb, input_tokens int, output_tokens int, cost_micro_usd bigint)
 returns void
 language plpgsql
@@ -82,7 +84,8 @@ set search_path = ''
 as $$
 begin
   update public.ai_questions a set
-    status = case when answer_kind = 'unavailable' then 'failed' else 'answered' end,
+    status = case when answer_kind = 'unavailable' and coalesce(finish_ai_question.input_tokens, 0) = 0 and coalesce(finish_ai_question.output_tokens, 0) = 0
+      then 'failed' else 'answered' end,
     kind = answer_kind, answer = answer_body,
     input_tokens = greatest(coalesce(finish_ai_question.input_tokens, 0), 0),
     output_tokens = greatest(coalesce(finish_ai_question.output_tokens, 0), 0),

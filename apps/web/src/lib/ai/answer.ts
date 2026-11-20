@@ -36,8 +36,11 @@ export type AiProfile = {
   injuryNotes?: string;
 };
 
-/** needs_referral: the model judged the question to need a doctor or physiotherapist. */
-export type ModelReply = { answer: string; cited: string[]; needs_referral?: boolean; usage?: { input_tokens: number; output_tokens: number } };
+/**
+ * needs_referral: the model judged the question to need a doctor or physiotherapist. unavailable: a paid reply that
+ * ended badly (cut short, refused, or not matching the schema); it still carries its usage, so the log is never short.
+ */
+export type ModelReply = { answer: string; cited: string[]; needs_referral?: boolean; unavailable?: boolean; usage?: { input_tokens: number; output_tokens: number } };
 /** null: the model declined or could not finish. A thrown error is treated the same way. */
 export type Model = { answer(prompt: { system: string; user: string }): Promise<ModelReply | null> };
 
@@ -148,6 +151,7 @@ export async function answerQuestion(
   if (!reply) return fixed('unavailable', UNAVAILABLE);
   // A model answer costs tokens whatever the code then does with it, so its usage rides along on every outcome.
   const usage = reply.usage;
+  if (reply.unavailable) return { ...fixed('unavailable', UNAVAILABLE), usage };
   if (reply.needs_referral) return { ...fixed('referral', REFERRAL), usage };
   const byId = new Map(sources.map((s) => [s.item_id, s]));
   const cited = [...new Set(reply.cited)].map((id) => byId.get(id)).filter((s) => s !== undefined);
