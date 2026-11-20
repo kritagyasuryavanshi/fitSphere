@@ -355,9 +355,9 @@ isOneToOne: false
                   ]
                 },"conversations": {
                   Row: {
-                    "athlete_id": string | null,"coach_id": string | null,"created_at": string,"id": string,"last_message_at": string | null
+                    "athlete_id": string | null,"coach_id": string | null,"created_at": string,"id": string,"last_message_at": string | null,"conversation_open": boolean | null
                   }
-                  ComputedFields: never
+                  ComputedFields: "conversation_open"
                   Insert: {
                     "athlete_id"?: string | null,"coach_id"?: string | null,"created_at"?: string,"id"?: string,"last_message_at"?: string | null
                   }
@@ -1072,6 +1072,9 @@ isOneToOne: false
 "complete_about_you":
 { Args: { "birth_date": string,"first_name": string,"sports": (string)[] }; Returns: undefined
                            },
+"conversation_open":
+{ Args: { "cv": Omit<Database["public"]['Tables']["conversations"]['Row'], Database["public"]['Tables']["conversations"]['ComputedFields']> }; Returns: boolean
+                           },
 "create_program":
 { Args: { "category": string,"title": string }; Returns: string
                            },
@@ -1160,7 +1163,7 @@ isOneToOne: false
                            },
 "my_conversations":
 { Args: Record<PropertyKey, never>; Returns: {
-              "conversation_id": string,"i_am_coach": boolean,"last_message_at": string,"other_id": string,"other_name": string
+              "can_send": boolean,"conversation_id": string,"i_am_coach": boolean,"last_message_at": string,"other_id": string,"other_is_live_coach": boolean,"other_name": string
             }[]
                            },
 "my_email_prefs":

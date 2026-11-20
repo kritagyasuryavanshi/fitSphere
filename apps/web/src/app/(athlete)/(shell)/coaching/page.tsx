@@ -52,6 +52,8 @@ async function Coaching() {
     <ul className="m-0 flex list-none flex-col gap-4 p-0">
       {data.map((g, i) => {
         const [label, variant] = STATUS[g.status] ?? [g.status, 'outline'];
+        // One conversation per coach, so one Message button: on the newest engagement with them.
+        const firstWithCoach = data.findIndex((x) => x.coach_id === g.coach_id) === i;
         const coach = names[i].data ?? 'Your coach';
         return (
           <li key={g.id} className="flex flex-col gap-2 border border-line p-5">
@@ -72,7 +74,7 @@ async function Coaching() {
                 Pay {formatInr(g.price_paise)}
               </Link>
             ) : null}
-            {g.coach_id ? (
+            {g.coach_id && firstWithCoach ? (
               <form action={openConversation}>
                 <input type="hidden" name="engagement" value={g.id} />
                 <button type="submit" className="text-[15px] font-medium underline underline-offset-4">

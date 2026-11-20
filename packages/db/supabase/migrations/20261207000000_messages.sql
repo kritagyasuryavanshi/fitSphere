@@ -14,7 +14,8 @@ create index conversations_coach_idx on public.conversations (coach_id);
 create table public.messages (
   id bigint generated always as identity primary key,
   conversation_id uuid not null references public.conversations (id) on delete cascade,
-  sender_id uuid references public.profiles (id) on delete set null,
+  -- Cascade: deleting an account erases what that person wrote (DPDP erasure); the other side keeps their own.
+  sender_id uuid references public.profiles (id) on delete cascade,
   body text not null check (char_length(body) between 1 and 2000),
   created_at timestamptz not null default now()
 );
@@ -34,6 +35,22 @@ alter table public.notifications drop constraint notifications_kind_check;
 alter table public.notifications add constraint notifications_kind_check
   check (kind in ('coach_feedback', 'new_lesson', 'session_reminder', 'request_accepted', 'payment_due', 'new_request', 'request_declined',
     'request_withdrawn', 'new_message'));
+
+-- Whether the pair may still write: some engagement between them was not declined, withdrawn or expired (past
+-- clients can keep talking), and the coach is not suspended. Otherwise the history stays readable but closed.
+create function public.conversation_open(cv public.conversations)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select cv.athlete_id is not null and cv.coach_id is not null
+    and exists (select 1 from public.engagements g where g.athlete_id = cv.athlete_id and g.coach_id = cv.coach_id
+      and g.status not in ('declined', 'withdrawn', 'expired'))
+    and not exists (select 1 from public.coach_profiles p where p.coach_id = cv.coach_id and p.status = 'suspended');
+$$;
+revoke all on function public.conversation_open(public.conversations) from public, anon, authenticated;
 
 -- The conversation for an engagement's two people, made on first use. Only those two can open it.
 create function public.open_conversation(engagement uuid)
@@ -74,7 +91,8 @@ declare
   uid uuid := auth.uid();
   cv public.conversations;
   other uuid;
-  text_ text := btrim(coalesce(body, ''));
+  -- One character per line break (a browser sends two), trimmed of all edge whitespace, not only spaces.
+  text_ text := btrim(replace(coalesce(body, ''), E'\r\n', E'\n'), E' \t\r\n');
   id_ bigint;
 begin
   if uid is null then
@@ -85,7 +103,7 @@ begin
     raise exception 'not_party' using errcode = '42501';
   end if;
   other := case when uid = cv.athlete_id then cv.coach_id else cv.athlete_id end;
-  if other is null then
+  if not public.conversation_open(cv) then
     raise exception 'closed' using errcode = '22023';
   end if;
   if char_length(text_) not between 1 and 2000 then
@@ -106,7 +124,8 @@ grant execute on function public.send_message(uuid, text) to authenticated;
 
 -- The caller's conversations with the other person's name (profiles are private otherwise).
 create function public.my_conversations()
-returns table (conversation_id uuid, other_id uuid, other_name text, i_am_coach boolean, last_message_at timestamptz)
+returns table (conversation_id uuid, other_id uuid, other_name text, i_am_coach boolean, last_message_at timestamptz, can_send boolean,
+  other_is_live_coach boolean)
 language sql
 stable
 security definer
@@ -114,7 +133,8 @@ set search_path = ''
 as $$
   select c.id, case when c.athlete_id = auth.uid() then c.coach_id else c.athlete_id end,
     coalesce(nullif(p.display_name, ''), case when c.athlete_id = auth.uid() then 'Coach' else 'Athlete' end),
-    c.coach_id = auth.uid(), c.last_message_at
+    c.coach_id = auth.uid(), c.last_message_at, public.conversation_open(c),
+    c.athlete_id = auth.uid() and c.coach_id is not null and public.coach_is_live(c.coach_id)
   from public.conversations c
   left join public.profiles p on p.id = case when c.athlete_id = auth.uid() then c.coach_id else c.athlete_id end
   where c.athlete_id = auth.uid() or c.coach_id = auth.uid()
@@ -123,7 +143,22 @@ $$;
 revoke all on function public.my_conversations() from public;
 grant execute on function public.my_conversations() to authenticated;
 
--- export_my_data as in 20261206000000_engagements.sql, plus the messages the person sent.
+-- Deleting an account removes conversations it leaves with nobody in them.
+create function public.drop_empty_conversations()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  delete from public.conversations where (athlete_id = old.id and coach_id is null) or (coach_id = old.id and athlete_id is null);
+  return old;
+end;
+$$;
+revoke all on function public.drop_empty_conversations() from public, anon, authenticated;
+create trigger profiles_drop_empty_conversations before delete on public.profiles for each row execute function public.drop_empty_conversations();
+
+-- export_my_data as in 20261206000000_engagements.sql, plus the person's conversations.
 create or replace function public.export_my_data()
 returns jsonb
 language plpgsql
@@ -176,10 +211,12 @@ begin
         'price_paise', g.price_paise, 'start_date', g.start_date, 'days_per_week', g.days_per_week, 'goals', g.goals, 'share_data', g.share_data,
         'status', g.status, 'requested_at', g.created_at, 'decided_at', g.decided_at, 'ended_at', g.ended_at) order by g.created_at)
       from public.engagements g left join public.profiles p on p.id = g.coach_id where g.athlete_id = uid), '[]'),
-    'messages', coalesce((select jsonb_agg(jsonb_build_object('to', coalesce(nullif(p.display_name, ''), 'Someone'), 'body', m.body, 'at', m.created_at) order by m.id)
+    'messages', coalesce((select jsonb_agg(jsonb_build_object('conversation', c.id,
+        'from', case when m.sender_id = uid then 'You' else coalesce(nullif(p.display_name, ''), case when c.coach_id = m.sender_id then 'Coach' else 'Athlete' end) end,
+        'body', m.body, 'at', m.created_at) order by c.id, m.id)
       from public.messages m join public.conversations c on c.id = m.conversation_id
-      left join public.profiles p on p.id = case when c.athlete_id = uid then c.coach_id else c.athlete_id end
-      where m.sender_id = uid), '[]'),
+      left join public.profiles p on p.id = m.sender_id
+      where c.athlete_id = uid or c.coach_id = uid), '[]'),
     'shortlist', coalesce((select jsonb_agg(jsonb_build_object('coach', s.coach_id, 'at', s.created_at) order by s.created_at)
       from public.shortlists s where s.athlete_id = uid), '[]'),
     'account_created_at', (select created_at from auth.users where id = uid),

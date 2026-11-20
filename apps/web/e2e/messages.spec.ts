@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { liveCoach, newPage, signInAs, signInWithEmail } from './helpers';
+import { admin, liveCoach, newPage, signInAs, signInWithEmail } from './helpers';
 
 test('an athlete and a coach message each other; a new message shows within 10 seconds', async ({ page, browser }) => {
   const coach = await liveCoach('Kiran', `Chatpur ${Date.now()}`, 450000);
@@ -33,4 +33,11 @@ test('an athlete and a coach message each other; a new message shows within 10 s
   await coachPage.getByLabel('Message Kabir').fill('Happy to take you on.');
   await coachPage.getByRole('button', { name: 'Send' }).click();
   await expect(page.getByRole('list', { name: 'Messages' })).toContainText('Happy to take you on.', { timeout: 10_000 });
+
+  // A declined request closes the conversation; the history stays readable.
+  expect((await admin().from('engagements').update({ status: 'declined' }).eq('coach_id', coach.id)).error).toBeNull();
+  await page.reload();
+  await expect(page.getByText('This conversation is closed. You can still read it.')).toBeVisible();
+  await expect(page.getByRole('list', { name: 'Messages' })).toContainText('Happy to take you on.');
+  await expect(page.getByLabel('Message Kiran')).toHaveCount(0);
 });

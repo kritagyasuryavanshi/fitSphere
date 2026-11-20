@@ -9,6 +9,8 @@ import { Refresher, SendForm } from './chat-client';
 
 export const metadata: Metadata = { title: 'Messages · FitSphere' };
 
+const SHOWN = 200;
+
 const when = (iso: string) =>
   new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }).format(new Date(iso));
 
@@ -20,12 +22,14 @@ async function Chat({ params }: PageProps<'/messages/[id]'>) {
   const supabase = await supabaseServer();
   const [list, msgs] = await Promise.all([
     supabase.rpc('my_conversations'),
-    supabase.from('messages').select('id, sender_id, body, created_at').eq('conversation_id', id).order('id'),
+    // The latest 200, newest first, shown oldest first (a full history passes the API's 1,000-row cap).
+    supabase.from('messages').select('id, sender_id, body, created_at').eq('conversation_id', id).order('id', { ascending: false }).limit(SHOWN),
   ]);
   if (list.error) throw list.error;
   if (msgs.error) throw msgs.error;
   const c = list.data.find((x) => x.conversation_id === id);
   if (!c) notFound();
+  const shown = [...msgs.data].reverse();
 
   return (
     <>
@@ -35,14 +39,15 @@ async function Chat({ params }: PageProps<'/messages/[id]'>) {
           All messages
         </Link>
         <h1 className="m-0 text-[32px] font-semibold">
-          {!c.i_am_coach && c.other_id ? <Link href={`/coaches/${c.other_id}`}>{c.other_name}</Link> : c.other_name}
+          {c.other_is_live_coach ? <Link href={`/coaches/${c.other_id}`}>{c.other_name}</Link> : c.other_name}
         </h1>
       </div>
       <p role="note" className="m-0 border-l-4 border-warning bg-warning-soft p-3 text-[15px]">
         Keep payments on FitSphere. Paying outside means no refund protection and no verified review.
       </p>
+      {msgs.data.length === SHOWN ? <p className="m-0 text-[14px] text-muted">Showing the latest {SHOWN} messages.</p> : null}
       <ol aria-label="Messages" className="m-0 flex list-none flex-col gap-3 p-0">
-        {msgs.data.map((m) => {
+        {shown.map((m) => {
           const mine = m.sender_id === viewer.userId;
           return (
             <li key={m.id} className={`flex max-w-[85%] flex-col gap-1 p-3 ${mine ? 'self-end bg-ink text-paper' : 'self-start border border-line'}`}>
@@ -54,7 +59,11 @@ async function Chat({ params }: PageProps<'/messages/[id]'>) {
         })}
       </ol>
       {msgs.data.length ? null : <p className="m-0 text-[15px] text-muted">No messages yet.</p>}
-      {c.other_id ? <SendForm conversationId={id} to={c.other_name} /> : <p className="m-0 text-[15px] text-muted">This person has left FitSphere.</p>}
+      {c.can_send ? (
+        <SendForm conversationId={id} to={c.other_name} />
+      ) : (
+        <p className="m-0 text-[15px] text-muted">{c.other_id ? 'This conversation is closed. You can still read it.' : 'This person has left FitSphere.'}</p>
+      )}
     </>
   );
 }
