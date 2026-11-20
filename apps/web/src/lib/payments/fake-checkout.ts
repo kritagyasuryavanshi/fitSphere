@@ -5,7 +5,8 @@ import { handleWebhook } from './webhook';
 
 /**
  * The fake provider's checkout: "captures" an open order by sending the signed webhook Razorpay would, through the real
- * webhook handler, so the same one writer of money state applies it. Returns the order's engagement, or null.
+ * webhook handler, so the same one writer of money state applies it. Called only from the athlete's checkout action,
+ * after it checked them. Returns the order's engagement, or null.
  */
 export async function captureFakeOrder(order: string): Promise<string | null> {
   if (!fakePaymentsAllowed()) return null;

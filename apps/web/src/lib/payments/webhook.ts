@@ -12,12 +12,15 @@ export async function handleWebhook(rawBody: string, signature: string | null, e
   if (!provider || !process.env.SUPABASE_SECRET_KEY) return new Response('Payments are not set up', { status: 404 });
   if (!verifySignature(rawBody, signature, provider.webhookSecret)) return new Response('Bad signature', { status: 401 });
 
-  let body: { event?: unknown; id?: unknown };
+  let parsed: unknown;
   try {
-    body = JSON.parse(rawBody);
+    parsed = JSON.parse(rawBody);
   } catch {
     return new Response('Bad body', { status: 400 });
   }
+  // A signed `null` or array is not an event: refuse it, so the provider does not retry it forever.
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return new Response('Bad body', { status: 400 });
+  const body = parsed as { event?: unknown; id?: unknown };
   const type = typeof body.event === 'string' ? body.event : '';
   // Unverified for Razorpay (docs/plans/m4-plan.md): the event id comes from x-razorpay-event-id.
   const eventId = eventIdHeader ?? (typeof body.id === 'string' ? body.id : '');

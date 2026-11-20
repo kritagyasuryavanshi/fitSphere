@@ -8,12 +8,14 @@ export type Provider = {
 };
 
 /**
- * The fake provider runs only when PAYMENTS_PROVIDER=fake and the deployment is not production, so a test-mode
- * shortcut can never take or fake money on the live site. NODE_ENV is "production" under `next start` in CI too,
- * so the guard reads Vercel's environment instead.
+ * The fake provider runs only with PAYMENTS_PROVIDER=fake, a webhook secret, and a positive sign that this is not
+ * production: a Vercel preview or development deployment, or the test-only E2E_AUTH_CONFIRM server. Anything else,
+ * a self-hosted production server included, stays closed. NODE_ENV cannot tell: it is "production" under
+ * `next start` in CI too. The database refuses fake orders as well unless its own setting allows them.
  */
 export function fakePaymentsAllowed(env: NodeJS.ProcessEnv = process.env): boolean {
-  return env.PAYMENTS_PROVIDER === 'fake' && env.VERCEL_ENV !== 'production' && !!env.PAYMENTS_WEBHOOK_SECRET;
+  const notProduction = env.VERCEL_ENV === 'preview' || env.VERCEL_ENV === 'development' || (!env.VERCEL_ENV && env.E2E_AUTH_CONFIRM === '1');
+  return env.PAYMENTS_PROVIDER === 'fake' && !!env.PAYMENTS_WEBHOOK_SECRET && notProduction;
 }
 
 /** The configured provider, or null when checkout is not open (production until Razorpay keys exist). */

@@ -16,12 +16,15 @@ describe('webhook signatures', () => {
 });
 
 describe('the fake payment provider', () => {
-  const on = { PAYMENTS_PROVIDER: 'fake', PAYMENTS_WEBHOOK_SECRET: 's' } as unknown as NodeJS.ProcessEnv;
+  const on = { PAYMENTS_PROVIDER: 'fake', PAYMENTS_WEBHOOK_SECRET: 's', E2E_AUTH_CONFIRM: '1' } as unknown as NodeJS.ProcessEnv;
   it('runs only when asked for, with a secret, and never in production', () => {
     expect(fakePaymentsAllowed(on)).toBe(true);
     expect(fakePaymentsAllowed({ ...on, VERCEL_ENV: 'preview' })).toBe(true);
     expect(fakePaymentsAllowed({ ...on, VERCEL_ENV: 'production' })).toBe(false);
     expect(fakePaymentsAllowed({ ...on, PAYMENTS_WEBHOOK_SECRET: '' })).toBe(false);
+    // A production server off Vercel (no VERCEL_ENV) and not the test server stays closed.
+    expect(fakePaymentsAllowed({ PAYMENTS_PROVIDER: 'fake', PAYMENTS_WEBHOOK_SECRET: 's' } as unknown as NodeJS.ProcessEnv)).toBe(false);
+    expect(fakePaymentsAllowed({ ...on, E2E_AUTH_CONFIRM: undefined, VERCEL_ENV: 'development' })).toBe(true);
     expect(fakePaymentsAllowed({} as NodeJS.ProcessEnv)).toBe(false);
   });
   it('leaves checkout closed when no provider is set up', () => {

@@ -695,14 +695,14 @@ isOneToOne: false
                   ]
                 },"orders": {
                   Row: {
-                    "amount_paise": number,"created_at": string,"currency": string,"engagement_id": string,"fee_bps": number,"id": string,"paid_at": string | null,"period_end": string,"period_start": string,"provider_order_id": string | null,"status": string
+                    "amount_paise": number,"created_at": string,"currency": string,"engagement_id": string,"fee_bps": number,"id": string,"kind": string,"paid_at": string | null,"period_end": string,"period_start": string,"provider_order_id": string | null,"status": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "amount_paise": number,"created_at"?: string,"currency"?: string,"engagement_id": string,"fee_bps": number,"id"?: string,"paid_at"?: string | null,"period_end": string,"period_start": string,"provider_order_id"?: string | null,"status"?: string
+                    "amount_paise": number,"created_at"?: string,"currency"?: string,"engagement_id": string,"fee_bps": number,"id"?: string,"kind"?: string,"paid_at"?: string | null,"period_end": string,"period_start": string,"provider_order_id"?: string | null,"status"?: string
                   }
                   Update: {
-                    "amount_paise"?: number,"created_at"?: string,"currency"?: string,"engagement_id"?: string,"fee_bps"?: number,"id"?: string,"paid_at"?: string | null,"period_end"?: string,"period_start"?: string,"provider_order_id"?: string | null,"status"?: string
+                    "amount_paise"?: number,"created_at"?: string,"currency"?: string,"engagement_id"?: string,"fee_bps"?: number,"id"?: string,"kind"?: string,"paid_at"?: string | null,"period_end"?: string,"period_start"?: string,"provider_order_id"?: string | null,"status"?: string
                   }
                   Relationships: [
                     {
@@ -743,6 +743,20 @@ isOneToOne: false
                   }
                   Update: {
                     "id"?: never,"note"?: string | null,"payload"?: NonNullable<Json>,"provider_event_id"?: string,"received_at"?: string,"result"?: string | null,"type"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"payment_settings": {
+                  Row: {
+                    "fake_allowed": boolean,"id": boolean
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "fake_allowed"?: boolean,"id"?: boolean
+                  }
+                  Update: {
+                    "fake_allowed"?: boolean,"id"?: boolean
                   }
                   Relationships: [
                     
@@ -1097,7 +1111,7 @@ isOneToOne: false
 { Args: { "coach": string }; Returns: undefined
                            },
 "attach_provider_order":
-{ Args: { "order_": string,"provider_order": string }; Returns: undefined
+{ Args: { "order_": string,"provider_order": string }; Returns: string
                            },
 "author_names":
 { Args: { "ids": (string)[] }; Returns: {
@@ -1254,6 +1268,9 @@ isOneToOne: false
 { Args: Record<PropertyKey, never>; Returns: {
               "ref": string,"rule": string
             }[]
+                           },
+"month_period_end":
+{ Args: { "start": string }; Returns: string
                            },
 "my_coach_profile":
 { Args: Record<PropertyKey, never>; Returns: {

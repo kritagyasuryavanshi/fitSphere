@@ -15,14 +15,15 @@ export const metadata: Metadata = { title: 'Pay · FitSphere' };
 
 // Pay for an accepted request. The page never activates anything: it shows what the signed webhook recorded,
 // and re-reads while an order is open.
-async function Pay({ params }: PageProps<'/coaching/[id]/pay'>) {
+async function Pay({ params, searchParams }: PageProps<'/coaching/[id]/pay'>) {
   const viewer = await requireRole('athlete');
   const { id } = await params;
+  const { unavailable } = await searchParams;
   if (!isUuid(id)) notFound();
   const supabase = await supabaseServer();
   const [eng, orders] = await Promise.all([
     supabase.from('engagements').select('package_title, package_kind, price_paise, start_date, status, paid_through').eq('id', id).eq('athlete_id', viewer.userId).maybeSingle(),
-    supabase.from('orders').select('status, created_at').eq('engagement_id', id).order('created_at', { ascending: false }).limit(1),
+    supabase.from('orders').select('status, created_at, period_start, period_end').eq('engagement_id', id).order('created_at', { ascending: false }).limit(1),
   ]);
   if (eng.error) throw eng.error;
   if (orders.error) throw orders.error;
@@ -30,6 +31,7 @@ async function Pay({ params }: PageProps<'/coaching/[id]/pay'>) {
   if (!g || !['accepted', 'active', 'cancelling'].includes(g.status)) notFound();
   const provider = paymentsProvider();
   const open = orders.data[0]?.status === 'created';
+  const paid = orders.data.find((o) => o.status === 'paid');
 
   return (
     <>
@@ -40,10 +42,9 @@ async function Pay({ params }: PageProps<'/coaching/[id]/pay'>) {
       </p>
       {g.status !== 'accepted' ? (
         <p role="status" className="m-0 text-[16px] font-medium text-success">
-          Payment received. Coaching starts {g.start_date}
-          {g.paid_through ? `, paid through ${g.paid_through}` : ''}.
+          Payment received. {paid ? `Coaching runs ${paid.period_start} to ${paid.period_end}.` : `Paid through ${g.paid_through}.`}
         </p>
-      ) : !provider ? (
+      ) : !provider || unavailable ? (
         <p className="m-0 text-[16px] text-ink-soft">Checkout is not open yet. Your coach keeps your place while you wait. We will tell you when you can pay.</p>
       ) : (
         <>
