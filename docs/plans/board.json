@@ -119,16 +119,30 @@
     {
       "id": "O-05",
       "phase": "O",
-      "title": "Set the platform fee %, refund and cancel terms, and the coach agreement",
+      "title": "Set the platform fee %, refund and cancel terms, and the payout hold",
       "priority": "P0",
+      "size": "S",
+      "deps": [],
+      "status": "done",
+      "owner": "owner",
+      "test": "manual",
+      "ac": [
+        "Fee %, refund window, cancel rule and payout hold written in MEMORY.md"
+      ],
+      "done_on": "2026-11-20"
+    },
+    {
+      "id": "O-05b",
+      "phase": "O",
+      "title": "Coach agreement wording (reviewed)",
+      "priority": "P1",
       "size": "S",
       "deps": [],
       "status": "todo",
       "owner": "owner",
       "test": "manual",
       "ac": [
-        "Fee %, refund window and cancel rule written in MEMORY.md",
-        "Coach agreement text ready for M4-02"
+        "Reviewed agreement text replaces the draft in apps/web/src/lib/coach-agreement.ts with a new version"
       ]
     },
     {
