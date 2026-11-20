@@ -1330,7 +1330,7 @@
       "deps": [
         "M4-05"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "db+e2e",
       "screens": [
@@ -1341,7 +1341,8 @@
         "A program shows on the public profile only after its coach ticks 'Show on my profile'",
         "Listed programs show title, weeks and athletes enrolled now, with the 5-athlete floor on the count",
         "End-to-end: an unticked program never shows; a ticked one does"
-      ]
+      ],
+      "done_on": "2026-11-20"
     },
     {
       "id": "M4-06",

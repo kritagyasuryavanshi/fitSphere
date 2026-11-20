@@ -81,6 +81,9 @@ Follows [[session-12]]. Hub for this work: [[programs]].
 `. Normalise it before any length check, and trim all whitespace, not only spaces.
 - Stopped here, per the M4 goal: M4-09a turns `fee_bps` into money, so it needs owner item O-05 (the fee, the refund terms and the payout hold) or the owner's "use the defaults".
 
+- M4-05b, PR #48: `programs.show_on_profile` is off by default and set through `set_program_listed`, for the owner's published programs only. `coach_programs` lists at most 6, using the version in effect today, with the enrolled count in bands of 5. 41 of 41 migrations on production.
+- Lesson: an exact public count is a privacy leak over time, because watching it drop reveals who left. Use bands or counts that never go down.
+
 ## Next
 1. When the owner answers O-05: M4-09a, the payment core with a fake provider. M4-09b needs Razorpay test keys.
 2. The demo work: demo accounts with realistic data and one-click entry, then a domain and Resend (owner).
