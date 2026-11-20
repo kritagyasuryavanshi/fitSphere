@@ -7,6 +7,7 @@ import type { DraftSession, Numbers, PrescriptionType } from '@/lib/program-draf
 import { isUuid } from '@/lib/programs';
 import { supabaseServer } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/viewer';
+import { setProgramListed } from '../actions';
 import { Builder, type LibraryItem } from './builder';
 
 export const metadata: Metadata = { title: 'Program builder · FitSphere Coach' };
@@ -21,7 +22,7 @@ async function Load({ params, searchParams }: PageProps<'/coach/programs/[id]'>)
     supabase
       .from('programs')
       .select(
-        'id, title, summary, weeks, updated_at, program_versions(id, version, published_at, program_sessions(id, week, day, position, title, session_items(id, position, item_id, type, prescription, cue, content_items(title, status))))',
+        'id, title, summary, weeks, updated_at, show_on_profile, program_versions(id, version, published_at, program_sessions(id, week, day, position, title, session_items(id, position, item_id, type, prescription, cue, content_items(title, status))))',
       )
       .eq('id', id)
       .eq('coach_id', viewer.userId)
@@ -65,6 +66,17 @@ async function Load({ params, searchParams }: PageProps<'/coach/programs/[id]'>)
       <div className="flex flex-wrap items-center gap-3">
         <Tag variant="outline">Draft · v{draft?.version ?? 1}</Tag>
         {live ? <Tag variant="success">Live · v{live.version}</Tag> : null}
+        {live ? (
+          // Programs are invite only; a coach lists one on their public profile only by choice.
+          <form action={setProgramListed} className="flex items-center gap-3">
+            <input type="hidden" name="program" value={p.id} />
+            <input type="hidden" name="listed" value={p.show_on_profile ? 'false' : 'true'} />
+            <span className="text-[14px] text-muted">{p.show_on_profile ? 'Shown on your public profile.' : 'Not on your public profile.'}</span>
+            <button type="submit" className="text-[14px] font-medium underline underline-offset-4">
+              {p.show_on_profile ? 'Hide from my profile' : 'Show on my profile'}
+            </button>
+          </form>
+        ) : null}
       </div>
       {/* Every save moves updated_at, so the builder starts again from what was saved, with nothing unsaved. */}
       <Builder

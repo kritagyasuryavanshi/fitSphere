@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
-import { admin, coachWithProgram, createUser } from './helpers';
+import { admin, coachWithProgram, createUser, newPage, signInWithEmail } from './helpers';
 
-test('a live coach profile shows FitSphere stats, keeps programs private, and marks what is self-reported', async ({ page }) => {
+test('a live coach profile shows FitSphere stats, keeps programs private, and marks what is self-reported', async ({ page, browser }) => {
   const { coach, programId } = await coachWithProgram('Boxing Fundamentals', { coachName: 'Rohan' });
   const db = admin();
   const ok = ({ error }: { error: unknown }) => expect(error).toBeNull();
@@ -26,7 +26,19 @@ test('a live coach profile shows FitSphere stats, keeps programs private, and ma
   // Too few athletes to show percentages without exposing one client's numbers.
   await expect(stats.getByText('Not enough clients yet')).toHaveCount(2);
 
-  // The program is private: it never shows on the public profile.
+  // The program is private: it shows on the public profile only once the coach lists it.
   await expect(page.getByText('Boxing Fundamentals')).toHaveCount(0);
+  const coachPage = await newPage(browser);
+  await signInWithEmail(coachPage, coach.email);
+  await coachPage.goto(`/coach/programs/${programId}`);
+  await expect(coachPage.getByText('Not on your public profile.')).toBeVisible();
+  await coachPage.getByRole('button', { name: 'Show on my profile' }).click();
+  await expect(coachPage.getByText('Shown on your public profile.')).toBeVisible();
+  await page.reload();
+  const portfolio = page.getByRole('region', { name: 'Portfolio' });
+  await expect(portfolio).toContainText('Program: Boxing Fundamentals');
+  // 3 athletes: the enrolled count stays hidden below 5.
+  await expect(portfolio).toContainText('6 weeks');
+  await expect(portfolio).not.toContainText('enrolled now');
   await expect(page.getByRole('region', { name: 'Reviews' })).toContainText('No reviews yet.');
 });
