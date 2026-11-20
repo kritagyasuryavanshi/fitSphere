@@ -353,6 +353,32 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"conversations": {
+                  Row: {
+                    "athlete_id": string | null,"coach_id": string | null,"created_at": string,"id": string,"last_message_at": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "athlete_id"?: string | null,"coach_id"?: string | null,"created_at"?: string,"id"?: string,"last_message_at"?: string | null
+                  }
+                  Update: {
+                    "athlete_id"?: string | null,"coach_id"?: string | null,"created_at"?: string,"id"?: string,"last_message_at"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "conversations_athlete_id_fkey"
+      columns: ["athlete_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "conversations_coach_id_fkey"
+      columns: ["coach_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"credentials": {
                   Row: {
                     "coach_id": string,"created_at": string,"decided_at": string | null,"decided_by": string | null,"file_path": string,"id": string,"id_number": string,"issuer": string,"note": string,"status": string,"title": string
@@ -604,6 +630,32 @@ isOneToOne: false
       columns: ["log_id"]
 isOneToOne: false
       referencedRelation: "session_logs"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"messages": {
+                  Row: {
+                    "body": string,"conversation_id": string,"created_at": string,"id": number,"sender_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "body": string,"conversation_id": string,"created_at"?: string,"id"?: never,"sender_id"?: string | null
+                  }
+                  Update: {
+                    "body"?: string,"conversation_id"?: string,"created_at"?: string,"id"?: never,"sender_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "messages_conversation_id_fkey"
+      columns: ["conversation_id"]
+isOneToOne: false
+      referencedRelation: "conversations"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "messages_sender_id_fkey"
+      columns: ["sender_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
       referencedColumns: ["id"]
     }
                   ]
@@ -1106,6 +1158,11 @@ isOneToOne: false
               "agreement_accepted_at": string,"agreement_version": string,"city": string,"client_limit": number,"coach_id": string,"formats": (string)[],"headline": string,"languages": (string)[],"philosophy": string,"specialties": (string)[],"status": string,"updated_at": string,"years": number
             }[]
                            },
+"my_conversations":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "conversation_id": string,"i_am_coach": boolean,"last_message_at": string,"other_id": string,"other_name": string
+            }[]
+                           },
 "my_email_prefs":
 { Args: Record<PropertyKey, never>; Returns: {
               "coach_feedback": boolean,"new_lesson": boolean,"session_reminder": boolean
@@ -1118,6 +1175,9 @@ isOneToOne: false
                            },
 "new_invite_code":
 { Args: Record<PropertyKey, never>; Returns: string
+                           },
+"open_conversation":
+{ Args: { "engagement": string }; Returns: string
                            },
 "own_draft":
 { Args: { "program": string }; Returns: string
@@ -1205,6 +1265,9 @@ isOneToOne: false
                            },
 "seed_sample_content":
 { Args: Record<PropertyKey, never>; Returns: undefined
+                           },
+"send_message":
+{ Args: { "body": string,"conversation": string }; Returns: number
                            },
 "set_completed":
 { Args: { "done": boolean,"item": string }; Returns: undefined
