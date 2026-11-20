@@ -1,11 +1,12 @@
 import { z } from 'zod';
 import type { Model } from './answer';
 
-// Google Gemini through its REST API (no SDK). shortcut: the free tier, for development and the eval only: Google may use
-// free-tier prompts and replies to improve its products, so real athlete data never goes here (model.ts keeps it out of
-// production). A paid Gemini plan or Claude is the choice for real users.
+// Google Gemini through its REST API (no SDK). shortcut: the free tier, for local test runs and the eval only: Google may
+// use free-tier prompts and replies to improve its products, so real athlete data never goes here (model.ts allows it on
+// a local test run only, never on a Vercel deploy, previews included, which share the production database). A paid
+// Gemini plan or Claude is the choice for real users.
 const MODEL = 'gemini-3.8-flash';
-const URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
+const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
 
 type Part = { text?: string; thought?: boolean };
 type Body = {
@@ -19,18 +20,28 @@ type Body = {
  * never the URL, so it stays out of logs.
  */
 export async function geminiJson(apiKey: string, system: string, user: string, schema: object) {
-  // The free tier allows a few requests a minute: on 429 (too many) or 503 (busy), wait and try again, three tries in all.
-  let res: Response | null = null;
+  // Three tries in all, 20 s then 40 s apart: the free tier allows a few requests a minute (429), and a busy service
+  // answers 5xx or times out. Anything else is final at once. Each try times out after 60 s.
+  let last: unknown = null;
   for (let attempt = 0; attempt < 3; attempt++) {
     if (attempt) await new Promise((r) => setTimeout(r, 20_000 * attempt));
-    res = await send(apiKey, system, user, schema);
-    if (res.status !== 429 && res.status !== 503) break;
+    try {
+      const res = await send(apiKey, system, user, schema);
+      if (res.status === 429 || res.status >= 500) {
+        last = new Error(`Gemini ${res.status}`);
+        continue;
+      }
+      return await read(res);
+    } catch (e) {
+      if (!(e instanceof Error) || (e.name !== 'TimeoutError' && e.name !== 'AbortError' && e.name !== 'TypeError')) throw e;
+      last = e;
+    }
   }
-  return read(res!);
+  throw last instanceof Error ? last : new Error('Gemini unavailable');
 }
 
 function send(apiKey: string, system: string, user: string, schema: object) {
-  return fetch(URL, {
+  return fetch(ENDPOINT, {
     method: 'POST',
     headers: { 'x-goog-api-key': apiKey, 'content-type': 'application/json' },
     body: JSON.stringify({

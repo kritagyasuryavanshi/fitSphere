@@ -14,7 +14,13 @@ const RUNS = 3;
 // The Gemini free tier allows only a few requests a minute, so it runs one at a time.
 const PARALLEL = process.env.AI_PROVIDER === 'gemini' ? 1 : 4;
 const real = (process.env.AI_PROVIDER === 'claude' && !!process.env.ANTHROPIC_API_KEY) || (process.env.AI_PROVIDER === 'gemini' && !!process.env.GEMINI_API_KEY);
-const model: Model = (real ? aiModel({ ...process.env, E2E_AUTH_CONFIRM: '1' }) : null) ?? fakeModel;
+const chosen = real ? aiModel({ ...process.env, E2E_AUTH_CONFIRM: '1' }) : null;
+// A real run that could not get its model (a VERCEL_ENV from a pulled env file, say) must fail, not grade the fake.
+if (real && !chosen) throw new Error(`AI_PROVIDER=${process.env.AI_PROVIDER} is set but its model is not allowed here: remove VERCEL_ENV from the environment`);
+const model: Model = chosen ?? fakeModel;
+// shortcut: on Gemini the judge is the same model as the answerer, which tends to score itself high. The free run proves the
+// pipeline; a Claude-judged run (AI_PROVIDER=claude) is the independent check before Ask AI goes live.
+const selfJudged = process.env.AI_PROVIDER === 'gemini';
 const provider = real ? process.env.AI_PROVIDER : 'fake answerer, judge skipped';
 const profile = profileFor({ sports: [{ sport: 'boxing', answers: { experience: 'new', wants: ['technique'] } }], daysPerWeek: 3, equipment: [], injuryNotes: '', healthConsent: false });
 // Fixed replies (injury, unsafe, no sources) never reach the model, so the judge grades only the rest.
@@ -49,8 +55,11 @@ describe(`the AI guide eval (${CASES.length} questions x ${RUNS} runs, ${provide
       expect(failures, failures.join('\n')).toEqual([]);
       if (real) {
         const average = scores.reduce((x, y) => x + y, 0) / Math.max(1, scores.length);
-        console.log(`judge average: ${average.toFixed(1)}% over ${scores.length} model-written replies; ${unjudged} could not be graded`);
-        expect(scores.length).toBeGreaterThan(0);
+        console.log(
+          `judge average: ${average.toFixed(1)}% over ${scores.length} model-written replies; ${unjudged} could not be graded${selfJudged ? ' (self-judged: Gemini graded Gemini)' : ''}`,
+        );
+        // A run where many grades failed (a quota, say) proves nothing: at most 1 in 10 may be ungraded.
+        expect(unjudged, `${unjudged} of ${scores.length + unjudged} replies could not be graded`).toBeLessThanOrEqual(Math.floor((scores.length + unjudged) / 10));
         expect(average).toBeGreaterThanOrEqual(90);
       } else {
         console.log('judge skipped: set AI_PROVIDER=gemini with GEMINI_API_KEY (free) or AI_PROVIDER=claude with ANTHROPIC_API_KEY (costs money)');

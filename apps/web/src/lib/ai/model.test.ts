@@ -15,9 +15,10 @@ describe('the AI model choice', () => {
     expect(aiModel(env({ AI_PROVIDER: 'fake', E2E_AUTH_CONFIRM: '1' }))).toBe(fakeModel);
     expect(aiModel(env({ AI_PROVIDER: 'fake', VERCEL_ENV: 'preview' }))).toBe(fakeModel);
   });
-  it('uses Gemini (free tier) only outside production, with a key', () => {
+  it('uses Gemini (free tier) only on a local test run, with a key', () => {
     expect(aiModel(env({ AI_PROVIDER: 'gemini', GEMINI_API_KEY: 'g', E2E_AUTH_CONFIRM: '1' }))).not.toBeNull();
-    expect(aiModel(env({ AI_PROVIDER: 'gemini', GEMINI_API_KEY: 'g', VERCEL_ENV: 'preview' }))).not.toBeNull();
+    // Preview deploys share the production database, so real athletes use them: never the free tier there.
+    expect(aiModel(env({ AI_PROVIDER: 'gemini', GEMINI_API_KEY: 'g', VERCEL_ENV: 'preview' }))).toBeNull();
     // The free tier may use prompts to improve Google's products: never real athletes on production.
     expect(aiModel(env({ AI_PROVIDER: 'gemini', GEMINI_API_KEY: 'g', VERCEL_ENV: 'production' }))).toBeNull();
     expect(aiModel(env({ AI_PROVIDER: 'gemini', GEMINI_API_KEY: 'g' }))).toBeNull();

@@ -1,6 +1,6 @@
-import { AI_LABEL, type Answer } from './answer';
+import { AI_LABEL, type Answer, type Usage } from './answer';
 
-export type Usage = { input_tokens: number; output_tokens: number; provider?: 'claude' | 'gemini' };
+export type { Usage };
 
 // Claude Opus 5.5 list prices: $4 per million input tokens, $20 per million output tokens, so 4 and 20 millionths of a
 // dollar per token. shortcut: list price only; caching, fallbacks to another model, and tax are not priced in.

@@ -53,8 +53,8 @@ async function judgeWithGemini(c: EvalCase, input: string): Promise<number | nul
     } catch (e) {
       console.error(`judge failed on ${c.id}`, e instanceof Error ? e.message : e);
     }
-    // The free tier allows a few requests a minute: wait before the retry.
-    await new Promise((r) => setTimeout(r, 10_000));
+    // The free tier allows a few requests a minute: wait before the one retry.
+    if (attempt === 0) await new Promise((r) => setTimeout(r, 10_000));
   }
   return null;
 }

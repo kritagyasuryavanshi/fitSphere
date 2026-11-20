@@ -7,7 +7,10 @@ const candidate = (text: string, finishReason = 'STOP') => ({
   usageMetadata: { promptTokenCount: 120, candidatesTokenCount: 30, thoughtsTokenCount: 10 },
 });
 
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.useRealTimers();
+});
 
 describe('the Gemini model', () => {
   it('sends the key in a header and returns the structured reply with its usage, skipping thinking parts', async () => {
@@ -41,6 +44,19 @@ describe('the Gemini model', () => {
     await vi.advanceTimersByTimeAsync(20_000);
     expect((await done).finished).toBe(true);
     expect(f).toHaveBeenCalledTimes(2);
-    vi.useRealTimers();
+  });
+
+  it('retries a timeout or a server error too', async () => {
+    vi.useFakeTimers();
+    const f = vi
+      .fn()
+      .mockRejectedValueOnce(Object.assign(new Error('timed out'), { name: 'TimeoutError' }))
+      .mockResolvedValueOnce(new Response('oops', { status: 500 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify(candidate('{"answer":"a","cited":[],"needs_referral":false}')), { status: 200 }));
+    vi.stubGlobal('fetch', f);
+    const done = geminiJson('k', 's', 'u', {});
+    await vi.advanceTimersByTimeAsync(60_000);
+    expect((await done).finished).toBe(true);
+    expect(f).toHaveBeenCalledTimes(3);
   });
 });
