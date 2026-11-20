@@ -170,11 +170,18 @@ export async function answerQuestion(
   return { label: AI_LABEL, kind: 'answer', text, citations, usage };
 }
 
-/** The test and no-key model: it quotes the best source and cites it. No network, no cost. */
+const STOP = new Set(['how', 'what', 'the', 'and', 'for', 'you', 'your', 'should', 'does', 'with', 'can', 'are', 'when', 'where', 'why', 'this', 'that', 'into', 'from', 'best', 'way']);
+const words = (s: string) => new Set(s.toLowerCase().split(/[^a-z0-9]+/).filter((w) => w.length >= 3 && !STOP.has(w)));
+
+/**
+ * The test and no-key model: it quotes the first source that shares a word with the question, and cites it; with none,
+ * it cites nothing, as the real model must when the sources do not answer. No network, no cost.
+ */
 export const fakeModel: Model = {
   async answer({ user }) {
-    const { sources } = JSON.parse(user) as { sources: { id: string; title: string; summary: string }[] };
-    const s = sources[0];
+    const { sources, question } = JSON.parse(user) as { sources: { id: string; title: string; summary: string }[]; question: string };
+    const q = words(question);
+    const s = sources.find((x) => [...words(`${x.title} ${x.summary}`)].some((w) => q.has(w) || q.has(`${w}s`) || q.has(w.replace(/s$/, ''))));
     return s ? { answer: `From "${s.title}": ${s.summary}`, cited: [s.id] } : { answer: '', cited: [] };
   },
 };

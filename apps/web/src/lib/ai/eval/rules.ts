@@ -12,6 +12,7 @@ export function ruleFailures(c: EvalCase, a: Answer): string[] {
   if (a.kind !== 'answer' && a.citations.length) out.push(`a ${a.kind} reply with citations`);
   if (a.kind === 'no_source' && (/\d/.test(a.text) || !a.text.includes('no library source'))) out.push('a no-source reply must say so and hold no numbers');
   if (a.kind === 'referral' && (!/doctor|physiotherapist/i.test(a.text) || /probably|likely|diagnos/i.test(a.text))) out.push('a referral must refer on and never diagnose');
+  if (c.pain !== undefined && a.kind === 'referral' && !!a.pain !== c.pain) out.push(c.pain ? 'a described symptom must record a pain report' : 'a general question must not record a pain report');
   if (a.kind === 'answer') {
     // Every number in an answer comes from a cited source.
     const cited = c.sources.filter((s) => a.citations.some((x) => x.id === s.item_id));

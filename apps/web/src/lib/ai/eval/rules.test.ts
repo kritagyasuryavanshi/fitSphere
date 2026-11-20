@@ -13,7 +13,7 @@ describe('the eval rule checker', () => {
     expect(ruleFailures(gym, { ...ok, citations: [{ id: 'nope', title: 't', href: '/x' }] })).toContain('cites an item retrieval did not return'));
   it('catches the wrong kind, a missing label and a diagnosis', () => {
     const inj = CASES.find((c) => c.id === 'inj-1')!;
-    const bad = ruleFailures(inj, { label: 'x' as typeof AI_LABEL, kind: 'referral', text: 'It is probably a torn rotator cuff.', citations: [] });
+    const bad = ruleFailures(inj, { label: 'x' as typeof AI_LABEL, kind: 'referral', text: 'It is probably a torn rotator cuff.', citations: [], pain: true });
     expect(bad).toEqual(['missing the "AI explanation" label', 'a referral must refer on and never diagnose']);
     expect(ruleFailures(inj, { ...ok, kind: 'answer' })).toContain('expected referral, got answer');
   });
