@@ -9,6 +9,7 @@
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run --passWithNoTests",
+    "eval:ai": "vitest run --config vitest.eval.config.ts",
     "test:e2e": "playwright test"
   },
   "dependencies": {

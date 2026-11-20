@@ -22,6 +22,7 @@
     "db:stop": "npm run db:stop -w @fitsphere/db",
     "db:reset": "npm run db:reset -w @fitsphere/db",
     "db:types": "npm run db:types -w @fitsphere/db",
+    "eval:ai": "npm run eval:ai -w @fitsphere/web",
     "test:e2e": "npm run test:e2e -w @fitsphere/web"
   },
   "devDependencies": {
