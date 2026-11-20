@@ -32,3 +32,6 @@ insert into public.user_roles (user_id, role) values
   ('00000000-0000-0000-0000-000000000003', 'coach'),
   ('00000000-0000-0000-0000-000000000004', 'reviewer'),
   ('00000000-0000-0000-0000-000000000005', 'admin');
+
+-- Local and CI only (the seed never runs on production): the fake payment provider may pay orders.
+update public.payment_settings set fake_allowed = true;
