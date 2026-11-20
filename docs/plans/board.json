@@ -1428,13 +1428,33 @@
       "done_on": "2026-11-20"
     },
     {
-      "id": "M4-09",
+      "id": "M4-09a",
       "phase": "M4",
-      "title": "Checkout and payment webhook",
+      "title": "Payment core with a fake provider",
       "priority": "P0",
       "size": "M",
       "deps": [
         "M4-07",
+        "O-05"
+      ],
+      "status": "done",
+      "done_on": "2026-11-21",
+      "owner": "claude",
+      "test": "db+e2e",
+      "ac": [
+        "orders, payments, payment_events and payouts; apply_payment_event is the one writer of money state",
+        "Duplicates, wrong amounts and late payments never double-charge; money owed back is flagged by money_invariants",
+        "The fake provider and the database guard keep fake payments out of production"
+      ]
+    },
+    {
+      "id": "M4-09b",
+      "phase": "M4",
+      "title": "Razorpay Orders in test mode (checkout and webhook on the real provider)",
+      "priority": "P0",
+      "size": "M",
+      "deps": [
+        "M4-09a",
         "O-04"
       ],
       "status": "todo",
@@ -1458,7 +1478,7 @@
       "priority": "P0",
       "size": "S",
       "deps": [
-        "M4-09",
+        "M4-09a",
         "M3-04"
       ],
       "status": "todo",
@@ -1478,7 +1498,7 @@
       "priority": "P0",
       "size": "M",
       "deps": [
-        "M4-09"
+        "M4-09a"
       ],
       "status": "todo",
       "owner": "claude",
@@ -1501,7 +1521,7 @@
       "priority": "P0",
       "size": "M",
       "deps": [
-        "M4-09",
+        "M4-09a",
         "O-05"
       ],
       "status": "todo",
@@ -1520,7 +1540,7 @@
       "priority": "P0",
       "size": "M",
       "deps": [
-        "M4-09",
+        "M4-09a",
         "O-04"
       ],
       "status": "todo",
@@ -1583,7 +1603,7 @@
       "priority": "P1",
       "size": "M",
       "deps": [
-        "M4-09",
+        "M4-09a",
         "O-09",
         "O-10"
       ],
@@ -1633,7 +1653,7 @@
       "priority": "P0",
       "size": "M",
       "deps": [
-        "M4-09",
+        "M4-09a",
         "M4-10",
         "M4-11",
         "M4-12",
@@ -1659,13 +1679,14 @@
       "deps": [
         "M2-11"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "db",
       "ac": [
         "Ranked full-text search returns item ids for citation",
         "pgTAP: draft, in-review and sample items are never returned"
-      ]
+      ],
+      "done_on": "2026-11-21"
     },
     {
       "id": "M5-02",
@@ -1677,7 +1698,7 @@
         "M5-01",
         "M1-08"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "unit",
       "ac": [
@@ -1686,7 +1707,8 @@
         "No-match answers say 'no library source' and contain no sets, reps or loads",
         "Injury questions get a referral and no diagnosis; unsafe requests are refused",
         "Personal data sent: sport, level, goals; health fields only with consent; never name or contact details"
-      ]
+      ],
+      "done_on": "2026-11-21"
     },
     {
       "id": "M5-03",
@@ -1697,13 +1719,14 @@
       "deps": [
         "M5-02"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "unit",
       "ac": [
         "Unit: the 11th question of the day is blocked with a clear message",
         "Each question logs user, tokens and cost"
-      ]
+      ],
+      "done_on": "2026-11-21"
     },
     {
       "id": "M5-04",
@@ -1714,7 +1737,7 @@
       "deps": [
         "M5-03"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "e2e",
       "screens": [
@@ -1725,7 +1748,8 @@
         "A pain report creates a flag on the coach dashboard",
         "End-to-end: ask, get a cited answer, open the cited lesson",
         "Phone layout matches the reviewed phone board at 390 px (decision D2)"
-      ]
+      ],
+      "done_on": "2026-11-21"
     },
     {
       "id": "M5-05",
@@ -1742,7 +1766,8 @@
       "ac": [
         "npm run eval:ai runs at least 30 questions (boxing, S&C, gym, beginner, injury, unsafe, off-topic, no-match) 3 times",
         "100% on code-checked rules in all 3 runs",
-        "Judge average at least 90%"
+        "Judge average at least 90%",
+        "The eval is built and passes 100% on the code rules with the fake answerer; the judge run needs a real model (Gemini free tier, PR from branch m5-06-gemini, or Claude with the owner's key)"
       ]
     },
     {
