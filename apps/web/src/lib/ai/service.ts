@@ -10,14 +10,14 @@ import { costMicroUsd, reservationRefusal } from './usage';
  * to call retrieve_for_ai), and logs the answer with its tokens and cost. Whatever fails after the reservation, the
  * question is finished, so nothing stays pending and an unpaid failure gives the question back.
  */
-export async function askGuide(viewer: Viewer, question: string, model: Model): Promise<Answer> {
+export async function askGuide(viewer: Viewer, question: string, model: Model): Promise<{ id: string | null; answer: Answer }> {
   const supabase = await supabaseServer();
   const reserved = await supabase.rpc('reserve_ai_question', { question });
   if (reserved.error) {
     // The limit in the reply is the one the database enforces.
     const limit = reserved.error.message.includes('ai_daily_limit') ? ((await supabase.rpc('ai_daily_limit')).data ?? 10) : 10;
     const refusal = reservationRefusal(reserved.error.message, limit);
-    if (refusal) return refusal;
+    if (refusal) return { id: null, answer: refusal };
     throw reserved.error;
   }
   const db = createDbClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? '', process.env.SUPABASE_SECRET_KEY ?? '');
@@ -48,7 +48,7 @@ export async function askGuide(viewer: Viewer, question: string, model: Model): 
   await finish(answer);
   const { usage: _usage, ...shown } = answer;
   void _usage;
-  return shown;
+  return { id: reserved.data, answer: shown };
 }
 
 async function answerFor(viewer: Viewer, question: string, model: Model, supabase: Awaited<ReturnType<typeof supabaseServer>>, db: ReturnType<typeof createDbClient>): Promise<Answer> {

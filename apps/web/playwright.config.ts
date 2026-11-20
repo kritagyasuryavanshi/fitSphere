@@ -24,6 +24,7 @@ export default defineConfig({
     url: `http://localhost:${port}`,
     reuseExistingServer: !process.env.CI,
     // Turns on the test-only /auth/confirm sign-in route (see src/app/auth/confirm/route.ts).
-    env: { E2E_AUTH_CONFIRM: '1' },
+    // The fake AI answerer, never in production (lib/ai/model.ts).
+    env: { E2E_AUTH_CONFIRM: '1', AI_PROVIDER: 'fake' },
   },
 });
