@@ -185,7 +185,7 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
                 <span className="text-[16px] font-medium">Program: {g.title}</span>
                 <span className="text-[14px] text-muted">
                   {g.weeks} {g.weeks === 1 ? 'week' : 'weeks'}
-                  {g.enrolled_now ? ` · ${g.enrolled_now} athletes enrolled now` : ''}
+                  {g.enrolled_band ? ` · ${g.enrolled_band}+ athletes enrolled` : ''}
                 </span>
               </li>
             ))}

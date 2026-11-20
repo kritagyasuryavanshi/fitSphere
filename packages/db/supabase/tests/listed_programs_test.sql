@@ -1,6 +1,6 @@
 -- M4-05b: a program shows on the coach's public profile only after the coach chooses to list it.
 begin;
-select plan(8);
+select plan(9);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('ae000000-0000-0000-0000-0000000000c1', 'lp-coach@t.test', now()),
@@ -16,7 +16,7 @@ insert into public.program_versions (program_id, version, published_at, effectiv
 insert into public.program_versions (program_id, version) values ('af000000-0000-0000-0000-0000000000f2', 1);
 -- Four athletes in Fundamentals now.
 insert into auth.users (id, email, email_confirmed_at)
-  select ('b0000000-0000-0000-0000-' || lpad(n::text, 12, '0'))::uuid, 'lp-' || n || '@t.test', now() from generate_series(1, 5) n;
+  select ('b0000000-0000-0000-0000-' || lpad(n::text, 12, '0'))::uuid, 'lp-' || n || '@t.test', now() from generate_series(1, 7) n;
 insert into public.enrollments (program_id, athlete_id, start_date)
   select 'af000000-0000-0000-0000-0000000000f1', ('b0000000-0000-0000-0000-' || lpad(n::text, 12, '0'))::uuid, current_date from generate_series(1, 4) n;
 
@@ -35,11 +35,17 @@ select lives_ok($$ select public.set_program_listed('af000000-0000-0000-0000-000
 set local role anon;
 select is((select title || ':' || weeks from public.coach_programs('ae000000-0000-0000-0000-0000000000c1')), 'Boxing Fundamentals:6',
   'a listed program shows its published title and weeks');
-select is((select enrolled_now from public.coach_programs('ae000000-0000-0000-0000-0000000000c1')), null::int, 'the enrolled count stays hidden below 5 athletes');
+select is((select enrolled_band from public.coach_programs('ae000000-0000-0000-0000-0000000000c1')), null::int, 'the enrolled count stays hidden below 5 athletes');
 reset role;
 insert into public.enrollments (program_id, athlete_id, start_date) values ('af000000-0000-0000-0000-0000000000f1', 'b0000000-0000-0000-0000-000000000005', current_date);
 set local role anon;
-select is((select enrolled_now from public.coach_programs('ae000000-0000-0000-0000-0000000000c1')), 5, 'and shows from 5');
+select is((select enrolled_band from public.coach_programs('ae000000-0000-0000-0000-0000000000c1')), 5, 'and shows from 5');
+-- In bands of 5, so one athlete joining or leaving does not show.
+reset role;
+insert into public.enrollments (program_id, athlete_id, start_date)
+  select 'af000000-0000-0000-0000-0000000000f1', ('b0000000-0000-0000-0000-' || lpad(n::text, 12, '0'))::uuid, current_date from generate_series(6, 7) n;
+set local role anon;
+select is((select enrolled_band from public.coach_programs('ae000000-0000-0000-0000-0000000000c1')), 5, '7 athletes still show as 5 or more');
 
 reset role;
 update public.coach_profiles set status = 'draft' where coach_id = 'ae000000-0000-0000-0000-0000000000c1';

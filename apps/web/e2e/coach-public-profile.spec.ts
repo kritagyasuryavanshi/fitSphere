@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { admin, coachWithProgram, createUser, newPage, signInWithEmail } from './helpers';
 
-test('a live coach profile shows FitSphere stats, keeps programs private, and marks what is self-reported', async ({ page, browser }) => {
+test('a live coach profile shows FitSphere stats, shows a program only once the coach lists it, and marks what is self-reported', async ({ page, browser }) => {
   const { coach, programId } = await coachWithProgram('Boxing Fundamentals', { coachName: 'Rohan' });
   const db = admin();
   const ok = ({ error }: { error: unknown }) => expect(error).toBeNull();
@@ -39,6 +39,7 @@ test('a live coach profile shows FitSphere stats, keeps programs private, and ma
   await expect(portfolio).toContainText('Program: Boxing Fundamentals');
   // 3 athletes: the enrolled count stays hidden below 5.
   await expect(portfolio).toContainText('6 weeks');
-  await expect(portfolio).not.toContainText('enrolled now');
+  await expect(portfolio).not.toContainText('enrolled');
+  await coachPage.context().close();
   await expect(page.getByRole('region', { name: 'Reviews' })).toContainText('No reviews yet.');
 });
