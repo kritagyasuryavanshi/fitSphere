@@ -1481,7 +1481,7 @@
         "M4-09a",
         "M3-04"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "db",
       "ac": [
@@ -1489,7 +1489,8 @@
         "Access ends when the engagement ends or is refunded",
         "The coach can assign a program to the client",
         "coach_stats counts paid coaching clients (active engagements) as well as program enrollments"
-      ]
+      ],
+      "done_on": "2026-11-21"
     },
     {
       "id": "M4-11",
@@ -1507,7 +1508,8 @@
         "Cancel in My programs stops the next renewal and keeps access to the end of the paid month",
         "A failed renewal retries per the provider's rules, then ends the engagement",
         "Athlete and coach get an email for each change",
-        "Follows the approved design X-ManageCoaching and X-CancelCoaching"
+        "Follows the approved design X-ManageCoaching and X-CancelCoaching",
+        "From M4-10: coach access already closes when paid_through passes (engagement_opens); a status change to ended or lapsed also ends programs the coach assigned (trigger end_assigned_programs). Keep paid_through current on each renewal"
       ],
       "screens": [
         "X-ManageCoaching",
@@ -1530,7 +1532,8 @@
       "ac": [
         "Refund follows the owner's written terms",
         "A refund ends the engagement and reverses the coach's share",
-        "Every refund is logged"
+        "Every refund is logged",
+        "From M4-10: decide whether a refund of one renewal sets the engagement 'refunded' (ends assigned programs and drops the client from coach_stats entirely) or 'ended'/'lapsed'"
       ]
     },
     {
