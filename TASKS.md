@@ -3,7 +3,6 @@
 Build tasks live on the board: `docs/plans/board.json` (rendered at https://claude.ai/artifact/BPCG8ghatzZkV7v1haJ1z1). This file keeps owner-level items only.
 
 ## Now
-- [ ] Owner: install Codex on the WELCOME PC (`npm i -g @openai/codex`, then `codex login`), so every PR gets its independent review on either PC. PRs #22 to #32 had none until session 13.
 - [ ] Owner: rotate the GitHub token, because it appeared in the chat.
 - [ ] Owner: push the `suryavanshi-claude` rulebook commit that brings Codex back (the push from LENOVO gets 403).
 - [ ] Owner: push the rulebook, and switch off unused plugins. The tooling audit lists the steps: https://claude.ai/artifact/NAWsRxJUah4godqxBrXA6T.

@@ -15,6 +15,7 @@ updated: 2026-11-12
 - `suryavanshi-claude` scripts call `python3`; on Windows that is a Store stub, so they now fall back to `python`. `doctor.sh` is GREEN; 3 `test.sh` symlink checks need Windows Developer Mode.
 - `/security-review` needs `origin/HEAD`: `git remote set-head origin main` on each clone.
 - Plugins: ponytail, ui-ux-pro-max, hallmark skill ([[lesson-hallmark-floor]]), OpenSEO, claude-seo (off until launch, [[lesson-seo-plugins]]).
+- 2026-11-22: the owner had all five installed on the WELCOME PC, claude-seo and OpenSEO included. Marketplaces: DietrichGebert/ponytail, nutlope/hallmark, every-app/open-seo, nextlevelbuilder/ui-ux-pro-max-skill, AgriciDaniel/claude-seo.
 - History: [[lesson-bun-gstack]].
 - `gh` push of workflow files: [[lesson-gh-workflow-scope]].
 - `skills` CLI: [[lesson-skills-cli-node]].

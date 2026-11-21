@@ -34,4 +34,6 @@ How the graph works: `docs/memory/memory-system.md`. See the graph in the board'
   - **Owner items:** O-07 legal text, whether the fee includes GST, O-05b coach agreement wording, the Razorpay test keys, and rotating the Gemini key.
 - **Next step for the next session:** finish PR #58 as listed above, then start M4-12.
 - **Open owner decisions:** see `docs/memory/owner-decisions.md`.
-- **Last session:** `docs/memory/session-13.md`.
+- **M6 plan (2026-11-21):** draft in `docs/plans/m6-plan.html`, merged from the Codex and planner reviews. It waits on five owner decisions: launch steps, 18+ beta, a domain (about ₹800 a year), Ask AI hidden in step 1, hiring and chat closed.
+- **2026-11-22, WELCOME PC:** CI is green on PR #58 head c553725, e2e included. The Codex second review found one medium issue, which belongs to M4-18: a suspended coach keeps a cancelling engagement to the paid date but cannot coach. Codex works here on `gpt-6-luna`; this ChatGPT account refuses `gpt-6-astra`.
+- **Last session:** `docs/memory/session-14.md`.
