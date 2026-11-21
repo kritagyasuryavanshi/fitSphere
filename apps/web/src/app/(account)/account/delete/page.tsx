@@ -16,11 +16,30 @@ async function Confirm({ searchParams }: { searchParams: PageProps<'/account/del
         Delete your account?
       </h1>
       <p id="dlg-text" className="m-0 text-[16px] leading-[1.6] text-ink-soft">
-        This removes your profile, session logs and saved lessons. Your coaches lose access at once. You cannot undo this.
+        This removes your profile, session logs and saved lessons. Your coaches lose access at once. Payment records are kept, without your name. You cannot undo this.
       </p>
       {error === 'admin' ? (
         <p role="alert" className="m-0 text-[15px] font-medium text-danger">
           You are an admin. Ask another admin to remove your admin role first, so FitSphere always has one.
+        </p>
+      ) : null}
+      {error === 'coaching' ? (
+        <p role="alert" className="m-0 text-[15px] font-medium text-danger">
+          Your coaching still renews each month. Cancel it on{' '}
+          <Link href="/coaching" className="underline underline-offset-4">
+            Your coaching
+          </Link>{' '}
+          first, then delete your account.
+        </p>
+      ) : null}
+      {error === 'payouts' ? (
+        <p role="alert" className="m-0 text-[15px] font-medium text-danger">
+          You have payouts still to come. Delete your account once they are paid.
+        </p>
+      ) : null}
+      {error === 'clients' ? (
+        <p role="alert" className="m-0 text-[15px] font-medium text-danger">
+          You have paying clients, or a request waiting for payment. Their coaching must end before you can delete your account.
         </p>
       ) : null}
       <form action={deleteAccount} className="flex flex-wrap gap-3">

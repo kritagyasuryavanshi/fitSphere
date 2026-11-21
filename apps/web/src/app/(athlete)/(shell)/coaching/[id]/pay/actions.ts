@@ -41,19 +41,23 @@ export async function startCheckout(formData: FormData): Promise<void> {
     // take the first charge themselves.
     // The athlete has paid by now: a subscription problem is logged, never shown as a failed payment.
     // shortcut: a monthly engagement left without a subscription ends at its paid date; M4-11b opens it at checkout.
+    let created: string | null = null;
     try {
       const { data: paid, error: paidError } = await db.from('engagements').select('package_kind, status, price_paise, subscriptions(id)').eq('id', engagement).single();
       if (paidError) throw paidError;
       if (paid.package_kind === 'monthly' && paid.status === 'active' && !paid.subscriptions) {
         const sub = await provider.createSubscription({ engagement, amountPaise: paid.price_paise });
+        created = sub.id;
         const attached = await db.rpc('attach_subscription', { engagement, provider_subscription: sub.id });
         if (attached.error) throw attached.error;
         // Two clicks at once: the first attach wins, and the extra subscription is cancelled at once.
-        if (attached.data !== sub.id) await provider.cancelSubscription(sub.id);
+        if (attached.data === sub.id) created = null;
       }
     } catch (e) {
       console.error('opening the subscription failed', engagement, e);
     }
+    // Two clicks at once (the first attach wins), or an attach that failed: the extra subscription never charges.
+    if (created) await provider.cancelSubscription(created).catch((e) => console.error('cancelling an unattached subscription failed', created, e));
   }
   redirect(`/coaching/${engagement}/pay`);
 }
