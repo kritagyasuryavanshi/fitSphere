@@ -1760,14 +1760,15 @@
       "deps": [
         "M5-04"
       ],
-      "status": "todo",
+      "status": "blocked",
       "owner": "claude",
       "test": "eval",
       "ac": [
         "npm run eval:ai runs at least 30 questions (boxing, S&C, gym, beginner, injury, unsafe, off-topic, no-match) 3 times",
         "100% on code-checked rules in all 3 runs",
         "Judge average at least 90%",
-        "The eval is built and passes 100% on the code rules with the fake answerer; the judge run needs a real model (Gemini free tier, PR from branch m5-06-gemini, or Claude with the owner's key)"
+        "The eval is built and passes 100% on the code rules with the fake answerer; the judge run needs a real model (Gemini free tier, PR from branch m5-06-gemini, or Claude with the owner's key)",
+        "2026-11-21: code merged (PRs #54, #55). The owner deferred the judge run: it needs the PC free; run `$env:AI_PROVIDER='gemini'; npm run eval:ai` in a plain PowerShell window, outside Claude Code (the system stopped two background runs for low memory)"
       ]
     },
     {
