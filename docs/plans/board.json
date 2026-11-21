@@ -1583,6 +1583,25 @@
       ]
     },
     {
+      "id": "M4-19",
+      "phase": "M4",
+      "title": "Money-safe account deletion, suspension and role loss",
+      "priority": "P0",
+      "size": "M",
+      "deps": [
+        "M4-11a"
+      ],
+      "status": "todo",
+      "owner": "claude",
+      "test": "db",
+      "ac": [
+        "Deleting an athlete's account keeps orders, payments and refunds, with athlete_id set to null (docs/plans/m4-plan.md, task 19)",
+        "Deletion and coach suspension stop the subscription and end the engagement; must ship before M4-11b goes live",
+        "From M4-10: one rule for a deleted coach's clients: ending engagements ends assigned programs, while invite programs stay (programs.coach_id is set null)",
+        "From the M4-01 review: deleteAccount refuses an admin before it removes their credential files, and pages past 1,000 files"
+      ]
+    },
+    {
       "id": "M4-14",
       "phase": "M4",
       "title": "Verified reviews and coach replies",
