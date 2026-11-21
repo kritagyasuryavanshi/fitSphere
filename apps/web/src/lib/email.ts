@@ -1,3 +1,4 @@
+import { formatInr } from '@fitsphere/core';
 // The email outbox sender (M3-14). Database functions queue rows in email_outbox in the same transaction as the event;
 // this drains them. The provider is injected, so tests use a fake and production uses Resend once a key exists.
 
@@ -11,7 +12,18 @@ export const MAX_ATTEMPTS = 5;
 export type Outbox = { claim: (templates: string[], limit: number) => Promise<OutboxRow[]>; markSent: (id: number) => Promise<void> };
 
 /** The templates this sender writes; others stay queued for a sender that knows them. */
-export const TEMPLATES = ['coach_feedback', 'new_lesson', 'session_reminder', 'coach_approved', 'coach_declined'];
+export const TEMPLATES = [
+  'coach_feedback',
+  'new_lesson',
+  'session_reminder',
+  'coach_approved',
+  'coach_declined',
+  'coaching_cancelled',
+  'coaching_renewed',
+  'renewal_failed',
+  'coaching_lapsed',
+  'coaching_ended',
+];
 
 const str = (v: unknown) => (typeof v === 'string' ? v : '');
 
@@ -60,7 +72,44 @@ export function renderEmail(template: string, data: Record<string, unknown>, ori
       text: [`Hello ${str(data.name) || 'there'},`, '', 'Thank you for applying to coach on FitSphere. We could not approve your application this time.', '', `You can still train on FitSphere: ${origin}/today`].join('\n'),
     };
   }
+  if (template.startsWith('coaching_') || template === 'renewal_failed') return coachingEmail(template, data, origin);
   return null;
+}
+
+/** A change to paid coaching (M4-11), written for the athlete or the coach (data.role). */
+function coachingEmail(template: string, data: Record<string, unknown>, origin: string): Omit<Email, 'id' | 'to'> | null {
+  const coachView = data.role === 'coach';
+  const other = str(data.other) || (coachView ? 'your client' : 'your coach');
+  const Other = other.charAt(0).toUpperCase() + other.slice(1);
+  const pkg = str(data.package) || 'coaching';
+  const until = str(data.paid_through);
+  const amount = typeof data.amount === 'number' ? formatInr(data.amount) : '';
+  const link = coachView ? `${origin}/coach/clients` : `${origin}/coaching`;
+  const lines = (...l: string[]) => [...l, '', link].join('\n');
+  switch (template) {
+    case 'coaching_cancelled':
+      return coachView
+        ? { subject: `${Other} cancelled ${pkg}`, text: lines(`${Other} cancelled ${pkg}.`, `${Other} stays your client until ${until}. No more payments are taken.`) }
+        : { subject: `Your coaching with ${other} is cancelled`, text: lines(`You cancelled ${pkg} with ${other}.`, `You keep coaching until ${until}. No more payments are taken.`) };
+    case 'coaching_renewed':
+      return coachView
+        ? { subject: `${Other} renewed ${pkg}`, text: lines(`${Other} paid ${amount} for another month of ${pkg}, until ${until}.`) }
+        : { subject: `Your coaching with ${other} is renewed`, text: lines(`We received ${amount} for another month of ${pkg} with ${other}, until ${until}.`) };
+    case 'renewal_failed':
+      return coachView
+        ? { subject: `A payment from ${other} did not go through`, text: lines(`${Other}'s renewal for ${pkg} did not go through. The payment provider will try again.`) }
+        : { subject: `Your payment for ${pkg} did not go through`, text: lines(`Your renewal for ${pkg} with ${other} did not go through. We will try again; check your payment method.`) };
+    case 'coaching_lapsed':
+      return coachView
+        ? { subject: `Coaching with ${other} has ended`, text: lines(`${Other}'s payment could not be taken after several tries, so ${pkg} has ended.`) }
+        : { subject: `Your coaching with ${other} has ended`, text: lines(`Your payment could not be taken after several tries, so ${pkg} with ${other} has ended.`, 'You can hire again at any time.') };
+    case 'coaching_ended':
+      return coachView
+        ? { subject: `Coaching with ${other} has ended`, text: lines(`${pkg} with ${other} has ended. You no longer see their logs.`) }
+        : { subject: `Your coaching with ${other} has ended`, text: lines(`${pkg} with ${other} has ended. Your logs and past feedback stay with you.`) };
+    default:
+      return null;
+  }
 }
 
 /**

@@ -4,6 +4,10 @@ import { randomUUID } from 'node:crypto';
 export type Provider = {
   name: 'fake' | 'razorpay';
   createOrder(input: { amountPaise: number; receipt: string }): Promise<{ id: string }>;
+  /** A monthly subscription that renews the coaching (M4-11). */
+  createSubscription(input: { engagement: string; amountPaise: number }): Promise<{ id: string }>;
+  /** Stops future renewals; the paid month runs on. */
+  cancelSubscription(id: string): Promise<void>;
   webhookSecret: string;
 };
 
@@ -25,6 +29,9 @@ export function paymentsProvider(env: NodeJS.ProcessEnv = process.env): Provider
       name: 'fake',
       webhookSecret: env.PAYMENTS_WEBHOOK_SECRET!,
       createOrder: async () => ({ id: `fake_order_${randomUUID().replace(/-/g, '')}` }),
+      // shortcut: the fake opens and cancels subscriptions without renewing anything; tests send its events directly.
+      createSubscription: async () => ({ id: `fake_sub_${randomUUID().replace(/-/g, '')}` }),
+      cancelSubscription: async () => {},
     };
   }
   // shortcut: Razorpay Orders arrive with M4-09b, once the owner's test keys exist (owner item O-04).

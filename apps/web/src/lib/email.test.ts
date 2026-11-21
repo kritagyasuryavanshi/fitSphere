@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { drainOutbox, renderEmail, type OutboxRow } from './email';
+import { drainOutbox, renderEmail, TEMPLATES, type OutboxRow } from './email';
 
 const row = (id: number, to: string, over: Partial<OutboxRow> = {}): OutboxRow => ({
   id,
@@ -124,3 +124,34 @@ describe('renderEmail for notifications (M3-16)', () => {
   });
 });
 
+
+describe('renderEmail for coaching changes (M4-11)', () => {
+  const athlete = { role: 'athlete', other: 'Vikram', package: 'Online coaching', paid_through: '2026-12-15', amount: 450000 };
+  const coach = { ...athlete, role: 'coach', other: 'Kabir' };
+
+  it('tells the athlete and the coach about a cancel, with the last day', () => {
+    const a = renderEmail('coaching_cancelled', athlete, 'https://x')!;
+    expect(a.subject).toBe('Your coaching with Vikram is cancelled');
+    expect(a.text).toContain('You keep coaching until 2026-12-15.');
+    const c = renderEmail('coaching_cancelled', coach, 'https://x')!;
+    expect(c.subject).toBe('Kabir cancelled Online coaching');
+    expect(c.text).toContain('Kabir stays your client until 2026-12-15.');
+    expect(c.text).toContain('https://x/coach/clients');
+  });
+
+  it('writes the renewal, the failed payment, the lapse and the end for both people', () => {
+    expect(renderEmail('coaching_renewed', athlete, 'https://x')!.text).toContain('₹4,500');
+    expect(renderEmail('coaching_renewed', athlete, 'https://x')!.text).toContain('until 2026-12-15');
+    expect(renderEmail('renewal_failed', athlete, 'https://x')!.subject).toBe('Your payment for Online coaching did not go through');
+    expect(renderEmail('renewal_failed', coach, 'https://x')!.subject).toBe('A payment from Kabir did not go through');
+    expect(renderEmail('coaching_lapsed', athlete, 'https://x')!.subject).toBe('Your coaching with Vikram has ended');
+    expect(renderEmail('coaching_lapsed', athlete, 'https://x')!.text).toContain('payment could not be taken');
+    expect(renderEmail('coaching_ended', coach, 'https://x')!.subject).toBe('Coaching with Kabir has ended');
+  });
+
+  it('falls back to a neutral name, and every coaching template is sent', () => {
+    expect(renderEmail('coaching_cancelled', { ...athlete, other: '' }, 'https://x')!.subject).toBe('Your coaching with your coach is cancelled');
+    expect(renderEmail('coaching_ended', { ...coach, other: '' }, 'https://x')!.subject).toBe('Coaching with your client has ended');
+    for (const t of ['coaching_cancelled', 'coaching_renewed', 'renewal_failed', 'coaching_lapsed', 'coaching_ended']) expect(TEMPLATES).toContain(t);
+  });
+});

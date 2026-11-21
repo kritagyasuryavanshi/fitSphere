@@ -35,6 +35,17 @@ export async function startCheckout(formData: FormData): Promise<void> {
     if (attached.error) throw attached.error;
   }
   // shortcut: the fake provider pays at once, through the signed webhook; Razorpay Checkout opens here in M4-09b.
-  if (provider.name === 'fake') await captureFakeOrder(data.order_id);
+  if (provider.name === 'fake') {
+    await captureFakeOrder(data.order_id);
+    // shortcut: the fake opens the monthly subscription after the first payment; Razorpay Subscriptions (M4-11b)
+    // take the first charge themselves.
+    const { data: paid, error: paidError } = await db.from('engagements').select('package_kind, status, price_paise').eq('id', engagement).single();
+    if (paidError) throw paidError;
+    if (paid.package_kind === 'monthly' && paid.status === 'active') {
+      const sub = await provider.createSubscription({ engagement, amountPaise: paid.price_paise });
+      const attached = await db.rpc('attach_subscription', { engagement, provider_subscription: sub.id });
+      if (attached.error) throw attached.error;
+    }
+  }
   redirect(`/coaching/${engagement}/pay`);
 }

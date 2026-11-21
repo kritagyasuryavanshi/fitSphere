@@ -3,6 +3,7 @@ import { buttonClass, Tag, type TagVariant } from '@fitsphere/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Suspense } from 'react';
+import { shortDate } from '@/lib/dates';
 import { supabaseServer } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/viewer';
 import { openConversation } from '@/app/(account)/messages/actions';
@@ -14,12 +15,12 @@ const STATUS: Record<string, [string, TagVariant]> = {
   requested: ['Waiting for the coach', 'outline'],
   accepted: ['Accepted · pay to start', 'success'],
   active: ['Active', 'success'],
-  cancelling: ['Ends at the end of this period', 'outline'],
+  cancelling: ['Cancelled · runs to the end of the paid month', 'outline'],
   ended: ['Ended', 'outline'],
   declined: ['Declined', 'outline'],
   withdrawn: ['Withdrawn', 'outline'],
   expired: ['Expired', 'outline'],
-  lapsed: ['Lapsed', 'outline'],
+  lapsed: ['Ended · payment failed', 'outline'],
   refunded: ['Refunded', 'outline'],
 };
 
@@ -30,7 +31,7 @@ async function Coaching() {
   const supabase = await supabaseServer();
   const { data, error } = await supabase
     .from('engagements')
-    .select('id, coach_id, package_title, package_kind, price_paise, start_date, status, created_at')
+    .select('id, coach_id, package_title, package_kind, price_paise, start_date, status, created_at, paid_through')
     .eq('athlete_id', viewer.userId)
     .order('created_at', { ascending: false });
   if (error) throw error;
@@ -69,6 +70,12 @@ async function Coaching() {
               {g.package_title}, {formatInr(g.price_paise)}
               {g.package_kind === 'monthly' ? ' a month' : ''} · starts {g.start_date}
             </p>
+            {g.status === 'active' && g.paid_through ? (
+              <p className="m-0 text-[15px]">
+                {g.package_kind === 'monthly' ? `Renews monthly · next payment ${formatInr(g.price_paise)} on ${shortDate(g.paid_through, 1)}` : `Runs until ${shortDate(g.paid_through)}`}
+              </p>
+            ) : null}
+            {g.status === 'cancelling' && g.paid_through ? <p className="m-0 text-[15px]">Coaching until {shortDate(g.paid_through)}. No more payments are taken.</p> : null}
             {g.status === 'accepted' ? (
               <Link href={`/coaching/${g.id}/pay`} className={`${buttonClass()} self-start`}>
                 Pay {formatInr(g.price_paise)}
@@ -81,6 +88,11 @@ async function Coaching() {
                   Message {coach}
                 </button>
               </form>
+            ) : null}
+            {g.status === 'active' && g.package_kind === 'monthly' ? (
+              <Link href={`/coaching/${g.id}/cancel`} className="self-start text-[15px] font-medium text-danger underline underline-offset-4">
+                Cancel coaching
+              </Link>
             ) : null}
             {g.status === 'requested' || g.status === 'accepted' ? (
               <form action={withdrawRequest}>
