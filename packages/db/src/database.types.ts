@@ -507,9 +507,9 @@ isOneToOne: true
                   ]
                 },"engagements": {
                   Row: {
-                    "athlete_id": string | null,"cancel_at_period_end": boolean,"coach_id": string | null,"created_at": string,"days_per_week": number,"decided_at": string | null,"ended_at": string | null,"fee_bps": number,"goals": string,"id": string,"package_id": string | null,"package_kind": string,"package_title": string,"paid_through": string | null,"price_paise": number,"share_data": boolean,"start_date": string,"status": string,"engagement_opens": boolean | null
+                    "athlete_id": string | null,"cancel_at_period_end": boolean,"coach_id": string | null,"created_at": string,"days_per_week": number,"decided_at": string | null,"ended_at": string | null,"fee_bps": number,"goals": string,"id": string,"package_id": string | null,"package_kind": string,"package_title": string,"paid_through": string | null,"price_paise": number,"share_data": boolean,"start_date": string,"status": string,"engagement_opens": boolean | null,"refundable_payment": string | null
                   }
-                  ComputedFields: "engagement_opens"
+                  ComputedFields: "engagement_opens" | "refundable_payment"
                   Insert: {
                     "athlete_id"?: string | null,"cancel_at_period_end"?: boolean,"coach_id"?: string | null,"created_at"?: string,"days_per_week": number,"decided_at"?: string | null,"ended_at"?: string | null,"fee_bps": number,"goals"?: string,"id"?: string,"package_id"?: string | null,"package_kind": string,"package_title": string,"paid_through"?: string | null,"price_paise": number,"share_data"?: boolean,"start_date": string,"status"?: string
                   }
@@ -959,6 +959,32 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"refunds": {
+                  Row: {
+                    "amount_paise": number,"created_at": string,"id": string,"note": string | null,"payment_id": string,"processed_at": string | null,"provider_refund_id": string | null,"reason": string,"requested_by": string | null,"status": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "amount_paise": number,"created_at"?: string,"id"?: string,"note"?: string | null,"payment_id": string,"processed_at"?: string | null,"provider_refund_id"?: string | null,"reason": string,"requested_by"?: string | null,"status"?: string
+                  }
+                  Update: {
+                    "amount_paise"?: number,"created_at"?: string,"id"?: string,"note"?: string | null,"payment_id"?: string,"processed_at"?: string | null,"provider_refund_id"?: string | null,"reason"?: string,"requested_by"?: string | null,"status"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "refunds_payment_id_fkey"
+      columns: ["payment_id"]
+isOneToOne: false
+      referencedRelation: "payments"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "refunds_requested_by_fkey"
+      columns: ["requested_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"saves": {
                   Row: {
                     "created_at": string,"item_id": string,"user_id": string
@@ -1219,6 +1245,11 @@ isOneToOne: false
               "coach_id": string,"coach_name": string,"created_at": string,"file_path": string,"id": string,"id_number": string,"issuer": string,"title": string
             }[]
                            },
+"admin_refund":
+{ Args: { "payment": string,"why": string }; Returns: {
+              "amount_paise": number,"provider_payment_id": string,"refund_id": string
+            }[]
+                           },
 "admin_set_roles":
 { Args: { "expected_roles": (Database["public"]['Enums']["app_role"])[],"new_roles": (Database["public"]['Enums']["app_role"])[],"target": string }; Returns: undefined
                            },
@@ -1230,6 +1261,9 @@ isOneToOne: false
                            },
 "apply_payment_event":
 { Args: { "body": Json,"event_id": string,"event_type": string }; Returns: string
+                           },
+"apply_refund_event":
+{ Args: { "body": Json,"ev": number,"event_type": string }; Returns: string
                            },
 "apply_sport_answers":
 { Args: { "by_sport": Json,"uid": string }; Returns: undefined
@@ -1247,6 +1281,9 @@ isOneToOne: false
                            },
 "attach_provider_order":
 { Args: { "order_": string,"provider_order": string }; Returns: string
+                           },
+"attach_provider_refund":
+{ Args: { "provider_refund": string,"refund": string }; Returns: string
                            },
 "attach_subscription":
 { Args: { "engagement": string,"provider_subscription": string }; Returns: string
@@ -1480,11 +1517,28 @@ isOneToOne: false
 "queue_coaching_emails":
 { Args: { "g": Omit<Database["public"]['Tables']["engagements"]['Row'], Database["public"]['Tables']["engagements"]['ComputedFields']>,"template_": string }; Returns: undefined
                            },
+"queue_owed_back_refunds":
+{ Args: Record<PropertyKey, never>; Returns: number
+                           },
 "queue_session_reminders":
 { Args: Record<PropertyKey, never>; Returns: number
                            },
 "record_consent":
 { Args: { "answer": boolean,"notice": string,"uid": string,"what": Database["public"]['Enums']["consent_purpose"] }; Returns: undefined
+                           },
+"refund_quote":
+{ Args: { "engagement": string }; Returns: number
+                           },
+"refund_window_days":
+{ Args: Record<PropertyKey, never>; Returns: number
+                           },
+"refundable_payment":
+{ Args: { "g": Omit<Database["public"]['Tables']["engagements"]['Row'], Database["public"]['Tables']["engagements"]['ComputedFields']> }; Returns: string
+                           },
+"refunds_to_send":
+{ Args: { "min_age_minutes": number }; Returns: {
+              "amount_paise": number,"provider_payment_id": string,"refund_id": string
+            }[]
                            },
 "remove_athlete":
 { Args: { "enrollment": string }; Returns: string
@@ -1494,6 +1548,11 @@ isOneToOne: false
                            },
 "request_coaching":
 { Args: { "days": number,"goals": string,"package": string,"share": boolean,"start": string }; Returns: string
+                           },
+"request_refund":
+{ Args: { "engagement": string }; Returns: {
+              "amount_paise": number,"provider_payment_id": string,"refund_id": string
+            }[]
                            },
 "require_published":
 { Args: { "item": string }; Returns: string

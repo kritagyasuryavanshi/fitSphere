@@ -8,6 +8,8 @@ export type Provider = {
   createSubscription(input: { engagement: string; amountPaise: number }): Promise<{ id: string }>;
   /** Stops future renewals; the paid month runs on. */
   cancelSubscription(id: string): Promise<void>;
+  /** A full refund of one payment (M4-12). `refund` is our refund id, so the provider can refuse a repeat. */
+  refund(input: { paymentId: string; amountPaise: number; refund: string }): Promise<{ id: string }>;
   webhookSecret: string;
 };
 
@@ -32,6 +34,8 @@ export function paymentsProvider(env: NodeJS.ProcessEnv = process.env): Provider
       // shortcut: the fake opens and cancels subscriptions without renewing anything; tests send its events directly.
       createSubscription: async () => ({ id: `fake_sub_${randomUUID().replace(/-/g, '')}` }),
       cancelSubscription: async () => {},
+      // One id per refund of ours, so a retry is the same refund. Its processed event comes from processFakeRefund.
+      refund: async ({ refund }) => ({ id: `fake_rfnd_${refund.replace(/-/g, '')}` }),
     };
   }
   // shortcut: Razorpay Orders arrive with M4-09b, once the owner's test keys exist (owner item O-04).

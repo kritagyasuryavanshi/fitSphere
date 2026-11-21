@@ -168,3 +168,17 @@ describe('renderEmail when a coach stops coaching (M4-19)', () => {
     expect(c.text).not.toContain('/coach/clients');
   });
 });
+
+describe('renderEmail for a refund (M4-12)', () => {
+  it('tells the athlete the money is on its way and the coach that the payout is cancelled', () => {
+    const a = renderEmail('coaching_refunded', { role: 'athlete', other: 'Vikram', package: 'Online coaching', amount: 450000 }, 'https://x')!;
+    expect(a.subject).toBe('Your payment for Online coaching is refunded');
+    expect(a.text).toContain('We refunded ₹4,500 for Online coaching with Vikram.');
+    expect(a.text).toContain('5 to 7 working days');
+    const c = renderEmail('coaching_refunded', { role: 'coach', other: 'Kabir', package: 'Online coaching', amount: 450000 }, 'https://x')!;
+    expect(c.subject).toBe('Kabir was refunded for Online coaching');
+    expect(c.text).toContain('no payout for it');
+    expect(c.text).toContain('https://x/coach/clients');
+    expect(TEMPLATES).toContain('coaching_refunded');
+  });
+});
