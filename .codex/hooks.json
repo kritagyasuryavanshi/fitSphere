@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git fetch -q origin 2>/dev/null; echo \"fitSphere sync: $(git status -sb | head -1)\"; git status --porcelain | head -5; [ -n \"$(git rev-list HEAD..@{u} 2>/dev/null)\" ] && echo 'This PC is BEHIND origin: git pull first, then npm ci if package-lock.json changed.'; true",
+            "timeout": 20
+          }
+        ]
+      }
+    ]
+  }
+}
