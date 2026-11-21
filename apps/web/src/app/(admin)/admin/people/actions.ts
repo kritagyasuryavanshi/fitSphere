@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { stopSubscriptions } from '@/lib/payments/reconcile';
 import { after } from 'next/server';
 import { sendQueuedEmails } from '@/lib/email-send';
 import { requireRole, type Role } from '@/lib/viewer';
@@ -38,6 +39,11 @@ export async function saveRoles(_prev: SaveRolesState, formData: FormData): Prom
     else if (error.message === 'roles_required') errors.push(`Pick at least one role for ${person.name}.`);
     else if (error.code === '42501') errors.push(`You cannot change the roles of ${person.name}.`);
     else errors.push(`Could not save ${person.name}. Try again.`);
+  }
+  // A coach who lost the role had their renewals stopped (stop_coach_renewals); cancel at the provider now, rather
+  // than at the next daily run, so no renewal slips through. The daily cron retries what fails here.
+  if (changed.some((p) => p.before.includes('coach') && !p.after.includes('coach'))) {
+    await stopSubscriptions().catch((e) => console.error('stopping subscriptions after a role change failed', e));
   }
   revalidatePath('/admin/people');
   const saved = changed.length - errors.length;
