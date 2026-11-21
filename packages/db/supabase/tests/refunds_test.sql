@@ -2,7 +2,7 @@
 -- by hand, and money owed back is refunded by the daily cron. The provider's refund events, applied by the one writer
 -- of money state, end the coaching, reverse the payout and log each step. See docs/plans/m4-12-refunds.md.
 begin;
-select plan(64);
+select plan(68);
 
 update public.payment_settings set fake_allowed = false;
 insert into auth.users (id, email, email_confirmed_at) values
@@ -72,7 +72,7 @@ create function pg_temp.emails(template_ text, engagement uuid) returns int lang
   select count(*)::int from public.email_outbox where template = template_ and data ->> 'engagement' = engagement::text;
 $$;
 create function pg_temp.refund_of(payment text) returns public.refunds language sql as $$
-  select r.* from public.refunds r join public.payments p on p.id = r.payment_id where p.provider_payment_id = payment order by r.created_at desc limit 1;
+  select r.* from public.refunds r join public.payments p on p.id = r.payment_id where p.provider_payment_id = payment order by r.status = 'failed', r.created_at desc limit 1;
 $$;
 grant execute on all functions in schema pg_temp to authenticated, service_role, anon;
 
@@ -184,6 +184,14 @@ set local role authenticated;
 select pg_temp.as_user('f3000000-0000-0000-0000-0000000000a7');
 select is(public.refund_quote('f4000000-0000-0000-0000-0000000000e7'), 450000::bigint, 'and the athlete can ask again');
 reset role;
+-- A second refund of one payment under another provider id is ignored, never an error the provider retries forever.
+set local role authenticated;
+select pg_temp.as_user('f3000000-0000-0000-0000-0000000000a7');
+select lives_ok($$ select * from public.request_refund('f4000000-0000-0000-0000-0000000000e7') $$, 'Dev asks again');
+reset role;
+select is(public.attach_provider_refund((pg_temp.refund_of('pay_d1')).id, 'rfnd_d2'), 'rfnd_d2', 'the new refund is attached');
+select is(pg_temp.refund_event('evt_d3', 'refund.processed', 'rfnd_d3', 'pay_d1'), 'ignored', 'a different refund of the same payment is ignored');
+select is((select row(r.provider_refund_id, r.status)::text from pg_temp.refund_of('pay_d1') r), row('rfnd_d2', 'requested')::text, 'and the requested refund is untouched');
 
 -- A refund made at the provider's dashboard is recorded too; a payout already paid to the coach is flagged.
 select is(pg_temp.refund_event('evt_n1', 'refund.processed', 'rfnd_n1', 'pay_n1'), 'applied', 'a refund made at the provider is applied');
