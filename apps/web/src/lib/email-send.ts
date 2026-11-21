@@ -32,6 +32,15 @@ export async function queueSessionReminders() {
   return data;
 }
 
+/** Ends paid coaching that ran out, and lapses renewals the provider went silent on (sweep_engagements). */
+export async function sweepEngagements() {
+  if (!process.env.SUPABASE_SECRET_KEY) return null;
+  const db = createDbClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? '', process.env.SUPABASE_SECRET_KEY);
+  const { data, error } = await db.rpc('sweep_engagements');
+  if (error) throw error;
+  return data;
+}
+
 /**
  * Sends what waits in email_outbox. Without RESEND_API_KEY, EMAIL_FROM and NEXT_PUBLIC_SITE_URL nothing is sent and
  * every email stays queued (for up to 7 days). Links use the configured site address, never a request's host, so one

@@ -143,6 +143,26 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"cancel_reasons": {
+                  Row: {
+                    "created_at": string,"engagement_id": string,"reason": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"engagement_id": string,"reason": string
+                  }
+                  Update: {
+                    "created_at"?: string,"engagement_id"?: string,"reason"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "cancel_reasons_engagement_id_fkey"
+      columns: ["engagement_id"]
+isOneToOne: true
+      referencedRelation: "engagements"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"categories": {
                   Row: {
                     "id": string,"is_live": boolean,"name": string,"sort": number,"tagline": string,"uses_muscles": boolean,"uses_supports": boolean
@@ -1075,6 +1095,26 @@ isOneToOne: false
       referencedColumns: ["coach_id"]
     }
                   ]
+                },"subscriptions": {
+                  Row: {
+                    "created_at": string,"engagement_id": string,"id": string,"provider_subscription_id": string,"status": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"engagement_id": string,"id"?: string,"provider_subscription_id": string,"status"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"engagement_id"?: string,"id"?: string,"provider_subscription_id"?: string,"status"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "subscriptions_engagement_id_fkey"
+      columns: ["engagement_id"]
+isOneToOne: true
+      referencedRelation: "engagements"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"today_extras": {
                   Row: {
                     "athlete_id": string,"created_at": string,"item_id": string,"on_date": string
@@ -1194,6 +1234,9 @@ isOneToOne: false
 "apply_sport_answers":
 { Args: { "by_sport": Json,"uid": string }; Returns: undefined
                            },
+"apply_subscription_event":
+{ Args: { "body": Json,"ev": number,"event_type": string }; Returns: string
+                           },
 "assert_live_ready":
 { Args: { "coach": string }; Returns: undefined
                            },
@@ -1205,10 +1248,16 @@ isOneToOne: false
 "attach_provider_order":
 { Args: { "order_": string,"provider_order": string }; Returns: string
                            },
+"attach_subscription":
+{ Args: { "engagement": string,"provider_subscription": string }; Returns: string
+                           },
 "author_names":
 { Args: { "ids": (string)[] }; Returns: {
               "display_name": string,"id": string
             }[]
+                           },
+"cancel_coaching":
+{ Args: { "engagement": string,"reason"?: string }; Returns: string
                            },
 "claim_emails":
 { Args: { "max_rows"?: number,"templates": (string)[] }; Returns: {
@@ -1365,6 +1414,9 @@ isOneToOne: false
 "mark_notifications_read":
 { Args: { "ids"?: (number)[] }; Returns: number
                            },
+"mark_subscription_cancelled":
+{ Args: { "subscription": string }; Returns: undefined
+                           },
 "money_invariants":
 { Args: Record<PropertyKey, never>; Returns: {
               "ref": string,"rule": string
@@ -1424,6 +1476,9 @@ isOneToOne: false
                            },
 "publish_program":
 { Args: { "program": string }; Returns: number
+                           },
+"queue_coaching_emails":
+{ Args: { "g": Omit<Database["public"]['Tables']["engagements"]['Row'], Database["public"]['Tables']["engagements"]['ComputedFields']>,"template_": string }; Returns: undefined
                            },
 "queue_session_reminders":
 { Args: Record<PropertyKey, never>; Returns: number
@@ -1542,6 +1597,14 @@ isOneToOne: false
                            },
 "submit_credential":
 { Args: { "file_path": string,"id_number"?: string,"issuer"?: string,"title": string }; Returns: string
+                           },
+"subscriptions_to_stop":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "provider_subscription_id": string,"subscription_id": string
+            }[]
+                           },
+"sweep_engagements":
+{ Args: Record<PropertyKey, never>; Returns: number
                            },
 "valid_prescription":
 { Args: { "p": Json,"t": Database["public"]['Enums']["prescription_type"] }; Returns: boolean

@@ -32,4 +32,10 @@ describe('the fake payment provider', () => {
     expect(paymentsProvider({ ...on, VERCEL_ENV: 'production' })).toBeNull();
     expect(paymentsProvider(on)?.name).toBe('fake');
   });
+  it('opens a fake subscription and cancels it without a network call', async () => {
+    const provider = paymentsProvider(on)!;
+    const sub = await provider.createSubscription({ engagement: 'e1', amountPaise: 450000 });
+    expect(sub.id).toMatch(/^fake_sub_[0-9a-f]{32}$/);
+    await expect(provider.cancelSubscription(sub.id)).resolves.toBeUndefined();
+  });
 });
