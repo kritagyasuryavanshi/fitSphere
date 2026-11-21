@@ -1,0 +1,127 @@
+<title>FitSphere M6 Launch Plan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+/* Layout: one reading column; stages as bands; tasks as compact rows with a size chip and a gate chip. */
+:root{--bg:#f6f7f5;--fg:#1b211d;--muted:#5d6760;--line:#d9ded9;--card:#ffffff;--accent:#1f7a4d;--warn:#a5520f;--crit:#b3261e;
+--display:"Space Grotesk",system-ui,sans-serif;--body:Inter,system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121614;--fg:#e6ebe7;--muted:#9aa59e;--line:#2b332e;--card:#1a201c;--accent:#5cc58f;--warn:#e39a55;--crit:#ef7b72;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121614;--fg:#e6ebe7;--muted:#9aa59e;--line:#2b332e;--card:#1a201c;--accent:#5cc58f;--warn:#e39a55;--crit:#ef7b72;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.55 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px}
+main{max-width:760px;margin:0 auto;display:grid;gap:28px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+h1{font-size:28px}h2{font-size:20px;margin-bottom:8px}h3{font-size:15px}
+p{margin:0}.muted{color:var(--muted)}
+section{display:grid;gap:10px}
+.rows{display:grid;gap:0;border:1px solid var(--line);border-radius:8px;background:var(--card);overflow:hidden}
+.row{display:grid;grid-template-columns:72px 1fr;gap:12px;padding:10px 12px;border-top:1px solid var(--line)}
+.row:first-child{border-top:0}
+.id{font:600 13px var(--display);color:var(--accent)}
+.row div{min-width:0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.chip{font-size:12px;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.chip.gate{border-color:var(--warn);color:var(--warn)}
+.chip.new{border-color:var(--accent);color:var(--accent)}
+ul{margin:0;padding-left:20px;display:grid;gap:4px}
+.found li strong{color:var(--crit)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+th,td{text-align:left;padding:8px 10px;border-top:1px solid var(--line);vertical-align:top}
+th{font-family:var(--display);font-weight:500;border-top:0}
+</style>
+<main>
+<header style="display:grid;gap:6px">
+<h1>M6 launch plan</h1>
+<p class="muted">Merged from my draft, a Codex review and a Fable planner review. Each finding below was checked in the repo on 21 Nov 2026.</p>
+</header>
+
+<section class="found">
+<h2>What the reviews found that changes the plan</h2>
+<ul>
+<li><strong>Real users cannot sign in yet.</strong> The release gate in TASKS.md needs our own email sender (SMTP), Turnstile, the site URL and a redirect allow-list. The built-in Supabase mailer is for testing only. So even a beta needs a domain and Resend.</li>
+<li><strong>Hiring and chat are live in production.</strong> Only payment is closed. People can send requests and messages, and there is no way to report abuse. The beta must close both.</li>
+<li><strong>The live home page is a placeholder.</strong> It shows "App scaffold is running".</li>
+<li>There is no 404 page, no error page and no app manifest. No security headers are set. <code>/styleguide</code> is public.</li>
+<li>Previews write to the production database, and the free plan has no backups.</li>
+<li>The privacy draft leaves out hiring, messages, payments, the AI provider abroad, a grievance contact, retention and children.</li>
+</ul>
+</section>
+
+<section>
+<h2>Shape: three steps</h2>
+<div class="tw"><table>
+<tr><th>Step</th><th>Who gets in</th><th>What is on</th></tr>
+<tr><td>1a Invite beta</td><td>Invited people, 18+ only</td><td>Library, training, coach programs by invite. Coaches can be browsed. Hiring, chat, checkout and Ask AI are off.</td></tr>
+<tr><td>1b Open beta</td><td>Anyone 18+</td><td>Same as 1a. It opens after the lawyer signs off the privacy notice and terms.</td></tr>
+<tr><td>2 Marketplace</td><td>Anyone 18+</td><td>Hiring, chat with reports, payments, refunds and payouts. It needs Razorpay KYC, GST and the rest of M4.</td></tr>
+</table></div>
+</section>
+
+<section>
+<h2>Step 1 tasks, in order</h2>
+<p class="muted">S is under a day, M is one or two days. Everything is free unless it has an orange gate chip.</p>
+<div class="rows">
+<div class="row"><span class="id">M6-10</span><div><h3>Stage switches</h3><p>Close hiring and chat in the database, not only in the UI. Hide Ask AI when no provider is set. Checkout stays closed.</p><div class="chips"><span class="chip new">new</span><span class="chip">S</span></div></div></div>
+<div class="row"><span class="id">M6-09</span><div><h3>18+ gate</h3><p>Onboarding refuses a date of birth under 18 and keeps nothing more. A test covers 17 years and 364 days. Parental consent comes after launch, once a lawyer designs it.</p><div class="chips"><span class="chip new">new</span><span class="chip">S</span><span class="chip gate">your decision</span></div></div></div>
+<div class="row"><span class="id">M6-03</span><div><h3>404, error pages and route audit</h3><p>Add not-found, error and global-error pages. Hide <code>/styleguide</code> in production. Audit the main journeys for empty, loading and error states.</p><div class="chips"><span class="chip">M</span></div></div></div>
+<div class="row"><span class="id">M6-01</span><div><h3>Public pages</h3><p>Replace the placeholder home page. Counts come from the database. Hiring says "coming soon". The M4-16 dependency is dropped.</p><div class="chips"><span class="chip">M</span></div></div></div>
+<div class="row"><span class="id">M6-02a</span><div><h3>Privacy and terms, full draft</h3><p>Cover every table with personal data, every provider, retention, withdrawal, the grievance contact, the 18+ rule and breach notice. M6-02b swaps in the lawyer's text.</p><div class="chips"><span class="chip">S</span><span class="chip gate">lawyer for 1b</span></div></div></div>
+<div class="row"><span class="id">M6-07</span><div><h3>Security</h3><p>Security headers. A separate free Supabase project for previews. Database caps on spammy writes. No secrets in the browser bundle. A full security review. Sign-in rate limits come from Supabase and Turnstile, so no custom code.</p><div class="chips"><span class="chip">M</span></div></div></div>
+<div class="row"><span class="id">M6-12</span><div><h3>Operations</h3><p>A weekly encrypted backup with one tested restore. An alert when a daily job fails. Prune old email rows. A runbook for breaches and key rotation.</p><div class="chips"><span class="chip new">new</span><span class="chip">M</span></div></div></div>
+<div class="row"><span class="id">M6-11</span><div><h3>Sign-in release gate</h3><p>Do every TASKS.md release-gate item. A magic link reaches an outside Gmail inbox.</p><div class="chips"><span class="chip new">new</span><span class="chip">M</span><span class="chip gate">domain + Resend</span></div></div></div>
+<div class="row"><span class="id">S0-08</span><div><h3>Error tracking</h3><p>Server and browser errors reach Sentry with no personal data. Usage analytics are cut; weekly returners come from SQL.</p><div class="chips"><span class="chip">S</span><span class="chip gate">free Sentry account</span></div></div></div>
+<div class="row"><span class="id">M6-06</span><div><h3>Accessibility</h3><p>axe finds no serious issue on the beta journeys.</p><div class="chips"><span class="chip">S</span></div></div></div>
+<div class="row"><span class="id">M6-05</span><div><h3>Speed</h3><p>Lighthouse 80 or more on home, library and Today, plus a low-end phone check.</p><div class="chips"><span class="chip">M</span></div></div></div>
+<div class="row"><span class="id">M6-13</span><div><h3>Content gate</h3><p>A script counts at least 20 boxing skills and 30 S&amp;C drills, published and not samples.</p><div class="chips"><span class="chip new">new</span><span class="chip">S</span><span class="chip gate">your content, O-06</span></div></div></div>
+<div class="row"><span class="id">M6-08a</span><div><h3>Beta QA and release</h3><p>Full QA, fix blockers, invite the first users.</p><div class="chips"><span class="chip">M</span></div></div></div>
+<div class="row"><span class="id">M6-04</span><div><h3>Install as an app</h3><p>A manifest and icons. Offline mode is cut. This can ship after the beta opens.</p><div class="chips"><span class="chip">S</span></div></div></div>
+</div>
+</section>
+
+<section>
+<h2>Step 2 tasks</h2>
+<ul>
+<li>Finish M4: M4-19 (PR #58), M4-12 refunds, M4-13 payouts, M4-14 reviews, M4-18 reports and suspension. Then the real Razorpay tasks M4-09b, 11b and 13b, then M4-16 go-live.</li>
+<li><strong>New M6-14 Marketplace compliance:</strong> grievance officer, seller details on profiles, a refund policy page, GST and TCS with a CA, the signed coach agreement, receipts.</li>
+<li>M6-08b marketplace QA, with one real payment and one real refund.</li>
+<li>M4-15 stories and M4-17 booking move to after launch.</li>
+</ul>
+</section>
+
+<section>
+<h2>Verify, step 1</h2>
+<ul>
+<li><code>npm run verify</code> is green.</li>
+<li>A magic link reaches an outside inbox.</li>
+<li>Hiring, chat and checkout are closed, and the database refuses them.</li>
+<li>An under-18 date of birth is refused.</li>
+<li>404 and error pages render. The route audit and axe are clean.</li>
+<li>Lighthouse is 80 or more on the three main pages.</li>
+<li>One backup restore works. The job alert fires once in a test.</li>
+<li>The content gate passes. <code>/qa</code> finds no high-severity bug.</li>
+</ul>
+</section>
+
+<section>
+<h2>Your decisions, with my defaults</h2>
+<div class="tw"><table>
+<tr><th>Decision</th><th>Default</th></tr>
+<tr><td>Launch in steps 1a, 1b, 2</td><td>Yes</td></tr>
+<tr><td>Under-18s</td><td>Beta is 18+. This pauses the "no age limit" decision until a lawyer designs parental consent.</td></tr>
+<tr><td>Spend</td><td>A domain, about ₹800 a year. Resend and Sentry on free tiers. Without it, sign-in does not work for real users.</td></tr>
+<tr><td>Ask AI</td><td>Hidden in step 1. Later, a capped Claude key and the Claude-judged eval.</td></tr>
+<tr><td>Hiring and chat</td><td>Closed until reports and payments work.</td></tr>
+<tr><td>Grievance officer</td><td>You, with a role address on the domain.</td></tr>
+<tr><td>Outside advice</td><td>One lawyer review before 1b. A CA for GST before step 2. Both cost money, so they wait on you.</td></tr>
+</table></div>
+</section>
+
+<section>
+<h2>Top risks</h2>
+<ul>
+<li>Real users' health data with no signed privacy notice. The lawyer gate before 1b covers it.</li>
+<li>Data loss: no backups, and previews write to production. M6-07 and M6-12 cover it.</li>
+<li>An empty beta: the library still holds sample content. M6-13 and your founding coaches cover it.</li>
+</ul>
+</section>
+</main>
