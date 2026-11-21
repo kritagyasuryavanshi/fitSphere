@@ -24,6 +24,7 @@ export const TEMPLATES = [
   'renewal_failed',
   'coaching_lapsed',
   'coaching_ended',
+  'coaching_stopped',
 ];
 
 const str = (v: unknown) => (typeof v === 'string' ? v : '');
@@ -104,6 +105,11 @@ function coachingEmail(template: string, data: Record<string, unknown>, origin: 
       return coachView
         ? { subject: `Coaching with ${other} has ended`, text: lines(`${Other}'s payment could not be taken after several tries, so ${pkg} has ended.`) }
         : { subject: `Your coaching with ${other} has ended`, text: lines(`Your payment could not be taken after several tries, so ${pkg} with ${other} has ended.`, 'You can hire again at any time.') };
+    case 'coaching_stopped':
+      // The coach can no longer coach on FitSphere (suspended, or the coach role removed): renewals stop.
+      return coachView
+        ? { subject: `Coaching with ${other} will not renew`, text: lines(`Your coaching account can no longer take payments, so ${pkg} with ${other} will not renew.`, `It runs until ${until}.`) }
+        : { subject: `Your coaching with ${other} will not renew`, text: lines(`${Other} can no longer take payments on FitSphere, so ${pkg} will not renew.`, `You keep coaching until ${until}. No more payments are taken.`) };
     case 'coaching_ended':
       return coachView
         ? { subject: `Coaching with ${other} has ended`, text: lines(`${pkg} with ${other} has ended. You no longer see their logs.`) }

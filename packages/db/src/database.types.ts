@@ -1589,6 +1589,9 @@ isOneToOne: false
               "amount_paise": number,"order_id": string,"provider_order_id": string
             }[]
                            },
+"stop_coach_renewals":
+{ Args: { "coach": string }; Returns: undefined
+                           },
 "submit_coach_application":
 { Args: { "category": string,"city": string,"full_name": string,"how_today": string,"work_url": string,"years": number }; Returns: undefined
                            },
@@ -1611,6 +1614,9 @@ isOneToOne: false
                            },
 "version_in_effect":
 { Args: { "on_date": string,"program": string }; Returns: string
+                           },
+"why_not_delete_my_account":
+{ Args: Record<PropertyKey, never>; Returns: string
                            },
 "withdraw_credential":
 { Args: { "credential": string }; Returns: undefined

@@ -152,6 +152,17 @@ describe('renderEmail for coaching changes (M4-11)', () => {
   it('falls back to a neutral name, and every coaching template is sent', () => {
     expect(renderEmail('coaching_cancelled', { ...athlete, other: '' }, 'https://x')!.subject).toBe('Your coaching with your coach is cancelled');
     expect(renderEmail('coaching_ended', { ...coach, other: '' }, 'https://x')!.subject).toBe('Coaching with your client has ended');
-    for (const t of ['coaching_cancelled', 'coaching_renewed', 'renewal_failed', 'coaching_lapsed', 'coaching_ended']) expect(TEMPLATES).toContain(t);
+    for (const t of ['coaching_cancelled', 'coaching_renewed', 'renewal_failed', 'coaching_lapsed', 'coaching_ended', 'coaching_stopped']) expect(TEMPLATES).toContain(t);
+  });
+});
+
+describe('renderEmail when a coach stops coaching (M4-19)', () => {
+  it('tells the athlete the paid month runs out and nothing more is taken, and tells the coach', () => {
+    const a = renderEmail('coaching_stopped', { role: 'athlete', other: 'Vikram', package: 'Online coaching', paid_through: '2026-12-15' }, 'https://x')!;
+    expect(a.subject).toBe('Your coaching with Vikram will not renew');
+    expect(a.text).toContain('You keep coaching until 15 Dec. No more payments are taken.');
+    const c = renderEmail('coaching_stopped', { role: 'coach', other: 'Kabir', package: 'Online coaching', paid_through: '2026-12-15' }, 'https://x')!;
+    expect(c.subject).toBe('Coaching with Kabir will not renew');
+    expect(c.text).toContain('until 15 Dec');
   });
 });
