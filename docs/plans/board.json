@@ -1493,15 +1493,15 @@
       "done_on": "2026-11-21"
     },
     {
-      "id": "M4-11",
+      "id": "M4-11a",
       "phase": "M4",
-      "title": "Monthly renewal, cancel and failed payments",
+      "title": "Monthly renewal, cancel and failed payments (fake subscription)",
       "priority": "P0",
       "size": "M",
       "deps": [
         "M4-09a"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "unit+e2e",
       "ac": [
@@ -1514,6 +1514,29 @@
       "screens": [
         "X-ManageCoaching",
         "X-CancelCoaching"
+      ],
+      "done_on": "2026-11-21"
+    },
+    {
+      "id": "M4-11b",
+      "phase": "M4",
+      "title": "Razorpay Subscriptions",
+      "priority": "P0",
+      "size": "M",
+      "deps": [
+        "M4-11a",
+        "M4-09b",
+        "M4-19",
+        "O-04"
+      ],
+      "status": "todo",
+      "owner": "claude",
+      "test": "db+e2e",
+      "ac": [
+        "Checkout opens a Razorpay Subscription for monthly packages; its first charge is the subscription's own",
+        "The renewal period comes from the provider payload (current_start, current_end), so on conflict catches a double charge",
+        "The real adapter treats 'already cancelled' as success, so stopSubscriptions never loops",
+        "The 7-day lapse grace is longer than Razorpay's retry window, or lapsing waits for subscription.halted"
       ]
     },
     {
@@ -1533,7 +1556,8 @@
         "Refund follows the owner's written terms",
         "A refund ends the engagement and reverses the coach's share",
         "Every refund is logged",
-        "From M4-10: decide whether a refund of one renewal sets the engagement 'refunded' (ends assigned programs and drops the client from coach_stats entirely) or 'ended'/'lapsed'"
+        "From M4-10: decide whether a refund of one renewal sets the engagement 'refunded' (ends assigned programs and drops the client from coach_stats entirely) or 'ended'/'lapsed'",
+        "From M4-11a: refund money owed back by payments.status = 'duplicate' (failed renewal orders hold it); the no-refund-on-renewals rule must not block those. A refund of a first payment must also stop the subscription"
       ]
     },
     {
@@ -1658,7 +1682,7 @@
       "deps": [
         "M4-09a",
         "M4-10",
-        "M4-11",
+        "M4-11a",
         "M4-12",
         "M4-13",
         "M4-14"
