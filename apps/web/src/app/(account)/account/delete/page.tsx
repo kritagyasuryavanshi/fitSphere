@@ -32,9 +32,14 @@ async function Confirm({ searchParams }: { searchParams: PageProps<'/account/del
           first, then delete your account.
         </p>
       ) : null}
+      {error === 'payouts' ? (
+        <p role="alert" className="m-0 text-[15px] font-medium text-danger">
+          You have payouts still to come. Delete your account once they are paid.
+        </p>
+      ) : null}
       {error === 'clients' ? (
         <p role="alert" className="m-0 text-[15px] font-medium text-danger">
-          You have paying clients. Their coaching must end before you can delete your account.
+          You have paying clients, or a request waiting for payment. Their coaching must end before you can delete your account.
         </p>
       ) : null}
       <form action={deleteAccount} className="flex flex-wrap gap-3">

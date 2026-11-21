@@ -10,6 +10,7 @@ export type DecideState = { error?: string };
 const messages: Record<string, string> = {
   coach_full: 'You are at your client limit. Raise it in your profile, or decline.',
   not_open: 'This request was already withdrawn or decided.',
+  not_live: 'Your profile is not live, so you cannot take on new clients.',
 };
 
 /** The coach accepts or declines a hire request. */

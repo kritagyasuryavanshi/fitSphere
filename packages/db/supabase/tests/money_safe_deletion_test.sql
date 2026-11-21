@@ -2,7 +2,7 @@
 -- and never leaves a subscription charging: an athlete cancels renewing coaching first, a coach with paying clients
 -- cannot leave them, and a suspended coach or one who loses the coach role stops every renewal.
 begin;
-select plan(24);
+select plan(32);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('d1000000-0000-0000-0000-0000000000c1', 'del-vikram@t.test', now()),
@@ -30,6 +30,9 @@ insert into public.engagements (id, athlete_id, coach_id, package_title, package
   ('d2000000-0000-0000-0000-0000000000e3', null, 'd1000000-0000-0000-0000-0000000000c2', 'Form check', 'single', 120000, 1500, public.india_today() - 90, 3, 'ended', true, public.india_today() - 90),
   ('d2000000-0000-0000-0000-0000000000e4', 'd1000000-0000-0000-0000-0000000000a3', 'd1000000-0000-0000-0000-0000000000c3', 'Online coaching', 'monthly', 450000, 1500, public.india_today() - 5, 3, 'active', true, public.india_today() + 25),
   ('d2000000-0000-0000-0000-0000000000e5', 'd1000000-0000-0000-0000-0000000000a4', 'd1000000-0000-0000-0000-0000000000c4', 'Online coaching', 'monthly', 450000, 1500, public.india_today() - 5, 3, 'active', true, public.india_today() + 25);
+insert into public.engagements (id, athlete_id, coach_id, package_title, package_kind, price_paise, fee_bps, start_date, days_per_week, status, goals) values
+  ('d2000000-0000-0000-0000-0000000000e6', 'd1000000-0000-0000-0000-0000000000a4', 'd1000000-0000-0000-0000-0000000000c3', 'Online coaching', 'monthly', 450000, 1500, public.india_today(), 3, 'accepted', 'Old shoulder injury');
+update public.engagements set goals = 'My knee hurts when I run' where id = 'd2000000-0000-0000-0000-0000000000e2';
 insert into public.subscriptions (engagement_id, provider_subscription_id, status) values
   ('d2000000-0000-0000-0000-0000000000e1', 'sub_del_kabir', 'active'), ('d2000000-0000-0000-0000-0000000000e2', 'sub_del_neha', 'active'),
   ('d2000000-0000-0000-0000-0000000000e4', 'sub_del_isha', 'active'), ('d2000000-0000-0000-0000-0000000000e5', 'sub_del_arjun', 'active');
@@ -63,6 +66,20 @@ select throws_ok($$ select public.delete_my_account() $$, '22023', 'coach_has_cl
 select set_config('request.jwt.claims', '{"sub":"d1000000-0000-0000-0000-0000000000ad","role":"authenticated"}', true);
 select is(public.why_not_delete_my_account(), 'admin', 'an admin hears it first');
 
+-- A coach with payouts still to come cannot delete either.
+reset role;
+update public.payouts set status = 'manual_due' where payment_id = 'd4000000-0000-0000-0000-0000000000c2';
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"d1000000-0000-0000-0000-0000000000c2","role":"authenticated"}', true);
+select is(public.why_not_delete_my_account(), 'payouts', 'a coach with payouts still to come hears why');
+select throws_ok($$ select public.delete_my_account() $$, '22023', 'payouts_due', 'and cannot delete yet');
+reset role;
+update public.payouts set status = 'manual_paid' where payment_id = 'd4000000-0000-0000-0000-0000000000c2';
+-- Nobody, an admin through the auth API included, deletes a coach whose clients have paid days to come.
+select throws_ok($$ delete from auth.users where id = 'd1000000-0000-0000-0000-0000000000c1' $$, '22023', 'coach_has_clients',
+  'a coach with paying clients cannot be deleted by any path');
+set local role authenticated;
+
 -- Neha cancelled: she can delete. Her coaching ends, its money records stay, and nothing personal is left on them.
 select set_config('request.jwt.claims', '{"sub":"d1000000-0000-0000-0000-0000000000a2","role":"authenticated"}', true);
 select is(public.why_not_delete_my_account(), null, 'a client who cancelled can delete');
@@ -74,7 +91,10 @@ select is((select count(*)::int from public.orders where engagement_id = 'd20000
 select is((select status from public.payments where id = 'd4000000-0000-0000-0000-0000000000a2'), 'captured', 'the payment stays');
 select is((select net_paise from public.payouts where payment_id = 'd4000000-0000-0000-0000-0000000000a2'), 382500::bigint, 'the coach''s payout stays');
 select is((select count(*)::int from public.cancel_reasons where engagement_id = 'd2000000-0000-0000-0000-0000000000e2'), 0, 'her cancel reason is erased');
+select is((select goals from public.engagements where id = 'd2000000-0000-0000-0000-0000000000e2'), '', 'and so are her own words');
 select is(pg_temp.emails('coaching_ended', 'd2000000-0000-0000-0000-0000000000e2'), 1, 'the coach is told, and no email waits for her');
+select is((select data ->> 'other' from public.email_outbox where template = 'coaching_ended' and data ->> 'engagement' = 'd2000000-0000-0000-0000-0000000000e2'), '',
+  'without her name');
 select ok(exists (select 1 from public.subscriptions_to_stop() where provider_subscription_id = 'sub_del_neha'),
   'her subscription is handed to the server to stop at the provider');
 
@@ -93,6 +113,17 @@ select is((select row(status, cancel_at_period_end, paid_through)::text from pub
   row('cancelling', true, public.india_today() + 25)::text, 'a suspended coach''s clients stop renewing, keeping the paid month');
 select is(pg_temp.emails('coaching_stopped', 'd2000000-0000-0000-0000-0000000000e4'), 2, 'both are told');
 select ok(exists (select 1 from public.subscriptions_to_stop() where provider_subscription_id = 'sub_del_isha'), 'and the subscription is stopped');
+select is((select status from public.engagements where id = 'd2000000-0000-0000-0000-0000000000e6'), 'declined', 'an accepted request waiting for payment closes');
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"d1000000-0000-0000-0000-0000000000c3","role":"authenticated"}', true);
+reset role;
+insert into public.engagements (id, athlete_id, coach_id, package_title, package_kind, price_paise, fee_bps, start_date, days_per_week, status) values
+  ('d2000000-0000-0000-0000-0000000000e7', 'd1000000-0000-0000-0000-0000000000a4', 'd1000000-0000-0000-0000-0000000000c3', 'Online coaching', 'monthly', 450000, 1500, public.india_today(), 3, 'requested');
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"d1000000-0000-0000-0000-0000000000c3","role":"authenticated"}', true);
+select throws_ok($$ select public.decide_request('d2000000-0000-0000-0000-0000000000e7', true) $$, '22023', 'not_live', 'a suspended coach cannot accept anyone');
+select lives_ok($$ select public.decide_request('d2000000-0000-0000-0000-0000000000e7', false) $$, 'but can still decline');
+reset role;
 update public.coach_profiles set status = 'live' where coach_id = 'd1000000-0000-0000-0000-0000000000c3';
 select is((select status from public.engagements where id = 'd2000000-0000-0000-0000-0000000000e4'), 'cancelling', 'lifting the suspension does not restart charging');
 
