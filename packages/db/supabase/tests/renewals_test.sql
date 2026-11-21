@@ -2,7 +2,7 @@
 -- through apply_payment_event; cancel keeps coaching to the end of the paid month; a failed renewal warns, then a halt
 -- lapses the coaching; the daily sweep ends what has run out. Every change emails the athlete and the coach.
 begin;
-select plan(50);
+select plan(51);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('f1000000-0000-0000-0000-0000000000c1', 'rn-vikram@t.test', now()),
@@ -98,6 +98,7 @@ select is((select count(*)::int from public.payouts u join public.payments p on 
 select is(pg_temp.sub_event('evt_p0', 'subscription.pending', 'sub_kabir'), 'ignored', 'a failure notice after the renewal went through changes nothing');
 select is((select status from public.subscriptions where provider_subscription_id = 'sub_kabir'), 'active', 'the subscription still renews');
 select is(pg_temp.sub_event('evt_x1', 'subscription.charged', 'sub_nobody', 'pay_x1'), 'ignored', 'a charge on an unknown subscription is ignored');
+select is(pg_temp.sub_event('evt_x2', 'subscription.charged', 'sub_kabir', 'pay_x2', 100000001), 'ignored', 'a charge too large to hold is ignored and flagged, not retried');
 -- A charge after the athlete cancelled is money owed back, never another month.
 select is(pg_temp.sub_event('evt_n1', 'subscription.charged', 'sub_neha', 'pay_n1'), 'applied', 'a charge after cancel is recorded');
 select is((select status from public.payments where provider_payment_id = 'pay_n1'), 'duplicate', 'as money owed back');

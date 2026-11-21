@@ -143,8 +143,9 @@ begin
       update public.payment_events set result = 'ignored', note = 'payment already recorded' where id = ev;
       return 'ignored';
     end if;
-    if amount is null or amount <= 0 or (p ->> 'currency') is distinct from 'INR' then
-      update public.payment_events set result = 'ignored', note = 'amount or currency is not a valid INR charge' where id = ev;
+    -- Values the money tables cannot hold are ignored (and flagged by money_invariants), never a rolled-back retry loop.
+    if amount is null or amount not between 1 and 100000000 or char_length(pid) > 64 or (p ->> 'currency') is distinct from 'INR' then
+      update public.payment_events set result = 'ignored', note = 'amount, currency or payment id is not a valid INR charge' where id = ev;
       return 'ignored';
     end if;
     -- The next month starts the day after the last paid day, or today if a retry came late: the athlete never pays
@@ -326,8 +327,8 @@ begin
     amount := null;
   end;
   select * into o from public.orders where provider_order_id = p ->> 'order_id' for update;
-  if o.id is null or pid is null then
-    update public.payment_events set result = 'ignored', note = 'unknown order' where id = ev;
+  if o.id is null or pid is null or char_length(pid) > 64 then
+    update public.payment_events set result = 'ignored', note = 'unknown order or bad payment id' where id = ev;
     return 'ignored';
   end if;
   if o.provider_order_id like 'fake\_%' and not coalesce((select fake_allowed from public.payment_settings), false) then
