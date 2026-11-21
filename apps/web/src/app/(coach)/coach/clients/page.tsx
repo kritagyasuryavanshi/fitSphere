@@ -5,19 +5,28 @@ import { Suspense } from 'react';
 import { supabaseServer } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/viewer';
 import { openConversation } from '@/app/(account)/messages/actions';
+import { AssignForm } from './assign-form';
 import { DecideForm } from './decide-form';
 
 export const metadata: Metadata = { title: 'Clients · FitSphere Coach' };
 
 const sent = (iso: string) => new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', weekday: 'short', day: 'numeric', month: 'short' }).format(new Date(iso));
 
-// X-CoachRequests: hire requests to accept or decline, and paying clients. Earnings arrive with M4-13.
+// X-CoachRequests: hire requests to accept or decline, and paying clients, who can be assigned a program (M4-10).
+// Earnings arrive with M4-13.
 async function Clients() {
-  await requireRole('coach');
+  const viewer = await requireRole('coach');
   const supabase = await supabaseServer();
-  const [rows, profile] = await Promise.all([supabase.rpc('coach_requests'), supabase.rpc('my_coach_profile').maybeSingle()]);
+  const [rows, profile, owned] = await Promise.all([
+    supabase.rpc('coach_requests'),
+    supabase.rpc('my_coach_profile').maybeSingle(),
+    supabase.from('programs').select('id, title, program_versions(published_at)').eq('coach_id', viewer.userId).order('title'),
+  ]);
   if (rows.error) throw rows.error;
   if (profile.error) throw profile.error;
+  if (owned.error) throw owned.error;
+  // Only published programs can be assigned (assign_program checks it too).
+  const programs = owned.data.filter((p) => p.program_versions.some((v) => v.published_at)).map(({ id, title }) => ({ id, title }));
   const requests = rows.data.filter((r) => r.status === 'requested' || r.status === 'accepted');
   const paying = rows.data.filter((r) => r.status === 'active' || r.status === 'cancelling');
   const taken = rows.data.filter((r) => r.status !== 'requested').length;
@@ -89,6 +98,8 @@ async function Clients() {
                       Message {r.athlete_name}
                     </button>
                   </form>
+                  <AssignForm engagementId={r.engagement_id} athlete={r.athlete_name} programs={programs} />
+                  {r.share_data ? null : <span className="w-full text-[13px] text-muted">Does not share training logs, so you will not see their sessions.</span>}
                 </span>
               </li>
             ))}

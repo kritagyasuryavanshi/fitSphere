@@ -487,9 +487,9 @@ isOneToOne: true
                   ]
                 },"engagements": {
                   Row: {
-                    "athlete_id": string | null,"cancel_at_period_end": boolean,"coach_id": string | null,"created_at": string,"days_per_week": number,"decided_at": string | null,"ended_at": string | null,"fee_bps": number,"goals": string,"id": string,"package_id": string | null,"package_kind": string,"package_title": string,"paid_through": string | null,"price_paise": number,"share_data": boolean,"start_date": string,"status": string
+                    "athlete_id": string | null,"cancel_at_period_end": boolean,"coach_id": string | null,"created_at": string,"days_per_week": number,"decided_at": string | null,"ended_at": string | null,"fee_bps": number,"goals": string,"id": string,"package_id": string | null,"package_kind": string,"package_title": string,"paid_through": string | null,"price_paise": number,"share_data": boolean,"start_date": string,"status": string,"engagement_opens": boolean | null
                   }
-                  ComputedFields: never
+                  ComputedFields: "engagement_opens"
                   Insert: {
                     "athlete_id"?: string | null,"cancel_at_period_end"?: boolean,"coach_id"?: string | null,"created_at"?: string,"days_per_week": number,"decided_at"?: string | null,"ended_at"?: string | null,"fee_bps": number,"goals"?: string,"id"?: string,"package_id"?: string | null,"package_kind": string,"package_title": string,"paid_through"?: string | null,"price_paise": number,"share_data"?: boolean,"start_date": string,"status"?: string
                   }
@@ -519,14 +519,14 @@ isOneToOne: false
                   ]
                 },"enrollments": {
                   Row: {
-                    "athlete_id": string,"ended_at": string | null,"id": string,"invite_code": string | null,"joined_at": string,"program_id": string,"start_date": string,"status": Database["public"]['Enums']["enrollment_status"]
+                    "athlete_id": string,"ended_at": string | null,"engagement_id": string | null,"id": string,"invite_code": string | null,"joined_at": string,"program_id": string,"start_date": string,"status": Database["public"]['Enums']["enrollment_status"]
                   }
                   ComputedFields: never
                   Insert: {
-                    "athlete_id": string,"ended_at"?: string | null,"id"?: string,"invite_code"?: string | null,"joined_at"?: string,"program_id": string,"start_date": string,"status"?: Database["public"]['Enums']["enrollment_status"]
+                    "athlete_id": string,"ended_at"?: string | null,"engagement_id"?: string | null,"id"?: string,"invite_code"?: string | null,"joined_at"?: string,"program_id": string,"start_date": string,"status"?: Database["public"]['Enums']["enrollment_status"]
                   }
                   Update: {
-                    "athlete_id"?: string,"ended_at"?: string | null,"id"?: string,"invite_code"?: string | null,"joined_at"?: string,"program_id"?: string,"start_date"?: string,"status"?: Database["public"]['Enums']["enrollment_status"]
+                    "athlete_id"?: string,"ended_at"?: string | null,"engagement_id"?: string | null,"id"?: string,"invite_code"?: string | null,"joined_at"?: string,"program_id"?: string,"start_date"?: string,"status"?: Database["public"]['Enums']["enrollment_status"]
                   }
                   Relationships: [
                     {
@@ -534,6 +534,12 @@ isOneToOne: false
       columns: ["athlete_id"]
 isOneToOne: false
       referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "enrollments_engagement_id_fkey"
+      columns: ["engagement_id"]
+isOneToOne: false
+      referencedRelation: "engagements"
       referencedColumns: ["id"]
     },{
       foreignKeyName: "enrollments_invite_code_fkey"
@@ -1191,6 +1197,11 @@ isOneToOne: false
 "assert_live_ready":
 { Args: { "coach": string }; Returns: undefined
                            },
+"assign_program":
+{ Args: { "engagement": string,"program": string }; Returns: {
+              "created": boolean,"enrollment_id": string
+            }[]
+                           },
 "attach_provider_order":
 { Args: { "order_": string,"provider_order": string }; Returns: string
                            },
@@ -1242,6 +1253,9 @@ isOneToOne: false
 "coach_public_name":
 { Args: { "coach": string }; Returns: string
                            },
+"coach_reads_body":
+{ Args: { "athlete": string }; Returns: boolean
+                           },
 "coach_reads_program":
 { Args: { "athlete": string,"program": string }; Returns: boolean
                            },
@@ -1284,6 +1298,9 @@ isOneToOne: false
                            },
 "email_wanted":
 { Args: { "person": string,"template": string }; Returns: boolean
+                           },
+"engagement_opens":
+{ Args: { "g": Omit<Database["public"]['Tables']["engagements"]['Row'], Database["public"]['Tables']["engagements"]['ComputedFields']> }; Returns: boolean
                            },
 "ever_enrolled":
 { Args: { "program": string }; Returns: boolean
@@ -1543,7 +1560,7 @@ isOneToOne: false
                            }
           }
           Enums: {
-            "app_role": "athlete"|"coach"|"reviewer"|"admin","application_status": "pending"|"approved"|"declined","consent_purpose": "ai_health_personalisation"|"ai_body_metrics","content_kind": "skill"|"drill"|"exercise","content_level": "beginner"|"intermediate"|"advanced","content_link_kind": "prerequisite"|"related"|"alternative","content_status": "draft"|"in_review"|"needs_changes"|"published","enrollment_status": "active"|"left"|"removed","prescription_type": "rounds"|"time"|"sets"
+            "app_role": "athlete"|"coach"|"reviewer"|"admin","application_status": "pending"|"approved"|"declined","consent_purpose": "ai_health_personalisation"|"ai_body_metrics","content_kind": "skill"|"drill"|"exercise","content_level": "beginner"|"intermediate"|"advanced","content_link_kind": "prerequisite"|"related"|"alternative","content_status": "draft"|"in_review"|"needs_changes"|"published","enrollment_status": "active"|"left"|"removed"|"ended","prescription_type": "rounds"|"time"|"sets"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -1663,7 +1680,7 @@ export const Constants = {
           }
         },"public": {
           Enums: {
-            "app_role": ["athlete", "coach", "reviewer", "admin"],"application_status": ["pending", "approved", "declined"],"consent_purpose": ["ai_health_personalisation", "ai_body_metrics"],"content_kind": ["skill", "drill", "exercise"],"content_level": ["beginner", "intermediate", "advanced"],"content_link_kind": ["prerequisite", "related", "alternative"],"content_status": ["draft", "in_review", "needs_changes", "published"],"enrollment_status": ["active", "left", "removed"],"prescription_type": ["rounds", "time", "sets"]
+            "app_role": ["athlete", "coach", "reviewer", "admin"],"application_status": ["pending", "approved", "declined"],"consent_purpose": ["ai_health_personalisation", "ai_body_metrics"],"content_kind": ["skill", "drill", "exercise"],"content_level": ["beginner", "intermediate", "advanced"],"content_link_kind": ["prerequisite", "related", "alternative"],"content_status": ["draft", "in_review", "needs_changes", "published"],"enrollment_status": ["active", "left", "removed", "ended"],"prescription_type": ["rounds", "time", "sets"]
           }
         }
 } as const
