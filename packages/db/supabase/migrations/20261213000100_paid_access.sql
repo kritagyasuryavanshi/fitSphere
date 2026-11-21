@@ -95,7 +95,7 @@ begin
   if not public.coach_is_live(g.coach_id) then
     raise exception 'not_live' using errcode = '42501';
   end if;
-  if g.status not in ('active', 'cancelling') or g.athlete_id is null or g.paid_through < public.india_today() then
+  if g.status not in ('active', 'cancelling') or g.athlete_id is null or g.paid_through is null or g.paid_through < public.india_today() then
     raise exception 'not_active' using errcode = '22023';
   end if;
   if not public.owns_program(program) then
