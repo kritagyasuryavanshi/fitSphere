@@ -31,7 +31,7 @@ async function Coaching() {
   const supabase = await supabaseServer();
   const { data, error } = await supabase
     .from('engagements')
-    .select('id, coach_id, package_title, package_kind, price_paise, start_date, status, created_at, paid_through')
+    .select('id, coach_id, package_title, package_kind, price_paise, start_date, status, created_at, paid_through, subscriptions(status)')
     .eq('athlete_id', viewer.userId)
     .order('created_at', { ascending: false });
   if (error) throw error;
@@ -72,7 +72,11 @@ async function Coaching() {
             </p>
             {g.status === 'active' && g.paid_through ? (
               <p className="m-0 text-[15px]">
-                {g.package_kind === 'monthly' ? `Renews monthly · next payment ${formatInr(g.price_paise)} on ${shortDate(g.paid_through, 1)}` : `Runs until ${shortDate(g.paid_through)}`}
+                {g.subscriptions?.status === 'pending'
+                  ? `Your last payment did not go through. We will try again; coaching is paused until it does.`
+                  : g.package_kind === 'monthly' && g.subscriptions?.status === 'active'
+                    ? `Renews monthly · next payment ${formatInr(g.price_paise)} on ${shortDate(g.paid_through, 1)}`
+                    : `Runs until ${shortDate(g.paid_through)}`}
               </p>
             ) : null}
             {g.status === 'cancelling' && g.paid_through ? <p className="m-0 text-[15px]">Coaching until {shortDate(g.paid_through)}. No more payments are taken.</p> : null}

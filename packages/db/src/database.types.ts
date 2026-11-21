@@ -1414,6 +1414,9 @@ isOneToOne: false
 "mark_notifications_read":
 { Args: { "ids"?: (number)[] }; Returns: number
                            },
+"mark_subscription_cancelled":
+{ Args: { "subscription": string }; Returns: undefined
+                           },
 "money_invariants":
 { Args: Record<PropertyKey, never>; Returns: {
               "ref": string,"rule": string
@@ -1594,6 +1597,11 @@ isOneToOne: false
                            },
 "submit_credential":
 { Args: { "file_path": string,"id_number"?: string,"issuer"?: string,"title": string }; Returns: string
+                           },
+"subscriptions_to_stop":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "provider_subscription_id": string,"subscription_id": string
+            }[]
                            },
 "sweep_engagements":
 { Args: Record<PropertyKey, never>; Returns: number

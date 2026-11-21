@@ -1,8 +1,9 @@
 import { connection } from 'next/server';
 import { queueSessionReminders, sendQueuedEmails, sweepEngagements } from '@/lib/email-send';
+import { stopSubscriptions } from '@/lib/payments/reconcile';
 import { authorised } from '@/lib/video-check';
 
-// Once a day (vercel.json), 08:30 India time: ends paid coaching that ran out (M4-11), queues today's session
+// Once a day (vercel.json), 08:30 India time: ends paid coaching that ran out and stops its subscriptions (M4-11), queues today's session
 // reminders, then sends what waits. Feedback also sends at once from its action, so this mostly delivers the
 // reminders and coaching emails, and retries what failed. One cron for all of it: the Vercel plan limits crons.
 export async function GET(request: Request) {
@@ -13,10 +14,14 @@ export async function GET(request: Request) {
     console.error('sweeping engagements failed', e);
     return null;
   });
+  const stopped = await stopSubscriptions().catch((e) => {
+    console.error('stopping subscriptions failed', e);
+    return null;
+  });
   const reminded = await queueSessionReminders().catch((e) => {
     console.error('queueing session reminders failed', e);
     return null;
   });
   const result = await sendQueuedEmails();
-  return result ? Response.json({ swept, reminded, ...result }) : Response.json({ swept, reminded, skipped: 'email is not configured: RESEND_API_KEY, EMAIL_FROM, NEXT_PUBLIC_SITE_URL or SUPABASE_SECRET_KEY is missing' });
+  return result ? Response.json({ swept, stopped, reminded, ...result }) : Response.json({ swept, stopped, reminded, skipped: 'email is not configured: RESEND_API_KEY, EMAIL_FROM, NEXT_PUBLIC_SITE_URL or SUPABASE_SECRET_KEY is missing' });
 }

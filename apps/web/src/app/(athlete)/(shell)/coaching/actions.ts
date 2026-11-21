@@ -35,14 +35,26 @@ export async function cancelCoaching(formData: FormData): Promise<void> {
   const supabase = await supabaseServer();
   const { error } = await supabase.rpc('cancel_coaching', REASONS.includes(reason) ? { engagement: id, reason } : { engagement: id });
   if (error) {
-    if (!error.message.includes('not_cancellable')) console.error('cancel_coaching failed', error.code, error.message);
+    // Already cancelled (a double click, an old tab): the list shows how it stands.
+    if (error.message.includes('not_cancellable')) redirect('/coaching');
+    console.error('cancel_coaching failed', error.code, error.message);
     redirect(`/coaching/${id}/cancel?error=1`);
   }
+  // The provider stops renewing now; if that fails, the daily cron retries it (stopSubscriptions).
   const provider = paymentsProvider();
   if (provider && process.env.SUPABASE_SECRET_KEY) {
     const db = createDbClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? '', process.env.SUPABASE_SECRET_KEY);
-    const { data: sub } = await db.from('subscriptions').select('provider_subscription_id').eq('engagement_id', id).maybeSingle();
-    if (sub) await provider.cancelSubscription(sub.provider_subscription_id).catch((e) => console.error('cancelling the subscription failed', id, e));
+    try {
+      const { data: sub, error: subError } = await db.from('subscriptions').select('id, provider_subscription_id').eq('engagement_id', id).maybeSingle();
+      if (subError) throw subError;
+      if (sub) {
+        await provider.cancelSubscription(sub.provider_subscription_id);
+        const marked = await db.rpc('mark_subscription_cancelled', { subscription: sub.id });
+        if (marked.error) throw marked.error;
+      }
+    } catch (e) {
+      console.error('cancelling the subscription failed, the cron retries it', id, e);
+    }
   }
   revalidatePath('/coaching');
   redirect('/coaching');

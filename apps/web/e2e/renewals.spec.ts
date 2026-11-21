@@ -19,7 +19,7 @@ test('a monthly client pays, a subscription opens, and they cancel to the end of
   const { data: sub } = await admin().from('subscriptions').select('provider_subscription_id, status').eq('engagement_id', g!.id).single();
   expect(sub!.provider_subscription_id).toMatch(/^fake_sub_/);
   await page.goto('/coaching');
-  await expect(page.getByText(/^Renews monthly · next payment ₹4,500 on \d{1,2} [A-Z][a-z]{2}$/)).toBeVisible();
+  await expect(page.getByText(/^Renews monthly · next payment ₹4,500 on \d{1,2} [A-Z][a-z]{2,3}$/)).toBeVisible();
 
   await page.getByRole('link', { name: 'Cancel coaching' }).click();
   const dialog = page.getByRole('alertdialog', { name: 'Cancel coaching with Leela?' });
@@ -28,7 +28,7 @@ test('a monthly client pays, a subscription opens, and they cancel to the end of
   await dialog.getByRole('button', { name: 'Cancel coaching' }).click();
   await expect(page).toHaveURL('/coaching');
   await expect(page.getByText('Cancelled · runs to the end of the paid month')).toBeVisible();
-  await expect(page.getByText(/^Coaching until \d{1,2} [A-Z][a-z]{2}\. No more payments are taken\.$/)).toBeVisible();
+  await expect(page.getByText(/^Coaching until \d{1,2} [A-Z][a-z]{2,3}\. No more payments are taken\.$/)).toBeVisible();
   await expect(page.getByRole('link', { name: 'Cancel coaching' })).toHaveCount(0);
 
   // The database agrees: cancelling, the reason kept apart, and both people emailed.

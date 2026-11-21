@@ -1,4 +1,5 @@
 import { formatInr } from '@fitsphere/core';
+import { shortDate } from './dates';
 // The email outbox sender (M3-14). Database functions queue rows in email_outbox in the same transaction as the event;
 // this drains them. The provider is injected, so tests use a fake and production uses Resend once a key exists.
 
@@ -82,7 +83,7 @@ function coachingEmail(template: string, data: Record<string, unknown>, origin: 
   const other = str(data.other) || (coachView ? 'your client' : 'your coach');
   const Other = other.charAt(0).toUpperCase() + other.slice(1);
   const pkg = str(data.package) || 'coaching';
-  const until = str(data.paid_through);
+  const until = /^\d{4}-\d{2}-\d{2}$/.test(str(data.paid_through)) ? shortDate(str(data.paid_through)) : '';
   const amount = typeof data.amount === 'number' ? formatInr(data.amount) : '';
   const link = coachView ? `${origin}/coach/clients` : `${origin}/coaching`;
   const lines = (...l: string[]) => [...l, '', link].join('\n');

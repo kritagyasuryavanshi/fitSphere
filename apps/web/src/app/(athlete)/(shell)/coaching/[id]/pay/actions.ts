@@ -39,12 +39,20 @@ export async function startCheckout(formData: FormData): Promise<void> {
     await captureFakeOrder(data.order_id);
     // shortcut: the fake opens the monthly subscription after the first payment; Razorpay Subscriptions (M4-11b)
     // take the first charge themselves.
-    const { data: paid, error: paidError } = await db.from('engagements').select('package_kind, status, price_paise').eq('id', engagement).single();
-    if (paidError) throw paidError;
-    if (paid.package_kind === 'monthly' && paid.status === 'active') {
-      const sub = await provider.createSubscription({ engagement, amountPaise: paid.price_paise });
-      const attached = await db.rpc('attach_subscription', { engagement, provider_subscription: sub.id });
-      if (attached.error) throw attached.error;
+    // The athlete has paid by now: a subscription problem is logged, never shown as a failed payment.
+    // shortcut: a monthly engagement left without a subscription ends at its paid date; M4-11b opens it at checkout.
+    try {
+      const { data: paid, error: paidError } = await db.from('engagements').select('package_kind, status, price_paise, subscriptions(id)').eq('id', engagement).single();
+      if (paidError) throw paidError;
+      if (paid.package_kind === 'monthly' && paid.status === 'active' && !paid.subscriptions) {
+        const sub = await provider.createSubscription({ engagement, amountPaise: paid.price_paise });
+        const attached = await db.rpc('attach_subscription', { engagement, provider_subscription: sub.id });
+        if (attached.error) throw attached.error;
+        // Two clicks at once: the first attach wins, and the extra subscription is cancelled at once.
+        if (attached.data !== sub.id) await provider.cancelSubscription(sub.id);
+      }
+    } catch (e) {
+      console.error('opening the subscription failed', engagement, e);
     }
   }
   redirect(`/coaching/${engagement}/pay`);

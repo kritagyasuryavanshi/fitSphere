@@ -132,16 +132,16 @@ describe('renderEmail for coaching changes (M4-11)', () => {
   it('tells the athlete and the coach about a cancel, with the last day', () => {
     const a = renderEmail('coaching_cancelled', athlete, 'https://x')!;
     expect(a.subject).toBe('Your coaching with Vikram is cancelled');
-    expect(a.text).toContain('You keep coaching until 2026-12-15.');
+    expect(a.text).toContain('You keep coaching until 15 Dec.');
     const c = renderEmail('coaching_cancelled', coach, 'https://x')!;
     expect(c.subject).toBe('Kabir cancelled Online coaching');
-    expect(c.text).toContain('Kabir stays your client until 2026-12-15.');
+    expect(c.text).toContain('Kabir stays your client until 15 Dec.');
     expect(c.text).toContain('https://x/coach/clients');
   });
 
   it('writes the renewal, the failed payment, the lapse and the end for both people', () => {
     expect(renderEmail('coaching_renewed', athlete, 'https://x')!.text).toContain('₹4,500');
-    expect(renderEmail('coaching_renewed', athlete, 'https://x')!.text).toContain('until 2026-12-15');
+    expect(renderEmail('coaching_renewed', athlete, 'https://x')!.text).toContain('until 15 Dec');
     expect(renderEmail('renewal_failed', athlete, 'https://x')!.subject).toBe('Your payment for Online coaching did not go through');
     expect(renderEmail('renewal_failed', coach, 'https://x')!.subject).toBe('A payment from Kabir did not go through');
     expect(renderEmail('coaching_lapsed', athlete, 'https://x')!.subject).toBe('Your coaching with Vikram has ended');

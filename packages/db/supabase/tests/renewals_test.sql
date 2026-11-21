@@ -2,7 +2,7 @@
 -- through apply_payment_event; cancel keeps coaching to the end of the paid month; a failed renewal warns, then a halt
 -- lapses the coaching; the daily sweep ends what has run out. Every change emails the athlete and the coach.
 begin;
-select plan(38);
+select plan(50);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('f1000000-0000-0000-0000-0000000000c1', 'rn-vikram@t.test', now()),
@@ -47,6 +47,11 @@ grant execute on all functions in schema pg_temp to authenticated, service_role;
 set local role authenticated;
 select set_config('request.jwt.claims', '{"sub":"f1000000-0000-0000-0000-0000000000a1","role":"authenticated"}', true);
 select throws_ok($$ select public.cancel_coaching('f2000000-0000-0000-0000-0000000000e2', null) $$, '42501', 'not_yours', 'nobody cancels someone else''s coaching');
+reset role;
+set local role anon;
+select throws_ok($$ select public.cancel_coaching('f2000000-0000-0000-0000-0000000000e2', null) $$, '42501', null, 'a signed-out caller cannot cancel anything');
+reset role;
+set local role authenticated;
 select set_config('request.jwt.claims', '{"sub":"f1000000-0000-0000-0000-0000000000a3","role":"authenticated"}', true);
 select throws_ok($$ select public.cancel_coaching('f2000000-0000-0000-0000-0000000000e3', null) $$, '22023', 'not_cancellable', 'a single session has no renewal to cancel');
 select set_config('request.jwt.claims', '{"sub":"f1000000-0000-0000-0000-0000000000a2","role":"authenticated"}', true);
@@ -81,9 +86,17 @@ select is((select count(*)::int from public.money_invariants() where ref in (sel
   'the renewal breaks no money rule');
 select is(pg_temp.sub_event('evt_r1', 'subscription.charged', 'sub_kabir', 'pay_r1'), 'duplicate', 'the same event again is a duplicate');
 select is(pg_temp.sub_event('evt_r1b', 'subscription.charged', 'sub_kabir', 'pay_r1'), 'ignored', 'the same payment in a new event is ignored');
-select is(pg_temp.sub_event('evt_r2', 'subscription.charged', 'sub_kabir', 'pay_r2', 100), 'ignored', 'a charge for the wrong amount is ignored');
+select is(pg_temp.sub_event('evt_r2', 'subscription.charged', 'sub_kabir', 'pay_r2', 100), 'applied', 'a charge for the wrong amount is recorded');
+select is((select status from public.payments where provider_payment_id = 'pay_r2'), 'duplicate', 'as money owed back');
 select is((select paid_through from public.engagements where id = 'f2000000-0000-0000-0000-0000000000e1'), public.month_period_end(public.india_today() + 1),
   'and moves nothing');
+select is(pg_temp.sub_event('evt_r3', 'subscription.charged', 'sub_kabir', 'pay_r3'), 'applied', 'a second charge in the same cycle is recorded');
+select is((select row(p.status, o.status)::text from public.payments p join public.orders o on o.id = p.order_id where p.provider_payment_id = 'pay_r3'),
+  row('duplicate', 'failed')::text, 'as money owed back: that month is not due yet');
+select is((select count(*)::int from public.payouts u join public.payments p on p.id = u.payment_id where p.provider_payment_id in ('pay_r2', 'pay_r3')), 0,
+  'and the coach is paid for neither');
+select is(pg_temp.sub_event('evt_p0', 'subscription.pending', 'sub_kabir'), 'ignored', 'a failure notice after the renewal went through changes nothing');
+select is((select status from public.subscriptions where provider_subscription_id = 'sub_kabir'), 'active', 'the subscription still renews');
 select is(pg_temp.sub_event('evt_x1', 'subscription.charged', 'sub_nobody', 'pay_x1'), 'ignored', 'a charge on an unknown subscription is ignored');
 -- A charge after the athlete cancelled is money owed back, never another month.
 select is(pg_temp.sub_event('evt_n1', 'subscription.charged', 'sub_neha', 'pay_n1'), 'applied', 'a charge after cancel is recorded');
@@ -91,6 +104,11 @@ select is((select status from public.payments where provider_payment_id = 'pay_n
 select is((select paid_through from public.engagements where id = 'f2000000-0000-0000-0000-0000000000e2'), public.india_today() + 10, 'with no new month');
 
 -- A failed renewal: the provider retries (pending), then gives up (halted) and the coaching lapses.
+update public.engagements set paid_through = public.india_today() - 1 where id = 'f2000000-0000-0000-0000-0000000000e1';
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"f1000000-0000-0000-0000-0000000000c1","role":"authenticated"}', true);
+select ok(public.coach_can_read('f1000000-0000-0000-0000-0000000000a1'), 'on renewal day the coach keeps access while the subscription renews');
+reset role;
 select is(pg_temp.sub_event('evt_p1', 'subscription.pending', 'sub_kabir'), 'applied', 'a failed renewal is applied');
 select is((select status from public.subscriptions where provider_subscription_id = 'sub_kabir'), 'pending', 'the subscription waits for a retry');
 select is(pg_temp.emails('renewal_failed', 'f2000000-0000-0000-0000-0000000000e1'), 2, 'both hear that the payment failed');
@@ -98,6 +116,15 @@ select is(pg_temp.sub_event('evt_h1', 'subscription.halted', 'sub_kabir'), 'appl
 select is((select status from public.engagements where id = 'f2000000-0000-0000-0000-0000000000e1'), 'lapsed', 'and the coaching lapses');
 select is(pg_temp.emails('coaching_lapsed', 'f2000000-0000-0000-0000-0000000000e1'), 2, 'both get an email');
 select is(pg_temp.sub_event('evt_h2', 'subscription.halted', 'sub_kabir'), 'ignored', 'a second halt changes nothing');
+set local role authenticated;
+select set_config('request.jwt.claims', '{"sub":"f1000000-0000-0000-0000-0000000000c1","role":"authenticated"}', true);
+select ok(not public.coach_can_read('f1000000-0000-0000-0000-0000000000a1'), 'once the renewal fails, the grace ends');
+reset role;
+-- Subscriptions still renewing after their coaching stopped are handed to the server to cancel at the provider.
+select is((select string_agg(provider_subscription_id, ',' order by provider_subscription_id) from public.subscriptions_to_stop()), 'sub_neha',
+  'the cancelled coaching''s subscription is to stop');
+select lives_ok($$ select public.mark_subscription_cancelled((select subscription_id from public.subscriptions_to_stop())) $$, 'the server marks it stopped');
+select is((select count(*)::int from public.subscriptions_to_stop()), 0, 'and nothing is left to stop');
 select is(pg_temp.sub_event('evt_c1', 'subscription.cancelled', 'sub_neha'), 'applied', 'the provider confirms a cancel');
 
 -- The daily sweep ends what ran out: the single session, the cancelled month, the monthly coaching without a
