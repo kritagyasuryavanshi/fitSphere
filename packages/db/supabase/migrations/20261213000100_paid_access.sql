@@ -6,6 +6,17 @@
 alter table public.enrollments add column engagement_id uuid references public.engagements (id);
 create index enrollments_engagement_idx on public.enrollments (engagement_id) where engagement_id is not null;
 
+-- True while an engagement opens its athlete to the coach: active or cancelling, paid up to today, and shared.
+-- The paid date closes access even if a status change (M4-11, M4-12) runs late.
+create function public.engagement_opens(g public.engagements)
+returns boolean
+language sql
+stable
+set search_path = ''
+as $$
+  select g.status in ('active', 'cancelling') and g.share_data and g.paid_through >= public.india_today();
+$$;
+
 -- coach_can_read as in 20261119000000_enrollment_access.sql, plus paid coaching. An enrollment tied to an engagement
 -- opens only while that engagement is paid and shared.
 create or replace function public.coach_can_read(athlete uuid)
@@ -20,11 +31,11 @@ as $$
       select 1 from public.enrollments e join public.programs p on p.id = e.program_id
       where e.athlete_id = athlete and e.status = 'active' and p.coach_id = auth.uid()
         and (e.engagement_id is null or exists (
-          select 1 from public.engagements g where g.id = e.engagement_id and g.status in ('active', 'cancelling') and g.share_data))
+          select 1 from public.engagements g where g.id = e.engagement_id and public.engagement_opens(g)))
     )
     or exists (
       select 1 from public.engagements g
-      where g.athlete_id = athlete and g.coach_id = auth.uid() and g.status in ('active', 'cancelling') and g.share_data
+      where g.athlete_id = athlete and g.coach_id = auth.uid() and public.engagement_opens(g)
     )
   );
 $$;
@@ -41,14 +52,34 @@ as $$
     select 1 from public.enrollments e join public.programs p on p.id = e.program_id
     where e.athlete_id = athlete and e.program_id = program and e.status = 'active' and p.coach_id = auth.uid()
       and (e.engagement_id is null or exists (
-        select 1 from public.engagements g where g.id = e.engagement_id and g.status in ('active', 'cancelling') and g.share_data))
+        select 1 from public.engagements g where g.id = e.engagement_id and public.engagement_opens(g)))
   );
 $$;
 
--- The coach assigns one of their published programs to a paying client, from the India date today. Assigning a
--- program the client is already in returns that enrollment.
+-- Body weight as in 20261126000000_body_weight.sql, through an invite enrollment only: the hire form's consent names
+-- training logs and sign-up answers, not body weight.
+create function public.coach_reads_body(athlete uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select public.has_role('coach') and exists (
+    select 1 from public.enrollments e join public.programs p on p.id = e.program_id
+    where e.athlete_id = athlete and e.status = 'active' and p.coach_id = auth.uid() and e.engagement_id is null
+  );
+$$;
+revoke execute on function public.coach_reads_body(uuid) from public, anon;
+grant execute on function public.coach_reads_body(uuid) to authenticated;
+drop policy body_metrics_select_coach on public.body_metrics;
+create policy body_metrics_select_coach on public.body_metrics for select to authenticated using (public.coach_reads_body(user_id));
+
+-- The coach assigns one of their published programs to a paying client, from the India date today. If the client is
+-- already in the program, that enrollment comes back with created false. A program the client left during this
+-- coaching is not pushed back on them.
 create function public.assign_program(engagement uuid, program uuid)
-returns uuid
+returns table (enrollment_id uuid, created boolean)
 language plpgsql
 security definer
 set search_path = ''
@@ -61,7 +92,10 @@ begin
   if not found or g.coach_id is distinct from auth.uid() or not public.has_role('coach') then
     raise exception 'not_yours' using errcode = '42501';
   end if;
-  if g.status not in ('active', 'cancelling') or g.athlete_id is null then
+  if not public.coach_is_live(g.coach_id) then
+    raise exception 'not_live' using errcode = '42501';
+  end if;
+  if g.status not in ('active', 'cancelling') or g.athlete_id is null or g.paid_through < public.india_today() then
     raise exception 'not_active' using errcode = '22023';
   end if;
   if not public.owns_program(program) then
@@ -70,13 +104,24 @@ begin
   if not public.program_is_published(program) then
     raise exception 'not_published' using errcode = '22023';
   end if;
-  select id into e from public.enrollments where program_id = program and athlete_id = g.athlete_id and status = 'active';
-  if e is null then
-    insert into public.enrollments (program_id, athlete_id, start_date, engagement_id)
-    values (program, g.athlete_id, public.india_today(), g.id)
-    returning id into e;
+  if exists (select 1 from public.enrollments where engagement_id = g.id and program_id = program and status = 'left') then
+    raise exception 'left_program' using errcode = '22023';
   end if;
-  return e;
+  select id into e from public.enrollments where program_id = program and athlete_id = g.athlete_id and status = 'active';
+  if e is not null then
+    return query select e, false;
+    return;
+  end if;
+  -- An invite join at the same moment wins the one active row; then this returns it.
+  insert into public.enrollments (program_id, athlete_id, start_date, engagement_id)
+  values (program, g.athlete_id, public.india_today(), g.id)
+  on conflict (program_id, athlete_id) where status = 'active' do nothing
+  returning id into e;
+  if e is not null then
+    return query select e, true;
+    return;
+  end if;
+  return query select en.id, false from public.enrollments en where en.program_id = program and en.athlete_id = g.athlete_id and en.status = 'active';
 end;
 $$;
 revoke all on function public.assign_program(uuid, uuid) from public;
@@ -130,7 +175,7 @@ begin
   ),
   -- Paid coaching clients: every engagement paid for at least once and not refunded.
   paid as (
-    select g.athlete_id, g.created_at as joined_at, g.ended_at
+    select g.athlete_id, (g.start_date::timestamp at time zone 'Asia/Kolkata') as joined_at, g.ended_at
     from public.engagements g
     where g.coach_id = coach and g.athlete_id is not null and g.paid_through is not null and g.status <> 'refunded'
   ),

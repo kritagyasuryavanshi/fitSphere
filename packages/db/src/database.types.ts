@@ -487,9 +487,9 @@ isOneToOne: true
                   ]
                 },"engagements": {
                   Row: {
-                    "athlete_id": string | null,"cancel_at_period_end": boolean,"coach_id": string | null,"created_at": string,"days_per_week": number,"decided_at": string | null,"ended_at": string | null,"fee_bps": number,"goals": string,"id": string,"package_id": string | null,"package_kind": string,"package_title": string,"paid_through": string | null,"price_paise": number,"share_data": boolean,"start_date": string,"status": string
+                    "athlete_id": string | null,"cancel_at_period_end": boolean,"coach_id": string | null,"created_at": string,"days_per_week": number,"decided_at": string | null,"ended_at": string | null,"fee_bps": number,"goals": string,"id": string,"package_id": string | null,"package_kind": string,"package_title": string,"paid_through": string | null,"price_paise": number,"share_data": boolean,"start_date": string,"status": string,"engagement_opens": boolean | null
                   }
-                  ComputedFields: never
+                  ComputedFields: "engagement_opens"
                   Insert: {
                     "athlete_id"?: string | null,"cancel_at_period_end"?: boolean,"coach_id"?: string | null,"created_at"?: string,"days_per_week": number,"decided_at"?: string | null,"ended_at"?: string | null,"fee_bps": number,"goals"?: string,"id"?: string,"package_id"?: string | null,"package_kind": string,"package_title": string,"paid_through"?: string | null,"price_paise": number,"share_data"?: boolean,"start_date": string,"status"?: string
                   }
@@ -1198,7 +1198,9 @@ isOneToOne: false
 { Args: { "coach": string }; Returns: undefined
                            },
 "assign_program":
-{ Args: { "engagement": string,"program": string }; Returns: string
+{ Args: { "engagement": string,"program": string }; Returns: {
+              "created": boolean,"enrollment_id": string
+            }[]
                            },
 "attach_provider_order":
 { Args: { "order_": string,"provider_order": string }; Returns: string
@@ -1251,6 +1253,9 @@ isOneToOne: false
 "coach_public_name":
 { Args: { "coach": string }; Returns: string
                            },
+"coach_reads_body":
+{ Args: { "athlete": string }; Returns: boolean
+                           },
 "coach_reads_program":
 { Args: { "athlete": string,"program": string }; Returns: boolean
                            },
@@ -1293,6 +1298,9 @@ isOneToOne: false
                            },
 "email_wanted":
 { Args: { "person": string,"template": string }; Returns: boolean
+                           },
+"engagement_opens":
+{ Args: { "g": Omit<Database["public"]['Tables']["engagements"]['Row'], Database["public"]['Tables']["engagements"]['ComputedFields']> }; Returns: boolean
                            },
 "ever_enrolled":
 { Args: { "program": string }; Returns: boolean

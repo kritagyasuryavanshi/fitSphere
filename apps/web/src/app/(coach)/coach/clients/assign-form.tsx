@@ -39,7 +39,7 @@ export function AssignForm({
       </button>
       {state.error || state.done ? (
         <p role="status" className={`m-0 w-full text-[14px] font-medium ${state.error ? 'text-danger' : ''}`}>
-          {state.error ?? `Assigned. ${athlete} sees it in My programs.`}
+          {state.error ?? (state.done === 'assigned' ? `Assigned. ${athlete} sees it in My programs.` : `${athlete} is already in this program.`)}
         </p>
       ) : null}
     </form>

@@ -31,11 +31,13 @@ export async function decideRequest(_prev: DecideState, formData: FormData): Pro
   return {};
 }
 
-export type AssignState = { error?: string; done?: boolean };
+export type AssignState = { error?: string; done?: 'assigned' | 'already' };
 
 const assignMessages: Record<string, string> = {
   not_active: 'This client is no longer paying, so you cannot assign a program.',
   not_published: 'Publish this program before you assign it.',
+  left_program: 'They left this program. Message them before you assign it again.',
+  not_live: 'Your profile is not live, so you cannot assign programs.',
 };
 
 /** The coach assigns one of their published programs to a paying client. */
@@ -45,7 +47,7 @@ export async function assignProgram(_prev: AssignState, formData: FormData): Pro
   const program = String(formData.get('program') ?? '');
   if (!isUuid(engagement) || !isUuid(program)) return { error: 'Choose a program to assign.' };
   const supabase = await supabaseServer();
-  const { error } = await supabase.rpc('assign_program', { engagement, program });
+  const { data, error } = await supabase.rpc('assign_program', { engagement, program }).single();
   if (error) {
     const known = Object.keys(assignMessages).find((k) => error.message.includes(k));
     if (!known) console.error('assign_program failed', error.code, error.message);
@@ -53,5 +55,5 @@ export async function assignProgram(_prev: AssignState, formData: FormData): Pro
   }
   revalidatePath('/coach/clients');
   revalidatePath('/coach/programs');
-  return { done: true };
+  return { done: data.created ? 'assigned' : 'already' };
 }

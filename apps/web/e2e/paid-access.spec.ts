@@ -46,5 +46,7 @@ test('a coach assigns a program to a paying client, who sees it in My programs',
   const athletePage = await newPage(browser);
   await signInWithEmail(athletePage, athlete.email);
   await athletePage.goto('/account/programs');
-  await expect(athletePage.getByRole('list', { name: 'My programs' }).getByRole('listitem').filter({ hasText: title })).toBeVisible();
+  await expect(
+    athletePage.getByRole('list', { name: 'My programs' }).getByRole('listitem').filter({ hasText: title }),
+  ).toBeVisible();
 });
