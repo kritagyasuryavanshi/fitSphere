@@ -18,21 +18,13 @@ How the graph works: `docs/memory/memory-system.md`. See the graph in the board'
 - **M4-10 (2026-11-21, PR #56, production at 47 of 47 migrations):** paid coaching opens coach access through `engagement_opens`: active or cancelling, `share_data`, and `paid_through` at or after today. Body weight stays behind invite enrollments only (`coach_reads_body`), because the hire form's consent names training logs and sign-up answers. `assign_program` ties an enrollment to its engagement; the enrollment follows the sharing choice and ends (enrollment status `ended`) when the coaching stops. `coach_stats` counts paid clients.
 - **Local e2e:** an old `next start` sits on port 3000, so run Playwright with `E2E_PORT=3100`. The disk is nearly full, which may be why background runs get stopped.
 - **M4-11a (2026-11-21, PR #57, production at 48 of 48 migrations):** monthly renewal on a fake subscription. `apply_payment_event` hands `subscription.*` events to `apply_subscription_event`: charged adds the next month once (anything else is money owed back: a 'failed' renewal order plus a 'duplicate' payment); pending warns; halted lapses. `cancel_coaching` runs coaching to the end of the paid month; the reason sits in `cancel_reasons`, which the coach cannot read. The daily email cron runs `sweep_engagements` (ends run-out coaching, lapses after 7 silent days) and `stopSubscriptions` (cancels subscriptions whose coaching stopped). Coaches get one day of access grace on renewal day. Every change emails both people.
-- **Pending work, 2026-11-21. The full list is in docs/memory/session-14.md.**
-  - **PR #58, M4-19 money-safe deletion: open, not merged.**
-    - The review fixes are pushed as c553725, and all 832 database tests pass.
-    - Still to do:
-      1. Free disk space ([[lesson-disk-full-turbo]]).
-      2. Run `npx supabase stop` then `start`.
-      3. Rerun the e2e: `CI=1 E2E_PORT=3100 npx playwright test e2e/admin-people.spec.ts e2e/money-safe-deletion.spec.ts e2e/account.spec.ts`.
-      4. Get one short second review of c553725, because it changes deletion and money.
-      5. Wait for green CI.
-      6. Push the migration: `npx supabase db push --remote`.
-      7. Merge.
+- **M4-19 (2026-11-22, PR #58, production at 49 of 49 migrations):** money-safe deletion, suspension and role loss are merged. The Codex medium finding moves to M4-18.
+- **Pending work:**
   - **M5-05 judge run:** waits for the owner, at the PC.
-  - **Board:** M4-12 refunds, then M4-13 payouts. M4-11b and M4-09b wait for the Razorpay test keys (O-04). M4-18 decides whether suspension cuts a coach's access at once.
-  - **Owner items:** O-07 legal text, whether the fee includes GST, O-05b coach agreement wording, the Razorpay test keys, and rotating the Gemini key.
-- **Next step for the next session:** finish PR #58 as listed above, then start M4-12.
+  - **Board:** M4-12 refunds, then M4-13 payouts. M4-11b and M4-09b wait for the Razorpay test keys (O-04). M4-18 decides whether suspension cuts a coach's access at once, and whether the athlete gets the unused days back.
+  - **Owner items:** the five M6 plan decisions, O-07 legal text, whether the fee includes GST, O-05b coach agreement wording, the Razorpay test keys, and rotating the Gemini key.
+- **Supabase CLI on the WELCOME PC:** logged in and linked to production. `db push --remote` needs `--yes` in agent mode, and only after the owner says yes.
+- **Next step for the next session:** start M4-12 refunds.
 - **Open owner decisions:** see `docs/memory/owner-decisions.md`.
 - **M6 plan (2026-11-21):** draft in `docs/plans/m6-plan.html`, merged from the Codex and planner reviews. It waits on five owner decisions: launch steps, 18+ beta, a domain (about ₹800 a year), Ask AI hidden in step 1, hiring and chat closed.
 - **2026-11-22, WELCOME PC:** CI is green on PR #58 head c553725, e2e included. The Codex second review found one medium issue, which belongs to M4-18: a suspended coach keeps a cancelling engagement to the paid date but cannot coach. Codex works here on `gpt-6-luna`; this ChatGPT account refuses `gpt-6-astra`.

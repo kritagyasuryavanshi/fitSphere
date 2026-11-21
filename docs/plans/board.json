@@ -1591,7 +1591,7 @@
       "deps": [
         "M4-11a"
       ],
-      "status": "in_progress",
+      "status": "done",
       "owner": "claude",
       "test": "db",
       "ac": [
@@ -1599,8 +1599,9 @@
         "Deletion and coach suspension stop the subscription and end the engagement; must ship before M4-11b goes live",
         "From M4-10: one rule for a deleted coach's clients: ending engagements ends assigned programs, while invite programs stay (programs.coach_id is set null)",
         "From the M4-01 review: deleteAccount refuses an admin before it removes their credential files, and pages past 1,000 files",
-        "2026-11-21: PR #58 is open with the review fixes pushed. Left to do: the e2e rerun once there is disk space, a second review, CI, the production migration push, and the merge"
-      ]
+        "2026-11-22: PR #58 merged (e0257eb) with green CI on c553725, e2e included. Migration pushed first; production at 49 of 49. Codex second review: one medium finding, moved to M4-18 (a suspended coach keeps a cancelling engagement to the paid date but cannot coach)"
+      ],
+      "done_on": "2026-11-22"
     },
     {
       "id": "M4-14",
@@ -1685,7 +1686,8 @@
       "ac": [
         "Follows the approved design X-Report, X-ReportSent and R-Reports",
         "Any user can report a review, message or coach",
-        "Admin can read only reported messages, hide content and suspend a user; every action is logged"
+        "Admin can read only reported messages, hide content and suspend a user; every action is logged",
+        "From the M4-19 Codex review (2026-11-22): a suspended coach, or one who lost the role, leaves the athlete a cancelling engagement to the paid date with no coach; decide a pro-rata refund or an earlier end"
       ],
       "screens": [
         "X-Report",
