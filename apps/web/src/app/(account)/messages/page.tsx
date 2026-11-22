@@ -28,10 +28,22 @@ async function Conversations() {
   );
 }
 
-export default function MessagesPage() {
+async function ClosedNote({ searchParams }: PageProps<'/messages'>) {
+  const { closed } = await searchParams;
+  return closed ? (
+    <p role="status" className="m-0 text-[15px]">
+      Messaging opens with hiring. Your past conversations stay here to read.
+    </p>
+  ) : null;
+}
+
+export default function MessagesPage(props: PageProps<'/messages'>) {
   return (
     <main className="mx-auto flex w-full max-w-[760px] flex-col gap-5 px-4 pb-24 pt-8 md:px-10">
       <h1 className="m-0 font-display text-[48px] font-normal uppercase leading-[0.95]">Messages</h1>
+      <Suspense fallback={null}>
+        <ClosedNote {...props} />
+      </Suspense>
       <Suspense fallback={null}>
         <Conversations />
       </Suspense>

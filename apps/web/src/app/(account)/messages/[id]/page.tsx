@@ -20,12 +20,14 @@ async function Chat({ params }: PageProps<'/messages/[id]'>) {
   const { id } = await params;
   if (!isUuid(id)) notFound();
   const supabase = await supabaseServer();
-  const [list, msgs] = await Promise.all([
+  const [list, msgs, market] = await Promise.all([
     supabase.rpc('my_conversations'),
     // The latest 200, newest first, shown oldest first (a full history passes the API's 1,000-row cap).
     supabase.from('messages').select('id, sender_id, body, created_at').eq('conversation_id', id).order('id', { ascending: false }).limit(SHOWN),
+    supabase.rpc('marketplace_open'),
   ]);
   if (list.error) throw list.error;
+  if (market.error) throw market.error;
   if (msgs.error) throw msgs.error;
   const c = list.data.find((x) => x.conversation_id === id);
   if (!c) notFound();
@@ -62,7 +64,9 @@ async function Chat({ params }: PageProps<'/messages/[id]'>) {
       {c.can_send ? (
         <SendForm conversationId={id} to={c.other_name} />
       ) : (
-        <p className="m-0 text-[15px] text-muted">{c.other_id ? 'This conversation is closed. You can still read it.' : 'This person has left FitSphere.'}</p>
+        <p className="m-0 text-[15px] text-muted">
+          {!c.other_id ? 'This person has left FitSphere.' : !market.data ? 'Messaging opens with hiring. You can still read this conversation.' : 'This conversation is closed. You can still read it.'}
+        </p>
       )}
     </>
   );

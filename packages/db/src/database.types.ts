@@ -43,6 +43,20 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"app_settings": {
+                  Row: {
+                    "id": boolean,"marketplace_open": boolean
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: boolean,"marketplace_open"?: boolean
+                  }
+                  Update: {
+                    "id"?: boolean,"marketplace_open"?: boolean
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"athlete_basics": {
                   Row: {
                     "days_per_week": number,"equipment": (string)[],"injury_notes": string,"updated_at": string,"user_id": string
@@ -1498,6 +1512,9 @@ isOneToOne: false
                            },
 "mark_subscription_cancelled":
 { Args: { "subscription": string }; Returns: undefined
+                           },
+"marketplace_open":
+{ Args: Record<PropertyKey, never>; Returns: boolean
                            },
 "money_invariants":
 { Args: Record<PropertyKey, never>; Returns: {

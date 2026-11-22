@@ -1,6 +1,8 @@
 import { buttonClass } from '@fitsphere/ui';
 import Link from 'next/link';
 import { Suspense, type ReactNode } from 'react';
+import { aiModel } from '@/lib/ai/model';
+import { athleteLinks as linksFor } from '@/lib/athlete-links';
 import { getViewer, type Viewer } from '@/lib/viewer';
 import { Icon } from './icons';
 import { BottomTabs, HeaderLinks, type NavItem } from './nav-links';
@@ -13,13 +15,6 @@ const publicLinks: NavItem[] = [
   { href: '/for-coaches', label: 'For coaches' },
 ];
 
-export const athleteLinks: NavItem[] = [
-  { href: '/today', label: 'Today', icon: 'calendar' },
-  { href: '/learn/boxing', label: 'Learn', icon: 'play' },
-  { href: '/progress', label: 'Progress', icon: 'bars' },
-  { href: '/coaching', label: 'Coaching', icon: 'calendar' },
-  { href: '/ask', label: 'Ask AI', icon: 'chat' },
-];
 
 // Each link shows only to the roles that can open it, so nobody is offered a page that says "not allowed".
 function coachLinks(viewer: Viewer, desktop: boolean): NavItem[] {
@@ -132,6 +127,7 @@ async function AthleteAvatar() {
 
 /** Athletes: Today, Learn and Progress. Phones get the same links as bottom tabs. */
 export function AthleteShell({ children }: { children: ReactNode }) {
+  const athleteLinks = linksFor(aiModel() !== null);
   return (
     <>
       <Frame
