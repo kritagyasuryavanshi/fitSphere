@@ -23,3 +23,17 @@ export async function captureFakeOrder(order: string): Promise<string | null> {
   if (!res.ok) throw new Error(`fake capture failed: ${res.status}`);
   return o.engagement_id;
 }
+
+/**
+ * The fake provider's refund: sends the signed refund.processed webhook Razorpay would, through the real webhook
+ * handler. The database applies it, matching the refund by its payment.
+ */
+export async function processFakeRefund(r: { provider_payment_id: string; amount_paise: number }, providerRefund: string): Promise<void> {
+  if (!fakePaymentsAllowed()) return;
+  const body = JSON.stringify({
+    event: 'refund.processed',
+    payload: { refund: { entity: { id: providerRefund, payment_id: r.provider_payment_id, amount: r.amount_paise, currency: 'INR', status: 'processed' } } },
+  });
+  const res = await handleWebhook(body, signBody(body, process.env.PAYMENTS_WEBHOOK_SECRET!), `fake_evt_${providerRefund}`);
+  if (!res.ok) throw new Error(`fake refund failed: ${res.status}`);
+}

@@ -25,6 +25,7 @@ export const TEMPLATES = [
   'coaching_lapsed',
   'coaching_ended',
   'coaching_stopped',
+  'coaching_refunded',
 ];
 
 const str = (v: unknown) => (typeof v === 'string' ? v : '');
@@ -119,6 +120,17 @@ function coachingEmail(template: string, data: Record<string, unknown>, origin: 
               `${Other} can no longer take payments on FitSphere, so ${pkg} will not renew.`,
               `You keep coaching until ${until}. No more payments are taken; if one goes through by mistake, it is refunded.`,
             ),
+          };
+    case 'coaching_refunded':
+      // The first payment went back (M4-12): the coaching ended at once and the coach's payout is cancelled.
+      return coachView
+        ? {
+            subject: `${Other} was refunded for ${pkg}`,
+            text: lines(`${Other} was refunded ${amount} for ${pkg}, so the coaching has ended and there is no payout for it.`, 'You no longer see their logs.'),
+          }
+        : {
+            subject: `Your payment for ${pkg} is refunded`,
+            text: lines(`We refunded ${amount} for ${pkg} with ${other}.`, 'Your bank can take 5 to 7 working days to show it. The coaching has ended; your logs and past feedback stay with you.'),
           };
     case 'coaching_ended':
       return coachView

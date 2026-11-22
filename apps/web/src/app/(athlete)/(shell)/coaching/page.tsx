@@ -31,7 +31,7 @@ async function Coaching() {
   const supabase = await supabaseServer();
   const { data, error } = await supabase
     .from('engagements')
-    .select('id, coach_id, package_title, package_kind, price_paise, start_date, status, created_at, paid_through, subscriptions(status)')
+    .select('id, coach_id, package_title, package_kind, price_paise, start_date, status, created_at, paid_through, subscriptions(status), orders(payments(refunds(status)))')
     .eq('athlete_id', viewer.userId)
     .order('created_at', { ascending: false });
   if (error) throw error;
@@ -48,6 +48,11 @@ async function Coaching() {
   }
   const names = await Promise.all(data.map((g) => (g.coach_id ? supabase.rpc('coach_public_name', { coach: g.coach_id }) : Promise.resolve({ data: null, error: null }))));
   for (const n of names) if (n.error) throw n.error;
+  // What the athlete can get back now, under the owner's terms (refund_quote); only running coaching can qualify.
+  const quotes = await Promise.all(
+    data.map((g) => (g.status === 'active' || g.status === 'cancelling' ? supabase.rpc('refund_quote', { engagement: g.id }) : Promise.resolve({ data: null, error: null }))),
+  );
+  for (const q of quotes) if (q.error) throw q.error;
 
   return (
     <ul className="m-0 flex list-none flex-col gap-4 p-0">
@@ -56,6 +61,8 @@ async function Coaching() {
         // One conversation per coach, so one Message button: on the newest engagement with them.
         const firstWithCoach = data.findIndex((x) => x.coach_id === g.coach_id) === i;
         const coach = names[i].data ?? 'Your coach';
+        const refundable = quotes[i].data;
+        const refunding = g.orders?.some((o) => o.payments?.some((p) => p.refunds?.some((r) => r.status === 'requested')));
         return (
           <li key={g.id} className="flex flex-col gap-2 border border-line p-5">
             <Tag variant={variant}>{label}</Tag>
@@ -80,6 +87,9 @@ async function Coaching() {
               </p>
             ) : null}
             {g.status === 'cancelling' && g.paid_through ? <p className="m-0 text-[15px]">Coaching until {shortDate(g.paid_through)}. No more payments are taken.</p> : null}
+            {refunding && (g.status === 'active' || g.status === 'cancelling') ? (
+              <p className="m-0 text-[15px]">Refund requested. Coaching ends when the refund goes through.</p>
+            ) : null}
             {g.status === 'accepted' ? (
               <Link href={`/coaching/${g.id}/pay`} className={`${buttonClass()} self-start`}>
                 Pay {formatInr(g.price_paise)}
@@ -96,6 +106,11 @@ async function Coaching() {
             {g.status === 'active' && g.package_kind === 'monthly' ? (
               <Link href={`/coaching/${g.id}/cancel`} className="self-start text-[15px] font-medium text-danger underline underline-offset-4">
                 Cancel coaching
+              </Link>
+            ) : null}
+            {refundable ? (
+              <Link href={`/coaching/${g.id}/refund`} className="self-start text-[15px] font-medium underline underline-offset-4">
+                Ask for a refund
               </Link>
             ) : null}
             {g.status === 'requested' || g.status === 'accepted' ? (
