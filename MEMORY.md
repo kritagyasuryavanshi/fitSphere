@@ -7,7 +7,7 @@ How the graph works: `docs/memory/memory-system.md`. See the graph in the board'
 ## Current state
 - **Phase:** building. Plan and stack approved. Design system, local DB and CI done.
 - **Current milestone:** M3 Coach-Led Training is done ([[M3-check]]); now M4 (marketplace) per `docs/plans/m4-plan.md`; M4-01 to M4-08 done (PRs #40 to #47). All 16 M3 tasks are done (PRs #22 to #39); reviews, fixes and the live checks are in `docs/memory/session-13.md`.
-- **Open PRs:** none. Merge only after the CI run for the PR's head commit is green (`docs/memory/lesson-merge-checks-head-sha.md`).
+- **Open PRs:** none (2026-11-23). Merge only after the CI run for the PR's head commit is green (`docs/memory/lesson-merge-checks-head-sha.md`).
 - **Both PCs:** Docker works; local DB, pgTAP and Playwright run. WELCOME PC details: `docs/memory/env-welcome-pc.md`.
 - **Money terms (owner, 2026-11-20, "use the defaults"; O-05):** platform fee 15% (`fee_bps=1500`, FitSphere pays the gateway fee from it); a full refund within 7 days of the first payment, no refund on renewals, 1:1 sessions refundable up to 24 hours before; the coach payout is held 7 days. The coach agreement wording is still a draft (O-05b).
 - **Owner, 2026-11-20: spend nothing for now; build payment gateways later.** GitHub Actions is blocked by billing ("payments have failed or spending limit"), so CI waits for the free minutes to reset. PR #49 (M4-09a, payment core, all four reviews resolved, all local checks green) stays open and unmerged until CI runs. Every other M4 task needs payments. Build M5 meanwhile with full-text search, which is free, and a fake answerer; the Claude API key and real calls come later.
@@ -27,8 +27,9 @@ How the graph works: `docs/memory/memory-system.md`. See the graph in the board'
   - **Owner items:** look at the refund confirm screen and /coach/reviews, the five M6 plan decisions, free space on C: (about 1.4 GB left), O-07 legal text, whether the fee includes GST, O-05b coach agreement wording, the Razorpay test keys, and rotating the Gemini key.
 - **Supabase CLI on the WELCOME PC:** logged in and linked to production. `db push --remote` needs `--yes` in agent mode, and only after the owner says yes.
 - **M6 (owner, 2026-11-22, "use the defaults"):** see `docs/memory/decision-m6-launch.md`. Three steps: an 18+ invite beta, an open beta after the lawyer, then the marketplace. Hiring and chat closed, Ask AI hidden. The owner buys the domain and makes free Resend and Sentry accounts (O-11).
-- **Next step for the next session:** the step 1 tasks in order: M6-10 stage switches, M6-09 the 18+ gate, M6-03, M6-01, M6-02a, M6-07, M6-12. M6-11 and S0-08 wait on O-11.
+- **2026-11-23:** PRs #61 (M6-10 stage switches), #62 (audit fixes) and #63 (M6-09 18+ gate) are merged. Production has 54 of 54 migrations. Hiring, chat and first checkout are closed in production; `app_settings.marketplace_open = true` opens them (owner approval).
+- **Next step for the next session:** the step 1 tasks in order: M6-03, M6-01, M6-02a, M6-07, M6-12. M6-11 and S0-08 wait on O-11.
 - **Open owner decisions:** see `docs/memory/owner-decisions.md`.
 - **M6 plan (2026-11-21):** draft in `docs/plans/m6-plan.html`, merged from the Codex and planner reviews. It waits on five owner decisions: launch steps, 18+ beta, a domain (about ₹800 a year), Ask AI hidden in step 1, hiring and chat closed.
 - **2026-11-22, WELCOME PC:** CI is green on PR #58 head c553725, e2e included. The Codex second review found one medium issue, which belongs to M4-18: a suspended coach keeps a cancelling engagement to the paid date but cannot coach. Codex works here on `gpt-6-luna`; this ChatGPT account refuses `gpt-6-astra`.
-- **Last session:** `docs/memory/session-15.md`.
+- **Last session:** `docs/memory/session-16.md`.

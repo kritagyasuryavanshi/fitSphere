@@ -1,6 +1,6 @@
 {
   "project": "FitSphere v1",
-  "updated": "2026-11-12",
+  "updated": "2026-11-23",
   "status_values": [
     "todo",
     "in_progress",
@@ -2018,7 +2018,7 @@
       "priority": "P0",
       "size": "S",
       "deps": [],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "db+e2e",
       "ac": [
@@ -2026,8 +2026,10 @@
         "Coaches stay browsable; hiring says coming soon",
         "Ask AI is hidden when no AI provider is set",
         "Checkout stays closed",
-        "One setting opens the marketplace later (step 2)"
-      ]
+        "One setting opens the marketplace later (step 2)",
+        "2026-11-23: PR #61 merged, migration 20261218 pushed first. Production starts closed: app_settings.marketplace_open is false. Opening it for step 2 is a production change that needs the owner"
+      ],
+      "done_on": "2026-11-23"
     },
     {
       "id": "M6-09",
@@ -2036,18 +2038,20 @@
       "priority": "P0",
       "size": "S",
       "deps": [],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "unit+e2e",
       "ac": [
         "Onboarding refuses a date of birth under 18 on the server and keeps nothing more",
         "A test covers 17 years and 364 days, and exactly 18 today",
         "The block screen says why and what happens next",
-        "Pauses decision-no-age-limit (decision-m6-launch)"
+        "Pauses decision-no-age-limit (decision-m6-launch)",
+        "2026-11-23: PR #63 merged, migration 20261220 pushed first. Under-18s go to /welcome/under-18 and nothing is saved; complete_about_you refuses under_18"
       ],
       "screens": [
         "A-Under18"
-      ]
+      ],
+      "done_on": "2026-11-23"
     },
     {
       "id": "M6-02a",
