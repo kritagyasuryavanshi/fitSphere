@@ -2,7 +2,7 @@
 -- hire requests, accepts, conversations and messages by any path. Coaches stay browsable; withdrawing and declining
 -- still work. One setting opens it for step 2.
 begin;
-select plan(18);
+select plan(21);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('f9000000-0000-0000-0000-0000000000c1', 'ss-vikram@t.test', now()),
@@ -61,7 +61,16 @@ select throws_ok($$ insert into public.messages (conversation_id, sender_id, bod
   '22023', 'marketplace_closed', 'or a message');
 select throws_ok($$ insert into public.conversations (athlete_id, coach_id) values ('f9000000-0000-0000-0000-0000000000a1', 'f9000000-0000-0000-0000-0000000000c1') $$,
   '22023', 'marketplace_closed', 'or a conversation');
+-- Checkout too: no first payment for coaching accepted before the switch; a renewal of running coaching still lands.
+update public.engagements set status = 'accepted' where id = 'f9200000-0000-0000-0000-0000000000e3';
+select throws_ok($$ select * from public.start_checkout('f9200000-0000-0000-0000-0000000000e3', 'f9000000-0000-0000-0000-0000000000a3') $$,
+  '22023', 'marketplace_closed', 'checkout stays closed');
+select lives_ok($$ insert into public.orders (engagement_id, amount_paise, fee_bps, kind, period_start, period_end, status, paid_at)
+  values ('f9200000-0000-0000-0000-0000000000e2', 450000, 1500, 'renewal', public.india_today() + 28, public.india_today() + 58, 'paid', now()) $$,
+  'a renewal of running coaching still lands');
 select lives_ok($$ update public.engagements set status = 'ended', ended_at = now() where id = 'f9200000-0000-0000-0000-0000000000e2' $$, 'coaching already running can still end');
+-- Deleting an account still works while closed: nothing on that path writes a request, chat or message.
+select lives_ok($$ delete from auth.users where id = 'f9000000-0000-0000-0000-0000000000a3' $$, 'an athlete with coaching can delete their account');
 
 -- Step 2: one setting opens it.
 update public.app_settings set marketplace_open = true;

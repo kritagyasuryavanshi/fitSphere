@@ -99,3 +99,9 @@ begin
   return id_;
 end;
 $$;
+
+-- Checkout: no first payment while closed, for coaching accepted before the switch. Renewals of running coaching
+-- still land (from the code review).
+create trigger orders_marketplace_open before insert on public.orders
+  for each row when (new.kind = 'first')
+  execute function public.refuse_when_marketplace_closed();
