@@ -48,9 +48,3 @@ export function adherence(completed: number, scheduled: number): number | null {
   return scheduled > 0 ? Math.floor((completed * 100) / scheduled) : null;
 }
 
-/** The mean of the last five technique feels (newest first), to one decimal; null without any. */
-export function skillRating(newestFirst: number[]): number | null {
-  const last = newestFirst.slice(0, 5);
-  if (!last.length) return null;
-  return Math.round((last.reduce((a, b) => a + b, 0) * 10) / last.length) / 10;
-}
