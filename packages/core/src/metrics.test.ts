@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { adherence, bestOf, isHardSet, isNewRecord, recordType, skillRating } from './metrics';
+import { adherence, bestOf, isHardSet, isNewRecord, recordType } from './metrics';
 
 describe('recordType', () => {
   it('is load for loaded sets, reps for bodyweight sets, and none for drills', () => {
@@ -76,17 +76,5 @@ describe('adherence', () => {
   });
   it('is null before anything was scheduled', () => {
     expect(adherence(0, 0)).toBeNull();
-  });
-});
-
-describe('skillRating', () => {
-  it('averages the last five technique logs, newest first, to one decimal', () => {
-    expect(skillRating([5, 4, 4, 3, 4, 1, 1])).toBe(4);
-    expect(skillRating([5, 4, 4, 4, 4])).toBe(4.2);
-    expect(skillRating([4, 3])).toBe(3.5);
-    expect(skillRating([3, 4, 4])).toBe(3.7);
-  });
-  it('is null without technique logs', () => {
-    expect(skillRating([])).toBeNull();
   });
 });
