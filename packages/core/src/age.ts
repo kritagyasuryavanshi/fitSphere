@@ -1,4 +1,4 @@
-// Dates are ISO strings (YYYY-MM-DD). There is no age limit; step 1 only checks the date is real and not in the future.
+// Dates are ISO strings (YYYY-MM-DD). The beta is 18+ (decision-m6-launch); the database enforces it too.
 
 /** Joins the three date-of-birth fields into an ISO date, or null when they are not a real date. */
 export function parseDob(day: string, month: string, year: string): string | null {
@@ -13,4 +13,9 @@ export function parseDob(day: string, month: string, year: string): string | nul
 /** Today's date in India, where every FitSphere user lives in v1. */
 export function indiaToday(now: Date = new Date()): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(now);
+}
+
+/** True from the 18th birthday on. A 29 February birthday turns 18 on 1 March in a common year. */
+export function isAdult(dob: string, today: string): boolean {
+  return `${Number(dob.slice(0, 4)) + 18}${dob.slice(4)}` <= today;
 }

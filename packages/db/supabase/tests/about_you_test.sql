@@ -1,6 +1,6 @@
--- M1-03: sign-up step 1 (name, date of birth, sports). No age limit since 2026-11-12 (owner decision).
+-- M1-03: sign-up step 1 (name, date of birth, sports). 18+ since 2026-11-22 (decision-m6-launch).
 begin;
-select plan(21);
+select plan(23);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('a0000000-0000-0000-0000-00000000000a', 'a@t.test', now()),
@@ -24,9 +24,11 @@ select throws_ok($$ select public.complete_about_you('Kid', (now() + interval '2
 select is((select display_name || '|' || coalesce(date_of_birth::text, 'null') from public.profiles where id = 'a0000000-0000-0000-0000-00000000000a'), '|null', 'a refused attempt stores no name or date of birth');
 select is_empty($$ select 1 from public.athlete_prefs where user_id = 'a0000000-0000-0000-0000-00000000000a' $$, 'a refused attempt stores no sports');
 
--- No age limit: a child can finish step 1 (owner decision, 2026-11-12).
+-- The beta is 18+ (decision-m6-launch): an under-18 is refused, and nothing is stored.
 select set_config('request.jwt.claims', '{"sub":"b0000000-0000-0000-0000-00000000000b","role":"authenticated"}', true);
-select lives_ok(format($$ select public.complete_about_you('Aarav', %L, array['boxing']) $$, ((now() at time zone 'Asia/Kolkata')::date - interval '10 years')::date), 'a 10-year-old can save step 1');
+select throws_ok(format($$ select public.complete_about_you('Aarav', %L, array['boxing']) $$, ((now() at time zone 'Asia/Kolkata')::date - interval '10 years')::date), '22023', 'under_18', 'a 10-year-old is refused');
+select throws_ok(format($$ select public.complete_about_you('Aarav', %L, array['boxing']) $$, ((now() at time zone 'Asia/Kolkata')::date - interval '18 years' + interval '1 day')::date), '22023', 'under_18', 'a day short of 18 is refused');
+select is((select coalesce(date_of_birth::text, 'null') from public.profiles where id = 'b0000000-0000-0000-0000-00000000000b'), 'null', 'a refused under-18 keeps no date of birth');
 select set_config('request.jwt.claims', '{"sub":"a0000000-0000-0000-0000-00000000000a","role":"authenticated"}', true);
 
 select throws_ok($$ select public.complete_about_you('Kid', null, array['boxing']) $$, '22023', 'dob_required', 'a missing date of birth is refused, so it cannot skip the age check');
@@ -43,7 +45,7 @@ select is((select array_agg(category_id order by category_id) from public.athlet
 -- Coming back to step 1 changes the name and sports, never the date of birth.
 select throws_ok($$ select public.complete_about_you('Kabir', '1990-01-01', array['sc']) $$, '22023', 'dob_locked', 'the date of birth cannot be changed');
 select throws_ok($$ select public.complete_about_you('Kabir', null, array['sc']) $$, '22023', 'dob_required', 'a null date cannot clear a saved one');
-select throws_ok($$ select public.complete_about_you('Kabir', '2020-01-01', array['sc']) $$, '22023', 'dob_locked', 'a different date is refused once one is saved');
+select throws_ok($$ select public.complete_about_you('Kabir', '2000-01-01', array['sc']) $$, '22023', 'dob_locked', 'a different date is refused once one is saved');
 select lives_ok(
   format($$ select public.complete_about_you('Kabir S', %L, array['sc']) $$, (select date_of_birth from public.profiles where id = 'a0000000-0000-0000-0000-00000000000a')),
   'step 1 can be saved again with the same date of birth');
