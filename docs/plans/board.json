@@ -1888,7 +1888,8 @@
       "ac": [
         "A route audit script lists every route and finds no dead button or placeholder",
         "Each data screen has a designed empty state",
-        "Coach empty states follow the approved design K-CoachEmpty"
+        "Coach empty states follow the approved design K-CoachEmpty",
+        "Found 2026-11-22: /coaches/[id] logs 'Next.js encountered the unstable value Date.now() while prerendering' (82 times in PR #59's CI log); the page still renders. Find the caller and fix it"
       ]
     },
     {
