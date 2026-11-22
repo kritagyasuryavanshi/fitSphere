@@ -28,13 +28,19 @@ test('step 1 saves the name, date of birth and sports', async ({ page }, testInf
   expect(await savedProfile(email)).toEqual({ display_name: 'Kabir', date_of_birth: birthday(18), sports: ['boxing', 'gym'] });
 });
 
-test('there is no age limit: a child finishes step 1 and the date is kept', async ({ page }, testInfo) => {
-  const email = `e2e-child-${testInfo.project.name}-${Date.now()}@test.fitsphere`;
+test('the beta is 18+: a day short of 18 sees why, and nothing is saved', async ({ page }, testInfo) => {
+  const email = `e2e-minor-${testInfo.project.name}-${Date.now()}@test.fitsphere`;
   await signUp(page, email);
-  await fillAboutYou(page, 'Aarav', birthday(10), ['Boxing']);
+  await fillAboutYou(page, 'Aarav', birthday(18, 1), ['Boxing']);
 
-  await expect(page).toHaveURL('/welcome/2');
-  expect(await savedProfile(email)).toEqual({ display_name: 'Aarav', date_of_birth: birthday(10), sports: ['boxing'] });
+  await expect(page).toHaveURL('/welcome/under-18');
+  await expect(page.getByRole('heading', { level: 1, name: 'FitSphere is 18+ for now' })).toBeVisible();
+  await expect(page.getByText('We did not save your date of birth')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Delete my account' })).toHaveAttribute('href', '/account/delete');
+  expect(await savedProfile(email)).toEqual({ display_name: '', date_of_birth: null, sports: [] });
+  // Signed in but never past step 1, so the app keeps sending them back to it.
+  await page.goto('/today');
+  await expect(page).toHaveURL('/welcome/1');
 });
 
 test('step 1 shows inline errors and keeps what was typed', async ({ page }, testInfo) => {
