@@ -46,7 +46,7 @@
     {
       "id": "M6",
       "name": "Launch",
-      "goal": "Public pages, legal, every state, PWA, speed, accessibility, security, QA, then production."
+      "goal": "Launch in steps: an 18+ invite beta, an open beta after the lawyer, then the marketplace (decision-m6-launch)."
     }
   ],
   "tasks": [
@@ -220,6 +220,22 @@
       "done_on": "2026-11-05"
     },
     {
+      "id": "O-11",
+      "phase": "O",
+      "title": "Buy the domain; make free Resend and Sentry accounts",
+      "priority": "P0",
+      "size": "S",
+      "deps": [],
+      "status": "todo",
+      "owner": "owner",
+      "test": "manual",
+      "ac": [
+        "Domain bought (about ₹800 a year) and its DNS reachable",
+        "Resend verifies the sending domain; the key goes into Vercel, never chat",
+        "A free Sentry project exists; its DSN goes into Vercel"
+      ]
+    },
+    {
       "id": "S0-01",
       "phase": "S0",
       "title": "Owner approves this plan and board",
@@ -373,16 +389,14 @@
       "priority": "P1",
       "size": "S",
       "deps": [
-        "S0-06",
-        "O-09"
+        "O-11"
       ],
       "status": "todo",
       "owner": "claude",
       "test": "manual",
       "ac": [
-        "Tools chosen per Q-12",
-        "Server and browser errors reach the tracker with no personal data",
-        "Events for sign-up, session logged and hire are recorded, so weekly-return numbers can be measured"
+        "Server and browser errors reach Sentry (free tier) with no personal data",
+        "Usage analytics are cut (decision-m6-launch); weekly returners come from SQL"
       ]
     },
     {
@@ -1646,7 +1660,8 @@
       "ac": [
         "A story shows only after the client approves the exact text in the app",
         "Body photos need a second, separate consent",
-        "The client can withdraw consent and the story disappears"
+        "The client can withdraw consent and the story disappears",
+        "2026-11-22: moved to after launch (decision-m6-launch)"
       ]
     },
     {
@@ -1666,7 +1681,8 @@
       "ac": [
         "Follows the approved design X-Book and X-Booked",
         "A slot can be booked once; a second booking of the same slot fails (database constraint test)",
-        "Booking needs payment; cancel follows the refund terms"
+        "Booking needs payment; cancel follows the refund terms",
+        "2026-11-22: moved to after launch (decision-m6-launch)"
       ],
       "screens": [
         "X-Book",
@@ -1833,9 +1849,7 @@
       "title": "Public pages: landing, programs, about, help, for coaches",
       "priority": "P0",
       "size": "M",
-      "deps": [
-        "M4-16"
-      ],
+      "deps": [],
       "status": "todo",
       "owner": "claude",
       "test": "e2e",
@@ -1850,17 +1864,19 @@
       "ac": [
         "Match the canvas at 390 and 1440 px",
         "No invented numbers; every count comes from the database",
+        "Hiring shows \"coming soon\" while the marketplace is closed (M6-10); the M4-16 dependency is dropped",
         "Re-enable the claude-seo plugin (claude plugin enable claude-seo@agricidaniel-claude-seo) and fix every critical finding from /seo audit on public pages"
       ]
     },
     {
       "id": "M6-02",
       "phase": "M6",
-      "title": "Privacy policy and terms",
+      "title": "Privacy notice and terms: the lawyer's text (before the open beta)",
       "priority": "P0",
       "size": "S",
       "deps": [
-        "O-07"
+        "O-07",
+        "M6-02a"
       ],
       "status": "todo",
       "owner": "claude",
@@ -1876,12 +1892,10 @@
     {
       "id": "M6-03",
       "phase": "M6",
-      "title": "Empty, loading and error states on every route; 404",
+      "title": "404, error pages and route audit",
       "priority": "P0",
       "size": "M",
-      "deps": [
-        "M6-01"
-      ],
+      "deps": [],
       "status": "todo",
       "owner": "claude",
       "test": "e2e",
@@ -1889,6 +1903,8 @@
         "P-NotFound"
       ],
       "ac": [
+        "not-found, error and global-error pages",
+        "/styleguide is hidden in production",
         "A route audit script lists every route and finds no dead button or placeholder",
         "Each data screen has a designed empty state",
         "Coach empty states follow the approved design K-CoachEmpty",
@@ -1908,8 +1924,9 @@
       "owner": "claude",
       "test": "manual",
       "ac": [
-        "Manifest, icons and an offline fallback page",
-        "Installs on Android Chrome and iOS Safari"
+        "A manifest and icons; offline mode is cut (decision-m6-launch)",
+        "Installs on Android Chrome and iOS Safari",
+        "Can ship after the beta opens"
       ]
     },
     {
@@ -1942,8 +1959,8 @@
       "owner": "claude",
       "test": "e2e",
       "ac": [
-        "axe finds no serious or critical issue on any route",
-        "Keyboard-only path through sign-up, a session and checkout"
+        "axe finds no serious or critical issue on the beta journeys",
+        "Keyboard-only path through sign-up and a session"
       ]
     },
     {
@@ -1952,39 +1969,195 @@
       "title": "Security review and rate limits",
       "priority": "P0",
       "size": "M",
-      "deps": [
-        "M6-03"
-      ],
+      "deps": [],
       "status": "todo",
       "owner": "claude",
       "test": "all",
       "ac": [
-        "Rate limits on sign-in, AI and payment routes",
-        "/security-review and a Codex review of the full app; findings resolved",
-        "No secrets in the repo or client bundle"
+        "Security headers on every response",
+        "A separate free Supabase project for previews, so previews stop writing to production",
+        "Database caps on spammy writes",
+        "No secrets in the repo or the browser bundle",
+        "/security-review and a Codex review of the whole app; findings resolved",
+        "Sign-in rate limits come from Supabase and Turnstile (M6-11), not custom code"
       ]
     },
     {
       "id": "M6-08",
       "phase": "M6",
-      "title": "Final QA and production launch",
+      "title": "Beta QA and release (step 1a)",
       "priority": "P0",
       "size": "M",
       "deps": [
-        "M6-02",
-        "M6-04",
+        "M6-01",
+        "M6-02a",
+        "M6-03",
         "M6-05",
         "M6-06",
         "M6-07",
-        "M5-05"
+        "M6-09",
+        "M6-10",
+        "M6-11",
+        "M6-12",
+        "M6-13",
+        "S0-08"
       ],
       "status": "todo",
       "owner": "claude",
       "test": "all",
       "ac": [
-        "/qa on the production candidate finds no high-severity bugs",
-        "Design doc M6 Verify list passes",
-        "Owner approves the production deploy"
+        "/qa finds no high-severity bug",
+        "The M6 plan step-1 Verify list passes (docs/plans/m6-plan.html)",
+        "The owner approves inviting the first users"
+      ]
+    },
+    {
+      "id": "M6-10",
+      "phase": "M6",
+      "title": "Stage switches: hiring and chat closed, Ask AI hidden",
+      "priority": "P0",
+      "size": "S",
+      "deps": [],
+      "status": "todo",
+      "owner": "claude",
+      "test": "db+e2e",
+      "ac": [
+        "The database refuses new hire requests and messages while the marketplace is closed, not only the UI",
+        "Coaches stay browsable; hiring says coming soon",
+        "Ask AI is hidden when no AI provider is set",
+        "Checkout stays closed",
+        "One setting opens the marketplace later (step 2)"
+      ]
+    },
+    {
+      "id": "M6-09",
+      "phase": "M6",
+      "title": "18+ gate in onboarding",
+      "priority": "P0",
+      "size": "S",
+      "deps": [],
+      "status": "todo",
+      "owner": "claude",
+      "test": "unit+e2e",
+      "ac": [
+        "Onboarding refuses a date of birth under 18 on the server and keeps nothing more",
+        "A test covers 17 years and 364 days, and exactly 18 today",
+        "The block screen says why and what happens next",
+        "Pauses decision-no-age-limit (decision-m6-launch)"
+      ],
+      "screens": [
+        "A-Under18"
+      ]
+    },
+    {
+      "id": "M6-02a",
+      "phase": "M6",
+      "title": "Privacy notice and terms, full draft",
+      "priority": "P0",
+      "size": "S",
+      "deps": [],
+      "status": "todo",
+      "owner": "claude",
+      "test": "e2e",
+      "ac": [
+        "Covers every table with personal data, every provider (Supabase, Vercel, Resend, Sentry, the AI provider abroad, Razorpay later), retention, withdrawal, the grievance contact, the 18+ rule and breach notice",
+        "Pages at /legal/privacy and /legal/terms; existing links stop returning 404",
+        "Marked as a draft until M6-02 swaps in the lawyer's text"
+      ],
+      "screens": [
+        "P-Legal"
+      ]
+    },
+    {
+      "id": "M6-11",
+      "phase": "M6",
+      "title": "Sign-in release gate",
+      "priority": "P0",
+      "size": "M",
+      "deps": [
+        "O-11"
+      ],
+      "status": "todo",
+      "owner": "claude",
+      "test": "manual",
+      "ac": [
+        "Every release-gate item in TASKS.md is done: confirm email, custom SMTP, Turnstile on sign-in, NEXT_PUBLIC_SITE_URL, our own domains only in the redirect allow-list, auth rate limits",
+        "A magic link reaches an outside Gmail inbox"
+      ]
+    },
+    {
+      "id": "M6-12",
+      "phase": "M6",
+      "title": "Operations: backups, job alerts, runbook",
+      "priority": "P0",
+      "size": "M",
+      "deps": [],
+      "status": "todo",
+      "owner": "claude",
+      "test": "manual",
+      "ac": [
+        "A weekly encrypted backup with one tested restore",
+        "An alert when a daily job fails, fired once in a test",
+        "Old email outbox rows are pruned",
+        "A runbook for a breach and for key rotation"
+      ]
+    },
+    {
+      "id": "M6-13",
+      "phase": "M6",
+      "title": "Content gate",
+      "priority": "P0",
+      "size": "S",
+      "deps": [
+        "O-06"
+      ],
+      "status": "todo",
+      "owner": "claude",
+      "test": "unit",
+      "ac": [
+        "A script counts at least 20 boxing skills and 30 S&C drills, published and not samples",
+        "The script runs in CI before release"
+      ]
+    },
+    {
+      "id": "M6-14",
+      "phase": "M6",
+      "title": "Marketplace compliance",
+      "priority": "P0",
+      "size": "M",
+      "deps": [
+        "O-04",
+        "O-07"
+      ],
+      "status": "todo",
+      "owner": "claude",
+      "test": "manual",
+      "ac": [
+        "A grievance officer and seller details on coach profiles",
+        "A refund policy page",
+        "GST and TCS confirmed with a CA",
+        "The signed coach agreement",
+        "Receipts for every payment"
+      ]
+    },
+    {
+      "id": "M6-08b",
+      "phase": "M6",
+      "title": "Marketplace QA and release (step 2)",
+      "priority": "P0",
+      "size": "M",
+      "deps": [
+        "M4-16",
+        "M6-14",
+        "M6-08"
+      ],
+      "status": "todo",
+      "owner": "claude",
+      "test": "manual",
+      "ac": [
+        "/qa on the marketplace finds no high-severity bug",
+        "One real payment and one real refund",
+        "The owner approves opening the marketplace"
       ]
     }
   ]

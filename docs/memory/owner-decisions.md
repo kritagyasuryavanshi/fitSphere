@@ -2,7 +2,7 @@
 name: owner-decisions
 type: area
 description: Open items that wait on the owner
-updated: 2026-11-19
+updated: 2026-11-22
 ---
 
 - Rest between sets: the prescription has no rest for sets, so the logger uses 90 s with an "Add 30 s" button. Say if coaches should set rest per exercise in the builder ([[programs]], [[session-12]]).
@@ -11,7 +11,7 @@ updated: 2026-11-19
 - Decide with M3-11: may a coach see an athlete's body metrics? Today only profile, sport answers and training basics are shared with the coach ([[programs]]).
 - Sharing the date of birth with an enrolled athlete's coach follows the design ("onboarding data while enrolled"). Say if a coach should see age only.
 - Merge PR #1 to #6, in order ([[ci]]).
-- Before launch: a parental-consent step for under-18s, confirmed by a lawyer. There is no age limit now ([[decision-no-age-limit]]), so the app can hold a child's health data without it.
+- Decided 2026-11-22: the beta is 18+ ([[decision-m6-launch]]). A parental-consent step for under-18s, confirmed by a lawyer, comes after launch.
 - Before real emails use `/auth/confirm`: add a "Continue" page that POSTs, to stop login CSRF. Until then it is test-only ([[route-guards]]).
 - Follow-up for M3/M5: check per-sport answers against option lists stored as data in `categories`, before coaches or the AI read them ([[M1-04-review]]).
 - Before launch: a protected owner account. Today any admin can remove another admin's role; the audit log records it ([[M1-06]] review). Default applied: accepted for M1.
@@ -36,3 +36,4 @@ updated: 2026-11-19
 - Before M4: payment provider, fee %, refund and cancel terms, business and GST registration, coach agreement ([[marketplace]]).
 - Nutrition for fat-loss users ([[decision-no-nutrition]]).
 - Mobbin: only unofficial MCPs exist; needs a paid account. The owner must say "install mobbin-mcp".
+- M6 (2026-11-22, defaults taken, [[decision-m6-launch]]). Owner item O-11: buy the domain (about ₹800 a year), then make free Resend and Sentry accounts. Sign-in for real users (M6-11) and error tracking (S0-08) wait on it. A lawyer review before the open beta, and a CA for GST before the marketplace.
