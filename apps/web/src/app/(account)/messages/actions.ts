@@ -16,13 +16,15 @@ export async function openConversation(formData: FormData): Promise<void> {
   if (!isUuid(engagement)) return;
   const supabase = await supabaseServer();
   const { data, error } = await supabase.rpc('open_conversation', { engagement });
+  // A new conversation while hiring and chat are closed (M6-10): the list says messaging opens with hiring.
+  if (error?.message.includes('marketplace_closed')) redirect('/messages?closed=1');
   if (error) throw error;
   redirect(`/messages/${data}`);
 }
 
 const messages: Record<string, string> = {
   bad_message: 'Write a message of up to 2,000 characters.',
-  closed: 'This person has left FitSphere, so they cannot get messages.',
+  closed: 'You cannot send messages in this conversation right now.',
 };
 
 export async function sendMessage(_prev: SendState, formData: FormData): Promise<SendState> {
