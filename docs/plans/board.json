@@ -1615,7 +1615,7 @@
       "deps": [
         "M4-10"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "db+e2e",
       "screens": [
@@ -1626,8 +1626,10 @@
         "pgTAP: only a client with a paid, finished engagement can review, once per engagement",
         "pgTAP: a coach cannot edit or delete a review",
         "A coach can post one public reply",
-        "Rating on the profile equals the average of reviews"
-      ]
+        "Rating on the profile equals the average of reviews",
+        "2026-11-22: PR #60 merged, production at 51 of 51 migrations. Design: docs/plans/m4-14-reviews.md. A review needs a finished paid period (owner default); a review of coaching refunded later stops counting. /coach/reviews is a new screen for the owner's look"
+      ],
+      "done_on": "2026-11-22"
     },
     {
       "id": "M4-15",
@@ -1691,7 +1693,8 @@
         "Any user can report a review, message or coach",
         "Admin can read only reported messages, hide content and suspend a user; every action is logged",
         "From the M4-19 Codex review (2026-11-22): a suspended coach, or one who lost the role, leaves the athlete a cancelling engagement to the paid date with no coach; decide a pro-rata refund or an earlier end",
-        "From M4-12: an admin page lists payments, money owed back and failed or stuck refunds (money_invariants), with a Refund button that calls admin_refund"
+        "From M4-12: an admin page lists payments, money owed back and failed or stuck refunds (money_invariants), with a Refund button that calls admin_refund",
+        "From M4-14: a Report link on each public review; hiding sets reviews.hidden_at, which drops it from the profile and the rating"
       ],
       "screens": [
         "X-Report",
