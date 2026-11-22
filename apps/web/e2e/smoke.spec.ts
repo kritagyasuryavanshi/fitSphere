@@ -14,6 +14,16 @@ test('home page renders', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1, name: 'FitSphere' })).toBeVisible();
 });
 
+test('every page refuses to load in a frame on another site', async ({ request }) => {
+  for (const path of ['/', '/account/delete']) {
+    const h = (await request.get(path, { maxRedirects: 0 })).headers();
+    expect(h['x-frame-options']).toBe('DENY');
+    expect(h['content-security-policy']).toContain("frame-ancestors 'none'");
+    expect(h['x-content-type-options']).toBe('nosniff');
+    expect(h['referrer-policy']).toBe('strict-origin-when-cross-origin');
+  }
+});
+
 for (const [email, role] of seededUsers) {
   test(`seeded ${role} ${email} can sign in`, async ({}, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'An API check; one viewport is enough.');
