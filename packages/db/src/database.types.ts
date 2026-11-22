@@ -1518,7 +1518,9 @@ isOneToOne: false
 { Args: { "g": Omit<Database["public"]['Tables']["engagements"]['Row'], Database["public"]['Tables']["engagements"]['ComputedFields']>,"template_": string }; Returns: undefined
                            },
 "queue_owed_back_refunds":
-{ Args: Record<PropertyKey, never>; Returns: number
+{ Args: Record<PropertyKey, never>; Returns: {
+              "amount_paise": number,"provider_payment_id": string,"refund_id": string
+            }[]
                            },
 "queue_session_reminders":
 { Args: Record<PropertyKey, never>; Returns: number

@@ -31,7 +31,8 @@ create unique index refunds_one_live on public.refunds (payment_id) where status
 alter table public.refunds enable row level security;
 revoke all on public.refunds from anon, authenticated;
 grant all on public.refunds to service_role;
-grant select on public.refunds to authenticated;
+-- The athlete and the coach read a refund's state, never who asked for it or an admin's note.
+grant select (id, payment_id, amount_paise, reason, status, created_at, processed_at) on public.refunds to authenticated;
 create policy refunds_select_party on public.refunds for select to authenticated
   using (public.is_admin() or exists (select 1 from public.payments p join public.orders o on o.id = p.order_id join public.engagements g on g.id = o.engagement_id
     where p.id = payment_id and (g.athlete_id = (select auth.uid()) or g.coach_id = (select auth.uid()))));
@@ -140,16 +141,17 @@ begin
 end;
 $$;
 
--- Service role only, from the daily cron: a refund for every payment owed back that has none. Returns how many.
+-- Service role only, from the daily cron: a refund for every payment owed back that has none. Returns them, so the
+-- cron sends them in the same run.
 create function public.queue_owed_back_refunds()
-returns int
+returns table (refund_id uuid, provider_payment_id text, amount_paise bigint)
 language plpgsql
 security definer
 set search_path = ''
 as $$
-declare
-  n int;
+#variable_conflict use_column
 begin
+  return query
   with q as (
     insert into public.refunds (payment_id, amount_paise, reason)
     select p.id, p.amount_paise, 'owed_back' from public.payments p
@@ -163,8 +165,7 @@ begin
     from q join public.payments p on p.id = q.payment_id join public.orders o on o.id = p.order_id join public.engagements g on g.id = o.engagement_id
     returning 1
   )
-  select count(*)::int into n from q;
-  return n;
+  select q.id, p.provider_payment_id, q.amount_paise from q join public.payments p on p.id = q.payment_id;
 end;
 $$;
 
@@ -236,6 +237,12 @@ begin
     update public.payment_events set result = 'ignored', note = 'fake payments are off' where id = ev;
     return 'ignored';
   end if;
+  -- Locks in the order request_refund takes them: the engagement, then the payment.
+  select g2.* into g from public.payments p2 join public.orders o2 on o2.id = p2.order_id join public.engagements g2 on g2.id = o2.engagement_id
+  where p2.provider_payment_id = pid;
+  if g.id is not null then
+    perform 1 from public.engagements where id = g.id for update;
+  end if;
   select * into pay from public.payments where provider_payment_id = pid for update;
   if pay.id is null then
     update public.payment_events set result = 'ignored', note = 'unknown payment' where id = ev;
@@ -297,7 +304,10 @@ begin
     update public.payouts set status = 'reversed' where payment_id = pay.id and status in ('pending', 'on_hold', 'manual_due');
     select * into g from public.engagements where id = o.engagement_id for update;
     was := g.status;
-    if o.kind = 'first' then
+    if o.kind = 'first' and exists (select 1 from public.orders x where x.engagement_id = g.id and x.kind = 'renewal' and x.status = 'paid') then
+      -- An admin refunds the first month of coaching already renewed: the months paid since run on.
+      null;
+    elsif o.kind = 'first' then
       -- The first payment back: the coaching is refunded and access ends at once.
       if was <> 'refunded' then
         update public.engagements set status = 'refunded', ended_at = coalesce(ended_at, now()) where id = g.id returning * into g;
@@ -330,7 +340,8 @@ begin
 end;
 $$;
 
--- apply_payment_event as in 20261214000000_renewals.sql, handing refund events to apply_refund_event.
+-- apply_payment_event as in 20261214000000_renewals.sql, handing refund events to apply_refund_event, and holding a
+-- session's payout until the session can no longer be refunded.
 create or replace function public.apply_payment_event(event_id text, event_type text, body jsonb)
 returns text
 language plpgsql
@@ -408,8 +419,10 @@ begin
   returning id into pay;
   update public.engagements set status = 'active', paid_through = o.period_end where id = g.id;
   fee := public.fee_paise(amount, o.fee_bps);
+  -- A session stays refundable until 2 days before it, so its payout waits at least until the day before (M4-12).
   insert into public.payouts (payment_id, coach_id, gross_paise, fee_paise, net_paise, hold_until)
-  values (pay, g.coach_id, amount, fee, amount - fee, now() + make_interval(days => public.payout_hold_days()));
+  values (pay, g.coach_id, amount, fee, amount - fee, greatest(now() + make_interval(days => public.payout_hold_days()),
+    case when g.package_kind = 'single' then (o.period_start - 1)::timestamp at time zone 'Asia/Kolkata' end));
   if g.athlete_id is not null then
     insert into public.notifications (user_id, kind, title, body, link, ref)
     values (g.athlete_id, 'payment_received', 'Payment received', 'We received your payment for ' || g.package_title || '. Coaching runs ' || o.period_start || ' to ' || o.period_end || '.',
@@ -469,8 +482,11 @@ as $$
   select 'running coaching with its first payment refunded', g.id from public.engagements g
   where g.status in ('active', 'cancelling')
     and exists (select 1 from public.orders o join public.payments p on p.order_id = o.id where o.engagement_id = g.id and o.kind = 'first' and p.status = 'refunded')
+    and not exists (select 1 from public.orders x where x.engagement_id = g.id and x.kind = 'renewal' and x.status = 'paid')
   union all
-  select 'refund event ignored', null::uuid from public.payment_events e where e.type like 'refund.%' and e.result = 'ignored';
+  -- Only an ignored refund event that points to a problem; a type with nothing to do, or a repeat, is not one.
+  select 'refund event ignored', null::uuid from public.payment_events e where e.type like 'refund.%' and e.result = 'ignored'
+    and e.note not in ('event type not handled yet', 'payment already refunded', 'no requested refund', 'fake payments are off');
 $$;
 
 revoke all on function public.refund_window_days() from public;

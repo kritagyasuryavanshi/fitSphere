@@ -15,13 +15,14 @@ export async function GET(request: Request) {
     console.error('sweeping engagements failed', e);
     return null;
   });
-  const stopped = await stopSubscriptions().catch((e) => {
-    console.error('stopping subscriptions failed', e);
-    return null;
-  });
-  // Money owed back is refunded, and refunds that did not reach the provider are sent again (M4-12).
+  // Money owed back is refunded, and refunds that did not reach the provider are sent again (M4-12). Before stopping
+  // subscriptions, so coaching refunded here has its subscription stopped in the same run.
   const refunded = await sendPendingRefunds().catch((e) => {
     console.error('sending refunds failed', e);
+    return null;
+  });
+  const stopped = await stopSubscriptions().catch((e) => {
+    console.error('stopping subscriptions failed', e);
     return null;
   });
   const reminded = await queueSessionReminders().catch((e) => {

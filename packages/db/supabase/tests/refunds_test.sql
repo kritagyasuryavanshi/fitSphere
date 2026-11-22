@@ -2,7 +2,7 @@
 -- by hand, and money owed back is refunded by the daily cron. The provider's refund events, applied by the one writer
 -- of money state, end the coaching, reverse the payout and log each step. See docs/plans/m4-12-refunds.md.
 begin;
-select plan(68);
+select plan(76);
 
 update public.payment_settings set fake_allowed = false;
 insert into auth.users (id, email, email_confirmed_at) values
@@ -14,7 +14,8 @@ insert into auth.users (id, email, email_confirmed_at) values
   ('f3000000-0000-0000-0000-0000000000a4', 'rf-isha@t.test', now()),
   ('f3000000-0000-0000-0000-0000000000a5', 'rf-arjun@t.test', now()),
   ('f3000000-0000-0000-0000-0000000000a6', 'rf-meera@t.test', now()),
-  ('f3000000-0000-0000-0000-0000000000a7', 'rf-dev@t.test', now());
+  ('f3000000-0000-0000-0000-0000000000a7', 'rf-dev@t.test', now()),
+  ('f3000000-0000-0000-0000-0000000000a8', 'rf-tara@t.test', now());
 insert into public.user_roles (user_id, role) values ('f3000000-0000-0000-0000-0000000000c1', 'coach'), ('f3000000-0000-0000-0000-0000000000d1', 'admin');
 update public.profiles set display_name = 'Vikram' where id = 'f3000000-0000-0000-0000-0000000000c1';
 update public.profiles set display_name = 'Kabir' where id = 'f3000000-0000-0000-0000-0000000000a1';
@@ -93,7 +94,7 @@ select is(public.refund_quote('f4000000-0000-0000-0000-0000000000e6'), null, 'a 
 select pg_temp.as_user('f3000000-0000-0000-0000-0000000000a1');
 select throws_ok($$ select * from public.request_refund('f4000000-0000-0000-0000-0000000000e3') $$, '42501', 'not_yours', 'nobody refunds someone else''s payment');
 select throws_ok($$ select * from public.attach_provider_refund(gen_random_uuid(), 'rfnd_x') $$, '42501', null, 'a signed-in person cannot attach a provider refund');
-select throws_ok($$ select public.queue_owed_back_refunds() $$, '42501', null, 'nor queue refunds');
+select throws_ok($$ select * from public.queue_owed_back_refunds() $$, '42501', null, 'nor queue refunds');
 select throws_ok($$ select * from public.refunds_to_send(0) $$, '42501', null, 'nor list refunds to send');
 select throws_ok($$ select * from public.admin_refund('f6000000-0000-0000-0000-0000000000f6', 'x') $$, '42501', 'not_admin', 'nor refund by hand unless an admin');
 reset role;
@@ -137,6 +138,8 @@ select is((select count(*)::int from public.money_invariants() where ref in ('f4
   'the refund breaks no money rule');
 select is(pg_temp.refund_event('evt_k1', 'refund.processed', 'rfnd_k1', 'pay_k1'), 'duplicate', 'the same event again is a duplicate');
 select is(pg_temp.refund_event('evt_k2', 'refund.processed', 'rfnd_k1', 'pay_k1'), 'ignored', 'the same refund in a new event is ignored');
+select is(pg_temp.refund_event('evt_c1', 'refund.created', 'rfnd_k1', 'pay_k1'), 'ignored', 'an event type with nothing to do is ignored');
+select is((select count(*)::int from public.money_invariants() where rule = 'refund event ignored'), 1, 'and raises no alert; only the partial refund does');
 select is(pg_temp.refund_event('evt_u1', 'refund.processed', 'rfnd_u1', 'pay_unknown'), 'ignored', 'a refund of an unknown payment is ignored');
 select is(pg_temp.refund_event('evt_f1', 'refund.processed', 'fake_rfnd_1', 'pay_r1', 120000), 'ignored', 'a fake refund is ignored while fake payments are off');
 
@@ -151,8 +154,8 @@ select is((select row(r.provider_refund_id, r.status)::text from pg_temp.refund_
 select is((select status from public.engagements where id = 'f4000000-0000-0000-0000-0000000000e3'), 'refunded', 'the session is refunded');
 
 -- Money owed back is refunded by the cron, whatever the renewal rule says.
-select is(public.queue_owed_back_refunds(), 1, 'the cron queues a refund for the payment owed back');
-select is(public.queue_owed_back_refunds(), 0, 'only once');
+select is((select count(*)::int from public.queue_owed_back_refunds() where provider_payment_id = 'pay_a2'), 1, 'the cron queues a refund for the payment owed back, and sends it in the same run');
+select is((select count(*)::int from public.queue_owed_back_refunds()), 0, 'only once');
 select is((select row(r.reason, r.requested_by)::text from pg_temp.refund_of('pay_a2') r), row('owed_back', null::uuid)::text, 'a refund nobody asked for');
 select ok(exists (select 1 from public.refunds_to_send(0) where provider_payment_id = 'pay_a2'), 'it waits to be sent');
 select ok(not exists (select 1 from public.refunds_to_send(10) where provider_payment_id = 'pay_a2'), 'a refund the server may still be sending waits 10 minutes');
@@ -160,6 +163,15 @@ select is(pg_temp.refund_event('evt_a2', 'refund.processed', 'rfnd_a2', 'pay_a2'
 select is((select status from public.payments where provider_payment_id = 'pay_a2'), 'refunded', 'the payment is refunded');
 select is((select status from public.engagements where id = 'f4000000-0000-0000-0000-0000000000e5'), 'active', 'the coaching it was owed back from runs on');
 select ok(not exists (select 1 from public.money_invariants() where ref = 'f6000000-0000-0000-0000-0000000000f5'), 'nothing is owed back any more');
+
+-- An admin refunds the first month of coaching already renewed: the paid month runs on.
+set local role authenticated;
+select pg_temp.as_user('f3000000-0000-0000-0000-0000000000d1');
+select is((select amount_paise from public.admin_refund('f6000000-0000-0000-0000-0000000000e6', 'Goodwill')), 450000::bigint, 'an admin refunds a first month by hand');
+reset role;
+select is(pg_temp.refund_event('evt_m1', 'refund.processed', 'rfnd_m1', 'pay_m1'), 'applied', 'that refund is applied');
+select is((select status from public.engagements where id = 'f4000000-0000-0000-0000-0000000000e6'), 'active', 'the renewed month the athlete paid for runs on');
+select ok(not exists (select 1 from public.money_invariants() where ref = 'f4000000-0000-0000-0000-0000000000e6'), 'and breaks no money rule');
 
 -- An admin refunds a renewed month: the coaching ends, and the earlier month still counts.
 set local role authenticated;
@@ -192,6 +204,16 @@ reset role;
 select is(public.attach_provider_refund((pg_temp.refund_of('pay_d1')).id, 'rfnd_d2'), 'rfnd_d2', 'the new refund is attached');
 select is(pg_temp.refund_event('evt_d3', 'refund.processed', 'rfnd_d3', 'pay_d1'), 'ignored', 'a different refund of the same payment is ignored');
 select is((select row(r.provider_refund_id, r.status)::text from pg_temp.refund_of('pay_d1') r), row('rfnd_d2', 'requested')::text, 'and the requested refund is untouched');
+
+-- A session paid for well ahead: the coach's payout waits until the session can no longer be refunded.
+insert into public.engagements (id, athlete_id, coach_id, package_title, package_kind, price_paise, fee_bps, start_date, days_per_week, status, share_data) values
+  ('f4000000-0000-0000-0000-0000000000e8', 'f3000000-0000-0000-0000-0000000000a8', 'f3000000-0000-0000-0000-0000000000c1', 'Form check', 'single', 120000, 1500, public.india_today() + 20, 3, 'accepted', true);
+insert into public.orders (engagement_id, amount_paise, fee_bps, period_start, period_end, provider_order_id) values
+  ('f4000000-0000-0000-0000-0000000000e8', 120000, 1500, public.india_today() + 20, public.india_today() + 20, 'order_t1');
+select is(public.apply_payment_event('evt_t1', 'payment.captured', jsonb_build_object('event', 'payment.captured', 'payload', jsonb_build_object('payment',
+  jsonb_build_object('entity', jsonb_build_object('id', 'pay_t1', 'order_id', 'order_t1', 'amount', 120000, 'currency', 'INR'))))), 'applied', 'Tara pays for a session in 20 days');
+select is((select u.hold_until from public.payouts u join public.payments p on p.id = u.payment_id where p.provider_payment_id = 'pay_t1'),
+  ((public.india_today() + 19)::timestamp at time zone 'Asia/Kolkata'), 'the payout is held to the day before the session, when refunds close');
 
 -- A refund made at the provider's dashboard is recorded too; a payout already paid to the coach is flagged.
 select is(pg_temp.refund_event('evt_n1', 'refund.processed', 'rfnd_n1', 'pay_n1'), 'applied', 'a refund made at the provider is applied');

@@ -33,12 +33,16 @@ function liveDeps(): RefundDeps | null {
   if (!provider || !process.env.SUPABASE_SECRET_KEY) return null;
   const db = createDbClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? '', process.env.SUPABASE_SECRET_KEY);
   return {
-    refund: (r) => provider.refund({ paymentId: r.provider_payment_id, amountPaise: r.amount_paise, refund: r.refund_id }),
+    refund: async (r) => {
+      const made = await provider.refund({ paymentId: r.provider_payment_id, amountPaise: r.amount_paise, refund: r.refund_id });
+      // The fake has no provider to send the processed event, so it sends it here, through the real webhook, before
+      // the attach: the event finds the refund by its payment. If it fails, nothing is attached and the cron retries.
+      if (provider.name === 'fake') await processFakeRefund(r, made.id);
+      return made;
+    },
     attach: async (refund, providerRefund) => {
       const { error } = await db.rpc('attach_provider_refund', { refund, provider_refund: providerRefund });
       if (error) throw error;
-      // The fake has no provider to send the processed event, so it sends it here, through the real webhook.
-      if (provider.name === 'fake') await processFakeRefund(providerRefund);
     },
   };
 }
@@ -50,8 +54,9 @@ export async function sendRefundsNow(rows: RefundRow[]): Promise<number | null> 
 }
 
 /**
- * The daily cron: a refund for every payment owed back, then every requested refund not yet at the provider and more
- * than 10 minutes old (one the server is still sending is left alone). Returns how many were sent.
+ * The daily cron: a refund for every payment owed back, sent at once, then every requested refund not yet at the
+ * provider and more than 10 minutes old. A younger one may still be on its way from the server. Returns how many were
+ * sent.
  */
 export async function sendPendingRefunds(): Promise<number | null> {
   const deps = liveDeps();
@@ -61,5 +66,6 @@ export async function sendPendingRefunds(): Promise<number | null> {
   if (queued.error) throw queued.error;
   const { data, error } = await db.rpc('refunds_to_send', { min_age_minutes: 10 });
   if (error) throw error;
-  return sendRefunds(data, deps);
+  const fresh = new Set(queued.data.map((r) => r.refund_id));
+  return sendRefunds([...queued.data, ...data.filter((r) => !fresh.has(r.refund_id))], deps);
 }

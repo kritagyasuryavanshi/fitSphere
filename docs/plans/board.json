@@ -1579,7 +1579,8 @@
       "ac": [
         "Unit: coach share = price − fee, exact to the paisa, for 3 sample prices",
         "Earnings page totals equal the payments table",
-        "pgTAP: a coach sees only their own payouts"
+        "pgTAP: a coach sees only their own payouts",
+        "From M4-12: never release a payout while its payment has a requested refund; a session payout is held to the day before the session"
       ]
     },
     {
