@@ -1549,7 +1549,7 @@
         "M4-09a",
         "O-05"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "unit+e2e",
       "ac": [
@@ -1557,8 +1557,10 @@
         "A refund ends the engagement and reverses the coach's share",
         "Every refund is logged",
         "From M4-10: decide whether a refund of one renewal sets the engagement 'refunded' (ends assigned programs and drops the client from coach_stats entirely) or 'ended'/'lapsed'",
-        "From M4-11a: refund money owed back by payments.status = 'duplicate' (failed renewal orders hold it); the no-refund-on-renewals rule must not block those. A refund of a first payment must also stop the subscription"
-      ]
+        "From M4-11a: refund money owed back by payments.status = 'duplicate' (failed renewal orders hold it); the no-refund-on-renewals rule must not block those. A refund of a first payment must also stop the subscription",
+        "2026-11-22: PR #59 merged (cc37221), production at 50 of 50 migrations. Design: docs/plans/m4-12-refunds.md. Decision: an admin refund of a renewal ends the coaching (ended); a first-month refund after a renewal leaves it running. The admin refund page moves to M4-18"
+      ],
+      "done_on": "2026-11-22"
     },
     {
       "id": "M4-13",
@@ -1688,7 +1690,8 @@
         "Follows the approved design X-Report, X-ReportSent and R-Reports",
         "Any user can report a review, message or coach",
         "Admin can read only reported messages, hide content and suspend a user; every action is logged",
-        "From the M4-19 Codex review (2026-11-22): a suspended coach, or one who lost the role, leaves the athlete a cancelling engagement to the paid date with no coach; decide a pro-rata refund or an earlier end"
+        "From the M4-19 Codex review (2026-11-22): a suspended coach, or one who lost the role, leaves the athlete a cancelling engagement to the paid date with no coach; decide a pro-rata refund or an earlier end",
+        "From M4-12: an admin page lists payments, money owed back and failed or stuck refunds (money_invariants), with a Refund button that calls admin_refund"
       ],
       "screens": [
         "X-Report",
