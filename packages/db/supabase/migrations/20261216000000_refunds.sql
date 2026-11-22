@@ -237,11 +237,12 @@ begin
     update public.payment_events set result = 'ignored', note = 'fake payments are off' where id = ev;
     return 'ignored';
   end if;
-  -- Locks in the order request_refund takes them: the engagement, then the payment.
-  select g2.* into g from public.payments p2 join public.orders o2 on o2.id = p2.order_id join public.engagements g2 on g2.id = o2.engagement_id
-  where p2.provider_payment_id = pid;
-  if g.id is not null then
-    perform 1 from public.engagements where id = g.id for update;
+  -- Locks in one order everywhere: the order, the engagement, then the payment. apply_payment_event takes the order
+  -- then the engagement; request_refund takes the engagement then the payment.
+  select o2.* into o from public.payments p2 join public.orders o2 on o2.id = p2.order_id where p2.provider_payment_id = pid;
+  if o.id is not null then
+    perform 1 from public.orders where id = o.id for update;
+    perform 1 from public.engagements where id = o.engagement_id for update;
   end if;
   select * into pay from public.payments where provider_payment_id = pid for update;
   if pay.id is null then
