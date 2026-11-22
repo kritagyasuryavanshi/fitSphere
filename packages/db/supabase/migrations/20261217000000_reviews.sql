@@ -33,7 +33,8 @@ grant select on public.reviews to authenticated;
 create policy reviews_select_party on public.reviews for select to authenticated
   using (athlete_id = (select auth.uid()) or coach_id = (select auth.uid()) or public.is_admin());
 
--- Whether this coaching has earned a review: not refunded, and at least one paid period ended before today.
+-- Whether this coaching has earned a review: not refunded or waiting for a refund, and at least one paid period ended
+-- before today.
 create function public.review_eligible(g public.engagements)
 returns boolean
 language sql
@@ -42,7 +43,9 @@ security definer
 set search_path = ''
 as $$
   select g.athlete_id is not null and g.coach_id is not null and g.status <> 'refunded'
-    and exists (select 1 from public.orders o where o.engagement_id = g.id and o.status = 'paid' and o.period_end < public.india_today());
+    and exists (select 1 from public.orders o where o.engagement_id = g.id and o.status = 'paid' and o.period_end < public.india_today())
+    and not exists (select 1 from public.orders o join public.payments p on p.order_id = o.id join public.refunds f on f.payment_id = p.id
+      where o.engagement_id = g.id and f.status = 'requested');
 $$;
 
 -- Whether the caller can review this coaching now: their own, eligible, and not yet reviewed.
@@ -131,6 +134,9 @@ begin
   if not found or auth.uid() is null or v.coach_id is distinct from auth.uid() then
     raise exception 'not_yours' using errcode = '42501';
   end if;
+  if v.hidden_at is not null then
+    raise exception 'hidden' using errcode = '22023';
+  end if;
   if char_length(text_) not between 1 and 1000 then
     raise exception 'bad_reply' using errcode = '22023';
   end if;
@@ -144,7 +150,18 @@ begin
 end;
 $$;
 
--- The rating of a coach: the average of visible reviews, to one decimal, and how many there are.
+-- A review that shows and counts: not hidden, and its coaching not refunded since.
+create function public.review_visible(r public.reviews)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select r.hidden_at is null and not exists (select 1 from public.engagements g where g.id = r.engagement_id and g.status = 'refunded');
+$$;
+
+-- The rating of a live coach: the average of visible reviews, to one decimal, and how many there are.
 create function public.coach_rating(coach uuid)
 returns table (rating numeric, review_count int)
 language sql
@@ -152,26 +169,42 @@ stable
 security definer
 set search_path = ''
 as $$
-  select round(avg(r.rating)::numeric, 1), count(*)::int from public.reviews r where r.coach_id = coach and r.hidden_at is null;
+  select round(avg(r.rating)::numeric, 1), count(*)::int from public.reviews r
+  where r.coach_id = coach and public.review_visible(r) and public.coach_is_live(coach);
 $$;
 
 -- The public reviews of a live coach, newest first. The author shows as first name and last initial; the athlete's id
 -- is never returned.
 create function public.coach_reviews(coach uuid, max_rows int default 20)
-returns table (id uuid, author text, package_title text, months_paid int, created_at timestamptz, month text, rating smallint, technique text,
+returns table (id uuid, author text, package_title text, package_kind text, months_paid int, created_at timestamptz, month text, rating smallint, technique text,
   feedback_speed text, value_for_money text, body text, coach_reply text, replied_at timestamptz)
 language sql
 stable
 security definer
 set search_path = ''
 as $$
-  select r.id, public.review_author(r.athlete_id), g.package_title,
+  select r.id, public.review_author(r.athlete_id), g.package_title, g.package_kind,
     (select count(*)::int from public.orders o where o.engagement_id = g.id and o.status = 'paid'),
     r.created_at, to_char(r.created_at at time zone 'Asia/Kolkata', 'Mon YYYY'), r.rating, r.technique, r.feedback_speed, r.value_for_money, r.body, r.coach_reply, r.replied_at
   from public.reviews r join public.engagements g on g.id = r.engagement_id
-  where r.coach_id = coach and r.hidden_at is null and public.coach_is_live(coach)
+  where r.coach_id = coach and public.review_visible(r) and public.coach_is_live(coach)
   order by r.created_at desc, r.id
   limit least(greatest(coalesce(max_rows, 20), 1), 100);
+$$;
+
+-- The caller's reviews as a coach, all of them, hidden ones too, with the author as the public sees them.
+create function public.my_reviews()
+returns table (id uuid, author text, package_title text, package_kind text, rating smallint, body text, coach_reply text,
+  hidden_at timestamptz, created_at timestamptz)
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select r.id, public.review_author(r.athlete_id), g.package_title, g.package_kind, r.rating, r.body, r.coach_reply, r.hidden_at, r.created_at
+  from public.reviews r join public.engagements g on g.id = r.engagement_id
+  where r.coach_id = (select auth.uid())
+  order by r.created_at desc, r.id;
 $$;
 
 -- find_coaches as in 20261205000000_shortlists.sql, with the verified rating and count.
@@ -210,10 +243,10 @@ begin
       (select min(k.price_paise) from public.packages k where k.coach_id = p.coach_id and k.live and k.kind = 'monthly') as from_paise,
       exists (select 1 from public.credentials cr where cr.coach_id = p.coach_id and cr.status = 'checked') as checked,
       -- The verified rating (M4-14): the average of visible reviews.
-      (select x.rating from public.coach_rating(p.coach_id) x) as rating,
-      (select x.review_count from public.coach_rating(p.coach_id) x) as review_count
+      x.rating, x.review_count
     from public.coach_profiles p
     join public.profiles pr on pr.id = p.coach_id
+    cross join lateral public.coach_rating(p.coach_id) x
     where public.coach_is_live(p.coach_id)
   )
   select c.coach_id, c.name, c.headline, c.specialties, c.formats, c.city, c.years, c.languages, c.from_paise, c.checked, c.rating, c.review_count
@@ -328,7 +361,9 @@ begin
 end;
 $$;
 
-revoke all on function public.review_eligible(public.engagements), public.review_author(uuid) from public, anon, authenticated;
+revoke all on function public.review_eligible(public.engagements), public.review_author(uuid), public.review_visible(public.reviews) from public, anon, authenticated;
+revoke all on function public.my_reviews() from public, anon;
+grant execute on function public.my_reviews() to authenticated;
 revoke all on function public.can_review(uuid), public.post_review(uuid, smallint, text, text, text, text), public.reply_review(uuid, text) from public, anon;
 grant execute on function public.can_review(uuid), public.post_review(uuid, smallint, text, text, text, text), public.reply_review(uuid, text) to authenticated;
 revoke all on function public.coach_rating(uuid), public.coach_reviews(uuid, int) from public;

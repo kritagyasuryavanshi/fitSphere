@@ -33,7 +33,7 @@ async function Review({ params, searchParams }: PageProps<'/coaching/[id]/review
   if (!isUuid(id)) notFound();
   const supabase = await supabaseServer();
   const [g, allowed] = await Promise.all([
-    supabase.from('engagements').select('coach_id, package_title, orders(status)').eq('id', id).eq('athlete_id', viewer.userId).maybeSingle(),
+    supabase.from('engagements').select('coach_id, package_title, package_kind, orders(status)').eq('id', id).eq('athlete_id', viewer.userId).maybeSingle(),
     supabase.rpc('can_review', { engagement: id }),
   ]);
   if (g.error) throw g.error;
@@ -48,7 +48,7 @@ async function Review({ params, searchParams }: PageProps<'/coaching/[id]/review
     <form action={postReview} aria-labelledby="review-title" className="flex flex-col gap-6">
       <input type="hidden" name="engagement" value={id} />
       <p className="m-0 inline-flex items-center gap-1.5 text-[13px] font-semibold text-success">
-        Verified client · {g.data.package_title} · {months} {months === 1 ? 'month' : 'months'}
+        Verified client · {g.data.package_title} · {g.data.package_kind === 'single' ? 'a session' : `${months} ${months === 1 ? 'month' : 'months'}`}
       </p>
       <h1 id="review-title" className="m-0 font-display text-[48px] font-normal uppercase leading-[0.95]">
         Review {coach}

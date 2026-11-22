@@ -13,16 +13,12 @@ const when = (iso: string) => new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia
 // The coach's reviews, newest first (M4-14). A coach replies once, in public, and cannot edit or remove a review.
 // The author shows as on the public profile: first name and last initial.
 async function Reviews({ searchParams }: PageProps<'/coach/reviews'>) {
-  const viewer = await requireRole('coach');
+  await requireRole('coach');
   const { error } = await searchParams;
   const supabase = await supabaseServer();
-  const [mine, shown] = await Promise.all([
-    supabase.from('reviews').select('id, rating, body, coach_reply, hidden_at, created_at').eq('coach_id', viewer.userId).order('created_at', { ascending: false }),
-    supabase.rpc('coach_reviews', { coach: viewer.userId, max_rows: 100 }),
-  ]);
+  // Every review of this coach's coaching, hidden ones too, with the author as the public sees them.
+  const mine = await supabase.rpc('my_reviews');
   if (mine.error) throw mine.error;
-  if (shown.error) throw shown.error;
-  const authors = new Map(shown.data.map((r) => [r.id, r.author]));
   if (!mine.data.length) return <p className="m-0 text-[16px]">No reviews yet. Clients can review once a paid month or session has finished.</p>;
   return (
     <>
@@ -35,7 +31,7 @@ async function Reviews({ searchParams }: PageProps<'/coach/reviews'>) {
         {mine.data.map((r) => (
           <li key={r.id} className="flex flex-col gap-2 border border-line p-5">
             <p className="m-0 text-[16px] font-semibold">
-              {authors.get(r.id) ?? 'A client'} <span className="font-normal text-muted">· {r.rating} of 5 · {when(r.created_at)}</span>
+              {r.author} <span className="font-normal text-muted">· {r.rating} of 5 · {when(r.created_at)}</span>
             </p>
             {r.hidden_at ? <p className="m-0 text-[14px] text-muted">Hidden by FitSphere. It does not show or count.</p> : null}
             <p className="m-0 text-[16px] leading-[1.6]">{r.body}</p>
@@ -43,7 +39,7 @@ async function Reviews({ searchParams }: PageProps<'/coach/reviews'>) {
               <p className="m-0 border-l-2 border-line-strong pl-3 text-[15px] text-ink-soft">
                 <span className="font-medium text-ink">Your reply:</span> {r.coach_reply}
               </p>
-            ) : (
+            ) : r.hidden_at ? null : (
               <form action={replyReview} className="flex flex-col gap-3">
                 <input type="hidden" name="review" value={r.id} />
                 <label className="flex flex-col gap-2 text-[15px] font-medium">

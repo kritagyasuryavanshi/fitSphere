@@ -30,15 +30,18 @@ test('a client reviews a finished month, the coach replies once, and the profile
   await form.getByLabel('Your review').fill('He fixed my guard in the first week.');
   await form.getByRole('button', { name: 'Post review' }).click();
 
-  await expect(page).toHaveURL(new RegExp(`/coaches/${coach.id}#reviews$`));
+  await expect(page).toHaveURL('/coaching');
+  await expect(page.getByRole('link', { name: 'Review Leela' })).toHaveCount(0);
+  await page.goto(`/coaches/${coach.id}`);
   const reviews = page.getByRole('region', { name: 'Reviews' });
   await expect(reviews).toContainText('5.0 (1 verified review)');
   await expect(reviews).toContainText('Kabir S.');
   await expect(reviews).toContainText('Verified client · Online coaching, 1 month');
   await expect(reviews).toContainText('He fixed my guard in the first week.');
   await expect(reviews).not.toContainText('Singh');
-  await page.goto('/coaching');
-  await expect(page.getByRole('link', { name: 'Review Leela' })).toHaveCount(0);
+  // The directory says the same as the profile.
+  await page.goto(`/coaches?city=${encodeURIComponent((await db.from('coach_profiles').select('city').eq('coach_id', coach.id).single()).data!.city!)}`);
+  await expect(page.getByText('5.0 (1 verified review)')).toBeVisible();
 
   // The coach replies once, in public.
   const { data: coachUser } = await db.auth.admin.getUserById(coach.id);

@@ -2,7 +2,7 @@
 -- Nobody edits or deletes a review; the coach replies once, in public. The rating is the average of visible reviews.
 -- See docs/plans/m4-14-reviews.md.
 begin;
-select plan(43);
+select plan(51);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('f7000000-0000-0000-0000-0000000000c1', 'rv-vikram@t.test', now()),
@@ -102,6 +102,16 @@ select throws_ok($$ select public.reply_review((select id from public.reviews li
 reset role;
 select is((select count(*)::int from public.notifications where user_id = 'f7000000-0000-0000-0000-0000000000a1' and kind = 'review_reply'), 1, 'the athlete is told');
 
+-- A refund on its way: no review until it is settled.
+insert into public.payments (order_id, provider_payment_id, amount_paise, currency, status)
+select o.id, 'pay_rv_isha', 120000, 'INR', 'captured' from public.orders o where o.engagement_id = 'f8000000-0000-0000-0000-0000000000e4';
+insert into public.refunds (payment_id, amount_paise, reason) select id, 120000, 'admin' from public.payments where provider_payment_id = 'pay_rv_isha';
+set local role authenticated;
+select pg_temp.as_user('f7000000-0000-0000-0000-0000000000a4');
+select ok(not public.can_review('f8000000-0000-0000-0000-0000000000e4'), 'coaching with a refund on its way cannot be reviewed');
+reset role;
+update public.refunds set status = 'failed' where payment_id = (select id from public.payments where provider_payment_id = 'pay_rv_isha');
+
 -- Two more reviews, then the rating.
 set local role authenticated;
 select pg_temp.as_user('f7000000-0000-0000-0000-0000000000a4');
@@ -118,6 +128,7 @@ select is((select array_agg(author order by rating desc) from public.coach_revie
 select is((select row(package_title, months_paid, coach_reply is not null)::text from public.coach_reviews('f7000000-0000-0000-0000-0000000000c1') where author = 'Kabir S.'),
   row('Online coaching', 1, true)::text, 'each shows the package, the months paid and the reply');
 select is((select months_paid from public.coach_reviews('f7000000-0000-0000-0000-0000000000c1') where author = 'Meera I.'), 2, 'renewed months count');
+select is((select package_kind from public.coach_reviews('f7000000-0000-0000-0000-0000000000c1') where author = 'Isha'), 'single', 'a session review says it was a session');
 select throws_ok($$ select * from public.reviews $$, '42501', null, 'a signed-out caller cannot read the table itself');
 reset role;
 
@@ -125,6 +136,22 @@ reset role;
 update public.reviews set hidden_at = now() where engagement_id = 'f8000000-0000-0000-0000-0000000000e6';
 select is((select row(rating, review_count)::text from public.coach_rating('f7000000-0000-0000-0000-0000000000c1')), row(4.5, 2)::text, 'a hidden review does not count');
 select is((select count(*)::int from public.coach_reviews('f7000000-0000-0000-0000-0000000000c1')), 2, 'or show');
+set local role authenticated;
+select pg_temp.as_user('f7000000-0000-0000-0000-0000000000c1');
+select is((select array_agg(author order by rating desc) from public.my_reviews()), array['Kabir S.', 'Isha', 'Meera I.'], 'the coach sees every review of theirs, hidden too, with names');
+select throws_ok($$ select public.reply_review((select id from public.reviews where engagement_id = 'f8000000-0000-0000-0000-0000000000e6'), 'Sorry') $$, '22023', 'hidden', 'nobody replies to a hidden review');
+select pg_temp.as_user('f7000000-0000-0000-0000-0000000000a2');
+select is((select count(*)::int from public.my_reviews()), 0, 'my_reviews lists only the caller''s own coaching');
+reset role;
+-- Coaching refunded after its review: the review no longer shows or counts.
+update public.engagements set status = 'refunded' where id = 'f8000000-0000-0000-0000-0000000000e4';
+select is((select row(rating, review_count)::text from public.coach_rating('f7000000-0000-0000-0000-0000000000c1')), row(5.0, 1)::text, 'a review of refunded coaching does not count');
+select is((select count(*)::int from public.coach_reviews('f7000000-0000-0000-0000-0000000000c1')), 1, 'or show');
+update public.engagements set status = 'active' where id = 'f8000000-0000-0000-0000-0000000000e4';
+-- A coach who is not live shows no rating.
+update public.coach_profiles set status = 'draft' where coach_id = 'f7000000-0000-0000-0000-0000000000c1';
+select is((select review_count from public.coach_rating('f7000000-0000-0000-0000-0000000000c1')), 0, 'a coach who is not live has no public rating');
+update public.coach_profiles set status = 'live' where coach_id = 'f7000000-0000-0000-0000-0000000000c1';
 
 -- The data download has the review; deleting the account deletes it.
 set local role authenticated;

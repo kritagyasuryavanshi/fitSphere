@@ -115,7 +115,7 @@ export async function postReview(formData: FormData): Promise<void> {
     console.error('post_review failed', error.code, error.message);
     redirect(`/coaching/${id}/review?error=failed`);
   }
-  const { data: g } = await supabase.from('engagements').select('coach_id').eq('id', id).maybeSingle();
+  // Back to the coaching list: the coach's public page may be closed (paused or suspended).
   revalidatePath('/coaching');
-  redirect(g?.coach_id ? `/coaches/${g.coach_id}#reviews` : '/coaching');
+  redirect('/coaching');
 }

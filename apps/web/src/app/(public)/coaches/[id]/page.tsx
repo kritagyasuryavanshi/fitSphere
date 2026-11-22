@@ -24,6 +24,7 @@ export async function generateMetadata({ params }: PageProps<'/coaches/[id]'>): 
 }
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const paidFor = (kind: string, n: number) => (kind === 'single' ? 'a session' : `${n} ${n === 1 ? 'month' : 'months'}`);
 
 // P-Coach (first version, M4-02): a live coach's public profile. RLS returns only live coaches, their live packages and
 // slots, and checked credentials. Stats come from a definer function over FitSphere records (M4-05). Programs are
@@ -212,7 +213,7 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
                     {r.author} <span className="font-normal text-muted">· {r.rating} of 5</span>
                   </p>
                   <p className="m-0 text-[14px] text-muted">
-                    Verified client · {r.package_title}, {r.months_paid} {r.months_paid === 1 ? 'month' : 'months'} · {r.month}
+                    Verified client · {r.package_title}, {paidFor(r.package_kind, r.months_paid)} · {r.month}
                   </p>
                   <p className="m-0 text-[16px] leading-[1.6]">{r.body}</p>
                   {r.coach_reply ? (
