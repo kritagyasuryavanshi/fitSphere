@@ -34,7 +34,7 @@ test.describe('lesson pages', () => {
     expect(error).toBeNull();
     for (const path of [`/learn/boxing/${slug}`, '/learn/gym/jab']) {
       await page.goto(path);
-      await expect(page.getByRole('heading', { name: 'This page could not be found.' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Out of the ring.' })).toBeVisible();
       await expect(page.getByText('Secret draft')).toHaveCount(0);
     }
     await db.from('content_items').delete().eq('slug', slug);

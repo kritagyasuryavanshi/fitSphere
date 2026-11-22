@@ -58,7 +58,7 @@ test.describe('library', () => {
     // notFound() inside Suspense streams a soft 404: the not-found page with noindex, status 200.
     for (const path of ['/learn/cricket', '/learn/nope']) {
       await page.goto(path);
-      await expect(page.getByRole('heading', { name: 'This page could not be found.' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: 'Out of the ring.' })).toBeVisible();
     }
   });
 });
