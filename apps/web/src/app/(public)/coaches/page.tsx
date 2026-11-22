@@ -158,7 +158,7 @@ async function Directory({ searchParams }: PageProps<'/coaches'>) {
                   ))}
                 </div>
                 <p className="m-0 text-[15px] text-muted">
-                  {c.review_count ? `${c.rating} (${c.review_count} verified reviews)` : 'No reviews yet'}
+                  {c.review_count ? `${Number(c.rating).toFixed(1)} (${c.review_count} verified ${c.review_count === 1 ? 'review' : 'reviews'})` : 'No reviews yet'}
                 </p>
                 <p className="m-0 text-[15px] text-muted">
                   {[c.formats.map((x) => (x === 'in_person' ? 'In person' : 'Online')).join(' · '), c.coach_city, c.years ? `${c.years} years` : ''].filter(Boolean).join(' · ')}

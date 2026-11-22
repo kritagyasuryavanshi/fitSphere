@@ -52,7 +52,7 @@ async function Compare({ searchParams }: PageProps<'/coaches/compare'>) {
   const later = 'Not tracked yet';
   const rows: [string, (col: (typeof cols)[number]) => ReactNode][] = [
     ['Best for', ({ c }) => c.specialties.slice(0, 3).join(', ') || c.headline],
-    ['Rating', ({ c }) => (c.review_count ? `${c.rating} · ${c.review_count} reviews` : 'No reviews yet')],
+    ['Rating', ({ c }) => (c.review_count ? `${Number(c.rating).toFixed(1)} · ${c.review_count} ${c.review_count === 1 ? 'review' : 'reviews'}` : 'No reviews yet')],
     ['Experience', ({ c }) => (c.years ? `${c.years} years (self-reported)` : 'Not given')],
     ['Credentials', ({ c }) => (c.checked ? 'Credentials checked' : 'Credentials self-reported')],
     ['Online coaching', ({ c }) => (c.from_paise !== null ? `${formatInr(c.from_paise)} / month` : 'Not offered')],

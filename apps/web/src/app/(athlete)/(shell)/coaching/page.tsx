@@ -53,6 +53,9 @@ async function Coaching() {
     data.map((g) => (g.status === 'active' || g.status === 'cancelling' ? supabase.rpc('refund_quote', { engagement: g.id }) : Promise.resolve({ data: null, error: null }))),
   );
   for (const q of quotes) if (q.error) throw q.error;
+  // Coaching with a finished paid period that is not yet reviewed (can_review).
+  const reviewable = await Promise.all(data.map((g) => (g.coach_id && g.paid_through ? supabase.rpc('can_review', { engagement: g.id }) : Promise.resolve({ data: false, error: null }))));
+  for (const r of reviewable) if (r.error) throw r.error;
 
   return (
     <ul className="m-0 flex list-none flex-col gap-4 p-0">
@@ -106,6 +109,11 @@ async function Coaching() {
             {g.status === 'active' && g.package_kind === 'monthly' ? (
               <Link href={`/coaching/${g.id}/cancel`} className="self-start text-[15px] font-medium text-danger underline underline-offset-4">
                 Cancel coaching
+              </Link>
+            ) : null}
+            {reviewable[i].data ? (
+              <Link href={`/coaching/${g.id}/review`} className="self-start text-[15px] font-medium underline underline-offset-4">
+                Review {coach}
               </Link>
             ) : null}
             {refundable ? (

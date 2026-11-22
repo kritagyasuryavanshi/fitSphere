@@ -121,6 +121,9 @@ export default function ClientsPage() {
           <Link href="/messages" className="text-[15px] font-medium underline underline-offset-4">
             Messages
           </Link>
+          <Link href="/coach/reviews" className="text-[15px] font-medium underline underline-offset-4">
+            Reviews
+          </Link>
           <Link href="/coach/profile" className="text-[15px] font-medium underline underline-offset-4">
             Edit profile and prices
           </Link>

@@ -84,3 +84,38 @@ export async function requestRefund(formData: FormData): Promise<void> {
   revalidatePath('/coaching');
   redirect('/coaching');
 }
+
+const ASPECT = ['excellent', 'good', 'okay'];
+const aspect = (v: FormDataEntryValue | null) => (typeof v === 'string' && ASPECT.includes(v) ? v : undefined);
+
+/**
+ * The athlete posts a review of their coaching (X-Review, M4-14). The database checks who may review, once, and the
+ * values; the form's own checks only save a round trip.
+ */
+export async function postReview(formData: FormData): Promise<void> {
+  await requireRole('athlete');
+  const id = String(formData.get('engagement') ?? '');
+  if (!isUuid(id)) redirect('/coaching');
+  const rating = Number(formData.get('rating'));
+  const body = String(formData.get('body') ?? '').trim();
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) redirect(`/coaching/${id}/review?error=rating`);
+  if (!body || body.length > 1000) redirect(`/coaching/${id}/review?error=body`);
+  const supabase = await supabaseServer();
+  const { error } = await supabase.rpc('post_review', {
+    engagement: id,
+    rating,
+    body,
+    technique: aspect(formData.get('technique')),
+    feedback_speed: aspect(formData.get('feedback_speed')),
+    value_for_money: aspect(formData.get('value_for_money')),
+  });
+  if (error) {
+    // Already reviewed, or no longer eligible (a double click, an old tab): the list shows how it stands.
+    if (error.message.includes('already_reviewed') || error.message.includes('not_eligible')) redirect('/coaching');
+    console.error('post_review failed', error.code, error.message);
+    redirect(`/coaching/${id}/review?error=failed`);
+  }
+  // Back to the coaching list: the coach's public page may be closed (paused or suspended).
+  revalidatePath('/coaching');
+  redirect('/coaching');
+}

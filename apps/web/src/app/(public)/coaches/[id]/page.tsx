@@ -24,17 +24,18 @@ export async function generateMetadata({ params }: PageProps<'/coaches/[id]'>): 
 }
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const paidFor = (kind: string, n: number) => (kind === 'single' ? 'a session' : `${n} ${n === 1 ? 'month' : 'months'}`);
 
 // P-Coach (first version, M4-02): a live coach's public profile. RLS returns only live coaches, their live packages and
 // slots, and checked credentials. Stats come from a definer function over FitSphere records (M4-05). Programs are
 // private (invite only); the portfolio lists only those the coach chose to show (M4-05b).
-// shortcut: reviews arrive with M4-14; until then the page says so.
+// Reviews are verified (M4-14): only clients with a finished paid period, shown with first name and last initial.
 async function Coach({ params }: PageProps<'/coaches/[id]'>) {
   const { id } = await params;
   if (!isUuid(id)) notFound();
   const supabase = await supabaseServer();
   const viewer = await getViewer();
-  const [profile, name, packages, slots, credentials, stats, lessons, mine, room, programs, open] = await Promise.all([
+  const [profile, name, packages, slots, credentials, stats, lessons, mine, room, programs, reviews, rating, open] = await Promise.all([
     supabase.from('coach_profiles').select('headline, philosophy, specialties, languages, formats, city, years').eq('coach_id', id).maybeSingle(),
     supabase.rpc('coach_public_name', { coach: id }),
     supabase.from('packages').select('id, title, kind, price_paise').eq('coach_id', id).eq('live', true).order('price_paise'),
@@ -45,11 +46,13 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
     viewer ? supabase.from('shortlists').select('coach_id').eq('coach_id', id) : Promise.resolve({ data: [], error: null }),
     supabase.rpc('coach_has_room', { coach: id }),
     supabase.rpc('coach_programs', { coach: id }),
+    supabase.rpc('coach_reviews', { coach: id }),
+    supabase.rpc('coach_rating', { coach: id }).maybeSingle(),
     viewer
       ? supabase.from('engagements').select('id').eq('athlete_id', viewer.userId).eq('coach_id', id).in('status', ['requested', 'accepted', 'active', 'cancelling'])
       : Promise.resolve({ data: [], error: null }),
   ]);
-  for (const r of [profile, name, packages, slots, credentials, stats, lessons, mine, room, programs, open]) if (r.error) throw r.error;
+  for (const r of [profile, name, packages, slots, credentials, stats, lessons, mine, room, programs, reviews, rating, open]) if (r.error) throw r.error;
   const st = stats.data;
   const statRows: [string, string][] = st
     ? [
@@ -197,7 +200,35 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
         <h2 id="reviews" className="m-0 text-[22px] font-semibold">
           Reviews
         </h2>
-        <p className="m-0 text-[16px] text-ink-soft">No reviews yet. Only clients with a paid, finished engagement can review.</p>
+        {reviews.data?.length && rating.data?.rating ? (
+          <>
+            <p className="m-0 text-[16px]">
+              <strong className="text-[20px]">{Number(rating.data.rating).toFixed(1)}</strong> ({rating.data.review_count} verified{' '}
+              {rating.data.review_count === 1 ? 'review' : 'reviews'})
+            </p>
+            <ul className="m-0 flex list-none flex-col gap-4 p-0">
+              {reviews.data.map((r) => (
+                <li key={r.id} className="flex flex-col gap-1 border-t border-line pt-4">
+                  <p className="m-0 text-[16px] font-semibold">
+                    {r.author} <span className="font-normal text-muted">· {r.rating} of 5</span>
+                  </p>
+                  <p className="m-0 text-[14px] text-muted">
+                    Verified client · {r.package_title}, {paidFor(r.package_kind, r.months_paid)} · {r.month}
+                  </p>
+                  <p className="m-0 text-[16px] leading-[1.6]">{r.body}</p>
+                  {r.coach_reply ? (
+                    <p className="m-0 mt-1 border-l-2 border-line-strong pl-3 text-[15px] text-ink-soft">
+                      <span className="font-medium text-ink">Reply from {name.data || 'the coach'}:</span> {r.coach_reply}
+                    </p>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+            <p className="m-0 text-[14px] text-muted">Only clients with a paid, finished engagement can review.</p>
+          </>
+        ) : (
+          <p className="m-0 text-[16px] text-ink-soft">No reviews yet. Only clients with a paid, finished engagement can review.</p>
+        )}
       </section>
 
       {p.languages.length ? <p className="m-0 text-[15px] text-muted">Speaks {p.languages.join(', ')}.</p> : null}

@@ -507,9 +507,9 @@ isOneToOne: true
                   ]
                 },"engagements": {
                   Row: {
-                    "athlete_id": string | null,"cancel_at_period_end": boolean,"coach_id": string | null,"created_at": string,"days_per_week": number,"decided_at": string | null,"ended_at": string | null,"fee_bps": number,"goals": string,"id": string,"package_id": string | null,"package_kind": string,"package_title": string,"paid_through": string | null,"price_paise": number,"share_data": boolean,"start_date": string,"status": string,"engagement_opens": boolean | null,"refundable_payment": string | null
+                    "athlete_id": string | null,"cancel_at_period_end": boolean,"coach_id": string | null,"created_at": string,"days_per_week": number,"decided_at": string | null,"ended_at": string | null,"fee_bps": number,"goals": string,"id": string,"package_id": string | null,"package_kind": string,"package_title": string,"paid_through": string | null,"price_paise": number,"share_data": boolean,"start_date": string,"status": string,"engagement_opens": boolean | null,"refundable_payment": string | null,"review_eligible": boolean | null
                   }
-                  ComputedFields: "engagement_opens" | "refundable_payment"
+                  ComputedFields: "engagement_opens" | "refundable_payment" | "review_eligible"
                   Insert: {
                     "athlete_id"?: string | null,"cancel_at_period_end"?: boolean,"coach_id"?: string | null,"created_at"?: string,"days_per_week": number,"decided_at"?: string | null,"ended_at"?: string | null,"fee_bps": number,"goals"?: string,"id"?: string,"package_id"?: string | null,"package_kind": string,"package_title": string,"paid_through"?: string | null,"price_paise": number,"share_data"?: boolean,"start_date": string,"status"?: string
                   }
@@ -985,6 +985,38 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"reviews": {
+                  Row: {
+                    "athlete_id": string,"body": string,"coach_id": string,"coach_reply": string | null,"created_at": string,"engagement_id": string,"feedback_speed": string | null,"hidden_at": string | null,"id": string,"rating": number,"replied_at": string | null,"technique": string | null,"value_for_money": string | null,"review_visible": boolean | null
+                  }
+                  ComputedFields: "review_visible"
+                  Insert: {
+                    "athlete_id": string,"body": string,"coach_id": string,"coach_reply"?: string | null,"created_at"?: string,"engagement_id": string,"feedback_speed"?: string | null,"hidden_at"?: string | null,"id"?: string,"rating": number,"replied_at"?: string | null,"technique"?: string | null,"value_for_money"?: string | null
+                  }
+                  Update: {
+                    "athlete_id"?: string,"body"?: string,"coach_id"?: string,"coach_reply"?: string | null,"created_at"?: string,"engagement_id"?: string,"feedback_speed"?: string | null,"hidden_at"?: string | null,"id"?: string,"rating"?: number,"replied_at"?: string | null,"technique"?: string | null,"value_for_money"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "reviews_athlete_id_fkey"
+      columns: ["athlete_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "reviews_coach_id_fkey"
+      columns: ["coach_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "reviews_engagement_id_fkey"
+      columns: ["engagement_id"]
+isOneToOne: true
+      referencedRelation: "engagements"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"saves": {
                   Row: {
                     "created_at": string,"item_id": string,"user_id": string
@@ -1293,6 +1325,9 @@ isOneToOne: false
               "display_name": string,"id": string
             }[]
                            },
+"can_review":
+{ Args: { "engagement": string }; Returns: boolean
+                           },
 "cancel_coaching":
 { Args: { "engagement": string,"reason"?: string }; Returns: string
                            },
@@ -1339,6 +1374,11 @@ isOneToOne: false
 "coach_public_name":
 { Args: { "coach": string }; Returns: string
                            },
+"coach_rating":
+{ Args: { "coach": string }; Returns: {
+              "rating": number,"review_count": number
+            }[]
+                           },
 "coach_reads_body":
 { Args: { "athlete": string }; Returns: boolean
                            },
@@ -1348,6 +1388,11 @@ isOneToOne: false
 "coach_requests":
 { Args: Record<PropertyKey, never>; Returns: {
               "athlete_name": string,"cancel_at_period_end": boolean,"created_at": string,"days_per_week": number,"engagement_id": string,"goals": string,"package_kind": string,"package_title": string,"paid_through": string,"price_paise": number,"share_data": boolean,"start_date": string,"status": string
+            }[]
+                           },
+"coach_reviews":
+{ Args: { "coach": string,"max_rows"?: number }; Returns: {
+              "author": string,"body": string,"coach_reply": string,"created_at": string,"feedback_speed": string,"id": string,"month": string,"months_paid": number,"package_kind": string,"package_title": string,"rating": number,"replied_at": string,"technique": string,"value_for_money": string
             }[]
                            },
 "coach_stats":
@@ -1482,6 +1527,11 @@ isOneToOne: false
               "category_id": string,"coach_name": string,"enrollment_id": string,"joined_at": string,"program_id": string,"start_date": string,"summary": string,"title": string,"version_id": string,"weeks": number
             }[]
                            },
+"my_reviews":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "author": string,"body": string,"coach_reply": string,"created_at": string,"hidden_at": string,"id": string,"package_kind": string,"package_title": string,"rating": number
+            }[]
+                           },
 "new_invite_code":
 { Args: Record<PropertyKey, never>; Returns: string
                            },
@@ -1499,6 +1549,9 @@ isOneToOne: false
                            },
 "platform_fee_bps":
 { Args: Record<PropertyKey, never>; Returns: number
+                           },
+"post_review":
+{ Args: { "body": string,"engagement": string,"feedback_speed"?: string,"rating": number,"technique"?: string,"value_for_money"?: string }; Returns: string
                            },
 "program_invite":
 { Args: { "program": string }; Returns: string
@@ -1548,6 +1601,9 @@ isOneToOne: false
 "reply_feedback":
 { Args: { "body": string,"feedback": string }; Returns: string
                            },
+"reply_review":
+{ Args: { "reply": string,"review": string }; Returns: undefined
+                           },
 "request_coaching":
 { Args: { "days": number,"goals": string,"package": string,"share": boolean,"start": string }; Returns: string
                            },
@@ -1573,8 +1629,17 @@ isOneToOne: false
               "category_id": string,"dose": Json,"item_id": string,"kind": Database["public"]['Enums']["content_kind"],"mistakes": string,"rank": number,"safety": string,"slug": string,"steps": string,"summary": string,"title": string
             }[]
                            },
+"review_author":
+{ Args: { "athlete": string }; Returns: string
+                           },
 "review_content":
 { Args: { "approve": boolean,"item": string,"note": string }; Returns: undefined
+                           },
+"review_eligible":
+{ Args: { "g": Omit<Database["public"]['Tables']["engagements"]['Row'], Database["public"]['Tables']["engagements"]['ComputedFields']> }; Returns: boolean
+                           },
+"review_visible":
+{ Args: { "r": Omit<Database["public"]['Tables']["reviews"]['Row'], Database["public"]['Tables']["reviews"]['ComputedFields']> }; Returns: boolean
                            },
 "revoke_role":
 { Args: { "old_role": Database["public"]['Enums']["app_role"],"target": string }; Returns: undefined
