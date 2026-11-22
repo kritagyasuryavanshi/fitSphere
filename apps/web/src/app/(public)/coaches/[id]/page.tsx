@@ -35,7 +35,7 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
   if (!isUuid(id)) notFound();
   const supabase = await supabaseServer();
   const viewer = await getViewer();
-  const [profile, name, packages, slots, credentials, stats, lessons, mine, room, programs, reviews, rating, open] = await Promise.all([
+  const [profile, name, packages, slots, credentials, stats, lessons, mine, room, programs, reviews, rating, market, open] = await Promise.all([
     supabase.from('coach_profiles').select('headline, philosophy, specialties, languages, formats, city, years').eq('coach_id', id).maybeSingle(),
     supabase.rpc('coach_public_name', { coach: id }),
     supabase.from('packages').select('id, title, kind, price_paise').eq('coach_id', id).eq('live', true).order('price_paise'),
@@ -48,11 +48,12 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
     supabase.rpc('coach_programs', { coach: id }),
     supabase.rpc('coach_reviews', { coach: id }),
     supabase.rpc('coach_rating', { coach: id }).maybeSingle(),
+    supabase.rpc('marketplace_open'),
     viewer
       ? supabase.from('engagements').select('id').eq('athlete_id', viewer.userId).eq('coach_id', id).in('status', ['requested', 'accepted', 'active', 'cancelling'])
       : Promise.resolve({ data: [], error: null }),
   ]);
-  for (const r of [profile, name, packages, slots, credentials, stats, lessons, mine, room, programs, reviews, rating, open]) if (r.error) throw r.error;
+  for (const r of [profile, name, packages, slots, credentials, stats, lessons, mine, room, programs, reviews, rating, market, open]) if (r.error) throw r.error;
   const st = stats.data;
   const statRows: [string, string][] = st
     ? [
@@ -80,6 +81,8 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
               <Link href="/coaching" className={buttonClass({ size: 'small' })}>
                 View your coaching
               </Link>
+            ) : !market.data ? (
+              <p className="m-0 text-[15px] text-muted">Hiring opens soon.</p>
             ) : room.data ? (
               <Link href={viewer ? `/hire/${id}` : '/sign-in'} className={buttonClass({ size: 'small' })}>
                 Hire {name.data}
