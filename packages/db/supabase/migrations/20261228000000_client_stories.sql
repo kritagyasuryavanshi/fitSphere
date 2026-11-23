@@ -189,6 +189,12 @@ begin
   drop table pg_temp.dead_revs;
   -- Only keys no remaining revision still uses go to the storage clean-up.
   return query select k from unnest(gone) k where not exists (select 1 from public.story_revisions r where k = any (r.photo_keys));
+  -- Also files no revision uses that are over a day old: an upload whose save failed, or stories removed with an
+  -- account (Codex review). The cron deletes them through the storage API.
+  return query select o.name from storage.objects o
+    where o.bucket_id = 'story-photos' and o.created_at < now() - interval '1 day'
+      and not exists (select 1 from public.story_revisions r where o.name = any (r.photo_keys))
+      and not (o.name = any (gone));
 end;
 $$;
 
@@ -302,7 +308,7 @@ begin
     -- M4-15: stories about the person or written by them, every revision, with the approvals.
     'stories', coalesce((select jsonb_agg(jsonb_build_object('role', case when s.athlete_id = uid then 'client' else 'coach' end,
         'current_rev', s.current_rev, 'approved_rev', s.approved_rev, 'photos_approved_rev', s.photos_approved_rev, 'withdrawn_at', s.withdrawn_at,
-        'revisions', (select jsonb_agg(jsonb_build_object('rev', r.rev, 'body', r.body, 'photos', cardinality(r.photo_keys), 'at', r.created_at) order by r.rev)
+        'revisions', (select jsonb_agg(jsonb_build_object('rev', r.rev, 'body', r.body, 'photo_keys', r.photo_keys, 'at', r.created_at) order by r.rev)
           from public.story_revisions r where r.story_id = s.id)) order by s.created_at)
       from public.stories s where s.athlete_id = uid or s.coach_id = uid), '[]'),
     'account_created_at', (select created_at from auth.users where id = uid),

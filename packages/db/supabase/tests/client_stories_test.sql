@@ -3,7 +3,7 @@
 -- revision; photos need a second, separate approval of the same revision. The client can withdraw at any time and
 -- the story disappears at once. Unapproved revisions and withdrawn stories are pruned after 30 days.
 begin;
-select plan(23);
+select plan(24);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('5c000000-0000-0000-0000-0000000000c1', 'st-coach@t.test', now()),
@@ -71,6 +71,9 @@ update public.stories set withdrawn_at = now() - interval '31 days' where id = (
 select is((select count(*)::int from public.prune_stories()), 1, 'the pruned photo key comes back for the storage clean-up');
 select is_empty($$ select 1 from public.stories where id = (select id from s) $$, 'the withdrawn story is gone after 30 days');
 select is_empty($$ select 1 from public.story_revisions where story_id = (select id from s) $$, 'with every revision');
+-- A file no revision uses (a failed save, or a deleted account's story) is found after a day.
+insert into storage.objects (bucket_id, name, created_at) values ('story-photos', 'stories/5d000000-0000-0000-0000-0000000000e1/' || repeat('b', 64) || '.jpg', now() - interval '2 days');
+select ok((select bool_or(photo_key like '%' || repeat('b', 64) || '.jpg') from public.prune_stories()), 'an orphaned upload is returned for deletion');
 
 select * from finish();
 rollback;
