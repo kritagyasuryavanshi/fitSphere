@@ -24,6 +24,18 @@ test('every page refuses to load in a frame on another site', async ({ request }
   }
 });
 
+test('an unknown URL shows the designed 404 page with a 404 status', async ({ page }) => {
+  const res = await page.goto('/no-such-page');
+  expect(res?.status()).toBe(404);
+  await expect(page.getByRole('heading', { level: 1, name: 'Out of the ring.' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Browse lessons' })).toHaveAttribute('href', '/learn');
+});
+
+test('the styleguide is hidden in a production build', async ({ page }) => {
+  await page.goto('/styleguide');
+  await expect(page.getByRole('heading', { level: 1, name: 'Out of the ring.' })).toBeVisible();
+});
+
 for (const [email, role] of seededUsers) {
   test(`seeded ${role} ${email} can sign in`, async ({}, testInfo) => {
     test.skip(testInfo.project.name !== 'desktop', 'An API check; one viewport is enough.');

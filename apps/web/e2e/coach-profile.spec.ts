@@ -64,6 +64,6 @@ test.describe('Coach marketplace profile', () => {
     const coach = await createUser(['athlete', 'coach'], { name: 'Ananya' });
     // notFound() inside Suspense streams a soft 404: the not-found page with status 200 (as in library.spec.ts).
     await page.goto(`/coaches/${coach.id}`);
-    await expect(page.getByRole('heading', { name: 'This page could not be found.' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Out of the ring.' })).toBeVisible();
   });
 });
