@@ -2,6 +2,7 @@ import { Tag } from '@fitsphere/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { connection } from 'next/server';
 import { Suspense } from 'react';
 import { formatInr } from '@fitsphere/core';
 import { isUuid } from '@/lib/programs';
@@ -14,6 +15,8 @@ import { ShortlistButton } from '../shortlist-button';
 export async function generateMetadata({ params }: PageProps<'/coaches/[id]'>): Promise<Metadata> {
   const { id } = await params;
   if (!isUuid(id)) return { title: 'Coach · FitSphere' };
+  // The cookie client checks token expiry with Date.now(), which a prerender refuses, so render at request time.
+  await connection();
   const supabase = await supabaseServer();
   const [name, profile] = await Promise.all([
     supabase.rpc('coach_public_name', { coach: id }),
