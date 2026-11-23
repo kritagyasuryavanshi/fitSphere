@@ -46,7 +46,7 @@ async function Confirm({ params, searchParams }: PageProps<'/coaching/[id]/refun
         <li>
           {g.package_kind === 'monthly'
             ? 'Refunds are for a first payment, within 7 days. Renewals are not refunded.'
-            : 'A session is refundable up to 24 hours before it.'}{' '}
+            : 'A session is refundable up to 2 days before its date.'}{' '}
           Your bank can take 5 to 7 working days to show it.
         </li>
       </ul>
