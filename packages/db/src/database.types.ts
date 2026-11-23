@@ -1207,6 +1207,58 @@ isOneToOne: false
       referencedColumns: ["coach_id"]
     }
                   ]
+                },"stories": {
+                  Row: {
+                    "approved_rev": number | null,"athlete_id": string,"coach_id": string,"created_at": string,"current_rev": number,"engagement_id": string,"id": string,"photos_approved_rev": number | null,"withdrawn_at": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "approved_rev"?: number | null,"athlete_id": string,"coach_id": string,"created_at"?: string,"current_rev"?: number,"engagement_id": string,"id"?: string,"photos_approved_rev"?: number | null,"withdrawn_at"?: string | null
+                  }
+                  Update: {
+                    "approved_rev"?: number | null,"athlete_id"?: string,"coach_id"?: string,"created_at"?: string,"current_rev"?: number,"engagement_id"?: string,"id"?: string,"photos_approved_rev"?: number | null,"withdrawn_at"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "stories_athlete_id_fkey"
+      columns: ["athlete_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "stories_coach_id_fkey"
+      columns: ["coach_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "stories_engagement_id_fkey"
+      columns: ["engagement_id"]
+isOneToOne: true
+      referencedRelation: "engagements"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"story_revisions": {
+                  Row: {
+                    "body": string,"created_at": string,"photo_keys": (string)[],"rev": number,"story_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "body": string,"created_at"?: string,"photo_keys"?: (string)[],"rev": number,"story_id": string
+                  }
+                  Update: {
+                    "body"?: string,"created_at"?: string,"photo_keys"?: (string)[],"rev"?: number,"story_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "story_revisions_story_id_fkey"
+      columns: ["story_id"]
+isOneToOne: false
+      referencedRelation: "stories"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"subscriptions": {
                   Row: {
                     "created_at": string,"engagement_id": string,"id": string,"provider_subscription_id": string,"status": string
@@ -1375,6 +1427,12 @@ isOneToOne: false
                            },
 "apply_subscription_event":
 { Args: { "body": Json,"ev": number,"event_type": string }; Returns: string
+                           },
+"approve_story":
+{ Args: { "rev": number,"story": string }; Returns: undefined
+                           },
+"approve_story_photos":
+{ Args: { "rev": number,"story": string }; Returns: undefined
                            },
 "assert_live_ready":
 { Args: { "coach": string }; Returns: undefined
@@ -1656,6 +1714,16 @@ isOneToOne: false
 "prune_email_outbox":
 { Args: Record<PropertyKey, never>; Returns: number
                            },
+"prune_stories":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "photo_key": string
+            }[]
+                           },
+"public_stories":
+{ Args: { "coach": string }; Returns: {
+              "approved_at": string,"author": string,"body": string,"id": string,"photo_count": number
+            }[]
+                           },
 "publish_program":
 { Args: { "program": string }; Returns: number
                            },
@@ -1757,6 +1825,9 @@ isOneToOne: false
 "save_session_note":
 { Args: { "note": string,"on_date": string,"session": string }; Returns: string
                            },
+"save_story":
+{ Args: { "body": string,"engagement": string,"photo_keys": (string)[] }; Returns: string
+                           },
 "save_training_basics":
 { Args: { "ai_consent": boolean,"days": number,"equipment": (string)[],"injury_notes": string,"notice": string,"sport_answers": Json }; Returns: undefined
                            },
@@ -1818,6 +1889,9 @@ isOneToOne: false
 "stop_coach_renewals":
 { Args: { "coach": string }; Returns: undefined
                            },
+"story_photo_keys":
+{ Args: { "story": string }; Returns: (string)[]
+                           },
 "submit_coach_application":
 { Args: { "category": string,"city": string,"full_name": string,"how_today": string,"work_url": string,"years": number }; Returns: undefined
                            },
@@ -1849,6 +1923,9 @@ isOneToOne: false
                            },
 "withdraw_my_credentials":
 { Args: Record<PropertyKey, never>; Returns: undefined
+                           },
+"withdraw_story":
+{ Args: { "story": string }; Returns: undefined
                            },
 "withdraw_request":
 { Args: { "engagement": string }; Returns: undefined

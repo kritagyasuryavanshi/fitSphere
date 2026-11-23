@@ -38,7 +38,7 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
   if (!isUuid(id)) notFound();
   const supabase = await supabaseServer();
   const viewer = await getViewer();
-  const [profile, name, packages, slots, credentials, stats, lessons, mine, room, programs, reviews, rating, market, open] = await Promise.all([
+  const [profile, name, packages, slots, credentials, stats, lessons, mine, room, programs, reviews, rating, market, open, stories] = await Promise.all([
     supabase.from('coach_profiles').select('headline, philosophy, specialties, languages, formats, city, years').eq('coach_id', id).maybeSingle(),
     supabase.rpc('coach_public_name', { coach: id }),
     supabase.from('packages').select('id, title, kind, price_paise').eq('coach_id', id).eq('live', true).order('price_paise'),
@@ -55,8 +55,9 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
     viewer
       ? supabase.from('engagements').select('id').eq('athlete_id', viewer.userId).eq('coach_id', id).in('status', ['requested', 'accepted', 'active', 'cancelling'])
       : Promise.resolve({ data: [], error: null }),
+    supabase.rpc('public_stories', { coach: id }),
   ]);
-  for (const r of [profile, name, packages, slots, credentials, stats, lessons, mine, room, programs, reviews, rating, market, open]) if (r.error) throw r.error;
+  for (const r of [profile, name, packages, slots, credentials, stats, lessons, mine, room, programs, reviews, rating, market, open, stories]) if (r.error) throw r.error;
   const st = stats.data;
   const statRows: [string, string][] = st
     ? [
@@ -236,6 +237,30 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
           <p className="m-0 text-[16px] text-ink-soft">No reviews yet. Only clients with a paid, finished engagement can review.</p>
         )}
       </section>
+
+      {stories.data?.length ? (
+        <section aria-labelledby="stories" className="flex flex-col gap-2">
+          <h2 id="stories" className="m-0 text-[22px] font-semibold">
+            Client stories
+          </h2>
+          <ul className="m-0 flex list-none flex-col gap-4 p-0">
+            {stories.data.map((st) => (
+              <li key={st.id} className="flex flex-col gap-2 border-t border-line pt-4">
+                <p className="m-0 text-[16px] leading-[1.6]">{st.body}</p>
+                {st.photo_count ? (
+                  <div className="flex flex-wrap gap-3">
+                    {Array.from({ length: st.photo_count }, (_, n) => (
+                      // eslint-disable-next-line @next/next/no-img-element -- served through a short-lived signed link
+                      <img key={n} src={`/api/stories/${st.id}/photo/${n}`} alt={`Photo ${n + 1} from ${st.author}'s story`} className="h-40 w-40 object-cover" loading="lazy" />
+                    ))}
+                  </div>
+                ) : null}
+                <p className="m-0 text-[14px] text-muted">{st.author}, approved by the client</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       {p.languages.length ? <p className="m-0 text-[15px] text-muted">Speaks {p.languages.join(', ')}.</p> : null}
     </>

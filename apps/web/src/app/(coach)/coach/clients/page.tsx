@@ -99,6 +99,9 @@ async function Clients() {
                     </button>
                   </form>
                   <AssignForm engagementId={r.engagement_id} athlete={r.athlete_name} programs={programs} />
+                  <Link href={`/coach/clients/${r.engagement_id}/story`} className="font-medium underline underline-offset-4">
+                    Write a story<span className="sr-only"> about {r.athlete_name}</span>
+                  </Link>
                   {r.share_data ? null : <span className="w-full text-[13px] text-muted">Does not share training logs, so you will not see their sessions.</span>}
                 </span>
               </li>

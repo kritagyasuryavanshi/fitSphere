@@ -30,3 +30,17 @@ export async function overdueJobs(): Promise<string[] | null> {
   if (error) return null;
   return data.map((r) => r.job);
 }
+
+/** M4-15: drops withdrawn and stale client stories, then their photos no revision still uses. */
+export async function pruneStories() {
+  const db = service();
+  if (!db) return null;
+  const { data, error } = await db.rpc('prune_stories');
+  if (error) throw error;
+  const keys = data.map((r) => r.photo_key);
+  if (keys.length) {
+    const removed = await db.storage.from('story-photos').remove(keys);
+    if (removed.error) throw removed.error;
+  }
+  return keys.length;
+}
