@@ -61,3 +61,28 @@ export async function startCheckout(formData: FormData): Promise<void> {
   }
   redirect(`/coaching/${engagement}/pay`);
 }
+
+/**
+ * Pays the next month of active monthly coaching that renews by orders (Decision 1). The database decides the period,
+ * the amount and whether it is due; only the signed webhook adds the month.
+ */
+export async function startRenewalCheckout(formData: FormData): Promise<void> {
+  const viewer = await requireRole('athlete');
+  const engagement = String(formData.get('engagement') ?? '');
+  if (!isUuid(engagement)) redirect('/coaching');
+  const provider = paymentsProvider();
+  if (!provider || !process.env.SUPABASE_SECRET_KEY) redirect(`/coaching/${engagement}/pay?unavailable=1`);
+  const db = createDbClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? '', process.env.SUPABASE_SECRET_KEY);
+  const { data, error } = await db.rpc('start_renewal_checkout', { engagement, athlete: viewer.userId }).single();
+  // Not due yet, renewing by subscription, cancelled or run out: the page says where things stand.
+  if (error?.message === 'not_due' || error?.message === 'not_payable') redirect(`/coaching/${engagement}/pay`);
+  if (error) throw error;
+  if (!data.provider_order_id) {
+    const created = await provider.createOrder({ amountPaise: data.amount_paise, receipt: data.order_id });
+    const attached = await db.rpc('attach_provider_order', { order_: data.order_id, provider_order: created.id });
+    if (attached.error) throw attached.error;
+  }
+  // shortcut: the fake provider pays at once, through the signed webhook; Razorpay Checkout opens here in M4-09b.
+  if (provider.name === 'fake') await captureFakeOrder(data.order_id);
+  redirect(`/coaching/${engagement}/pay?renewed=1`);
+}

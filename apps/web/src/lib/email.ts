@@ -26,6 +26,8 @@ export const TEMPLATES = [
   'coaching_ended',
   'coaching_stopped',
   'coaching_refunded',
+  'renewal_due',
+  'coaching_unpaid',
 ];
 
 const str = (v: unknown) => (typeof v === 'string' ? v : '');
@@ -75,7 +77,7 @@ export function renderEmail(template: string, data: Record<string, unknown>, ori
       text: [`Hello ${str(data.name) || 'there'},`, '', 'Thank you for applying to coach on FitSphere. We could not approve your application this time.', '', `You can still train on FitSphere: ${origin}/today`].join('\n'),
     };
   }
-  if (template.startsWith('coaching_') || template === 'renewal_failed') return coachingEmail(template, data, origin);
+  if (template.startsWith('coaching_') || template === 'renewal_failed' || template === 'renewal_due') return coachingEmail(template, data, origin);
   return null;
 }
 
@@ -132,6 +134,18 @@ function coachingEmail(template: string, data: Record<string, unknown>, origin: 
             subject: `Your payment for ${pkg} is refunded`,
             text: lines(`We refunded ${amount} for ${pkg} with ${other}.`, 'Your bank can take 5 to 7 working days to show it. The coaching has ended; your logs and past feedback stay with you.'),
           };
+    case 'renewal_due': {
+      // Decision 1: monthly coaching renews when the athlete pays a new order. Sent to the athlete only.
+      const engagement = /^[0-9a-f-]{36}$/.test(str(data.engagement)) ? str(data.engagement) : '';
+      return {
+        subject: `Pay for your next month with ${other}`,
+        text: [`Your coaching runs until ${until}.`, `Pay ${amount} for the next month of ${pkg} to keep going. If it is not paid, coaching ends 3 days after that date.`, '', engagement ? `${origin}/coaching/${engagement}/pay` : `${origin}/coaching`].join('\n'),
+      };
+    }
+    case 'coaching_unpaid':
+      return coachView
+        ? { subject: `Coaching with ${other} has ended`, text: lines(`${Other} did not pay for the next month of ${pkg}, so it has ended. You no longer see their logs.`) }
+        : { subject: `Your coaching with ${other} has ended`, text: lines(`The next month was not paid, so ${pkg} with ${other} has ended.`, 'Your logs and past feedback stay with you. You can hire again at any time.') };
     case 'coaching_ended':
       return coachView
         ? { subject: `Coaching with ${other} has ended`, text: lines(`${pkg} with ${other} has ended. You no longer see their logs.`) }

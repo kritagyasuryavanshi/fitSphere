@@ -1780,6 +1780,11 @@ isOneToOne: false
               "amount_paise": number,"order_id": string,"provider_order_id": string
             }[]
                            },
+"start_renewal_checkout":
+{ Args: { "athlete": string,"engagement": string }; Returns: {
+              "amount_paise": number,"order_id": string,"provider_order_id": string
+            }[]
+                           },
 "stop_coach_renewals":
 { Args: { "coach": string }; Returns: undefined
                            },

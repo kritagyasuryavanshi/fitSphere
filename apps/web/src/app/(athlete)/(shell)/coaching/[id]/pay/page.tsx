@@ -3,13 +3,14 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
-import { formatInr } from '@fitsphere/core';
+import { formatInr, indiaToday } from '@fitsphere/core';
 import { Refresher } from '@/app/(account)/messages/[id]/chat-client';
 import { paymentsProvider } from '@/lib/payments/provider';
 import { isUuid } from '@/lib/programs';
 import { supabaseServer } from '@/lib/supabase/server';
+import { renewalState } from '@/lib/renewal';
 import { requireRole } from '@/lib/viewer';
-import { startCheckout } from './actions';
+import { startCheckout, startRenewalCheckout } from './actions';
 
 export const metadata: Metadata = { title: 'Pay · FitSphere' };
 
@@ -18,13 +19,15 @@ export const metadata: Metadata = { title: 'Pay · FitSphere' };
 async function Pay({ params, searchParams }: PageProps<'/coaching/[id]/pay'>) {
   const viewer = await requireRole('athlete');
   const { id } = await params;
-  const { unavailable } = await searchParams;
+  const { unavailable, renewed } = await searchParams;
   if (!isUuid(id)) notFound();
   const supabase = await supabaseServer();
-  const [eng, orders] = await Promise.all([
+  const [eng, orders, subs] = await Promise.all([
     supabase.from('engagements').select('package_title, package_kind, price_paise, start_date, status, paid_through').eq('id', id).eq('athlete_id', viewer.userId).maybeSingle(),
     supabase.from('orders').select('status, created_at, period_start, period_end').eq('engagement_id', id).order('created_at', { ascending: false }).limit(1),
+    supabase.from('subscriptions').select('status').eq('engagement_id', id).in('status', ['active', 'pending']),
   ]);
+  if (subs.error) throw subs.error;
   if (eng.error) throw eng.error;
   if (orders.error) throw orders.error;
   const g = eng.data;
@@ -32,6 +35,8 @@ async function Pay({ params, searchParams }: PageProps<'/coaching/[id]/pay'>) {
   const provider = paymentsProvider();
   const open = orders.data[0]?.status === 'created';
   const paid = orders.data.find((o) => o.status === 'paid');
+  // Decision 1: active monthly coaching without a subscription renews when the athlete pays the next month.
+  const renewal = g.status === 'active' && g.package_kind === 'monthly' && g.paid_through ? renewalState(g.paid_through, indiaToday(), subs.data.length > 0) : null;
 
   return (
     <>
@@ -64,6 +69,32 @@ async function Pay({ params, searchParams }: PageProps<'/coaching/[id]/pay'>) {
           <p className="m-0 text-[13px] text-muted">Refunds: in full within 7 days of your first payment. Renewals are not refunded.</p>
         </>
       )}
+      {renewed === '1' ? (
+        <p role="status" className="m-0 text-[15px] text-muted">
+          Confirming your payment for the next month. Your paid date moves once it arrives.
+        </p>
+      ) : null}
+      {renewal === 'due' || renewal === 'grace' ? (
+        <section aria-labelledby="next-month" className="flex flex-col gap-3 border border-line-strong p-5">
+          <h2 id="next-month" className="m-0 text-[20px] font-semibold">
+            Your next month
+          </h2>
+          <p className="m-0 text-[16px] text-ink-soft">
+            {renewal === 'due'
+              ? `Your coaching runs until ${g.paid_through}. Pay for the next month to keep going.`
+              : `Your paid month ended on ${g.paid_through}. Pay within 3 days of that date, or your coaching ends.`}
+          </p>
+          {provider ? (
+            <form action={startRenewalCheckout}>
+              <input type="hidden" name="engagement" value={id} />
+              <Button type="submit">Pay {formatInr(g.price_paise)} for the next month</Button>
+            </form>
+          ) : (
+            <p className="m-0 text-[15px] text-ink-soft">Checkout is not open yet.</p>
+          )}
+          <p className="m-0 text-[13px] text-muted">Renewals are not refunded. Not paying simply ends the coaching after the 3 days.</p>
+        </section>
+      ) : null}
       <Link href="/coaching" className="text-[15px] font-medium underline underline-offset-4">
         Back to your coaching
       </Link>
