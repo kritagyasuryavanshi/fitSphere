@@ -23,7 +23,8 @@
     "db:reset": "npm run db:reset -w @fitsphere/db",
     "db:types": "npm run db:types -w @fitsphere/db",
     "eval:ai": "npm run eval:ai -w @fitsphere/web",
-    "test:e2e": "npm run test:e2e -w @fitsphere/web"
+    "test:e2e": "npm run test:e2e -w @fitsphere/web",
+    "gate:content": "npm run gate:content -w @fitsphere/db"
   },
   "devDependencies": {
     "prettier": "^3",

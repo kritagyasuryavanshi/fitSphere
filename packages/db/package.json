@@ -14,7 +14,8 @@
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "db:types": "supabase gen types typescript --local > src/database.types.ts",
-    "test:db": "supabase test db"
+    "test:db": "supabase test db",
+    "gate:content": "node scripts/content-gate.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2"
