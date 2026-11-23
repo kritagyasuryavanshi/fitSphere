@@ -11,6 +11,7 @@ import { BottomTabs, HeaderLinks, type NavItem } from './nav-links';
 // Only pages that exist: Programs returns with the marketplace (M4).
 const publicLinks: NavItem[] = [
   { href: '/learn/boxing', label: 'Learn' },
+  { href: '/programs', label: 'Programs' },
   { href: '/coaches', label: 'Coaches' },
   { href: '/for-coaches', label: 'For coaches' },
 ];
