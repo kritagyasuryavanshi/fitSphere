@@ -76,7 +76,7 @@ test('an admin invites an address to the beta, and the invite is stored lower ca
   const address = `Beta.${Date.now()}@T.test`;
   await page.getByLabel('Email address').fill(address);
   await page.getByRole('button', { name: 'Invite', exact: true }).click();
-  await expect(page.getByRole('status')).toContainText(`${address.toLowerCase()} can now sign up.`);
+  await expect(page.getByRole('region', { name: 'Invite to the beta' }).getByRole('status')).toContainText(`${address.toLowerCase()} can now sign up.`);
   const { data } = await admin().from('beta_invites').select('email').eq('email', address.toLowerCase());
   expect(data).toHaveLength(1);
 });
