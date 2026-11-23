@@ -21,4 +21,18 @@ describe('Sentry scrubbing (S0-08)', () => {
     expect(out.exception?.values?.[0]?.value).toBe('user [email] not found');
     expect(out.breadcrumbs?.[0]?.message).toBe('fetch https://x.test/api?email=[email]');
   });
+
+  it('redacts invite codes and other id-like path parts, and drops extra, breadcrumb data and request contexts', () => {
+    const out = scrubEvent({
+      request: { url: 'https://x.test/join/0123456789abcdef0123456789abcdef?x=1' },
+      extra: { args: ['a@b.co'] },
+      contexts: { os: { name: 'Linux' }, request_body: { dob: '1990-01-01' } },
+      breadcrumbs: [{ message: 'ok', data: { url: '/join/0123456789abcdef0123456789abcdef' } }],
+    });
+    expect(out.request).toEqual({ url: 'https://x.test/join/[id]' });
+    expect(out.extra).toBeUndefined();
+    expect(out.contexts).toEqual({ os: { name: 'Linux' } });
+    expect(out.breadcrumbs?.[0]).toEqual({ message: 'ok' });
+  });
 });
+
