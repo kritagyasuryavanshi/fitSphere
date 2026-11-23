@@ -28,7 +28,7 @@ async function Earnings() {
         ))}
       </dl>
       <p className="m-0 text-[14px] text-muted">
-        Estimated. Amounts are after FitSphere’s 15% fee, which FitSphere confirms with its accountant before payouts start.
+        Estimated. Amounts are after FitSphere’s 15% fee, which FitSphere confirms with its accountant before payouts start. Refunded payments are not counted.
       </p>
     </>
   );

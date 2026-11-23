@@ -2,7 +2,7 @@
 -- after the hold, and only while no refund is asked or done; the check locks the payment row, as refunds do, so a
 -- refund and a payout cannot cross. A failed transfer goes back to due. A coach sees only their own earnings.
 begin;
-select plan(14);
+select plan(16);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('9a000000-0000-0000-0000-0000000000c1', 'po-coach@t.test', now()),
@@ -51,6 +51,11 @@ select lives_ok($$ select public.admin_mark_payout_paid('9e000000-0000-0000-0000
 select is((select status || '|' || paid_ref from public.payouts where id = '9e000000-0000-0000-0000-000000000001'), 'manual_paid|UTR123456', 'paid, with its reference');
 select throws_ok($$ select public.admin_mark_payout_paid('9e000000-0000-0000-0000-000000000001', 'UTR9') $$, '22023', 'not_due', 'it cannot be paid twice');
 select is((select count(*)::int from public.audit_log where action = 'payout_paid' and target_id = '9e000000-0000-0000-0000-000000000001'), 1, 'the payment is audited');
+-- Once the coach is paid, no refund can start for that payment (Codex review).
+select throws_ok($$ select public.admin_refund('9d000000-0000-0000-0000-000000000001', 'late') $$, '22023', 'not_refundable', 'an admin cannot refund a payment already paid out');
+select pg_temp.as_user('9a000000-0000-0000-0000-0000000000a1');
+select throws_ok($$ select public.request_refund('9b000000-0000-0000-0000-0000000000e1') $$, '22023', 'not_refundable', 'nor can the athlete');
+select pg_temp.as_user('9a000000-0000-0000-0000-0000000000ad');
 
 -- A failed bank transfer goes back to due, with the reason.
 select lives_ok($$ select public.admin_mark_payout_failed('9e000000-0000-0000-0000-000000000001', 'Account closed') $$, 'the admin records a failed transfer');

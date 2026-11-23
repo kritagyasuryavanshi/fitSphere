@@ -124,3 +124,72 @@ revoke all on function public.admin_payouts_due(), public.admin_mark_payout_paid
   public.my_earnings() from public, anon;
 grant execute on function public.admin_payouts_due(), public.admin_mark_payout_paid(uuid, text), public.admin_mark_payout_failed(uuid, text),
   public.my_earnings() to authenticated;
+
+-- request_refund and admin_refund as in 20261216000000_refunds.sql, plus: no refund after the coach was paid.
+create or replace function public.request_refund(engagement uuid)
+returns table (refund_id uuid, provider_payment_id text, amount_paise bigint)
+language plpgsql
+security definer
+set search_path = ''
+as $$
+#variable_conflict use_variable
+declare
+  g public.engagements;
+  pay public.payments;
+  r uuid;
+begin
+  select * into g from public.engagements where id = engagement for update;
+  if not found or auth.uid() is null or g.athlete_id is distinct from auth.uid() then
+    raise exception 'not_yours' using errcode = '42501';
+  end if;
+  select * into pay from public.payments where id = public.refundable_payment(g) for update;
+  if pay.id is null then
+    raise exception 'not_refundable' using errcode = '22023';
+  end if;
+  -- Once the coach has been paid for this payment, no refund can start (M4-13, from the Codex review): marking a
+  -- payout paid takes the same payment lock, so the two cannot cross.
+  if exists (select 1 from public.payouts u where u.payment_id = pay.id and u.status in ('manual_paid', 'processed')) then
+    raise exception 'not_refundable' using errcode = '22023';
+  end if;
+  insert into public.refunds (payment_id, amount_paise, reason, requested_by) values (pay.id, pay.amount_paise, 'first_payment', auth.uid())
+  returning id into r;
+  insert into public.audit_log (actor_id, action, target_id, details) values (auth.uid(), 'refund_requested', g.athlete_id,
+    jsonb_build_object('refund', r, 'payment', pay.id, 'engagement', g.id, 'amount_paise', pay.amount_paise, 'reason', 'first_payment'));
+  return query select r, pay.provider_payment_id, pay.amount_paise;
+end;
+$$;
+
+create or replace function public.admin_refund(payment uuid, why text)
+returns table (refund_id uuid, provider_payment_id text, amount_paise bigint)
+language plpgsql
+security definer
+set search_path = ''
+as $$
+#variable_conflict use_variable
+declare
+  pay public.payments;
+  athlete uuid;
+  r uuid;
+begin
+  if not public.is_admin() then
+    raise exception 'not_admin' using errcode = '42501';
+  end if;
+  select * into pay from public.payments where id = payment for update;
+  if pay.id is null or pay.status not in ('captured', 'duplicate')
+    or exists (select 1 from public.refunds x where x.payment_id = pay.id and x.status in ('requested', 'processed')) then
+    raise exception 'not_refundable' using errcode = '22023';
+  end if;
+  -- Once the coach has been paid for this payment, no refund can start (M4-13, from the Codex review): marking a
+  -- payout paid takes the same payment lock, so the two cannot cross.
+  if exists (select 1 from public.payouts u where u.payment_id = pay.id and u.status in ('manual_paid', 'processed')) then
+    raise exception 'not_refundable' using errcode = '22023';
+  end if;
+  insert into public.refunds (payment_id, amount_paise, reason, requested_by, note)
+  values (pay.id, pay.amount_paise, case when pay.status = 'duplicate' then 'owed_back' else 'admin' end, auth.uid(), left(nullif(btrim(why), ''), 500))
+  returning id into r;
+  select g.athlete_id into athlete from public.orders o join public.engagements g on g.id = o.engagement_id where o.id = pay.order_id;
+  insert into public.audit_log (actor_id, action, target_id, details) values (auth.uid(), 'refund_requested', athlete,
+    jsonb_build_object('refund', r, 'payment', pay.id, 'amount_paise', pay.amount_paise, 'reason', 'admin', 'note', left(nullif(btrim(why), ''), 500)));
+  return query select r, pay.provider_payment_id, pay.amount_paise;
+end;
+$$;
