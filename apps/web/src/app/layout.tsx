@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Anton, Inter } from "next/font/google";
 import "./globals.css";
 
@@ -16,7 +16,10 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "FitSphere",
   description: "Coach-led boxing, strength and gym training.",
+  appleWebApp: { capable: true, title: "FitSphere", statusBarStyle: "default" },
 };
+
+export const viewport: Viewport = { themeColor: "#111111" };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
