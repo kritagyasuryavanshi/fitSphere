@@ -21,8 +21,9 @@ async function sendLink(email: string, captcha?: string): Promise<string | undef
   const send = async () => supabase.auth.signInWithOtp({ email, options: otpOptions(await callbackUrl(), captcha) });
   let { error } = await send();
   // Two requests for a new address at once make Supabase fail one of them on a duplicate user.
-  // The other one created the user, so a single retry sends the link.
-  if (error && error.status === 500) ({ error } = await send());
+  // The other one created the user, so a single retry sends the link. A captcha token works once, so with one the
+  // retry is left to the person, with a fresh check (Codex review).
+  if (error && error.status === 500 && !captcha) ({ error } = await send());
   if (!error) return undefined;
   // A missing or used-up Turnstile token, once captcha is on in Supabase Auth (M6-11).
   if (error.code === 'captcha_failed') return 'Complete the check above the button, then try again.';
