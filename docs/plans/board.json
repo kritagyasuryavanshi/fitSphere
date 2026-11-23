@@ -236,6 +236,21 @@
       ]
     },
     {
+      "id": "O-12",
+      "phase": "O",
+      "title": "Vercel Pro (or another host) before the marketplace takes money",
+      "priority": "P0",
+      "size": "S",
+      "deps": [],
+      "status": "todo",
+      "owner": "owner",
+      "test": "manual",
+      "ac": [
+        "Vercel's terms limit Hobby to non-commercial use; the free invite beta stays on Hobby",
+        "About USD 20 a month; decide before step 2 (M6-08b)"
+      ]
+    },
+    {
       "id": "S0-01",
       "phase": "S0",
       "title": "Owner approves this plan and board",
@@ -396,7 +411,8 @@
       "test": "manual",
       "ac": [
         "Server and browser errors reach Sentry (free tier) with no personal data",
-        "Usage analytics are cut (decision-m6-launch); weekly returners come from SQL"
+        "Usage analytics are cut (decision-m6-launch); weekly returners come from SQL",
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
       ]
     },
     {
@@ -1482,7 +1498,8 @@
         "The server sets the amount from the package; the browser cannot change it",
         "Webhook rejects a bad signature",
         "A repeated webhook creates no second engagement (idempotency key)",
-        "End-to-end in test mode: pay, and the engagement becomes active"
+        "End-to-end in test mode: pay, and the engagement becomes active",
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
       ]
     },
     {
@@ -1550,7 +1567,8 @@
         "Checkout opens a Razorpay Subscription for monthly packages; its first charge is the subscription's own",
         "The renewal period comes from the provider payload (current_start, current_end), so on conflict catches a double charge",
         "The real adapter treats 'already cancelled' as success, so stopSubscriptions never loops",
-        "The 7-day lapse grace is longer than Razorpay's retry window, or lapsing waits for subscription.halted"
+        "The 7-day lapse grace is longer than Razorpay's retry window, or lapsing waits for subscription.halted",
+        "2026-11-23: deferred. The marketplace launches with a new Order each month (docs/plans/remaining-tasks-plan.md); Subscriptions only if manual renewal churn is high"
       ]
     },
     {
@@ -1596,7 +1614,8 @@
         "Unit: coach share = price − fee, exact to the paisa, for 3 sample prices",
         "Earnings page totals equal the payments table",
         "pgTAP: a coach sees only their own payouts",
-        "From M4-12: never release a payout while its payment has a requested refund; a session payout is held to the day before the session"
+        "From M4-12: never release a payout while its payment has a requested refund; a session payout is held to the day before the session",
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
       ]
     },
     {
@@ -1661,7 +1680,8 @@
         "A story shows only after the client approves the exact text in the app",
         "Body photos need a second, separate consent",
         "The client can withdraw consent and the story disappears",
-        "2026-11-22: moved to after launch (decision-m6-launch)"
+        "2026-11-22: moved to after launch (decision-m6-launch)",
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
       ]
     },
     {
@@ -1682,7 +1702,8 @@
         "Follows the approved design X-Book and X-Booked",
         "A slot can be booked once; a second booking of the same slot fails (database constraint test)",
         "Booking needs payment; cancel follows the refund terms",
-        "2026-11-22: moved to after launch (decision-m6-launch)"
+        "2026-11-22: moved to after launch (decision-m6-launch)",
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
       ],
       "screens": [
         "X-Book",
@@ -1710,7 +1731,8 @@
         "Admin can read only reported messages, hide content and suspend a user; every action is logged",
         "From the M4-19 Codex review (2026-11-22): a suspended coach, or one who lost the role, leaves the athlete a cancelling engagement to the paid date with no coach; decide a pro-rata refund or an earlier end",
         "From M4-12: an admin page lists payments, money owed back and failed or stuck refunds (money_invariants), with a Refund button that calls admin_refund",
-        "From M4-14: a Report link on each public review; hiding sets reviews.hidden_at, which drops it from the profile and the rating"
+        "From M4-14: a Report link on each public review; hiding sets reviews.hidden_at, which drops it from the profile and the rating",
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
       ],
       "screens": [
         "X-Report",
@@ -1739,7 +1761,8 @@
         "All 20 checklist items audited against the code: webhook signatures, failed payments, refunds, upgrades, idempotency, server-side gating, status sync, test clocks, billing page, receipts, event logging, expired cards, tax, trials, duplicate charges, currency, cancel flow, retries, failed-webhook alerts, full test as a customer",
         "The design doc's M4 Verify list passes",
         "Codex final-diff review; findings fixed or rejected with evidence",
-        "Live mode only after the owner approves"
+        "Live mode only after the owner approves",
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
       ]
     },
     {
@@ -1840,7 +1863,8 @@
         "100% on code-checked rules in all 3 runs",
         "Judge average at least 90%",
         "The eval is built and passes 100% on the code rules with the fake answerer; the judge run needs a real model (Gemini free tier, PR from branch m5-06-gemini, or Claude with the owner's key)",
-        "2026-11-21: code merged (PRs #54, #55). The owner deferred the judge run: it needs the PC free; run `$env:AI_PROVIDER='gemini'; npm run eval:ai` in a plain PowerShell window, outside Claude Code (the system stopped two background runs for low memory)"
+        "2026-11-21: code merged (PRs #54, #55). The owner deferred the judge run: it needs the PC free; run `$env:AI_PROVIDER='gemini'; npm run eval:ai` in a plain PowerShell window, outside Claude Code (the system stopped two background runs for low memory)",
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
       ]
     },
     {
@@ -1888,7 +1912,8 @@
       ],
       "ac": [
         "Uses the owner's signed-off text",
-        "Names Anthropic and the payment provider as processors"
+        "Names Anthropic and the payment provider as processors",
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
       ]
     },
     {
@@ -1949,7 +1974,8 @@
       "ac": [
         "Lighthouse mobile performance at least 80 on landing, library and Today",
         "Images served in modern formats at the right size",
-        "2026-11-23: PageSpeed's keyless daily quota was used up, and a local npx lighthouse run needs the owner's permission"
+        "2026-11-23: PageSpeed's keyless daily quota was used up, and a local npx lighthouse run needs the owner's permission",
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
       ]
     },
     {
@@ -1989,7 +2015,25 @@
         "/security-review and a Codex review of the whole app; findings resolved",
         "Sign-in rate limits come from Supabase and Turnstile (M6-11), not custom code",
         "2026-11-23: PR #66 (write caps) green, waits for the owner's yes to push 20261222 to production. Codex whole-app review and /security-review found nothing. No secret in the bundle or history. Left: a separate free Supabase project for previews (owner account)",
-        "2026-11-23: PR #66 merged after the owner's yes; 20261222 pushed first. Production at 55 of 55. Left: the preview Supabase project (owner)"
+        "2026-11-23: PR #66 merged after the owner's yes; 20261222 pushed first. Production at 55 of 55. Left: the preview Supabase project (owner)",
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
+      ]
+    },
+    {
+      "id": "M6-15",
+      "phase": "M6",
+      "title": "Invite-only admission for the beta",
+      "priority": "P0",
+      "size": "S",
+      "deps": [],
+      "status": "todo",
+      "owner": "claude",
+      "test": "db+e2e",
+      "ac": [
+        "beta_invites(email) and app_settings.signups_open (default false); complete_about_you raises not_invited unless open or invited, so email and Google are both gated",
+        "Admin adds invites on /admin/people; /welcome/not-invited saves nothing and offers deletion",
+        "pgTAP and e2e for an uninvited email account and an uninvited Google-shaped account",
+        "Plan: docs/plans/remaining-tasks-plan.md (agreed with Codex 2026-11-23)"
       ]
     },
     {
@@ -2010,7 +2054,8 @@
         "M6-11",
         "M6-12",
         "M6-13",
-        "S0-08"
+        "S0-08",
+        "M6-15"
       ],
       "status": "todo",
       "owner": "claude",
@@ -2098,7 +2143,8 @@
       "test": "manual",
       "ac": [
         "Every release-gate item in TASKS.md is done: confirm email, custom SMTP, Turnstile on sign-in, NEXT_PUBLIC_SITE_URL, our own domains only in the redirect allow-list, auth rate limits",
-        "A magic link reaches an outside Gmail inbox"
+        "A magic link reaches an outside Gmail inbox",
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
       ]
     },
     {
@@ -2116,7 +2162,8 @@
         "An alert when a daily job fails, fired once in a test",
         "Old email outbox rows are pruned",
         "A runbook for a breach and for key rotation",
-        "2026-11-23: built on local branch m6-12-operations (job_runs, health endpoint, Ops workflow with weekly tested backup, outbox pruning, runbook). The push is refused: the gh token lacks the workflow scope. Owner: gh auth refresh -s workflow, then add SUPABASE_DB_URL and BACKUP_PASSPHRASE secrets"
+        "2026-11-23: built on local branch m6-12-operations (job_runs, health endpoint, Ops workflow with weekly tested backup, outbox pruning, runbook). The push is refused: the gh token lacks the workflow scope. Owner: gh auth refresh -s workflow, then add SUPABASE_DB_URL and BACKUP_PASSPHRASE secrets",
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
       ]
     },
     {
@@ -2133,7 +2180,8 @@
       "test": "unit",
       "ac": [
         "A script counts at least 20 boxing skills and 30 S&C drills, published and not samples",
-        "The script runs in CI before release"
+        "The script runs in CI before release",
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
       ]
     },
     {
@@ -2154,7 +2202,8 @@
         "A refund policy page",
         "GST and TCS confirmed with a CA",
         "The signed coach agreement",
-        "Receipts for every payment"
+        "Receipts for every payment",
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
       ]
     },
     {
@@ -2166,7 +2215,8 @@
       "deps": [
         "M4-16",
         "M6-14",
-        "M6-08"
+        "M6-08",
+        "O-12"
       ],
       "status": "todo",
       "owner": "claude",
@@ -2174,7 +2224,8 @@
       "ac": [
         "/qa on the marketplace finds no high-severity bug",
         "One real payment and one real refund",
-        "The owner approves opening the marketplace"
+        "The owner approves opening the marketplace",
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
       ]
     }
   ]

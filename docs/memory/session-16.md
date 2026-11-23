@@ -54,3 +54,8 @@ The owner asked for a goal: finish every remaining task that needs no owner inpu
 - Allow a local Lighthouse run (`npx lighthouse`) for M6-05, or wait a day for the PageSpeed quota.
 - Install the app once on an Android phone and an iPhone (M6-04).
 - Create a free Supabase project for previews (M6-07).
+
+## Later still: plans discussed with Codex
+- The owner asked to discuss every remaining plan with Codex until the best solution. Three rounds converged. See [[decision-remaining-plan]].
+- New task M6-15 (invite gate) and owner item O-12 (Vercel Pro before step 2).
+- PR #71 fixes the refund screen's session wording.
