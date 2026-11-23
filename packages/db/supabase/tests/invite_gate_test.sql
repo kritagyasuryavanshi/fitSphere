@@ -1,7 +1,7 @@
 -- M6-15: invite-only admission. While sign-ups are closed, sign-up step 1 refuses anyone not invited, before any
 -- write, so email and Google accounts are both gated. Only admins add invites, and each invite is audited.
 begin;
-select plan(10);
+select plan(11);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('1e000000-0000-0000-0000-0000000000a1', 'stranger@t.test', now()),
@@ -22,6 +22,7 @@ select pg_temp.as_user('1e000000-0000-0000-0000-0000000000a1');
 select throws_ok($$ select public.complete_about_you('Sam', '1990-05-05', array['boxing']) $$, '42501', 'not_invited', 'an uninvited person is refused');
 select is((select date_of_birth from public.profiles where id = '1e000000-0000-0000-0000-0000000000a1'), null, 'the refusal saves nothing');
 select throws_ok($$ select public.admin_invite('friend@t.test') $$, '42501', null, 'a non-admin cannot invite');
+select throws_ok($$ select public.reserve_ai_question('How do I jab?') $$, '22023', 'step1_required', 'an uninvited account cannot ask the AI guide');
 select throws_ok($$ insert into public.beta_invites (email) values ('me@t.test') $$, '42501', null, 'nobody inserts invites directly');
 
 -- The admin invites, in any letter case.

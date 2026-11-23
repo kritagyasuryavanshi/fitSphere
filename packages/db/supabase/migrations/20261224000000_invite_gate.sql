@@ -96,3 +96,38 @@ begin
   on conflict (user_id, category_id) do nothing;
 end;
 $$;
+
+-- reserve_ai_question as in 20261211000000_ai_questions.sql, plus the step 1 check: every new account has the athlete
+-- role, so without it an uninvited account could call this directly.
+create or replace function public.reserve_ai_question(question text)
+returns uuid
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  uid uuid := auth.uid();
+  q text := btrim(coalesce(question, ''));
+  id_ uuid;
+begin
+  if uid is null then
+    raise exception 'sign in first' using errcode = '42501';
+  end if;
+  if not public.has_role('athlete') then
+    raise exception 'not_athlete' using errcode = '42501';
+  end if;
+  -- Only someone past sign-up step 1, and so past the invite gate, may ask (M6-15, from the Codex review).
+  perform public.require_step1();
+  if char_length(q) not between 1 and 500 then
+    raise exception 'bad_question' using errcode = '22023';
+  end if;
+  -- One at a time per athlete, so two quick questions cannot both take the last place.
+  perform pg_advisory_xact_lock(hashtext('ai_questions:' || uid::text));
+  if (select count(*) filter (where a.status <> 'failed') >= public.ai_daily_limit() or count(*) >= 2 * public.ai_daily_limit()
+      from public.ai_questions a where a.user_id = uid and a.asked_on = public.india_today()) then
+    raise exception 'ai_daily_limit' using errcode = '22023';
+  end if;
+  insert into public.ai_questions (user_id, question) values (uid, q) returning id into id_;
+  return id_;
+end;
+$$;
