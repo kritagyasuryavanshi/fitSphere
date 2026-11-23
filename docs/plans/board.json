@@ -1708,7 +1708,8 @@
         "A slot can be booked once; a second booking of the same slot fails (database constraint test)",
         "Booking needs payment; cancel follows the refund terms",
         "2026-11-22: moved to after launch (decision-m6-launch)",
-        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md",
+        "2026-11-24: the owner chose to build M4-18 now and leave M4-17 until bookings are near"
       ],
       "screens": [
         "X-Book",
@@ -1727,7 +1728,7 @@
         "O-09",
         "O-10"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "db+e2e",
       "ac": [
@@ -1737,13 +1738,15 @@
         "From the M4-19 Codex review (2026-11-22): a suspended coach, or one who lost the role, leaves the athlete a cancelling engagement to the paid date with no coach; decide a pro-rata refund or an earlier end",
         "From M4-12: an admin page lists payments, money owed back and failed or stuck refunds (money_invariants), with a Refund button that calls admin_refund",
         "From M4-14: a Report link on each public review; hiding sets reviews.hidden_at, which drops it from the profile and the rating",
-        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md",
+        "2026-11-24: PR #81 merged after the owner chose to build it on the plan's rules; 20261229 pushed first (production 62 of 62). Codex review: suspension lock order and the debt on a bounced payout fixed. Tries: 4. /admin/reports and the Report disclosure wait for the owner's look"
       ],
       "screens": [
         "X-Report",
         "X-ReportSent",
         "R-Reports"
-      ]
+      ],
+      "done_on": "2026-11-24"
     },
     {
       "id": "M4-16",

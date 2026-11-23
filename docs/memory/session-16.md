@@ -84,3 +84,9 @@ The owner asked for a goal: finish every remaining task that needs no owner inpu
   - S0-08: 2, plus an infrastructure rerun.
   - Renewal orders: 3. M4-13: 4, including an infrastructure rerun.
   - M4-15: 3. #79: 1.
+
+## M4-18 (2026-11-24)
+- The owner chose to build M4-18 now and leave M4-17. PR #81 is merged, with 20261229 pushed first. Production has 62 of 62.
+- Suspension refunds the unused days pro rata, the only partial refund. The payout is cut by the same share, or a coach debt is recorded when it was already paid. A bounced payout drops the debt and cuts the payout instead.
+- The Codex final-diff review found a deadlock risk in lock order and a stale debt; both are fixed. Tries: 4.
+- Lesson: in pgTAP, row security hides other people's rows from an admin user, so run checks as the owner (`reset role`).
