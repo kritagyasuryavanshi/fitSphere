@@ -172,6 +172,8 @@ export default function Home({ searchParams }: PageProps<'/'>) {
       </Suspense>
       <section className="relative flex min-h-[560px] items-end overflow-hidden bg-ink text-paper md:min-h-[720px]">
         <Image src="/images/heavybag.jpg" alt="A heavy bag hanging in a boxing gym" fill priority sizes="100vw" className="object-cover opacity-60" />
+        {/* Darkens the photo under the text, so the white words stay readable on a phone. */}
+        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-ink via-ink/50 to-transparent" />
         <div className={`${wrap} relative flex flex-col gap-6 pb-14 md:pb-20`}>
           <h1 className="m-0 max-w-[1000px] font-display text-[64px] font-normal uppercase leading-[0.9] md:text-[clamp(72px,9vw,140px)]">Every round starts with the jab.</h1>
           <p className="m-0 max-w-[560px] text-[18px] leading-[1.5] text-mist">Coach-taught boxing, strength and gym training, in one plan.</p>
