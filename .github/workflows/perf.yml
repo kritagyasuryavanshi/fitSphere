@@ -1,0 +1,56 @@
+name: Perf
+# M6-05: Lighthouse mobile, 3 runs each, median score, on one production build with the seed. Run it by hand.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run db:start
+      - name: Write local Supabase keys for the web app
+        working-directory: packages/db
+        run: |
+          eval "$(npx supabase status -o env)"
+          printf 'NEXT_PUBLIC_SUPABASE_URL=%s\nNEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=%s\nSUPABASE_SECRET_KEY=%s\n' "$API_URL" "$PUBLISHABLE_KEY" "$SECRET_KEY" > ../../apps/web/.env.local
+      - run: npx -w @fitsphere/web playwright install --with-deps chromium
+      - run: npm run build -w @fitsphere/web
+      - name: Start the app
+        working-directory: apps/web
+        run: |
+          E2E_AUTH_CONFIRM=1 npm run start -- -p 3000 > "$RUNNER_TEMP/next.log" 2>&1 &
+          npx wait-on@8.0.3 -t 60000 http://localhost:3000/
+      - name: Lighthouse, 3 runs per page, median
+        working-directory: apps/web
+        run: |
+          set -a; . ./.env.local; set +a
+          export CHROME_PATH=$(node -e "console.log(require('@playwright/test').chromium.executablePath())")
+          COOKIE=$(node scripts/perf-cookie.mjs http://localhost:3000)
+          mkdir -p "$RUNNER_TEMP/lh"
+          fail=0
+          for page in / /learn/boxing /today; do
+            scores=()
+            for run in 1 2 3; do
+              out="$RUNNER_TEMP/lh/$(echo "$page" | tr '/' '_')-$run.json"
+              headers='{}'; [ "$page" = /today ] && headers=$(node -e "console.log(JSON.stringify({Cookie: process.argv[1]}))" "$COOKIE")
+              npx -y lighthouse@12.8.2 "http://localhost:3000$page" --only-categories=performance --form-factor=mobile \
+                --extra-headers="$headers" --output=json --output-path="$out" --chrome-flags="--headless=new --no-sandbox" --quiet
+              scores+=($(node -e "console.log(Math.round(require(process.argv[1]).categories.performance.score*100))" "$out"))
+            done
+            median=$(printf '%s\n' "${scores[@]}" | sort -n | sed -n 2p)
+            echo "$page: runs ${scores[*]}, median $median" | tee -a "$GITHUB_STEP_SUMMARY"
+            [ "$median" -ge 80 ] || fail=1
+          done
+          exit $fail
+      - uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: lighthouse
+          path: ${{ runner.temp }}/lh/
