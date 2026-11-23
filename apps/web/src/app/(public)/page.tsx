@@ -1,6 +1,7 @@
 import { buttonClass } from '@fitsphere/ui';
 import Image from 'next/image';
 import Link from 'next/link';
+import { connection } from 'next/server';
 import { Suspense } from 'react';
 import { humanise, libraryItems, type LibraryItem } from '@/lib/content';
 import { db } from '@/lib/db';
@@ -42,6 +43,8 @@ function LessonCards({ category, items, tag }: { category: string; items: Librar
 }
 
 async function Sections() {
+  // Live data: read at request time, never at build time.
+  await connection();
   const [boxing, sc, gym, coaches] = await Promise.all([
     libraryItems('boxing'),
     libraryItems('sc'),

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { connection } from 'next/server';
 import { Suspense } from 'react';
 import { db } from '@/lib/db';
 
@@ -9,6 +10,8 @@ export const metadata: Metadata = { title: 'Programs · FitSphere', description:
 // coaches chose to show on their profile, each linking to its coach. There is no public page per program.
 // shortcut: one coach_programs call per live coach; fine for the beta's few coaches, move to one RPC past ~50.
 async function ShownPrograms() {
+  // Live data: read at request time, never at build time.
+  await connection();
   const supabase = db();
   const coaches = await supabase.rpc('find_coaches', {});
   if (coaches.error) throw coaches.error;
