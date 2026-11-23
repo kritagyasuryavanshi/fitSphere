@@ -903,14 +903,14 @@ isOneToOne: false
                   ]
                 },"payouts": {
                   Row: {
-                    "coach_id": string | null,"created_at": string,"fee_paise": number,"gross_paise": number,"failed_note": string | null,"hold_until": string,"id": string,"net_paise": number,"paid_at": string | null,"paid_by": string | null,"paid_ref": string | null,"payment_id": string,"provider_transfer_id": string | null,"status": string
+                    "coach_id": string | null,"created_at": string,"failed_note": string | null,"fee_paise": number,"gross_paise": number,"hold_until": string,"id": string,"net_paise": number,"paid_at": string | null,"paid_by": string | null,"paid_ref": string | null,"payment_id": string,"provider_transfer_id": string | null,"status": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "coach_id"?: string | null,"created_at"?: string,"fee_paise": number,"gross_paise": number,"failed_note"?: string | null,"hold_until": string,"id"?: string,"net_paise": number,"paid_at"?: string | null,"paid_by"?: string | null,"paid_ref"?: string | null,"payment_id": string,"provider_transfer_id"?: string | null,"status"?: string
+                    "coach_id"?: string | null,"created_at"?: string,"failed_note"?: string | null,"fee_paise": number,"gross_paise": number,"hold_until": string,"id"?: string,"net_paise": number,"paid_at"?: string | null,"paid_by"?: string | null,"paid_ref"?: string | null,"payment_id": string,"provider_transfer_id"?: string | null,"status"?: string
                   }
                   Update: {
-                    "coach_id"?: string | null,"created_at"?: string,"fee_paise"?: number,"gross_paise"?: number,"failed_note"?: string | null,"hold_until"?: string,"id"?: string,"net_paise"?: number,"paid_at"?: string | null,"paid_by"?: string | null,"paid_ref"?: string | null,"payment_id"?: string,"provider_transfer_id"?: string | null,"status"?: string
+                    "coach_id"?: string | null,"created_at"?: string,"failed_note"?: string | null,"fee_paise"?: number,"gross_paise"?: number,"hold_until"?: string,"id"?: string,"net_paise"?: number,"paid_at"?: string | null,"paid_by"?: string | null,"paid_ref"?: string | null,"payment_id"?: string,"provider_transfer_id"?: string | null,"status"?: string
                   }
                   Relationships: [
                     {
@@ -1583,11 +1583,6 @@ isOneToOne: false
 "month_period_end":
 { Args: { "start": string }; Returns: string
                            },
-"my_earnings":
-{ Args: Record<PropertyKey, never>; Returns: {
-              "held_paise": number,"paid_paise": number,"ready_paise": number
-            }[]
-                           },
 "my_coach_profile":
 { Args: Record<PropertyKey, never>; Returns: {
               "agreement_accepted_at": string,"agreement_version": string,"city": string,"client_limit": number,"coach_id": string,"formats": (string)[],"headline": string,"languages": (string)[],"philosophy": string,"specialties": (string)[],"status": string,"updated_at": string,"years": number
@@ -1596,6 +1591,11 @@ isOneToOne: false
 "my_conversations":
 { Args: Record<PropertyKey, never>; Returns: {
               "can_send": boolean,"conversation_id": string,"i_am_coach": boolean,"last_message_at": string,"other_id": string,"other_is_live_coach": boolean,"other_name": string
+            }[]
+                           },
+"my_earnings":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "held_paise": number,"paid_paise": number,"ready_paise": number
             }[]
                            },
 "my_email_prefs":
