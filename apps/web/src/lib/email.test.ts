@@ -174,6 +174,17 @@ describe('renderEmail for renewal by order (Decision 1)', () => {
   });
 });
 
+describe('renderEmail when a coach is suspended (M4-18)', () => {
+  const data = { engagement: '8b000000-0000-0000-0000-0000000000e1', role: 'athlete', other: 'Vikram', package: 'Online coaching', paid_through: '2026-12-15', amount: 300000 };
+  it('tells the athlete the coaching ended and the unused days come back, and tells the coach', () => {
+    const a = renderEmail('coaching_suspended', data, 'https://x')!;
+    expect(a.subject).toBe('Your coaching with Vikram has ended');
+    expect(a.text).toContain('We refund the unused days of your paid month');
+    expect(renderEmail('coaching_suspended', { ...data, role: 'coach', other: 'Kabir' }, 'https://x')!.subject).toBe('Coaching with Kabir has ended');
+    expect(TEMPLATES).toContain('coaching_suspended');
+  });
+});
+
 describe('renderEmail when a coach stops coaching (M4-19)', () => {
   it('tells the athlete the paid month runs out and nothing more is taken, and tells the coach', () => {
     const a = renderEmail('coaching_stopped', { role: 'athlete', other: 'Vikram', package: 'Online coaching', paid_through: '2026-12-15' }, 'https://x')!;

@@ -10,6 +10,8 @@ import { supabaseServer } from '@/lib/supabase/server';
 import { buttonClass } from '@fitsphere/ui';
 import { getViewer } from '@/lib/viewer';
 import { ShortlistButton } from '../shortlist-button';
+import { ReportForm } from '@/components/report-form';
+import { ReportNotice } from '@/components/report-notice';
 
 // Each coach page names its coach, for tabs, search results and link previews.
 export async function generateMetadata({ params }: PageProps<'/coaches/[id]'>): Promise<Metadata> {
@@ -203,6 +205,9 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
         </section>
       ) : null}
 
+      <Suspense fallback={null}>
+        <ReportNotice />
+      </Suspense>
       <section aria-labelledby="reviews" className="flex flex-col gap-2">
         <h2 id="reviews" className="m-0 text-[22px] font-semibold">
           Reviews
@@ -223,6 +228,7 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
                     Verified client · {r.package_title}, {paidFor(r.package_kind, r.months_paid)} · {r.month}
                   </p>
                   <p className="m-0 text-[16px] leading-[1.6]">{r.body}</p>
+                  {viewer ? <ReportForm kind="review" target={r.id} back={`/coaches/${id}`} label={`the review by ${r.author}`} /> : null}
                   {r.coach_reply ? (
                     <p className="m-0 mt-1 border-l-2 border-line-strong pl-3 text-[15px] text-ink-soft">
                       <span className="font-medium text-ink">Reply from {name.data || 'the coach'}:</span> {r.coach_reply}
@@ -263,6 +269,7 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
       ) : null}
 
       {p.languages.length ? <p className="m-0 text-[15px] text-muted">Speaks {p.languages.join(', ')}.</p> : null}
+      {viewer && viewer.userId !== id ? <ReportForm kind="coach" target={id} back={`/coaches/${id}`} label="this coach" /> : null}
     </>
   );
 }
