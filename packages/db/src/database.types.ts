@@ -1924,11 +1924,11 @@ isOneToOne: false
 "withdraw_my_credentials":
 { Args: Record<PropertyKey, never>; Returns: undefined
                            },
-"withdraw_story":
-{ Args: { "story": string }; Returns: undefined
-                           },
 "withdraw_request":
 { Args: { "engagement": string }; Returns: undefined
+                           },
+"withdraw_story":
+{ Args: { "story": string }; Returns: undefined
                            }
           }
           Enums: {
