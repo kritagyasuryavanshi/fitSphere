@@ -4,7 +4,7 @@
 -- coaching at once and refunds the unused days pro rata: the only partial refund. Its payout is cut by the same
 -- share, or recorded as a coach debt when already paid.
 begin;
-select plan(26);
+select plan(28);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('8a000000-0000-0000-0000-0000000000c1', 'rp-coach@t.test', now()),
@@ -91,6 +91,10 @@ select is_empty($$ select * from public.money_invariants() where rule not in ('r
 -- Lifting the suspension.
 set local role authenticated;
 select pg_temp.as_user('8a000000-0000-0000-0000-0000000000ad');
+-- Neha's payout bounced after all: the debt goes, and the payout is cut like an unpaid one (Codex review).
+select lives_ok($$ select public.admin_mark_payout_failed('8e000000-0000-0000-0000-000000000002', 'Account closed') $$, 'the admin records the failed transfer');
+select is((select gross_paise || '|' || net_paise || '|' || (select count(*) from public.coach_debts where payout_id = '8e000000-0000-0000-0000-000000000002'))
+  from public.payouts where id = '8e000000-0000-0000-0000-000000000002'), '100000|85000|0', 'no debt is left, and the payout keeps only the money kept');
 select lives_ok($$ select public.admin_unsuspend_coach('8a000000-0000-0000-0000-0000000000c1') $$, 'the admin lifts the suspension');
 
 select * from finish();

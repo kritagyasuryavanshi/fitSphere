@@ -251,6 +251,9 @@ begin
   if p.coach_id is null or p.status = 'suspended' then
     raise exception 'not_suspendable' using errcode = '22023';
   end if;
+  -- Locks in the order every money path uses: orders, then engagements, then payments (Codex review).
+  perform 1 from public.orders x join public.engagements e on e.id = x.engagement_id
+  where e.coach_id = coach and e.status in ('active', 'cancelling') order by x.id for update of x;
   for g in select * from public.engagements e where e.coach_id = coach and e.status in ('active', 'cancelling') order by e.id for update loop
     for o in select * from public.orders x where x.engagement_id = g.id and x.status = 'paid' and x.period_end > today order by x.period_start for update loop
       select * into pay from public.payments y where y.order_id = o.id and y.status = 'captured' for update;
@@ -529,3 +532,39 @@ end;
 $$;
 revoke all on function public.admin_money_issues() from public, anon;
 grant execute on function public.admin_money_issues() to authenticated;
+
+-- admin_mark_payout_failed as in 20261227000000_manual_payouts.sql, plus: a transfer that bounced was never the coach's
+-- money, so a debt recorded for it after a suspension refund is dropped, and the payout is cut instead (Codex review).
+create or replace function public.admin_mark_payout_failed(payout uuid, note text)
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  why text := left(btrim(coalesce(note, '')), 300);
+  u public.payouts;
+  r public.refunds;
+begin
+  if not public.is_admin() then
+    raise exception 'admins only' using errcode = '42501';
+  end if;
+  if why = '' then
+    raise exception 'note_required' using errcode = '22023';
+  end if;
+  perform 1 from public.payments p where p.id = (select payment_id from public.payouts where id = payout) for update;
+  select * into u from public.payouts where id = payout for update;
+  if u.id is null or u.status <> 'manual_paid' then
+    raise exception 'not_paid' using errcode = '22023';
+  end if;
+  update public.payouts set status = 'manual_due', paid_at = null, paid_ref = null, paid_by = null, failed_note = why where id = u.id;
+  if exists (select 1 from public.coach_debts d where d.payout_id = u.id and d.settled_at is null) then
+    delete from public.coach_debts d where d.payout_id = u.id and d.settled_at is null;
+    for r in select * from public.refunds x where x.payment_id = u.payment_id and x.reason = 'suspension' and x.status = 'processed' loop
+      perform public.cut_payout_for_refund(u.payment_id, r.amount_paise);
+    end loop;
+  end if;
+  insert into public.audit_log (actor_id, action, target_id, details)
+  values (auth.uid(), 'payout_failed', u.id, jsonb_build_object('note', why, 'reference', u.paid_ref));
+end;
+$$;

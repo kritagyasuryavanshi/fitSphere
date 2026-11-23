@@ -11,9 +11,10 @@ test('a reported coach is suspended from the admin queue', async ({ page }) => {
 
   await signInWithEmail(page, athlete.email);
   await page.goto(`/coaches/${coach.id}`);
-  await page.getByText('Report', { exact: true }).last().click();
-  await page.getByLabel('Why are you reporting this?').last().selectOption('unsafe_advice');
-  await page.getByRole('button', { name: 'Send report' }).last().click();
+  const box = page.locator('details').filter({ has: page.locator('summary', { hasText: 'Report this coach' }) });
+  await box.locator('summary').click();
+  await box.getByLabel('Why are you reporting this?').selectOption('unsafe_advice');
+  await box.getByRole('button', { name: 'Send report' }).click();
   await expect(page.getByRole('status')).toContainText('Your report reached FitSphere');
 
   await signInWithEmail(page, adminUser.email);
