@@ -1850,7 +1850,7 @@
       "priority": "P0",
       "size": "M",
       "deps": [],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "e2e",
       "screens": [
@@ -1865,8 +1865,10 @@
         "Match the canvas at 390 and 1440 px",
         "No invented numbers; every count comes from the database",
         "Hiring shows \"coming soon\" while the marketplace is closed (M6-10); the M4-16 dependency is dropped",
-        "Re-enable the claude-seo plugin (claude plugin enable claude-seo@agricidaniel-claude-seo) and fix every critical finding from /seo audit on public pages"
-      ]
+        "Re-enable the claude-seo plugin (claude plugin enable claude-seo@agricidaniel-claude-seo) and fix every critical finding from /seo audit on public pages",
+        "2026-11-23: PRs #67 and #70. Landing, /about, /help, /programs, footer; all data from the database. P-Program and G-Program not built: programs are invite-only. Live check at 375/768/1280 px clean. Still to do: /seo audit on production"
+      ],
+      "done_on": "2026-11-23"
     },
     {
       "id": "M6-02",
@@ -1896,7 +1898,7 @@
       "priority": "P0",
       "size": "M",
       "deps": [],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "e2e",
       "screens": [
@@ -1908,8 +1910,10 @@
         "A route audit script lists every route and finds no dead button or placeholder",
         "Each data screen has a designed empty state",
         "Coach empty states follow the approved design K-CoachEmpty",
-        "Found 2026-11-22: /coaches/[id] logs 'Next.js encountered the unstable value Date.now() while prerendering' (82 times in PR #59's CI log); the page still renders. Find the caller and fix it"
-      ]
+        "Found 2026-11-22: /coaches/[id] logs 'Next.js encountered the unstable value Date.now() while prerendering' (82 times in PR #59's CI log); the page still renders. Find the caller and fix it",
+        "2026-11-23: PR #64. not-found, error and global-error pages; routes.test.ts checks every internal link; coach first run links real pages; /coaches/[id] metadata awaits connection()"
+      ],
+      "done_on": "2026-11-23"
     },
     {
       "id": "M6-04",
@@ -1920,13 +1924,14 @@
       "deps": [
         "M6-01"
       ],
-      "status": "todo",
+      "status": "in_progress",
       "owner": "claude",
       "test": "manual",
       "ac": [
         "A manifest and icons; offline mode is cut (decision-m6-launch)",
         "Installs on Android Chrome and iOS Safari",
-        "Can ship after the beta opens"
+        "Can ship after the beta opens",
+        "2026-11-23: PR #69 merged: manifest and code-drawn icons. Left: install once on Android Chrome and iOS Safari (owner, on a phone)"
       ]
     },
     {
@@ -1943,7 +1948,8 @@
       "test": "manual",
       "ac": [
         "Lighthouse mobile performance at least 80 on landing, library and Today",
-        "Images served in modern formats at the right size"
+        "Images served in modern formats at the right size",
+        "2026-11-23: PageSpeed's keyless daily quota was used up, and a local npx lighthouse run needs the owner's permission"
       ]
     },
     {
@@ -1955,13 +1961,15 @@
       "deps": [
         "M6-03"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "e2e",
       "ac": [
         "axe finds no serious or critical issue on the beta journeys",
-        "Keyboard-only path through sign-up and a session"
-      ]
+        "Keyboard-only path through sign-up and a session",
+        "2026-11-23: PR #68. e2e/a11y.spec.ts: axe finds no serious or critical issue on guest, athlete, session and coach pages; keyboard paths through sign-up step 1 and a session"
+      ],
+      "done_on": "2026-11-23"
     },
     {
       "id": "M6-07",
@@ -1970,7 +1978,7 @@
       "priority": "P0",
       "size": "M",
       "deps": [],
-      "status": "todo",
+      "status": "in_progress",
       "owner": "claude",
       "test": "all",
       "ac": [
@@ -1979,7 +1987,8 @@
         "Database caps on spammy writes",
         "No secrets in the repo or the browser bundle",
         "/security-review and a Codex review of the whole app; findings resolved",
-        "Sign-in rate limits come from Supabase and Turnstile (M6-11), not custom code"
+        "Sign-in rate limits come from Supabase and Turnstile (M6-11), not custom code",
+        "2026-11-23: PR #66 (write caps) green, waits for the owner's yes to push 20261222 to production. Codex whole-app review and /security-review found nothing. No secret in the bundle or history. Left: a separate free Supabase project for previews (owner account)"
       ]
     },
     {
@@ -2060,17 +2069,19 @@
       "priority": "P0",
       "size": "S",
       "deps": [],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "e2e",
       "ac": [
         "Covers every table with personal data, every provider (Supabase, Vercel, Resend, Sentry, the AI provider abroad, Razorpay later), retention, withdrawal, the grievance contact, the 18+ rule and breach notice",
         "Pages at /legal/privacy and /legal/terms; existing links stop returning 404",
-        "Marked as a draft until M6-02 swaps in the lawyer's text"
+        "Marked as a draft until M6-02 swaps in the lawyer's text",
+        "2026-11-23: PR #65. Full draft with a draft notice. Release check (M6-08): publish the grievance email once the domain exists (O-11)"
       ],
       "screens": [
         "P-Legal"
-      ]
+      ],
+      "done_on": "2026-11-23"
     },
     {
       "id": "M6-11",
@@ -2096,14 +2107,15 @@
       "priority": "P0",
       "size": "M",
       "deps": [],
-      "status": "todo",
+      "status": "in_progress",
       "owner": "claude",
       "test": "manual",
       "ac": [
         "A weekly encrypted backup with one tested restore",
         "An alert when a daily job fails, fired once in a test",
         "Old email outbox rows are pruned",
-        "A runbook for a breach and for key rotation"
+        "A runbook for a breach and for key rotation",
+        "2026-11-23: built on local branch m6-12-operations (job_runs, health endpoint, Ops workflow with weekly tested backup, outbox pruning, runbook). The push is refused: the gh token lacks the workflow scope. Owner: gh auth refresh -s workflow, then add SUPABASE_DB_URL and BACKUP_PASSPHRASE secrets"
       ]
     },
     {

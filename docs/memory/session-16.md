@@ -26,3 +26,31 @@ Follows [[session-15]]. Hub: [[marketplace]]. Plan: [[decision-m6-launch]].
 
 ## Next
 The step 1 tasks in order: M6-03, M6-01, M6-02a, M6-07, M6-12. M6-11 and S0-08 wait on O-11.
+
+## Later the same session: the no-owner M6 tasks
+The owner asked for a goal: finish every remaining task that needs no owner input.
+
+### Done
+- PR #64, M6-03: error pages, a route audit test (`routes.test.ts`), and coach first-run links.
+- PR #65, M6-02a: full privacy and terms draft.
+- PRs #67 and #70, M6-01: landing, about, help, programs and a footer. All data comes from the database.
+- PR #68, M6-06: axe and keyboard e2e. They passed on the first run.
+- PR #69, M6-04: manifest and code-drawn icons.
+- Codex reviewed the whole app for security (`gpt-6-luna`) and found nothing. `/security-review` of the write caps found nothing.
+
+### Bugs and errors
+- A page that reads the database in a public server component needs `await connection()`, or the verify build fails with "Supabase URL is missing".
+- The `/coaches/[id]` prerender error came from the cookie client checking token expiry with `Date.now()` in `generateMetadata`.
+- The gh token lacks the `workflow` scope, so a push that adds `.github/workflows/*` is refused.
+
+### Decisions
+- `/programs` lists only the programs coaches show on their profile. There is no public page per program, because programs are invite-only.
+- Write caps sit on tables as triggers, and the service role is never capped.
+- The job failure alert is a public health endpoint plus a GitHub Actions run, so it needs no secret.
+
+### Needs you
+- Say yes to pushing migration `20261222` (write caps, PR #66) to production.
+- Run `gh auth refresh -h github.com -s workflow` so M6-12 can push. Then add the `SUPABASE_DB_URL` and `BACKUP_PASSPHRASE` secrets.
+- Allow a local Lighthouse run (`npx lighthouse`) for M6-05, or wait a day for the PageSpeed quota.
+- Install the app once on an Android phone and an iPhone (M6-04).
+- Create a free Supabase project for previews (M6-07).
