@@ -36,6 +36,7 @@ The owner asked for a goal: finish every remaining task that needs no owner inpu
 - PRs #67 and #70, M6-01: landing, about, help, programs and a footer. All data comes from the database.
 - PR #68, M6-06: axe and keyboard e2e. They passed on the first run.
 - PR #69, M6-04: manifest and code-drawn icons.
+- PR #66, M6-07 write caps: merged after the owner's yes, with `20261222` pushed first. Production has 55 of 55 migrations.
 - Codex reviewed the whole app for security (`gpt-6-luna`) and found nothing. `/security-review` of the write caps found nothing.
 
 ### Bugs and errors
@@ -49,7 +50,6 @@ The owner asked for a goal: finish every remaining task that needs no owner inpu
 - The job failure alert is a public health endpoint plus a GitHub Actions run, so it needs no secret.
 
 ### Needs you
-- Say yes to pushing migration `20261222` (write caps, PR #66) to production.
 - Run `gh auth refresh -h github.com -s workflow` so M6-12 can push. Then add the `SUPABASE_DB_URL` and `BACKUP_PASSPHRASE` secrets.
 - Allow a local Lighthouse run (`npx lighthouse`) for M6-05, or wait a day for the PageSpeed quota.
 - Install the app once on an Android phone and an iPhone (M6-04).

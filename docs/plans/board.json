@@ -1988,7 +1988,8 @@
         "No secrets in the repo or the browser bundle",
         "/security-review and a Codex review of the whole app; findings resolved",
         "Sign-in rate limits come from Supabase and Turnstile (M6-11), not custom code",
-        "2026-11-23: PR #66 (write caps) green, waits for the owner's yes to push 20261222 to production. Codex whole-app review and /security-review found nothing. No secret in the bundle or history. Left: a separate free Supabase project for previews (owner account)"
+        "2026-11-23: PR #66 (write caps) green, waits for the owner's yes to push 20261222 to production. Codex whole-app review and /security-review found nothing. No secret in the bundle or history. Left: a separate free Supabase project for previews (owner account)",
+        "2026-11-23: PR #66 merged after the owner's yes; 20261222 pushed first. Production at 55 of 55. Left: the preview Supabase project (owner)"
       ]
     },
     {
