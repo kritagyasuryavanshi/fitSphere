@@ -171,6 +171,8 @@ declare
   unpaid boolean;
   n int := 0;
 begin
+  -- One sweep at a time, so two overlapping runs cannot both send the same reminder (Codex review).
+  perform pg_advisory_xact_lock(hashtext('sweep_engagements'));
   for g in
     select * from public.engagements e
     where e.status in ('active', 'cancelling') and e.paid_through < public.india_today()
