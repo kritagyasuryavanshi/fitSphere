@@ -903,19 +903,25 @@ isOneToOne: false
                   ]
                 },"payouts": {
                   Row: {
-                    "coach_id": string | null,"created_at": string,"fee_paise": number,"gross_paise": number,"hold_until": string,"id": string,"net_paise": number,"payment_id": string,"provider_transfer_id": string | null,"status": string
+                    "coach_id": string | null,"created_at": string,"fee_paise": number,"gross_paise": number,"failed_note": string | null,"hold_until": string,"id": string,"net_paise": number,"paid_at": string | null,"paid_by": string | null,"paid_ref": string | null,"payment_id": string,"provider_transfer_id": string | null,"status": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "coach_id"?: string | null,"created_at"?: string,"fee_paise": number,"gross_paise": number,"hold_until": string,"id"?: string,"net_paise": number,"payment_id": string,"provider_transfer_id"?: string | null,"status"?: string
+                    "coach_id"?: string | null,"created_at"?: string,"fee_paise": number,"gross_paise": number,"failed_note"?: string | null,"hold_until": string,"id"?: string,"net_paise": number,"paid_at"?: string | null,"paid_by"?: string | null,"paid_ref"?: string | null,"payment_id": string,"provider_transfer_id"?: string | null,"status"?: string
                   }
                   Update: {
-                    "coach_id"?: string | null,"created_at"?: string,"fee_paise"?: number,"gross_paise"?: number,"hold_until"?: string,"id"?: string,"net_paise"?: number,"payment_id"?: string,"provider_transfer_id"?: string | null,"status"?: string
+                    "coach_id"?: string | null,"created_at"?: string,"fee_paise"?: number,"gross_paise"?: number,"failed_note"?: string | null,"hold_until"?: string,"id"?: string,"net_paise"?: number,"paid_at"?: string | null,"paid_by"?: string | null,"paid_ref"?: string | null,"payment_id"?: string,"provider_transfer_id"?: string | null,"status"?: string
                   }
                   Relationships: [
                     {
       foreignKeyName: "payouts_coach_id_fkey"
       columns: ["coach_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payouts_paid_by_fkey"
+      columns: ["paid_by"]
 isOneToOne: false
       referencedRelation: "profiles"
       referencedColumns: ["id"]
@@ -1323,6 +1329,17 @@ isOneToOne: false
               "display_name": string,"email": string,"id": string,"joined": string,"roles": (Database["public"]['Enums']["app_role"])[]
             }[]
                            },
+"admin_mark_payout_failed":
+{ Args: { "note": string,"payout": string }; Returns: undefined
+                           },
+"admin_mark_payout_paid":
+{ Args: { "payout": string,"reference": string }; Returns: undefined
+                           },
+"admin_payouts_due":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "coach_id": string,"coach_name": string,"failed_note": string,"hold_until": string,"net_paise": number,"payout_id": string
+            }[]
+                           },
 "admin_pending_credentials":
 { Args: Record<PropertyKey, never>; Returns: {
               "coach_id": string,"coach_name": string,"created_at": string,"file_path": string,"id": string,"id_number": string,"issuer": string,"title": string
@@ -1566,6 +1583,11 @@ isOneToOne: false
 "month_period_end":
 { Args: { "start": string }; Returns: string
                            },
+"my_earnings":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "held_paise": number,"paid_paise": number,"ready_paise": number
+            }[]
+                           },
 "my_coach_profile":
 { Args: Record<PropertyKey, never>; Returns: {
               "agreement_accepted_at": string,"agreement_version": string,"city": string,"client_limit": number,"coach_id": string,"formats": (string)[],"headline": string,"languages": (string)[],"philosophy": string,"specialties": (string)[],"status": string,"updated_at": string,"years": number
@@ -1605,6 +1627,9 @@ isOneToOne: false
                            },
 "payout_hold_days":
 { Args: Record<PropertyKey, never>; Returns: number
+                           },
+"payout_ready":
+{ Args: { "payout": string }; Returns: boolean
                            },
 "platform_fee_bps":
 { Args: Record<PropertyKey, never>; Returns: number
