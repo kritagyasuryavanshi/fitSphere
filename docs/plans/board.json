@@ -1975,7 +1975,8 @@
         "Lighthouse mobile performance at least 80 on landing, library and Today",
         "Images served in modern formats at the right size",
         "2026-11-23: PageSpeed's keyless daily quota was used up, and a local npx lighthouse run needs the owner's permission",
-        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md",
+        "2026-11-23: the agreed perf job is a GitHub workflow, so it also waits for gh auth refresh -s workflow"
       ]
     },
     {
@@ -2026,15 +2027,17 @@
       "priority": "P0",
       "size": "S",
       "deps": [],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "db+e2e",
       "ac": [
         "beta_invites(email) and app_settings.signups_open (default false); complete_about_you raises not_invited unless open or invited, so email and Google are both gated",
         "Admin adds invites on /admin/people; /welcome/not-invited saves nothing and offers deletion",
         "pgTAP and e2e for an uninvited email account and an uninvited Google-shaped account",
-        "Plan: docs/plans/remaining-tasks-plan.md (agreed with Codex 2026-11-23)"
-      ]
+        "Plan: docs/plans/remaining-tasks-plan.md (agreed with Codex 2026-11-23)",
+        "2026-11-23: PR #72 merged, 20261224 pushed first. Codex review: reserve_ai_question now needs step 1 too. Production sign-ups are invite only"
+      ],
+      "done_on": "2026-11-23"
     },
     {
       "id": "M6-08",
@@ -2163,7 +2166,8 @@
         "Old email outbox rows are pruned",
         "A runbook for a breach and for key rotation",
         "2026-11-23: built on local branch m6-12-operations (job_runs, health endpoint, Ops workflow with weekly tested backup, outbox pruning, runbook). The push is refused: the gh token lacks the workflow scope. Owner: gh auth refresh -s workflow, then add SUPABASE_DB_URL and BACKUP_PASSPHRASE secrets",
-        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md",
+        "2026-11-23: PR #73 merged, 20261223 pushed first (production 57 of 57). Left for the owner: create private repo fitsphere-ops, gh auth refresh -s workflow, copy docs/ops/ops.yml there, add CRON_SECRET, SUPABASE_DB_URL, BACKUP_PASSPHRASE, run Ops backup once (the tested restore)"
       ]
     },
     {
