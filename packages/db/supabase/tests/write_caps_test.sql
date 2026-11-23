@@ -40,7 +40,7 @@ select lives_ok($$ insert into public.messages (conversation_id, sender_id, body
   'after the window the athlete can send again');
 
 -- Every capped table has the trigger.
-select is((select count(*)::int from pg_trigger where tgname = 'write_cap' and not tgisinternal), 8, 'eight tables are capped');
+select is((select count(*)::int from pg_trigger where tgname = 'write_cap' and not tgisinternal), 9, 'nine tables are capped (reports since M4-18)');
 
 select * from finish();
 rollback;

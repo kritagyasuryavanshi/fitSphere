@@ -33,6 +33,7 @@ function coachLinks(viewer: Viewer, desktop: boolean): NavItem[] {
   if (desktop && viewer.roles.includes('admin')) links.push({ href: '/admin/people', label: 'People' });
   if (desktop && viewer.roles.includes('admin')) links.push({ href: '/admin/credentials', label: 'Credential checks' });
   if (desktop && viewer.roles.includes('admin')) links.push({ href: '/admin/payouts', label: 'Payouts' });
+  if (desktop && viewer.roles.includes('admin')) links.push({ href: '/admin/reports', label: 'Reports' });
   return links;
 }
 

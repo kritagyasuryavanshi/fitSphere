@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { isUuid } from '@/lib/programs';
 import { supabaseServer } from '@/lib/supabase/server';
+import { ReportForm } from '@/components/report-form';
+import { ReportNotice } from '@/components/report-notice';
 import { requireSignedIn } from '@/lib/viewer';
 import { Refresher, SendForm } from './chat-client';
 
@@ -48,6 +50,9 @@ async function Chat({ params }: PageProps<'/messages/[id]'>) {
         Keep payments on FitSphere. Paying outside means no refund protection and no verified review.
       </p>
       {msgs.data.length === SHOWN ? <p className="m-0 text-[14px] text-muted">Showing the latest {SHOWN} messages.</p> : null}
+      <Suspense fallback={null}>
+        <ReportNotice />
+      </Suspense>
       <ol aria-label="Messages" className="m-0 flex list-none flex-col gap-3 p-0">
         {shown.map((m) => {
           const mine = m.sender_id === viewer.userId;
@@ -56,6 +61,7 @@ async function Chat({ params }: PageProps<'/messages/[id]'>) {
               <span className="sr-only">{mine ? 'You' : c.other_name}:</span>
               <span className="whitespace-pre-line text-[16px]">{m.body}</span>
               <span className={`text-[12px] ${mine ? 'text-paper/70' : 'text-muted'}`}>{when(m.created_at)}</span>
+              {mine ? null : <ReportForm kind="message" target={String(m.id)} back={`/messages/${id}`} label={`this message from ${c.other_name}`} />}
             </li>
           );
         })}

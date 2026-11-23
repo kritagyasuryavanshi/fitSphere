@@ -28,6 +28,7 @@ export const TEMPLATES = [
   'coaching_refunded',
   'renewal_due',
   'coaching_unpaid',
+  'coaching_suspended',
 ];
 
 const str = (v: unknown) => (typeof v === 'string' ? v : '');
@@ -142,6 +143,11 @@ function coachingEmail(template: string, data: Record<string, unknown>, origin: 
         text: [`Your coaching runs until ${until}.`, `Pay ${amount} for the next month of ${pkg} to keep going. If it is not paid, coaching ends 3 days after that date.`, '', engagement ? `${origin}/coaching/${engagement}/pay` : `${origin}/coaching`].join('\n'),
       };
     }
+    case 'coaching_suspended':
+      // M4-18: an admin suspended the coach; the coaching ended at once and the unused days are refunded.
+      return coachView
+        ? { subject: `Coaching with ${other} has ended`, text: lines(`Your coaching account is suspended, so ${pkg} with ${other} has ended today.`, 'The unused days are refunded to the client. Reply to this email to ask why.') }
+        : { subject: `Your coaching with ${other} has ended`, text: lines(`${Other} can no longer coach on FitSphere, so ${pkg} has ended today.`, 'We refund the unused days of your paid month. Your bank can take 5 to 7 working days to show it.') };
     case 'coaching_unpaid':
       return coachView
         ? { subject: `Coaching with ${other} has ended`, text: lines(`${Other} did not pay for the next month of ${pkg}, so it has ended. You no longer see their logs.`) }
