@@ -9,9 +9,25 @@ const seededUsers = [
   ['admin@test.fitsphere', 'admin'],
 ] as const;
 
-test('home page renders', async ({ page }) => {
+test('home page shows real lessons and no placeholder', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1, name: 'FitSphere' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Every round starts with the jab.' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Start training free' })).toHaveAttribute('href', '/sign-in');
+  // The boxing rail lists published lessons from the database, with their real count.
+  const rail = page.getByRole('region', { name: 'Learn the fundamentals' });
+  await expect(rail.getByRole('link', { name: /^All \d+ boxing lessons$/ })).toBeVisible();
+  await expect(rail.getByRole('listitem').first()).toBeVisible();
+  await expect(page.getByText('App scaffold')).toHaveCount(0);
+  await expect(page.getByRole('contentinfo').getByRole('link', { name: 'Help' })).toHaveAttribute('href', '/help');
+});
+
+test('about, help and programs pages render', async ({ page }) => {
+  await page.goto('/about');
+  await expect(page.getByRole('heading', { level: 1, name: /One place to learn/ })).toBeVisible();
+  await page.goto('/help');
+  await expect(page.getByRole('region', { name: 'Getting started' })).toContainText('18');
+  await page.goto('/programs');
+  await expect(page.getByRole('region', { name: 'How joining works' })).toBeVisible();
 });
 
 test('every page refuses to load in a frame on another site', async ({ request }) => {
@@ -47,3 +63,14 @@ for (const [email, role] of seededUsers) {
     expect(roles?.map((r) => r.role)).toContain(role);
   });
 }
+
+test('the app can be installed: a manifest with icons that load (M6-04)', async ({ request }) => {
+  const manifest = await (await request.get('/manifest.webmanifest')).json();
+  expect(manifest.display).toBe('standalone');
+  for (const icon of manifest.icons as { src: string }[]) {
+    const res = await request.get(icon.src);
+    expect(res.status(), icon.src).toBe(200);
+    expect(res.headers()['content-type']).toBe('image/png');
+  }
+  expect((await request.get('/apple-icon')).headers()['content-type']).toContain('image/png');
+});

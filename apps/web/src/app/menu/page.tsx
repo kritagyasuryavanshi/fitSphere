@@ -9,8 +9,11 @@ export const metadata: Metadata = { title: 'Menu · FitSphere' };
 // Only pages that exist; the AI guide (M5) adds its own.
 const links = [
   { href: '/learn/boxing', label: 'Learn' },
+  { href: '/programs', label: 'Programs' },
   { href: '/coaches', label: 'Coaches' },
   { href: '/for-coaches', label: 'For coaches' },
+  { href: '/about', label: 'About' },
+  { href: '/help', label: 'Help' },
   { href: '/legal/privacy', label: 'Privacy' },
   { href: '/legal/terms', label: 'Terms' },
 ];
