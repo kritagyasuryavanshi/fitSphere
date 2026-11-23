@@ -10,6 +10,8 @@ insert into auth.users (id, email, email_confirmed_at) values
 -- The coach is a coach only.
 delete from public.user_roles where user_id = 'b3000000-0000-0000-0000-0000000000c1';
 insert into public.user_roles (user_id, role) values ('b3000000-0000-0000-0000-0000000000c1', 'coach');
+-- Everyone here has passed sign-up step 1, which asking the AI guide needs (M6-15).
+update public.profiles set date_of_birth = '1995-01-01' where id::text like 'b3000000%';
 
 create temp table ids (n int primary key, id uuid);
 grant all on ids to authenticated, service_role;

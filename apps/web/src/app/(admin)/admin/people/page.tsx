@@ -1,9 +1,11 @@
+import { Button } from '@fitsphere/ui';
 import type { Metadata } from 'next';
 import Form from 'next/form';
 import { Suspense } from 'react';
 import { Icon } from '@/components/layout/icons';
 import { supabaseServer } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/viewer';
+import { inviteToBeta } from './actions';
 import { Applications } from './applications';
 import { PeopleTable } from './people-table';
 
@@ -13,7 +15,7 @@ const joined = new Intl.DateTimeFormat('en-IN', { day: 'numeric', month: 'short'
 
 async function People({ searchParams }: { searchParams: PageProps<'/admin/people'>['searchParams'] }) {
   const viewer = await requireRole('admin');
-  const { q } = await searchParams;
+  const { q, invite, email } = await searchParams;
   const search = typeof q === 'string' ? q.slice(0, 100) : '';
   const { data, error } = await (await supabaseServer()).rpc('admin_list_people', { search });
   if (error) throw new Error(`Could not list people: ${error.message}`);
@@ -29,6 +31,30 @@ async function People({ searchParams }: { searchParams: PageProps<'/admin/people
 
   return (
     <>
+      <section aria-labelledby="invite" className="flex flex-col gap-3">
+        <h2 id="invite" className="m-0 text-[22px] font-medium">
+          Invite to the beta
+        </h2>
+        <p className="m-0 text-[15px] text-ink-soft">Only invited addresses can finish sign-up while the beta is invite only. Send them the site link yourself.</p>
+        <form action={inviteToBeta} className="flex max-w-[520px] flex-wrap items-end gap-2">
+          <div className="flex min-w-0 flex-1 flex-col gap-1">
+            <label htmlFor="invite-email" className="text-[14px] font-medium">
+              Email address
+            </label>
+            <input id="invite-email" name="email" type="email" required autoComplete="off" className="min-h-12 border border-line-strong px-3.5 text-[16px]" />
+          </div>
+          <Button type="submit">Invite</Button>
+        </form>
+        {invite === 'sent' ? (
+          <p role="status" className="m-0 text-[15px] font-medium text-success">
+            {typeof email === 'string' ? email : 'The address'} can now sign up.
+          </p>
+        ) : invite === 'failed' ? (
+          <p role="alert" className="m-0 text-[15px] font-medium text-danger">
+            That address could not be invited. Check it and try again.
+          </p>
+        ) : null}
+      </section>
       <Applications viewerId={viewer.userId} />
       <h2 className="m-0 text-[22px] font-medium">Everyone</h2>
       <Form action="/admin/people" role="search" className="flex max-w-[420px] items-center gap-2 border border-line-strong px-3.5 focus-within:outline-2 focus-within:outline-ink">

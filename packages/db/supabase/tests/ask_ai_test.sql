@@ -9,6 +9,8 @@ insert into auth.users (id, email, email_confirmed_at) values
   ('b4000000-0000-0000-0000-0000000000c1', 'ask-coach@t.test', now()),
   ('b4000000-0000-0000-0000-0000000000c2', 'ask-other@t.test', now());
 insert into public.user_roles (user_id, role) values ('b4000000-0000-0000-0000-0000000000c1', 'coach'), ('b4000000-0000-0000-0000-0000000000c2', 'coach');
+-- Everyone here has passed sign-up step 1, which asking the AI guide needs (M6-15).
+update public.profiles set date_of_birth = '1995-01-01' where id::text like 'b4000000%';
 -- Kabir is in the coach's program.
 insert into public.programs (id, coach_id, category_id, title, weeks) values ('b5000000-0000-0000-0000-0000000000f1', 'b4000000-0000-0000-0000-0000000000c1', 'boxing', 'Basics', 4);
 insert into public.program_versions (program_id, version, published_at, effective_from, weeks, title, summary) values ('b5000000-0000-0000-0000-0000000000f1', 1, now(), current_date, 4, 'Basics', '');

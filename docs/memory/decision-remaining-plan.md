@@ -1,7 +1,7 @@
 ---
 name: decision-remaining-plan
 type: decision
-description: 2026-11-23: plan for every remaining task, agreed with Codex in 3 rounds; waits for the owner's approval
+description: 2026-11-23: plan for every remaining task, agreed with Codex in 3 rounds; the owner approved it the same day
 updated: 2026-11-23
 ---
 
