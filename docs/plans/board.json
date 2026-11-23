@@ -1676,7 +1676,7 @@
       "deps": [
         "M4-14"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "db",
       "ac": [
@@ -1684,8 +1684,10 @@
         "Body photos need a second, separate consent",
         "The client can withdraw consent and the story disappears",
         "2026-11-22: moved to after launch (decision-m6-launch)",
-        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
-      ]
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md",
+        "2026-11-23: PR #80 merged, 20261228 pushed first (production 61 of 61). Codex review: orphaned photos are now pruned; the export lists photo keys. The coach editor, client approval page and profile section wait for the owner's look (no design existed)"
+      ],
+      "done_on": "2026-11-23"
     },
     {
       "id": "M4-17",

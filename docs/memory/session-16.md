@@ -74,3 +74,13 @@ The owner asked for a goal: finish every remaining task that needs no owner inpu
   - A prompt to `codex exec` that holds a big diff goes on stdin (`codex exec - < file`), because the argument list is too long.
   - A pgTAP statement cannot see a row that its own function call inserts.
   - Long heredocs with quotes break the Bash tool, so write such files with the Write tool.
+
+## Reviews after the stop hook, M4-15, and try counts
+- #74, #75 and #76 had merged without a review. Codex reviewed them after the merge. The fixes are in #79: Sentry now redacts id-like path parts and drops `extra`, breadcrumb data and request contexts, and the captcha token is no longer reused on retry. Rejected with reason: captcha on Google OAuth, which Supabase does not cover; the invite gate covers that path.
+- #80 M4-15 client stories is merged. Codex found orphaned photos, now pruned by the cron, and photo keys missing from the export, now added.
+- Tries per task (CI or review rounds before the merge; none reached the cap of 5):
+  - M6-15: 2. M6-12: 2.
+  - M6-13: 1, plus an infrastructure rerun. M6-11: 1.
+  - S0-08: 2, plus an infrastructure rerun.
+  - Renewal orders: 3. M4-13: 4, including an infrastructure rerun.
+  - M4-15: 3. #79: 1.
