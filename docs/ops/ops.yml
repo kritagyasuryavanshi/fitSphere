@@ -1,0 +1,82 @@
+# M6-12 ops workflow. It runs in the PRIVATE repo `fitsphere-ops`, never in the public app repo: backups are
+# private there, and GitHub does not switch off scheduled runs in a private repo after 60 quiet days.
+# Copy this file to fitsphere-ops/.github/workflows/ops.yml. Secrets in that repo:
+#   CRON_SECRET        the same value as in Vercel
+#   SUPABASE_DB_URL    the production session pooler URL with the database password
+#   BACKUP_PASSPHRASE  32+ random characters, kept in the owner's password manager
+# GitHub emails the repo owner when a scheduled run fails, so a failure here is the alert.
+name: Ops
+on:
+  schedule:
+    - cron: '30 4 * * *' # 10:00 India time, after both daily Vercel jobs.
+    - cron: '0 22 * * 0' # Sunday 22:00 UTC: the weekly backup.
+  workflow_dispatch:
+    inputs:
+      job:
+        description: Which check to run
+        type: choice
+        options: [health, backup]
+        default: health
+permissions:
+  contents: read
+jobs:
+  health:
+    if: (github.event_name == 'workflow_dispatch' && inputs.job == 'health') || github.event.schedule == '30 4 * * *'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Daily jobs ran and did not fail
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          code=$(curl -sS -o /dev/null -w '%{http_code}' -H "Authorization: Bearer $CRON_SECRET" https://fit-sphere-xi.vercel.app/api/health/jobs)
+          echo "health: $code"
+          test "$code" = 200
+
+  backup:
+    if: (github.event_name == 'workflow_dispatch' && inputs.job == 'backup') || github.event.schedule == '0 22 * * 0'
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+    steps:
+      - name: Secrets are set
+        run: test -n "$SUPABASE_DB_URL" && test -n "$BACKUP_PASSPHRASE"
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 3.0.0
+      - name: Dump production, with the row count of every table
+        run: |
+          mkdir -p "$RUNNER_TEMP/backup" && cd "$RUNNER_TEMP/backup"
+          supabase db dump --db-url "$SUPABASE_DB_URL" --role-only -f roles.sql
+          supabase db dump --db-url "$SUPABASE_DB_URL" -f schema.sql
+          supabase db dump --db-url "$SUPABASE_DB_URL" --data-only --use-copy -f data.sql
+          cat > "$RUNNER_TEMP/counts.sql" <<'SQL'
+          select string_agg(format('select %L, count(*) from %I.%I', schemaname || '.' || tablename, schemaname, tablename), ' union all ' order by schemaname, tablename)
+            || ' union all select ''auth.users'', count(*) from auth.users'
+          from pg_tables where schemaname = 'public' \gexec
+          SQL
+          psql "$SUPABASE_DB_URL" -At -F ' ' -f "$RUNNER_TEMP/counts.sql" | sort > counts.txt
+          echo "Tables counted: $(wc -l < counts.txt)"
+      # The tested restore, every week, on Supabase's documented path: an empty project, then roles, schema and data.
+      - name: Restore into an empty Supabase and compare every count
+        run: |
+          mkdir -p "$RUNNER_TEMP/restore" && cd "$RUNNER_TEMP/restore"
+          supabase init --force >/dev/null
+          supabase start -x studio,imgproxy,edge-runtime,logflare,vector,supavisor,realtime,storage-api,inbucket
+          LOCAL=postgresql://postgres:postgres@127.0.0.1:54322/postgres
+          B="$RUNNER_TEMP/backup"
+          psql "$LOCAL" -v ON_ERROR_STOP=1 --single-transaction -f "$B/roles.sql" -f "$B/schema.sql" -c 'set session_replication_role = replica' -f "$B/data.sql"
+          psql "$LOCAL" -At -F ' ' -f "$RUNNER_TEMP/counts.sql" | sort > restored.txt
+          diff "$B/counts.txt" restored.txt
+          test "$(psql "$LOCAL" -At -c 'select count(*) from public.money_invariants()')" = 0
+          echo "Restore matches on $(wc -l < restored.txt) tables; money invariants hold."
+      - name: Encrypt
+        run: |
+          tar -C "$RUNNER_TEMP/backup" -czf - roles.sql schema.sql data.sql counts.txt \
+            | gpg --batch --symmetric --cipher-algo AES256 --passphrase-fd 3 3<<<"$BACKUP_PASSPHRASE" -o "$RUNNER_TEMP/fitsphere-backup.tar.gz.gpg"
+          rm -rf "$RUNNER_TEMP/backup"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fitsphere-backup-${{ github.run_id }}
+          path: ${{ runner.temp }}/fitsphere-backup.tar.gz.gpg
+          retention-days: 90

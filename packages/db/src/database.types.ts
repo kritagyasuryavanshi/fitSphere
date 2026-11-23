@@ -693,6 +693,20 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"job_runs": {
+                  Row: {
+                    "failed_at": string | null,"job": string,"last_error": string | null,"ok_at": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "failed_at"?: string | null,"job": string,"last_error"?: string | null,"ok_at"?: string | null
+                  }
+                  Update: {
+                    "failed_at"?: string | null,"job"?: string,"last_error"?: string | null,"ok_at"?: string | null
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"messages": {
                   Row: {
                     "body": string,"conversation_id": string,"created_at": string,"id": number,"sender_id": string | null
@@ -1492,6 +1506,11 @@ isOneToOne: false
 "is_admin":
 { Args: Record<PropertyKey, never>; Returns: boolean
                            },
+"jobs_overdue":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "failed_at": string,"job": string,"ok_at": string
+            }[]
+                           },
 "join_program":
 { Args: { "code": string }; Returns: string
                            },
@@ -1581,6 +1600,9 @@ isOneToOne: false
               "athlete_id": string,"display_name": string,"enrollment_id": string,"joined_at": string,"status": Database["public"]['Enums']["enrollment_status"]
             }[]
                            },
+"prune_email_outbox":
+{ Args: Record<PropertyKey, never>; Returns: number
+                           },
 "publish_program":
 { Args: { "program": string }; Returns: number
                            },
@@ -1597,6 +1619,9 @@ isOneToOne: false
                            },
 "record_consent":
 { Args: { "answer": boolean,"notice": string,"uid": string,"what": Database["public"]['Enums']["consent_purpose"] }; Returns: undefined
+                           },
+"record_job":
+{ Args: { "error": string,"job_name": string,"ok": boolean }; Returns: undefined
                            },
 "refund_quote":
 { Args: { "engagement": string }; Returns: number
