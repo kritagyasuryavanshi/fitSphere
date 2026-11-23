@@ -4,7 +4,7 @@ import { expect, test } from '@playwright/test';
 // /about, /legal/*). Found by /qa on 2026-11-19 (M3-15). Every internal link on the public pages must open.
 test('public pages link only to pages that exist', async ({ page, request }) => {
   const hrefs = new Set<string>();
-  for (const path of ['/', '/learn', '/learn/boxing', '/search', '/for-coaches', '/sign-in', '/menu', '/legal/privacy', '/legal/terms']) {
+  for (const path of ['/', '/learn', '/learn/boxing', '/search', '/for-coaches', '/sign-in', '/menu', '/legal/privacy', '/legal/terms', '/about', '/help', '/programs']) {
     const res = await page.goto(path);
     expect(res?.status(), path).toBeLessThan(400);
     for (const href of await page.$$eval('a[href^="/"]', (as) => as.map((a) => a.getAttribute('href') ?? ''))) hrefs.add(href.split('#')[0]!);
