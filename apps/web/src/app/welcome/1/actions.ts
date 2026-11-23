@@ -26,6 +26,8 @@ export async function saveAboutYou(_prev: AboutYouState, formData: FormData): Pr
 
   const { error } = await (await supabaseServer()).rpc('complete_about_you', { first_name: name, birth_date: dob!, sports });
   if (error?.message === 'under_18') redirect('/welcome/under-18');
+  // Invite only during the beta (M6-15); the database decides.
+  if (error?.message === 'not_invited') redirect('/welcome/not-invited');
   if (error?.message === 'dob_locked') return { values, errors: { dob: 'Your date of birth is already saved. It cannot be changed.' } };
   if (error?.message === 'sign in first') redirect('/sign-in');
   if (error) return { values, errors: { form: 'We could not save this. Try again.' } };

@@ -1,7 +1,7 @@
 # Plan for the remaining tasks (agreed with Codex, 2026-11-23)
 
 Three rounds with Codex (`gpt-6-luna`), each point checked against the code. Round 3 ended with no open issues.
-Status: **waits for the owner's approval**. Nothing here is built yet, except where it says so.
+Status: **approved by the owner on 2026-11-23**, with the four decisions as written. Nothing here is built yet, except where it says so.
 
 ## Owner decisions this plan needs
 1. **Vercel Pro before taking money.** Vercel's terms limit Hobby to non-commercial use. The free invite beta stays on Hobby. Step 2 needs Pro (about USD 20 a month) or another host.

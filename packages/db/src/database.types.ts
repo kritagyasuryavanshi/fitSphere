@@ -45,14 +45,14 @@ isOneToOne: false
                   ]
                 },"app_settings": {
                   Row: {
-                    "id": boolean,"marketplace_open": boolean
+                    "id": boolean,"marketplace_open": boolean,"signups_open": boolean
                   }
                   ComputedFields: never
                   Insert: {
-                    "id"?: boolean,"marketplace_open"?: boolean
+                    "id"?: boolean,"marketplace_open"?: boolean,"signups_open"?: boolean
                   }
                   Update: {
-                    "id"?: boolean,"marketplace_open"?: boolean
+                    "id"?: boolean,"marketplace_open"?: boolean,"signups_open"?: boolean
                   }
                   Relationships: [
                     
@@ -135,6 +135,26 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "coach_profiles"
       referencedColumns: ["coach_id"]
+    }
+                  ]
+                },"beta_invites": {
+                  Row: {
+                    "created_at": string,"email": string,"invited_by": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"email": string,"invited_by"?: string | null
+                  }
+                  Update: {
+                    "created_at"?: string,"email"?: string,"invited_by"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "beta_invites_invited_by_fkey"
+      columns: ["invited_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
     }
                   ]
                 },"body_metrics": {
@@ -1275,6 +1295,9 @@ isOneToOne: false
 { Args: { "athlete": string,"program"?: string }; Returns: {
               "completed": number,"scheduled": number
             }[]
+                           },
+"admin_invite":
+{ Args: { "address": string }; Returns: undefined
                            },
 "admin_list_applications":
 { Args: Record<PropertyKey, never>; Returns: {

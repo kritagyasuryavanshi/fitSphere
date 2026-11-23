@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 import { stopSubscriptions } from '@/lib/payments/reconcile';
 import { after } from 'next/server';
 import { sendQueuedEmails } from '@/lib/email-send';
@@ -68,4 +69,12 @@ export async function decideApplication(formData: FormData): Promise<void> {
       console.error('sending queued emails failed', e);
     }
   });
+}
+
+/** M6-15: invites an email address to the beta. The database checks the admin, cleans the address and audits it. */
+export async function inviteToBeta(formData: FormData): Promise<void> {
+  await requireRole('admin');
+  const email = String(formData.get('email') ?? '').slice(0, 254);
+  const { error } = await (await supabaseServer()).rpc('admin_invite', { address: email });
+  redirect(error ? '/admin/people?invite=failed' : `/admin/people?invite=sent&email=${encodeURIComponent(email.trim().toLowerCase())}`);
 }

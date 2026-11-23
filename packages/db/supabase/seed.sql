@@ -36,4 +36,4 @@ insert into public.user_roles (user_id, role) values
 -- Local and CI only (the seed never runs on production): the fake payment provider may pay orders.
 update public.payment_settings set fake_allowed = true;
 -- Hiring and chat are open locally, so their tests run; production starts closed (M6-10).
-update public.app_settings set marketplace_open = true;
+update public.app_settings set marketplace_open = true, signups_open = true;

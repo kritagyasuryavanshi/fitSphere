@@ -69,3 +69,20 @@ test('only an admin sees the page', async ({ page }) => {
   await page.goto('/admin/people');
   await expect(page).toHaveURL('/not-allowed');
 });
+
+test('an admin invites an address to the beta, and the invite is stored lower case (M6-15)', async ({ page }) => {
+  await signInAs(page, ['admin'], { name: 'Asha' });
+  await page.goto('/admin/people');
+  const address = `Beta.${Date.now()}@T.test`;
+  await page.getByLabel('Email address').fill(address);
+  await page.getByRole('button', { name: 'Invite', exact: true }).click();
+  await expect(page.getByRole('status')).toContainText(`${address.toLowerCase()} can now sign up.`);
+  const { data } = await admin().from('beta_invites').select('email').eq('email', address.toLowerCase());
+  expect(data).toHaveLength(1);
+});
+
+test('the not-invited screen says why and offers deletion (M6-15)', async ({ page }) => {
+  await page.goto('/welcome/not-invited');
+  await expect(page.getByRole('heading', { name: 'FitSphere is invite only for now' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Delete my account' })).toHaveAttribute('href', '/account/delete');
+});
