@@ -43,12 +43,14 @@ create function pg_temp.refund_event(event text, refund text, payment text, amou
     jsonb_build_object('refund', jsonb_build_object('entity', jsonb_build_object('id', refund, 'payment_id', payment, 'amount', amount, 'currency', 'INR')))));
 $$;
 create temp table rep (id uuid);
+create temp table msg7 as select id::text as id from public.messages where body = 'message 7';
+grant all on msg7 to authenticated;
 grant all on rep to authenticated;
 set local role authenticated;
 
 -- Reporting.
 select pg_temp.as_user('8a000000-0000-0000-0000-0000000000a3');
-select throws_ok($$ select public.report_content('message', (select id from public.messages where body = 'message 7')::text, 'abuse') $$, '42501', 'not_yours', 'only someone in the chat reports a message');
+select throws_ok($$ select public.report_content('message', (select id from msg7), 'harassment') $$, '42501', 'not_yours', 'only someone in the chat reports a message');
 select pg_temp.as_user('8a000000-0000-0000-0000-0000000000a1');
 select throws_ok($$ select public.report_content('message', (select id from public.messages where body = 'message 7')::text, 'because') $$, '22023', 'bad_reason', 'the reason is one of the listed ones');
 insert into rep select public.report_content('message', (select id from public.messages where body = 'message 7')::text, 'harassment');
@@ -69,6 +71,8 @@ select is((select status from public.reports where id = (select id from rep)), '
 
 -- Suspension: ends the coaching now and refunds the unused 20 of 30 days.
 select lives_ok($$ select public.admin_suspend_coach('8a000000-0000-0000-0000-0000000000c1', 'Unsafe advice to clients') $$, 'the admin suspends the coach');
+-- The checks read as the database owner: row security hides other people's coaching from an admin.
+reset role;
 select is((select status from public.coach_profiles where coach_id = '8a000000-0000-0000-0000-0000000000c1'), 'suspended', 'the coach is suspended');
 select is((select string_agg(status || '|' || paid_through, ',' order by id) from public.engagements where coach_id = '8a000000-0000-0000-0000-0000000000c1'),
   'ended|' || public.india_today() || ',ended|' || public.india_today(), 'both clients'' coaching ends today');
@@ -77,7 +81,6 @@ select is((select reason || '|' || status from public.refunds where payment_id =
 select is((select count(*)::int from public.reports where status = 'open' and target_kind = 'coach'), 0, 'the coach report is resolved by the suspension');
 
 -- The provider confirms the partial refunds.
-reset role;
 select is(pg_temp.refund_event('evt_rp1', 'rfnd_rp1', 'pay_rp1', 200000), 'applied', 'the partial refund is applied');
 select is((select status from public.payments where id = '8d000000-0000-0000-0000-000000000001'), 'captured', 'the payment stays captured: only part came back');
 select is((select gross_paise || '|' || fee_paise || '|' || net_paise from public.payouts where id = '8e000000-0000-0000-0000-000000000001'),
@@ -93,8 +96,10 @@ set local role authenticated;
 select pg_temp.as_user('8a000000-0000-0000-0000-0000000000ad');
 -- Neha's payout bounced after all: the debt goes, and the payout is cut like an unpaid one (Codex review).
 select lives_ok($$ select public.admin_mark_payout_failed('8e000000-0000-0000-0000-000000000002', 'Account closed') $$, 'the admin records the failed transfer');
-select is((select gross_paise || '|' || net_paise || '|' || (select count(*) from public.coach_debts where payout_id = '8e000000-0000-0000-0000-000000000002'))
-  from public.payouts where id = '8e000000-0000-0000-0000-000000000002'), '100000|85000|0', 'no debt is left, and the payout keeps only the money kept');
+reset role;
+select is((select gross_paise || '|' || net_paise || '|' || (select count(*) from public.coach_debts d where d.payout_id = u.id)
+  from public.payouts u where u.id = '8e000000-0000-0000-0000-000000000002'), '100000|85000|0', 'no debt is left, and the payout keeps only the money kept');
+set local role authenticated;
 select lives_ok($$ select public.admin_unsuspend_coach('8a000000-0000-0000-0000-0000000000c1') $$, 'the admin lifts the suspension');
 
 select * from finish();
