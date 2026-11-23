@@ -1336,6 +1336,11 @@ isOneToOne: false
 "admin_set_roles":
 { Args: { "expected_roles": (Database["public"]['Enums']["app_role"])[],"new_roles": (Database["public"]['Enums']["app_role"])[],"target": string }; Returns: undefined
                            },
+"admin_weekly_training":
+{ Args: { "weeks"?: number }; Returns: {
+              "athletes": number,"week_start": string
+            }[]
+                           },
 "ai_daily_limit":
 { Args: Record<PropertyKey, never>; Returns: number
                            },
