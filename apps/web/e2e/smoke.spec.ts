@@ -64,6 +64,11 @@ for (const [email, role] of seededUsers) {
   });
 }
 
+test('the job health check refuses a caller without the cron secret (M6-12)', async ({ request }) => {
+  expect((await request.get('/api/health/jobs')).status()).toBe(401);
+  expect((await request.get('/api/health/jobs', { headers: { authorization: 'Bearer guess' } })).status()).toBe(401);
+});
+
 test('the app can be installed: a manifest with icons that load (M6-04)', async ({ request }) => {
   const manifest = await (await request.get('/manifest.webmanifest')).json();
   expect(manifest.display).toBe('standalone');
