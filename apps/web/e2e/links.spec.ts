@@ -21,3 +21,14 @@ test('the legal pages name each section for screen readers', async ({ page }) =>
   await page.goto('/legal/terms');
   await expect(page.getByRole('region', { name: 'Train safely' })).toBeVisible();
 });
+
+test('the legal pages are a marked draft with the beta rules (M6-02a)', async ({ page }) => {
+  await page.goto('/legal/privacy');
+  await expect(page.getByRole('note')).toContainText('Draft');
+  await expect(page.getByRole('region', { name: 'Who we are' })).toContainText('18 or older');
+  for (const name of ['Service providers', 'How long we keep it', 'Your consent and how to withdraw it', 'Questions and complaints', 'If something goes wrong'])
+    await expect(page.getByRole('region', { name })).toBeVisible();
+  await page.goto('/legal/terms');
+  await expect(page.getByRole('note')).toContainText('Draft');
+  await expect(page.getByRole('region', { name: 'Who can use it' })).toContainText('18 or older');
+});

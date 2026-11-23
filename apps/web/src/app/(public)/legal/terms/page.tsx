@@ -1,18 +1,24 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import { LegalPage, type Sections } from '../legal-page';
 
 export const metadata: Metadata = { title: 'Terms of use · FitSphere' };
 
-// Plain terms for the current service (no payments yet; M4 adds marketplace terms). Pending legal review (owner item O-07).
-// An id cannot hold spaces: aria-labelledby would read each word as a separate id.
-const slug = (title: string) => title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-
-const sections: [string, string[]][] = [
+// Plain terms for the invite beta (M6-02a). Money terms follow the owner's defaults (O-05). M6-02 swaps in the
+// lawyer's text (O-07); the coach agreement wording is O-05b.
+const sections: Sections = [
   [
     'The service',
     [
       'FitSphere gives athletes lessons, training programs from their coach, and a log of their training. Coaches build programs, invite athletes and give feedback.',
       'Lessons marked "Sample" are examples, not coaching advice from a named coach.',
+      'During the invite beta, coaches can be browsed but not hired, and messages are closed. Ask AI is off.',
+    ],
+  ],
+  [
+    'Who can use it',
+    [
+      'You must be 18 or older. If you are younger, do not create an account; if you did, delete it from your account page.',
+      'One account per person. The details you give at sign-up must be true.',
     ],
   ],
   [
@@ -20,55 +26,54 @@ const sections: [string, string[]][] = [
     [
       'Training carries a risk of injury. Warm up, train within your limits and stop if you feel pain.',
       'FitSphere and its coaches do not give medical advice. For pain or injury, see a doctor or physiotherapist first.',
+      'Ask AI answers come from a computer, not a coach. They can be wrong. Check anything that matters with your coach or a doctor.',
     ],
   ],
   [
     'Your account',
     [
       'Keep your sign-in email secure. You are responsible for what is done with your account.',
-      'What you log is self-reported. Coaches see it while you are in their program.',
+      'What you log is self-reported. Coaches see it only as the privacy policy says.',
     ],
   ],
   [
     'Coaches',
     [
       'Coaches are approved before they get coach tools. Lessons are checked by a second coach before they go live.',
-      'Coaches are responsible for the programs and feedback they give, and must not ask athletes for payment outside FitSphere once payments are offered here.',
+      'Coaches are responsible for the programs, feedback and coaching they give, and accept the coach agreement before their profile goes live.',
+      'Coaches must not ask athletes for payment outside FitSphere for coaching found here.',
+    ],
+  ],
+  [
+    'Hiring and payments',
+    [
+      'When hiring opens, an athlete pays FitSphere for coaching, and FitSphere pays the coach after keeping its 15% fee.',
+      'Monthly coaching renews each month until you cancel. Cancelling stops the next renewal; the paid month runs to its end.',
+      'A first payment for monthly coaching is refundable in full within 7 days. Renewals are not refundable.',
+      'A single session is refundable up to 2 days before its date.',
+      'A refund goes back to the way you paid.',
+    ],
+  ],
+  [
+    'Reviews and messages',
+    [
+      'Only an athlete who paid for coaching can review it, once. Reviews must be honest and about the coaching.',
+      'Do not use messages to harass anyone, to share content you have no right to share, or to take payment outside FitSphere.',
     ],
   ],
   [
     'Fair use',
     [
       'Do not misuse the service, harass others, upload content you have no right to share, or try to reach data that is not yours.',
-      'We may suspend accounts that break these terms.',
+      'We may remove content or suspend accounts that break these terms. A suspended coach’s paid coaching runs to the end of the paid month.',
     ],
   ],
   [
     'Changes',
-    ['We may update these terms as the service grows. The date below changes when we do.'],
+    ['We may update these terms as the service grows. The date at the top changes when we do, and we tell you before a change that affects you.'],
   ],
 ];
 
 export default function TermsPage() {
-  return (
-    <main className="mx-auto flex w-full max-w-[760px] flex-col gap-6 px-4 pb-20 pt-8 md:px-10">
-      <h1 className="m-0 font-display text-[48px] font-normal uppercase leading-[0.95]">Terms of use</h1>
-      <p className="m-0 text-[15px] text-muted">Last updated 19 November 2026.</p>
-      {sections.map(([title, items]) => (
-        <section key={title} aria-labelledby={slug(title)} className="flex flex-col gap-2">
-          <h2 id={slug(title)} className="m-0 text-[20px] font-semibold">
-            {title}
-          </h2>
-          <ul className="m-0 flex flex-col gap-1.5 pl-5 text-[16px] text-ink-soft">
-            {items.map((i) => (
-              <li key={i}>{i}</li>
-            ))}
-          </ul>
-        </section>
-      ))}
-      <p className="m-0 text-[15px] text-muted">
-        See also the <Link href="/legal/privacy" className="underline">privacy policy</Link>.
-      </p>
-    </main>
-  );
+  return <LegalPage title="Terms of use" updated="23 November 2026" sections={sections} other={{ href: '/legal/privacy', label: 'privacy policy' }} />;
 }
