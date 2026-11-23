@@ -25,6 +25,7 @@ export async function openConversation(formData: FormData): Promise<void> {
 const messages: Record<string, string> = {
   bad_message: 'Write a message of up to 2,000 characters.',
   closed: 'You cannot send messages in this conversation right now.',
+  rate_limited: 'You are sending messages very fast. Wait a few minutes, then send again.',
 };
 
 export async function sendMessage(_prev: SendState, formData: FormData): Promise<SendState> {
