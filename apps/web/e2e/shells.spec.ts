@@ -80,6 +80,11 @@ test('a coach lands on the coach dashboard with the coach header', async ({ page
   await signInAs(page, ['coach']);
   await expect(page).toHaveURL('/coach');
   await expect(page.getByRole('heading', { name: 'Set up your camp' })).toBeVisible();
+  // K-CoachEmpty: a new coach has done no step, and every step and card links somewhere real.
+  await expect(page.getByText('0 of 4 done')).toBeVisible();
+  await expect(page.getByText('Available soon')).toHaveCount(0);
+  await expect(page.getByRole('listitem').filter({ hasText: 'Fill in your profile' }).getByRole('link')).toHaveAttribute('href', '/coach/profile');
+  await expect(page.getByRole('link', { name: 'Write a lesson' }).first()).toHaveAttribute('href', '/coach/lessons/new');
   const nav = page.getByRole('navigation', { name: 'Coach' });
   await expect(nav.first().getByText('Coach', { exact: true })).toBeVisible();
   if (isPhone(testInfo.project.name)) {
