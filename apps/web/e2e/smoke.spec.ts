@@ -63,3 +63,14 @@ for (const [email, role] of seededUsers) {
     expect(roles?.map((r) => r.role)).toContain(role);
   });
 }
+
+test('the app can be installed: a manifest with icons that load (M6-04)', async ({ request }) => {
+  const manifest = await (await request.get('/manifest.webmanifest')).json();
+  expect(manifest.display).toBe('standalone');
+  for (const icon of manifest.icons as { src: string }[]) {
+    const res = await request.get(icon.src);
+    expect(res.status(), icon.src).toBe(200);
+    expect(res.headers()['content-type']).toBe('image/png');
+  }
+  expect((await request.get('/apple-icon')).headers()['content-type']).toContain('image/png');
+});
