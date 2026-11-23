@@ -30,7 +30,7 @@ insert into public.engagements (id, athlete_id, coach_id, package_title, package
   ('e2000000-0000-0000-0000-0000000000e3', 'e1000000-0000-0000-0000-0000000000a3', 'e1000000-0000-0000-0000-0000000000c1', 'Online coaching', 'monthly', 450000, 1500, public.india_today(), 3, 'accepted', true, null),
   ('e2000000-0000-0000-0000-0000000000e4', 'e1000000-0000-0000-0000-0000000000a4', 'e1000000-0000-0000-0000-0000000000c1', 'Online coaching', 'monthly', 450000, 1500, public.india_today() - 20, 3, 'cancelling', true, public.india_today() + 10),
   -- Arjun's paid month ran out yesterday, and nothing has changed the status yet (the M4-11 sweep runs late).
-  ('e2000000-0000-0000-0000-0000000000e5', 'e1000000-0000-0000-0000-0000000000a5', 'e1000000-0000-0000-0000-0000000000c1', 'Online coaching', 'monthly', 450000, 1500, public.india_today() - 31, 3, 'active', true, public.india_today() - 1);
+  ('e2000000-0000-0000-0000-0000000000e5', 'e1000000-0000-0000-0000-0000000000a5', 'e1000000-0000-0000-0000-0000000000c1', 'Online coaching', 'monthly', 450000, 1500, public.india_today() - 34, 3, 'active', true, public.india_today() - 4);
 
 create temp table ids (name text primary key, v uuid);
 grant all on ids to authenticated;
@@ -59,7 +59,7 @@ select is((select count(*)::int from public.athlete_basics where user_id = 'e100
   'so the coach reads none of their answers');
 select ok(not public.coach_can_read('e1000000-0000-0000-0000-0000000000a3'), 'an accepted request that is not paid opens nothing');
 select ok(public.coach_can_read('e1000000-0000-0000-0000-0000000000a4'), 'a client who is cancelling stays open to the end of the paid month');
-select ok(not public.coach_can_read('e1000000-0000-0000-0000-0000000000a5'), 'access closes when the paid period ends, whatever the status says');
+select ok(not public.coach_can_read('e1000000-0000-0000-0000-0000000000a5'), 'access closes when the paid period and its 3-day grace end, whatever the status says');
 select is((select count(*)::int from public.body_metrics where user_id = 'e1000000-0000-0000-0000-0000000000a1'), 0,
   'paid coaching does not open body weight');
 select set_config('request.jwt.claims', '{"sub":"e1000000-0000-0000-0000-0000000000c2","role":"authenticated"}', true);

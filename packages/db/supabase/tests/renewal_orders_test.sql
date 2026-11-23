@@ -34,8 +34,9 @@ create function pg_temp.capture(event text, provider_order text, payment text, a
 $$;
 
 -- Opening a renewal order (service role, as the pay action does).
-select is((select kind || '|' || period_start || '|' || period_end || '|' || amount_paise from public.orders
-  where id = (select order_id from public.start_renewal_checkout('7f000000-0000-0000-0000-0000000000e1', '7e000000-0000-0000-0000-0000000000a1'))),
+-- The order is created first, then read: one statement cannot see a row its own function call inserts.
+create temp table opened as select * from public.start_renewal_checkout('7f000000-0000-0000-0000-0000000000e1', '7e000000-0000-0000-0000-0000000000a1');
+select is((select kind || '|' || period_start || '|' || period_end || '|' || amount_paise from public.orders where id = (select order_id from opened)),
   'renewal|' || (public.india_today() + 4) || '|' || public.month_period_end(public.india_today() + 4) || '|450000',
   'the renewal order covers the next month, from the day after the paid date, at the agreed price');
 select is((select count(*)::int from public.orders where engagement_id = '7f000000-0000-0000-0000-0000000000e1' and kind = 'renewal'), 1, 'one order so far');
