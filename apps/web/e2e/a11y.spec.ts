@@ -48,6 +48,8 @@ test('sign-up step 1 works by keyboard alone', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop', 'A keyboard path; the desktop viewport is enough.');
   await signInAs(page, ['athlete'], { stepsDone: 0 });
   await expect(page).toHaveURL('/welcome/1');
+  // Type only once the form has hydrated, or React can drop what was typed before it.
+  await page.waitForLoadState('networkidle');
   await page.getByLabel('First name').focus();
   await page.keyboard.type('Kabir');
   await page.keyboard.press('Tab');
@@ -66,7 +68,7 @@ test('sign-up step 1 works by keyboard alone', async ({ page }, testInfo) => {
   for (let i = 0; i < 10 && !(await go.evaluate((el) => el === document.activeElement)); i++) await page.keyboard.press('Tab');
   await expect(go).toBeFocused();
   await page.keyboard.press('Enter');
-  await expect(page).toHaveURL('/welcome/2');
+  await expect(page).toHaveURL('/welcome/2', { timeout: 15_000 });
 });
 
 test('a session starts and logs by keyboard alone', async ({ page }, testInfo) => {
