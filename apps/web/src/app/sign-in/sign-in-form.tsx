@@ -2,6 +2,7 @@
 
 import { Button, Input } from '@fitsphere/ui';
 import { useActionState } from 'react';
+import { Turnstile } from '@/components/turnstile';
 import { useHydrated } from '@/lib/use-hydrated';
 import { requestLink, signInWithGoogle } from './actions';
 
@@ -14,6 +15,8 @@ export function SignInForm() {
       {/* noValidate: the inline message from the mockup replaces the browser bubble. */}
       <form action={action} noValidate className="flex flex-col gap-6">
         <Input label="Email" name="email" type="email" autoComplete="email" inputMode="email" defaultValue={state.email} error={state.error} required />
+        {/* A token works once: a refused send gets a fresh check. */}
+        <Turnstile resetKey={state} />
         <Button type="submit" disabled={pending || !hydrated}>
           {pending ? 'Sending…' : 'Email me a link'}
         </Button>
