@@ -64,3 +64,13 @@ The owner asked for a goal: finish every remaining task that needs no owner inpu
 - The owner approved the plan. PR #72 (M6-15 invite gate) and PR #73 (M6-12 ops) are merged, with 20261223 and 20261224 pushed first. Production has 57 of 57 migrations.
 - The Codex review of #72 found that `reserve_ai_question` let an uninvited account write rows. It now calls `require_step1`.
 - A branch whose history adds a `.github/workflows` file cannot be pushed without the `workflow` scope. Squash it so that no commit touches the file.
+
+## Building more of the plan (the stop hook asked)
+- Merged #74 M6-13, #75 M6-11 code, #76 S0-08 code, #77 renewal by order (Decision 1) and #78 M4-13 manual payouts. Each migration went to production after the owner's yes. Production has 60 of 60.
+- The Codex final-diff review of #77 found duplicate reminders, fixed with a sweep lock. The review of #78 found a refund-vs-payout race, fixed by refusing refunds once a payout is paid. One claimed finding was rejected: duplicate payments never get a payout.
+- M6-05's perf workflow push was refused for the missing workflow scope, which confirms the block.
+- CI failures from the Docker registry rate limit and port errors were not code problems. A rerun of the failed jobs fixed them.
+- Lessons:
+  - A prompt to `codex exec` that holds a big diff goes on stdin (`codex exec - < file`), because the argument list is too long.
+  - A pgTAP statement cannot see a row that its own function call inserts.
+  - Long heredocs with quotes break the Bash tool, so write such files with the Write tool.

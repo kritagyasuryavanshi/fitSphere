@@ -406,13 +406,14 @@
       "deps": [
         "O-11"
       ],
-      "status": "todo",
+      "status": "in_progress",
       "owner": "claude",
       "test": "manual",
       "ac": [
         "Server and browser errors reach Sentry (free tier) with no personal data",
         "Usage analytics are cut (decision-m6-launch); weekly returners come from SQL",
-        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md",
+        "2026-11-23: PR #76 merged: Sentry (errors only, scrubbed) off until SENTRY_DSN; admin_weekly_training(). Left: the DSN (O-11) and one hand check in Sentry for personal data"
       ]
     },
     {
@@ -1568,7 +1569,8 @@
         "The renewal period comes from the provider payload (current_start, current_end), so on conflict catches a double charge",
         "The real adapter treats 'already cancelled' as success, so stopSubscriptions never loops",
         "The 7-day lapse grace is longer than Razorpay's retry window, or lapsing waits for subscription.halted",
-        "2026-11-23: deferred. The marketplace launches with a new Order each month (docs/plans/remaining-tasks-plan.md); Subscriptions only if manual renewal churn is high"
+        "2026-11-23: deferred. The marketplace launches with a new Order each month (docs/plans/remaining-tasks-plan.md); Subscriptions only if manual renewal churn is high",
+        "2026-11-23: PR #77 merged: renewal by a new order each month (Decision 1), with reminders, a 3-day grace and an unpaid lapse"
       ]
     },
     {
@@ -1604,7 +1606,7 @@
         "M4-09a",
         "O-04"
       ],
-      "status": "todo",
+      "status": "in_progress",
       "owner": "claude",
       "test": "unit+e2e",
       "screens": [
@@ -1615,7 +1617,8 @@
         "Earnings page totals equal the payments table",
         "pgTAP: a coach sees only their own payouts",
         "From M4-12: never release a payout while its payment has a requested refund; a session payout is held to the day before the session",
-        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md",
+        "2026-11-23: PR #78 merged (phase a): admin payouts page, mark paid with a UTR, failed transfers, coach earnings as estimates; refunds refused once a payout is paid (Codex review). Left: Route (phase b) after O-04; live payouts after the CA"
       ]
     },
     {
@@ -1976,7 +1979,8 @@
         "Images served in modern formats at the right size",
         "2026-11-23: PageSpeed's keyless daily quota was used up, and a local npx lighthouse run needs the owner's permission",
         "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md",
-        "2026-11-23: the agreed perf job is a GitHub workflow, so it also waits for gh auth refresh -s workflow"
+        "2026-11-23: the agreed perf job is a GitHub workflow, so it also waits for gh auth refresh -s workflow",
+        "2026-11-23: perf.yml and scripts/perf-cookie.mjs are on local branch m6-05-perf; the push was refused for the missing workflow scope (checked)"
       ]
     },
     {
@@ -2141,13 +2145,14 @@
       "deps": [
         "O-11"
       ],
-      "status": "todo",
+      "status": "in_progress",
       "owner": "claude",
       "test": "manual",
       "ac": [
         "Every release-gate item in TASKS.md is done: confirm email, custom SMTP, Turnstile on sign-in, NEXT_PUBLIC_SITE_URL, our own domains only in the redirect allow-list, auth rate limits",
         "A magic link reaches an outside Gmail inbox",
-        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md",
+        "2026-11-23: PR #75 merged: Turnstile wired into sign-in and resend, off until NEXT_PUBLIC_TURNSTILE_SITE_KEY. docs/ops/release-gate.md lists the hosted settings. Left: O-11 (domain, Resend, Turnstile keys, captcha on in Supabase) and the Gmail test"
       ]
     },
     {
@@ -2179,14 +2184,16 @@
       "deps": [
         "O-06"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "unit",
       "ac": [
         "A script counts at least 20 boxing skills and 30 S&C drills, published and not samples",
         "The script runs in CI before release",
-        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
-      ]
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md",
+        "2026-11-23: PR #74. npm run gate:content (packages/db) counts with the publishable key and exits 1 below 20 boxing skills / 30 S&C items. Run it in the M6-08 release checklist; it fails until the founding coaches publish (O-06)"
+      ],
+      "done_on": "2026-11-23"
     },
     {
       "id": "M6-14",
