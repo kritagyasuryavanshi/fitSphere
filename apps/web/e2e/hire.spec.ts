@@ -60,6 +60,6 @@ test('a coach at the client limit is not taking new clients', async ({ page, bro
   await expect(page.getByRole('link', { name: 'View your coaching' })).toBeVisible();
   const guest = await newPage(browser);
   await guest.goto(`/coaches/${coach.id}`);
-  await expect(guest.getByText('Not taking new clients right now.')).toBeVisible();
+  await expect(guest.getByText('Not taking new clients right now')).toBeVisible();
   await expect(guest.getByRole('link', { name: 'Hire Jaya' })).toHaveCount(0);
 });

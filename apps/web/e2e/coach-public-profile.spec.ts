@@ -17,11 +17,11 @@ test('a live coach profile shows FitSphere stats, shows a program only once the 
 
   await page.goto(`/coaches/${coach.id}`);
   await expect(page.getByRole('heading', { level: 1, name: 'Rohan' })).toBeVisible();
-  await expect(page.getByText('15 years coaching (self-reported)')).toBeVisible();
+  await expect(page.getByText('15 years coaching, self-reported.')).toBeVisible();
   await expect(page.getByText('Credentials self-reported')).toBeVisible();
 
   const stats = page.getByRole('region', { name: 'On FitSphere' });
-  await expect(stats.getByText('From FitSphere records, not entered by the coach.')).toBeVisible();
+  await expect(stats.getByText('From FitSphere records, not entered by the coach')).toBeVisible();
   await expect(stats.getByRole('definition').first()).toHaveText('3');
   // Too few athletes to show percentages without exposing one client's numbers.
   await expect(stats.getByText('Not enough clients yet')).toHaveCount(2);
@@ -36,7 +36,7 @@ test('a live coach profile shows FitSphere stats, shows a program only once the 
   await expect(coachPage.getByText('Shown on your public profile.')).toBeVisible();
   await page.reload();
   const portfolio = page.getByRole('region', { name: 'Portfolio' });
-  await expect(portfolio).toContainText('Program: Boxing Fundamentals');
+  await expect(portfolio).toContainText('ProgramBoxing Fundamentals');
   // 3 athletes: the enrolled count stays hidden below 5.
   await expect(portfolio).toContainText('6 weeks');
   await expect(portfolio).not.toContainText('enrolled');

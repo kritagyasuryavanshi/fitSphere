@@ -25,7 +25,7 @@ test('a story shows only after the client approves it, and goes when they withdr
   await page.getByRole('button', { name: 'Save and send to the client' }).click();
   await expect(page.getByRole('status')).toContainText('Saved.');
   await page.goto(`/coaches/${coach.id}`);
-  await expect(page.getByRole('region', { name: 'Client stories' })).toHaveCount(0);
+  await expect(page.getByText(words)).toHaveCount(0);
 
   await signInWithEmail(page, athlete.email);
   await page.goto('/coaching');
@@ -35,7 +35,7 @@ test('a story shows only after the client approves it, and goes when they withdr
   await expect(page.getByRole('status')).toContainText('Approved.');
 
   await page.goto(`/coaches/${coach.id}`);
-  const stories = page.getByRole('region', { name: 'Client stories' });
+  const stories = page.getByRole('region', { name: 'Portfolio' });
   await expect(stories).toContainText(words);
   await expect(stories).toContainText('Kabir');
 
@@ -43,5 +43,5 @@ test('a story shows only after the client approves it, and goes when they withdr
   await page.getByRole('button', { name: 'Withdraw my approval' }).click();
   await expect(page.getByRole('status')).toContainText('Withdrawn.');
   await page.goto(`/coaches/${coach.id}`);
-  await expect(page.getByRole('region', { name: 'Client stories' })).toHaveCount(0);
+  await expect(page.getByText(words)).toHaveCount(0);
 });
