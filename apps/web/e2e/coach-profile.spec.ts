@@ -48,9 +48,9 @@ test.describe('Coach marketplace profile', () => {
     await page.getByRole('link', { name: 'Preview public profile' }).click();
     await expect(page.getByRole('heading', { level: 1, name: 'Vikram' })).toBeVisible();
     await expect(page.getByText('Boxing coach for beginners, 10 years')).toBeVisible();
-    await expect(page.getByRole('region', { name: 'Packages' })).toContainText('₹4,500 a month');
+    await expect(page.getByRole('region', { name: 'Packages' })).toContainText('₹4,500 per month');
     await expect(page.getByText('Credentials self-reported')).toBeVisible();
-    await expect(page.getByRole('region', { name: 'Weekly 1:1 slots' })).toContainText('Mon 18:00');
+    await expect(page.getByRole('region', { name: 'How I coach' })).toContainText('Mon18:00');
 
     await page.goto('/coach/profile');
     await page.getByRole('form', { name: 'About you' }).getByLabel('Headline').fill('Boxing coach, 11 years');
