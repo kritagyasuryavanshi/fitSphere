@@ -52,5 +52,5 @@ export async function GET(request: Request) {
   });
   await recordJob('send-emails', failed);
   if (failed.includes('sending emails')) return Response.json({ swept, stopped, refunded, reminded, pruned, stories, failed }, { status: 500 });
-  return result ? Response.json({ swept, stopped, refunded, reminded, pruned, stories, ...result }) : Response.json({ swept, stopped, refunded, reminded, pruned, stories, skipped: 'email is not configured: RESEND_API_KEY, EMAIL_FROM, NEXT_PUBLIC_SITE_URL or SUPABASE_SECRET_KEY is missing' });
+  return result ? Response.json({ swept, stopped, refunded, reminded, pruned, stories, ...result }) : Response.json({ swept, stopped, refunded, reminded, pruned, stories, skipped: 'email is not configured: a sender (SMTP_USER and SMTP_PASS, or RESEND_API_KEY and EMAIL_FROM), NEXT_PUBLIC_SITE_URL or SUPABASE_SECRET_KEY is missing' });
 }

@@ -45,7 +45,7 @@ const sections: Sections = [
     [
       'Supabase stores the database in Mumbai, India.',
       'Vercel runs the website. Pages can be served from its servers outside India.',
-      'Resend sends our emails. It receives your email address and the email text, in the USA.',
+      'Google (Gmail) sends our emails during the beta, and Resend may take over later. Each receives your email address and the email text, in the USA.',
       'Sentry, when we add it, receives error reports from the app to help us fix bugs.',
       'Ask AI is off during the beta. When it opens, your question goes to an AI provider outside India (Anthropic in the USA) to write the answer. Your injury notes or body measurements go with it only if you turn that on.',
       'Razorpay, when payments open, takes card and UPI payments in India and pays coaches.',

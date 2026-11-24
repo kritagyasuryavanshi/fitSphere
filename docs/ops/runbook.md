@@ -42,6 +42,7 @@ Rotate a key at once if it appeared in a chat, a log, a screenshot or a commit. 
 | `SUPABASE_SECRET_KEY` | Supabase → Settings → API keys | Vercel |
 | Database password (in `SUPABASE_DB_URL`) | Supabase → Settings → Database | `fitsphere-ops` repo secret `SUPABASE_DB_URL` |
 | `CRON_SECRET` | Any long random string | Vercel, and the `fitsphere-ops` repo secret |
+| `SMTP_PASS` (with `SMTP_USER`, the Gmail address) | Google Account → Security → App passwords | Vercel, and Supabase → Authentication → SMTP |
 | `RESEND_API_KEY` | Resend → API keys | Vercel |
 | `ANTHROPIC_API_KEY` / Gemini key | Anthropic console / Google AI Studio | Vercel, local `.env.local` |
 | `PAYMENTS_WEBHOOK_SECRET` | Razorpay → Webhooks | Vercel |
