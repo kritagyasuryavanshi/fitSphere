@@ -6,7 +6,7 @@ import { Suspense } from 'react';
 import { facetKeys, humanise, itemNoun, type FacetKey, type Filters, legendFor, levelLabel, libraryItems, type LibraryItem, matches, parseFilters, valuesOf } from '@/lib/content';
 import { db } from '@/lib/db';
 import { FilterForm } from './filter-form';
-import { SkillPath } from './skill-path';
+import { prerequisiteLinks, SkillPath } from './skill-path';
 
 async function liveCategory(id: string) {
   const supabase = db();
@@ -84,7 +84,7 @@ async function Library({ params, searchParams }: PageProps<'/learn/[category]'>)
   if (!found) notFound();
   const filters = parseFilters(await searchParams);
   const supabase = db();
-  const [items, { data: disciplines }] = await Promise.all([libraryItems(category), supabase.from('disciplines').select('slug, name').eq('category_id', category)]);
+  const [items, { data: disciplines }, links] = await Promise.all([libraryItems(category), supabase.from('disciplines').select('slug, name').eq('category_id', category), prerequisiteLinks()]);
   const names = new Map((disciplines ?? []).map((d) => [d.slug, d.name]));
   const shown = items.filter((item) => matches(item, filters));
   const coaches = new Set(shown.map((i) => i.authorName).filter(Boolean)).size;
@@ -120,7 +120,7 @@ async function Library({ params, searchParams }: PageProps<'/learn/[category]'>)
       </div>
 
       {/* Rendered with the page, so the list below never moves when the path arrives (M6-05). */}
-      <SkillPath category={category} categoryName={found.current.name} items={items} />
+      <SkillPath category={category} categoryName={found.current.name} items={items} links={links} />
 
       <div className="mt-10 flex flex-col gap-10 md:flex-row md:items-start">
         <details className="border-y border-line py-3 md:hidden">
@@ -180,9 +180,10 @@ async function Library({ params, searchParams }: PageProps<'/learn/[category]'>)
   );
 }
 
+// A full-screen placeholder, so the footer starts below the fold and does not jump when the page arrives (M6-05).
 export default function LibraryPage(props: PageProps<'/learn/[category]'>) {
   return (
-    <Suspense fallback={<main className="mx-auto min-h-[60vh] w-full max-w-[1440px]" />}>
+    <Suspense fallback={<main className="mx-auto min-h-screen w-full max-w-[1440px]" />}>
       <Library {...props} />
     </Suspense>
   );

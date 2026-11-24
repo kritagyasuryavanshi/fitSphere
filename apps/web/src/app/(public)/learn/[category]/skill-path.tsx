@@ -60,14 +60,19 @@ async function PathWithStatus(props: PathProps) {
   return <PathView {...props} completed={completed} saved={saved} signedIn={!!viewer} />;
 }
 
-/** The skill path: skills joined by prerequisite links, in order, with the viewer's status on each. */
-export async function SkillPath({ category, categoryName, items }: { category: string; categoryName: string; items: LibraryItem[] }) {
-  const { data: links } = await db()
+/** The prerequisite links. The page starts this with its other queries, so the path adds no wait of its own. */
+export function prerequisiteLinks() {
+  return db()
     .from('content_links')
     .select('from:content_items!content_links_from_id_fkey(slug), to:content_items!content_links_to_id_fkey(slug)')
-    .eq('kind', 'prerequisite');
+    .eq('kind', 'prerequisite')
+    .then(({ data }) => data ?? []);
+}
+
+/** The skill path: skills joined by prerequisite links, in order, with the viewer's status on each. */
+export async function SkillPath({ category, categoryName, items, links }: { category: string; categoryName: string; items: LibraryItem[]; links: Awaited<ReturnType<typeof prerequisiteLinks>> }) {
   const skills = new Map(items.filter((i) => i.kind === 'skill').map((i) => [i.slug, i]));
-  const pairs = (links ?? []).flatMap((l) => (l.from && l.to && skills.has(l.from.slug) && skills.has(l.to.slug) ? [[l.from.slug, l.to.slug] as [string, string]] : []));
+  const pairs = links.flatMap((l) => (l.from && l.to && skills.has(l.from.slug) && skills.has(l.to.slug) ? [[l.from.slug, l.to.slug] as [string, string]] : []));
   const onPath = [...skills.keys()].filter((s) => pairs.some(([a, b]) => a === s || b === s));
   if (onPath.length < 2) return null;
   const props: PathProps = { category, categoryName, order: pathOrder(onPath, pairs), titles: Object.fromEntries([...skills].map(([slug, i]) => [slug, i.title])) };
