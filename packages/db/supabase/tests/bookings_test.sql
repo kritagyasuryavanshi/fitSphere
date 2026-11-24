@@ -8,7 +8,8 @@ select plan(21);
 insert into auth.users (id, email, email_confirmed_at) values
   ('6a000000-0000-0000-0000-0000000000c1', 'bk-coach@t.test', now()),
   ('6a000000-0000-0000-0000-0000000000a1', 'bk-kabir@t.test', now()),
-  ('6a000000-0000-0000-0000-0000000000a2', 'bk-neha@t.test', now());
+  ('6a000000-0000-0000-0000-0000000000a2', 'bk-neha@t.test', now()),
+  ('6a000000-0000-0000-0000-0000000000a3', 'bk-ravi@t.test', now());
 insert into public.user_roles (user_id, role) values ('6a000000-0000-0000-0000-0000000000c1', 'coach');
 insert into public.coach_profiles (coach_id, headline, status, agreement_version) values
   ('6a000000-0000-0000-0000-0000000000c1', 'Boxing', 'live', public.current_coach_agreement());
@@ -73,11 +74,11 @@ select is((select u.hold_until from public.payouts u join public.payments p on p
 
 -- A capture long after its hold ran out is money owed back, not a booking (Codex review).
 insert into public.engagements (id, athlete_id, coach_id, package_id, package_title, package_kind, price_paise, fee_bps, start_date, days_per_week, status, share_data) values
-  ('6c000000-0000-0000-0000-0000000000e3', '6a000000-0000-0000-0000-0000000000a2', '6a000000-0000-0000-0000-0000000000c1', '6b000000-0000-0000-0000-000000000001', 'Form check', 'single', 120000, 1500, public.india_today() + 9, 3, 'accepted', true);
+  ('6c000000-0000-0000-0000-0000000000e3', '6a000000-0000-0000-0000-0000000000a3', '6a000000-0000-0000-0000-0000000000c1', '6b000000-0000-0000-0000-000000000001', 'Form check', 'single', 120000, 1500, public.india_today() + 9, 3, 'accepted', true);
 insert into public.orders (id, engagement_id, amount_paise, fee_bps, period_start, period_end, provider_order_id) values
   ('6d000000-0000-0000-0000-000000000003', '6c000000-0000-0000-0000-0000000000e3', 120000, 1500, public.india_today() + 9, public.india_today() + 9, 'order_bk3');
 insert into public.bookings (engagement_id, coach_id, athlete_id, starts_at, ends_at, hold_expires_at, order_id) values
-  ('6c000000-0000-0000-0000-0000000000e3', '6a000000-0000-0000-0000-0000000000c1', '6a000000-0000-0000-0000-0000000000a2', pg_temp.at(9, '07:00'), pg_temp.at(9, '08:00'), now() - interval '1 hour', '6d000000-0000-0000-0000-000000000003');
+  ('6c000000-0000-0000-0000-0000000000e3', '6a000000-0000-0000-0000-0000000000c1', '6a000000-0000-0000-0000-0000000000a3', pg_temp.at(9, '07:00'), pg_temp.at(9, '08:00'), now() - interval '1 hour', '6d000000-0000-0000-0000-000000000003');
 select pg_temp.capture('evt_bk3', 'order_bk3', 'pay_bk3');
 select is((select status from public.payments where provider_payment_id = 'pay_bk3'), 'duplicate', 'a capture an hour after the hold ran out is owed back');
 
