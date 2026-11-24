@@ -61,7 +61,8 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
   ]);
   for (const r of [profile, name, packages, slots, credentials, stats, lessons, mine, room, programs, reviews, rating, market, open, stories]) if (r.error) throw r.error;
   const st = stats.data;
-  const statRows: [string, string][] = st
+  // Shown once the coach has coached someone on FitSphere; a row of zeros says nothing yet.
+  const statRows: [string, string][] = st && st.athletes > 0
     ? [
         ['Athletes coached', String(st.athletes)],
         ['Programs finished', String(st.programs_finished)],

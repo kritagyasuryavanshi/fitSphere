@@ -11,7 +11,7 @@ import { ShortlistButton } from './shortlist-button';
 
 export const metadata: Metadata = {
   title: 'Find a coach · FitSphere',
-  description: 'Compare coaches by sport, goal, price and credentials. Hire online or in person.',
+  description: 'Compare coaches by sport, goal, price and credentials.',
 };
 
 // The fixed sort keys. None of them uses payment or paid placement.
@@ -64,6 +64,8 @@ async function Directory({ searchParams }: PageProps<'/coaches'>) {
     language: one(sp.language),
     sort: SORTS.some(([v]) => v === one(sp.sort)) ? one(sp.sort)! : 'best',
   };
+  // Any filter chosen (the sort order is not a filter), so an empty list can say why.
+  const filtered = Object.entries(f).some(([k, v]) => k !== 'sort' && v !== undefined && v !== false && v !== '');
   const minPaise = f.min ? rupeesToPaise(f.min) : null;
   const maxPaise = f.max ? rupeesToPaise(f.max) : null;
 
@@ -170,7 +172,13 @@ async function Directory({ searchParams }: PageProps<'/coaches'>) {
           </ul>
         ) : (
           <p className="mt-4 text-[16px]">
-            No coach matches these filters. <Link href="/coaches" className="underline underline-offset-4">Clear filters</Link>
+            {filtered ? (
+              <>
+                No coach matches these filters. <Link href="/coaches" className="underline underline-offset-4">Clear filters</Link>
+              </>
+            ) : (
+              'No coaches are live yet. Coaches appear here once FitSphere approves their profile.'
+            )}
           </p>
         )}
         <p className="mt-8 text-[13px] text-muted">Order never depends on payment. Ratings come only from clients who paid for coaching on FitSphere.</p>
@@ -183,7 +191,7 @@ export default function CoachesPage(props: PageProps<'/coaches'>) {
   return (
     <main className="mx-auto w-full max-w-[1440px] px-4 pb-20 pt-8 md:px-10">
       <h1 className="m-0 font-display text-[clamp(56px,9vw,120px)] font-normal uppercase leading-[0.85]">Find a coach</h1>
-      <p className="m-0 mt-4 max-w-[640px] text-[18px] text-ink-soft">Compare coaches by sport, goal, price and credentials. Hire online or in person.</p>
+      <p className="m-0 mt-4 max-w-[640px] text-[18px] text-ink-soft">Compare coaches by sport, goal, price and credentials.</p>
       <Suspense fallback={null}>
         <Directory {...props} />
       </Suspense>
