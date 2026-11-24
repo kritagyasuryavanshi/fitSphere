@@ -10,16 +10,26 @@ import { isUuid } from '@/lib/programs';
 import { supabaseServer } from '@/lib/supabase/server';
 import { renewalState } from '@/lib/renewal';
 import { requireRole } from '@/lib/viewer';
-import { startCheckout, startRenewalCheckout } from './actions';
+import { holdSlot, startCheckout, startRenewalCheckout } from './actions';
 
 export const metadata: Metadata = { title: 'Pay · FitSphere' };
+
+const sessionTime = new Intl.DateTimeFormat('en-IN', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit', timeZone: 'Asia/Kolkata' });
+const clock = new Intl.DateTimeFormat('en-IN', { hour: 'numeric', minute: '2-digit', timeZone: 'Asia/Kolkata' });
+const SLOT_ERRORS: Record<string, string> = {
+  slot_taken: 'Someone just took that time. Pick another.',
+  too_soon: 'Sessions are booked at least 48 hours ahead. Pick a later time.',
+  not_available: 'That time is outside your coach’s hours. Pick another.',
+  expired: 'Your hold ran out. Pick the time again, then pay.',
+  failed: 'That did not work. Try again.',
+};
 
 // Pay for an accepted request. The page never activates anything: it shows what the signed webhook recorded,
 // and re-reads while an order is open.
 async function Pay({ params, searchParams }: PageProps<'/coaching/[id]/pay'>) {
   const viewer = await requireRole('athlete');
   const { id } = await params;
-  const { unavailable, renewed } = await searchParams;
+  const { unavailable, renewed, slot } = await searchParams;
   if (!isUuid(id)) notFound();
   const supabase = await supabaseServer();
   const [eng, orders, subs] = await Promise.all([
@@ -28,6 +38,16 @@ async function Pay({ params, searchParams }: PageProps<'/coaching/[id]/pay'>) {
     supabase.from('subscriptions').select('status').eq('engagement_id', id).in('status', ['active', 'pending']),
   ]);
   if (subs.error) throw subs.error;
+  // M4-17: a single session is booked for a time first. The live hold, and the free times to choose from.
+  const single = eng.data?.package_kind === 'single' && eng.data.status === 'accepted';
+  const [held, freeTimes] = single
+    ? await Promise.all([
+        supabase.from('bookings').select('starts_at, hold_expires_at').eq('engagement_id', id).eq('status', 'held').gt('hold_expires_at', new Date().toISOString()).maybeSingle(),
+        supabase.rpc('open_slots', { engagement: id, days: 14 }),
+      ])
+    : [null, null];
+  if (held?.error) throw held.error;
+  if (freeTimes?.error) throw freeTimes.error;
   if (eng.error) throw eng.error;
   if (orders.error) throw orders.error;
   const g = eng.data;
@@ -61,12 +81,55 @@ async function Pay({ params, searchParams }: PageProps<'/coaching/[id]/pay'>) {
               </p>
             </>
           ) : null}
-          <form action={startCheckout}>
-            <input type="hidden" name="engagement" value={id} />
-            <Button type="submit">Pay {formatInr(g.price_paise)}</Button>
-          </form>
+          {single ? (
+            <section aria-labelledby="time" className="flex flex-col gap-3">
+              <h2 id="time" className="m-0 text-[20px] font-semibold">
+                Your session time
+              </h2>
+              {typeof slot === 'string' && SLOT_ERRORS[slot] ? (
+                <p role="alert" className="m-0 text-[15px] font-medium text-danger">
+                  {SLOT_ERRORS[slot]}
+                </p>
+              ) : null}
+              {held?.data ? (
+                <p role="status" className="m-0 text-[16px]">
+                  Held for you: <strong>{sessionTime.format(new Date(held.data.starts_at))}</strong> (India time), until {clock.format(new Date(held.data.hold_expires_at!))}. Pay to book it.
+                </p>
+              ) : null}
+              {freeTimes?.data.length ? (
+                <form action={holdSlot} className="flex flex-wrap items-end gap-2">
+                  <input type="hidden" name="engagement" value={id} />
+                  <div className="flex flex-col gap-1">
+                    <label htmlFor="slot-pick" className="text-[15px] font-medium">
+                      {held?.data ? 'Pick another time' : 'Pick a time'}
+                    </label>
+                    <select id="slot-pick" name="starts" required className="min-h-12 border border-line-strong bg-paper px-3 text-[16px]">
+                      {freeTimes.data.map((o) => (
+                        <option key={o.starts_at} value={o.starts_at}>
+                          {sessionTime.format(new Date(o.starts_at))}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <Button type="submit" variant={held?.data ? 'light' : 'ink'}>
+                    Hold this time
+                  </Button>
+                </form>
+              ) : (
+                <p className="m-0 text-[15px] text-ink-soft">No free times in the next two weeks. Message your coach to find one.</p>
+              )}
+            </section>
+          ) : null}
+          {!single || held?.data ? (
+            <form action={startCheckout}>
+              <input type="hidden" name="engagement" value={id} />
+              <Button type="submit">Pay {formatInr(g.price_paise)}</Button>
+            </form>
+          ) : null}
           {provider.name === 'fake' ? <p className="m-0 text-[13px] text-warning">Test mode: no real money moves.</p> : null}
-          <p className="m-0 text-[13px] text-muted">Refunds: in full within 7 days of your first payment. Renewals are not refunded.</p>
+          <p className="m-0 text-[13px] text-muted">
+            {g.package_kind === 'single' ? 'Refunds: in full up to 24 hours before the session.' : 'Refunds: in full within 7 days of your first payment. Renewals are not refunded.'}
+          </p>
         </>
       )}
       {renewed === '1' ? (

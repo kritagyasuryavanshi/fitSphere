@@ -27,6 +27,8 @@ export async function startCheckout(formData: FormData): Promise<void> {
 
   const db = createDbClient(process.env.NEXT_PUBLIC_SUPABASE_URL ?? '', process.env.SUPABASE_SECRET_KEY);
   const { data, error } = await db.rpc('start_checkout', { engagement, athlete: viewer.userId }).single();
+  // A single session needs a held time first (M4-17); the hold may have run out.
+  if (error?.message.includes('needs_slot')) redirect(`/coaching/${engagement}/pay?slot=expired`);
   if (error) throw error;
   if (!data.provider_order_id) {
     const created = await provider.createOrder({ amountPaise: data.amount_paise, receipt: data.order_id });
@@ -85,4 +87,16 @@ export async function startRenewalCheckout(formData: FormData): Promise<void> {
   // shortcut: the fake provider pays at once, through the signed webhook; Razorpay Checkout opens here in M4-09b.
   if (provider.name === 'fake') await captureFakeOrder(data.order_id);
   redirect(`/coaching/${engagement}/pay?renewed=1`);
+}
+
+/** M4-17: holds a session time for 15 minutes. The database checks the window, the 48 hours and overlaps. */
+export async function holdSlot(formData: FormData): Promise<void> {
+  await requireRole('athlete');
+  const engagement = String(formData.get('engagement') ?? '');
+  const starts = String(formData.get('starts') ?? '');
+  if (!isUuid(engagement) || Number.isNaN(Date.parse(starts))) redirect('/coaching');
+  const { error } = await (await supabaseServer()).rpc('reserve_slot', { engagement, starts });
+  const code = error ? (['slot_taken', 'too_soon', 'not_available'].find((c) => error.message.includes(c)) ?? 'failed') : null;
+  if (error && code === 'failed') console.error('reserve_slot failed', error.message);
+  redirect(`/coaching/${engagement}/pay${code ? `?slot=${code}` : ''}`);
 }
