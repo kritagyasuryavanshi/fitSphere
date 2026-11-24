@@ -1979,7 +1979,7 @@
       "deps": [
         "M6-01"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "manual",
       "ac": [
@@ -1988,8 +1988,10 @@
         "2026-11-23: PageSpeed's keyless daily quota was used up, and a local npx lighthouse run needs the owner's permission",
         "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md",
         "2026-11-23: the agreed perf job is a GitHub workflow, so it also waits for gh auth refresh -s workflow",
-        "2026-11-23: perf.yml and scripts/perf-cookie.mjs are on local branch m6-05-perf; the push was refused for the missing workflow scope (checked)"
-      ]
+        "2026-11-23: perf.yml and scripts/perf-cookie.mjs are on local branch m6-05-perf; the push was refused for the missing workflow scope (checked)",
+        "2026-11-24: PR #83 merged. Lighthouse mobile medians: landing 88, library 90, Today 98. Fixed the library's layout shift (CLS 0.42) and a footer jump; the path query now runs with the lesson queries. The Perf job runs by hand and on PRs touching the three pages. Codex: 2 points rejected with evidence (local throwaway keys only; CI-only test users). Tries: 4"
+      ],
+      "done_on": "2026-11-24"
     },
     {
       "id": "M6-06",

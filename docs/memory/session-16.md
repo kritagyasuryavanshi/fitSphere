@@ -97,3 +97,8 @@ The owner asked for a goal: finish every remaining task that needs no owner inpu
 - The Codex review found three issues, all fixed: hold expiry at capture, with 15 minutes' grace; ended or lapsed coaching releasing future bookings; and no time change while a checkout is open. One point was rejected with reason: an expired own hold shown as free.
 - Tries: 4 code runs, plus 1 infrastructure rerun after a Docker registry rate limit.
 - PR #82 merged after the owner's yes. Production has 63 of 63.
+
+## M6-05 (2026-11-24)
+- The owner granted the gh `workflow` scope. The browser step must be completed, or the scope stays missing.
+- The Perf workflow found the library at 75. Its skill path streamed in after an empty placeholder and pushed the list down (CLS 0.42). A loading placeholder shorter than the screen also let the footer jump. Both are fixed, and the path query now runs alongside the lesson queries. Medians: landing 88, library 90, Today 98.
+- Codex: 2 points rejected with evidence. Tries: 4.

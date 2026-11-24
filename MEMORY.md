@@ -35,7 +35,8 @@ How the graph works: `docs/memory/memory-system.md`. See the graph in the board'
 - **2026-11-23, last:** #79 post-merge review fixes (Sentry path ids and extra fields, captcha retry) and #80 M4-15 client stories are merged. Production has 61 of 61 migrations.
 - **2026-11-24:** #81 M4-18 (reports, admin queue, suspension with pro-rata partial refunds, coach debts) is merged. Production has 62 of 62 migrations. The owner chose to leave M4-17 (booking) until bookings are near.
 - **2026-11-24, later:** M4-17 booking (PR #82) is merged. Production has 63 of 63 migrations.
-- **Next step for the next session:** everything left waits on the owner: M6-05 (`gh auth refresh -s workflow`), M4-16 (live Razorpay keys), M6-02 (lawyer), M6-14 (CA), M6-08 (release approval after O-11).
+- **2026-11-24, end:** M6-05 is merged (#83). Lighthouse medians: landing 88, library 90, Today 98. The gh token now has the `workflow` scope.
+- **Next step for the next session:** every build task in the plan is merged. Left for the owner: the private `fitsphere-ops` repo and its secrets (M6-12 backups), M4-16 (live Razorpay keys), M6-02 (lawyer), M6-14 (CA), and M6-08 (release approval after O-11).
 - **Open owner decisions:** see `docs/memory/owner-decisions.md`.
 - **M6 plan (2026-11-21):** draft in `docs/plans/m6-plan.html`, merged from the Codex and planner reviews. It waits on five owner decisions: launch steps, 18+ beta, a domain (about ₹800 a year), Ask AI hidden in step 1, hiring and chat closed.
 - **2026-11-22, WELCOME PC:** CI is green on PR #58 head c553725, e2e included. The Codex second review found one medium issue, which belongs to M4-18: a suspended coach keeps a cancelling engagement to the paid date but cannot coach. Codex works here on `gpt-6-luna`; this ChatGPT account refuses `gpt-6-astra`.
