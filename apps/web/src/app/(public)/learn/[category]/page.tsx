@@ -119,9 +119,8 @@ async function Library({ params, searchParams }: PageProps<'/learn/[category]'>)
         </p>
       </div>
 
-      <Suspense fallback={null}>
-        <SkillPath category={category} categoryName={found.current.name} items={items} />
-      </Suspense>
+      {/* Rendered with the page, so the list below never moves when the path arrives (M6-05). */}
+      <SkillPath category={category} categoryName={found.current.name} items={items} />
 
       <div className="mt-10 flex flex-col gap-10 md:flex-row md:items-start">
         <details className="border-y border-line py-3 md:hidden">
