@@ -1700,7 +1700,7 @@
         "O-09",
         "O-10"
       ],
-      "status": "in_progress",
+      "status": "done",
       "owner": "claude",
       "test": "unit+e2e",
       "ac": [
@@ -1710,12 +1710,14 @@
         "2026-11-22: moved to after launch (decision-m6-launch)",
         "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md",
         "2026-11-24: the owner chose to build M4-18 now and leave M4-17 until bookings are near",
-        "2026-11-24: PR #82 green (owner: 'do what is best'). Codex review: hold expiry at capture, ended/lapsed release, no time change during checkout, all fixed; one point rejected with reason. Tries: 4 code runs + 1 infrastructure rerun. Waits for the owner's yes to push 20261230 to production, then merge"
+        "2026-11-24: PR #82 green (owner: 'do what is best'). Codex review: hold expiry at capture, ended/lapsed release, no time change during checkout, all fixed; one point rejected with reason. Tries: 4 code runs + 1 infrastructure rerun. Waits for the owner's yes to push 20261230 to production, then merge",
+        "2026-11-24: PR #82 merged after the owner's yes; 20261230 pushed first (production 63 of 63)"
       ],
       "screens": [
         "X-Book",
         "X-Booked"
-      ]
+      ],
+      "done_on": "2026-11-24"
     },
     {
       "id": "M4-18",
