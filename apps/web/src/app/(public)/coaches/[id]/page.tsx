@@ -131,7 +131,7 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
                   Hire {name.data}
                 </Link>
               ) : (
-                <span className="inline-flex min-h-12 items-center rounded-pill bg-mist px-7 text-[16px] font-medium text-ink-soft">Not taking new clients</span>
+                <span className="inline-flex min-h-12 items-center rounded-pill bg-mist px-7 text-[16px] font-medium text-ink-soft">Not taking new clients right now</span>
               )}
               <ShortlistButton coachId={id} on={listed} signedIn={!!viewer} name={name.data} />
             </div>
@@ -300,7 +300,10 @@ async function Coach({ params }: PageProps<'/coaches/[id]'>) {
           </h2>
           {rating.data?.rating ? (
             <span className="text-[14px] font-semibold">
-              ★ {Number(rating.data.rating).toFixed(1)} <span className="font-normal text-muted">({rating.data.review_count} verified)</span>
+              ★ {Number(rating.data.rating).toFixed(1)}{' '}
+              <span className="font-normal text-muted">
+                ({rating.data.review_count} verified {rating.data.review_count === 1 ? 'review' : 'reviews'})
+              </span>
             </span>
           ) : null}
         </div>
