@@ -2,6 +2,9 @@ name: Perf
 # M6-05: Lighthouse mobile, 3 runs each, median score, on one production build with the seed. Run it by hand.
 on:
   workflow_dispatch:
+  # Also when this job or the speed work changes, so a PR shows its scores.
+  pull_request:
+    paths: ['.github/workflows/perf.yml', 'apps/web/scripts/perf-cookie.mjs']
 permissions:
   contents: read
 jobs:
