@@ -102,3 +102,8 @@ The owner asked for a goal: finish every remaining task that needs no owner inpu
 - The owner granted the gh `workflow` scope. The browser step must be completed, or the scope stays missing.
 - The Perf workflow found the library at 75. Its skill path streamed in after an empty placeholder and pushed the list down (CLS 0.42). A loading placeholder shorter than the screen also let the footer jump. Both are fixed, and the path query now runs alongside the lesson queries. Medians: landing 88, library 90, Today 98.
 - Codex: 2 points rejected with evidence. Tries: 4.
+
+## Demo data (2026-11-24)
+- At the owner's request, production has one demo coach: "Arjun Mehta (demo)", id `d0000000-0000-4000-8000-00000000c0a1`. It has 2 packages, 11 weekly slots and a 6-week demo program shown on the profile. It has no reviews, stories or client numbers, because those would be invented evidence. The account cannot sign in.
+- Script: `docs/ops/demo-data.sql`. Remove before launch with `docs/ops/demo-data-remove.sql`.
+- Lesson: `supabase db query --remote` needs `--yes` for writes in agent mode. Untyped literals in `union all` and enum columns need explicit casts there.

@@ -36,6 +36,7 @@ How the graph works: `docs/memory/memory-system.md`. See the graph in the board'
 - **2026-11-24:** #81 M4-18 (reports, admin queue, suspension with pro-rata partial refunds, coach debts) is merged. Production has 62 of 62 migrations. The owner chose to leave M4-17 (booking) until bookings are near.
 - **2026-11-24, later:** M4-17 booking (PR #82) is merged. Production has 63 of 63 migrations.
 - **2026-11-24, end:** M6-05 is merged (#83). Lighthouse medians: landing 88, library 90, Today 98. The gh token now has the `workflow` scope.
+- **Demo data (2026-11-24):** production has a demo coach, "Arjun Mehta (demo)". Remove it before real launch with `docs/ops/demo-data-remove.sql` (an M6-08 release step).
 - **Next step for the next session:** every build task in the plan is merged. Left for the owner: the private `fitsphere-ops` repo and its secrets (M6-12 backups), M4-16 (live Razorpay keys), M6-02 (lawyer), M6-14 (CA), and M6-08 (release approval after O-11).
 - **Open owner decisions:** see `docs/memory/owner-decisions.md`.
 - **M6 plan (2026-11-21):** draft in `docs/plans/m6-plan.html`, merged from the Codex and planner reviews. It waits on five owner decisions: launch steps, 18+ beta, a domain (about ₹800 a year), Ask AI hidden in step 1, hiring and chat closed.
