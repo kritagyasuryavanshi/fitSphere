@@ -1705,7 +1705,7 @@ isOneToOne: false
 { Args: { "on_date": string,"opened_at"?: string,"session": string }; Returns: string
                            },
 "fits_availability":
-{ Args: { "coach": string,"minutes": number,"starts": string }; Returns: boolean
+{ Args: { "coach": string,"len": number,"starts": string }; Returns: boolean
                            },
 "give_feedback":
 { Args: { "body": string,"enrollment": string,"log"?: string }; Returns: string
