@@ -90,3 +90,9 @@ The owner asked for a goal: finish every remaining task that needs no owner inpu
 - Suspension refunds the unused days pro rata, the only partial refund. The payout is cut by the same share, or a coach debt is recorded when it was already paid. A bounced payout drops the debt and cuts the payout instead.
 - The Codex final-diff review found a deadlock risk in lock order and a stale debt; both are fixed. Tries: 4.
 - Lesson: in pgTAP, row security hides other people's rows from an admin user, so run checks as the owner (`reset role`).
+
+## M4-17 (2026-11-24)
+- The owner said "stop asking and do what is best", so M4-17 was built to the agreed plan in PR #82. It is green and waits for the production push.
+- pgTAP caught a real bug. In a SQL function, a column wins over a parameter of the same name, so `fits_availability(minutes)` read the window length. The parameter is now called `len`.
+- The Codex review found three issues, all fixed: hold expiry at capture, with 15 minutes' grace; ended or lapsed coaching releasing future bookings; and no time change while a checkout is open. One point was rejected with reason: an expired own hold shown as free.
+- Tries: 4 code runs, plus 1 infrastructure rerun after a Docker registry rate limit.
