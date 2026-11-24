@@ -177,6 +177,44 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"bookings": {
+                  Row: {
+                    "athlete_id": string | null,"coach_id": string,"created_at": string,"ends_at": string,"engagement_id": string,"hold_expires_at": string | null,"id": string,"order_id": string | null,"starts_at": string,"status": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "athlete_id"?: string | null,"coach_id": string,"created_at"?: string,"ends_at": string,"engagement_id": string,"hold_expires_at"?: string | null,"id"?: string,"order_id"?: string | null,"starts_at": string,"status"?: string
+                  }
+                  Update: {
+                    "athlete_id"?: string | null,"coach_id"?: string,"created_at"?: string,"ends_at"?: string,"engagement_id"?: string,"hold_expires_at"?: string | null,"id"?: string,"order_id"?: string | null,"starts_at"?: string,"status"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "bookings_athlete_id_fkey"
+      columns: ["athlete_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "bookings_coach_id_fkey"
+      columns: ["coach_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "bookings_engagement_id_fkey"
+      columns: ["engagement_id"]
+isOneToOne: false
+      referencedRelation: "engagements"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "bookings_order_id_fkey"
+      columns: ["order_id"]
+isOneToOne: false
+      referencedRelation: "orders"
+      referencedColumns: ["id"]
+    }
+                  ]
                 },"cancel_reasons": {
                   Row: {
                     "created_at": string,"engagement_id": string,"reason": string
@@ -835,14 +873,14 @@ isOneToOne: false
                   ]
                 },"packages": {
                   Row: {
-                    "coach_id": string,"created_at": string,"currency": string,"id": string,"kind": string,"live": boolean,"price_paise": number,"title": string
+                    "coach_id": string,"created_at": string,"currency": string,"id": string,"kind": string,"live": boolean,"minutes": number | null,"price_paise": number,"title": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "coach_id": string,"created_at"?: string,"currency"?: string,"id"?: string,"kind": string,"live"?: boolean,"price_paise": number,"title": string
+                    "coach_id": string,"created_at"?: string,"currency"?: string,"id"?: string,"kind": string,"live"?: boolean,"minutes"?: number | null,"price_paise": number,"title": string
                   }
                   Update: {
-                    "coach_id"?: string,"created_at"?: string,"currency"?: string,"id"?: string,"kind"?: string,"live"?: boolean,"price_paise"?: number,"title"?: string
+                    "coach_id"?: string,"created_at"?: string,"currency"?: string,"id"?: string,"kind"?: string,"live"?: boolean,"minutes"?: number | null,"price_paise"?: number,"title"?: string
                   }
                   Relationships: [
                     {
@@ -1666,6 +1704,9 @@ isOneToOne: false
 "finish_session":
 { Args: { "on_date": string,"opened_at"?: string,"session": string }; Returns: string
                            },
+"fits_availability":
+{ Args: { "coach": string,"len": number,"starts": string }; Returns: boolean
+                           },
 "give_feedback":
 { Args: { "body": string,"enrollment": string,"log"?: string }; Returns: string
                            },
@@ -1766,6 +1807,11 @@ isOneToOne: false
                            },
 "open_conversation":
 { Args: { "engagement": string }; Returns: string
+                           },
+"open_slots":
+{ Args: { "days"?: number,"engagement": string }; Returns: {
+              "starts_at": string
+            }[]
                            },
 "own_draft":
 { Args: { "program": string }; Returns: string
@@ -1872,6 +1918,9 @@ isOneToOne: false
 "reserve_ai_question":
 { Args: { "question": string }; Returns: string
                            },
+"reserve_slot":
+{ Args: { "engagement": string,"starts": string }; Returns: string
+                           },
 "reset_invite":
 { Args: { "program": string }; Returns: string
                            },
@@ -1934,6 +1983,9 @@ isOneToOne: false
                            },
 "send_message":
 { Args: { "body": string,"conversation": string }; Returns: number
+                           },
+"session_minutes":
+{ Args: { "package": string }; Returns: number
                            },
 "set_completed":
 { Args: { "done": boolean,"item": string }; Returns: undefined

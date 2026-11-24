@@ -50,7 +50,7 @@ const sections: Sections = [
       'When hiring opens, an athlete pays FitSphere for coaching, and FitSphere pays the coach after keeping its 15% fee.',
       'Monthly coaching renews each month until you cancel. Cancelling stops the next renewal; the paid month runs to its end.',
       'A first payment for monthly coaching is refundable in full within 7 days. Renewals are not refundable.',
-      'A single session is refundable up to 2 days before its date.',
+      'A single session is booked for a time at least 48 hours ahead, and is refundable up to 24 hours before it starts.',
       'A refund goes back to the way you paid.',
     ],
   ],
