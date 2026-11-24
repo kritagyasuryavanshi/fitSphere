@@ -21,6 +21,7 @@ const SLOT_ERRORS: Record<string, string> = {
   too_soon: 'Sessions are booked at least 48 hours ahead. Pick a later time.',
   not_available: 'That time is outside your coach’s hours. Pick another.',
   expired: 'Your hold ran out. Pick the time again, then pay.',
+  checkout_open: 'Your payment for the held time may still be going through. Wait for it, or try again after the hold ends.',
   failed: 'That did not work. Try again.',
 };
 

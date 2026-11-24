@@ -3,7 +3,7 @@
 -- for the package's length, never overlapping another live booking. Checkout needs the hold; paying confirms it. A
 -- payment for a slot lost meanwhile is money owed back. A booked session is refundable until 24 hours before it.
 begin;
-select plan(19);
+select plan(21);
 
 insert into auth.users (id, email, email_confirmed_at) values
   ('6a000000-0000-0000-0000-0000000000c1', 'bk-coach@t.test', now()),
@@ -59,12 +59,27 @@ update public.bookings set hold_expires_at = now() - interval '1 minute' where e
 select throws_ok($$ select public.start_checkout('6c000000-0000-0000-0000-0000000000e2', '6a000000-0000-0000-0000-0000000000a2') $$, '22023', 'needs_slot', 'an expired hold must be picked again');
 create temp table o1 as select * from public.start_checkout('6c000000-0000-0000-0000-0000000000e1', '6a000000-0000-0000-0000-0000000000a1');
 update public.orders set provider_order_id = 'order_bk1' where id = (select order_id from o1);
+-- With the provider checkout open on a live hold, the time cannot change.
+select pg_temp.as_user('6a000000-0000-0000-0000-0000000000a1');
+set local role authenticated;
+select throws_ok($$ select public.reserve_slot('6c000000-0000-0000-0000-0000000000e1', pg_temp.at(7, '07:00')) $$, '22023', 'checkout_open', 'the time is fixed while checkout is open');
+reset role;
 select is(pg_temp.capture('evt_bk1', 'order_bk1', 'pay_bk1'), 'applied', 'the session is paid');
 select is((select status from public.bookings where engagement_id = '6c000000-0000-0000-0000-0000000000e1' and order_id = (select order_id from o1)), 'confirmed', 'paying confirms the hold');
 select is((select status || '|' || paid_through from public.engagements where id = '6c000000-0000-0000-0000-0000000000e1'), 'active|' || (public.india_today() + 6), 'the coaching is active for the session date');
 select is((select u.hold_until from public.payouts u join public.payments p on p.id = u.payment_id where p.provider_payment_id = 'pay_bk1'),
   greatest(now() + make_interval(days => public.payout_hold_days()), pg_temp.at(6, '07:00') - interval '24 hours'),
   'the payout waits for the usual hold, and never ends before refunds close 24 hours ahead');
+
+-- A capture long after its hold ran out is money owed back, not a booking (Codex review).
+insert into public.engagements (id, athlete_id, coach_id, package_id, package_title, package_kind, price_paise, fee_bps, start_date, days_per_week, status, share_data) values
+  ('6c000000-0000-0000-0000-0000000000e3', '6a000000-0000-0000-0000-0000000000a2', '6a000000-0000-0000-0000-0000000000c1', '6b000000-0000-0000-0000-000000000001', 'Form check', 'single', 120000, 1500, public.india_today() + 9, 3, 'accepted', true);
+insert into public.orders (id, engagement_id, amount_paise, fee_bps, period_start, period_end, provider_order_id) values
+  ('6d000000-0000-0000-0000-000000000003', '6c000000-0000-0000-0000-0000000000e3', 120000, 1500, public.india_today() + 9, public.india_today() + 9, 'order_bk3');
+insert into public.bookings (engagement_id, coach_id, athlete_id, starts_at, ends_at, hold_expires_at, order_id) values
+  ('6c000000-0000-0000-0000-0000000000e3', '6a000000-0000-0000-0000-0000000000c1', '6a000000-0000-0000-0000-0000000000a2', pg_temp.at(9, '07:00'), pg_temp.at(9, '08:00'), now() - interval '1 hour', '6d000000-0000-0000-0000-000000000003');
+select pg_temp.capture('evt_bk3', 'order_bk3', 'pay_bk3');
+select is((select status from public.payments where provider_payment_id = 'pay_bk3'), 'duplicate', 'a capture an hour after the hold ran out is owed back');
 
 -- Refunds: until 24 hours before the start.
 select is(public.refundable_payment(g) is not null, true, 'a session 6 days away is refundable') from public.engagements g where id = '6c000000-0000-0000-0000-0000000000e1';

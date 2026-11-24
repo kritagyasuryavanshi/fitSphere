@@ -44,7 +44,7 @@ as $$
 $$;
 
 -- Whether [starts_at, starts_at + minutes) lies inside one of the coach's weekly windows, in India time.
-create function public.fits_availability(coach uuid, starts timestamptz, minutes int)
+create function public.fits_availability(coach uuid, starts timestamptz, len int)
 returns boolean
 language sql
 stable
@@ -55,7 +55,7 @@ as $$
     where s.coach_id = coach
       and s.dow = extract(isodow from (starts at time zone 'Asia/Kolkata'))::int
       and (starts at time zone 'Asia/Kolkata')::time >= s.start_time
-      and ((starts at time zone 'Asia/Kolkata') + make_interval(mins => minutes)) <= ((starts at time zone 'Asia/Kolkata')::date + s.start_time + make_interval(mins => s.minutes)));
+      and ((starts at time zone 'Asia/Kolkata') + make_interval(mins => len)) <= ((starts at time zone 'Asia/Kolkata')::date + s.start_time + make_interval(mins => s.minutes)));
 $$;
 
 -- The athlete holds a time for their accepted single-session request, for 15 minutes. Picking again replaces the hold.
@@ -82,6 +82,11 @@ begin
   end if;
   if starts > now() + interval '60 days' then
     raise exception 'too_far' using errcode = '22023';
+  end if;
+  -- The time cannot change while a payment for the held time may be under way (Codex review).
+  if exists (select 1 from public.bookings b join public.orders o on o.id = b.order_id
+      where b.engagement_id = g.id and b.status = 'held' and b.hold_expires_at > now() and o.status = 'created' and o.provider_order_id is not null) then
+    raise exception 'checkout_open' using errcode = '22023';
   end if;
   mins := public.session_minutes(g.package_id);
   if not public.fits_availability(g.coach_id, starts, mins) then
@@ -147,7 +152,8 @@ set search_path = ''
 as $$
 begin
   update public.bookings set status = case when new.status = 'refunded' then 'refunded' else 'cancelled' end
-  where engagement_id = new.id and (status = 'held' or (status = 'confirmed' and new.status in ('refunded', 'declined', 'withdrawn', 'expired')));
+  where engagement_id = new.id and (status = 'held'
+    or (status = 'confirmed' and (new.status in ('refunded', 'declined', 'withdrawn', 'expired') or starts_at > now())));
   return null;
 end;
 $$;
@@ -299,9 +305,13 @@ begin
 
   -- A booked single session (M4-17): the capture confirms the held time, or, if the hold was lost to someone else
   -- meanwhile, the money is owed back. Its payout waits until refunds close, 24 hours before the start.
-  select * into bk from public.bookings x where x.order_id = o.id order by x.created_at desc limit 1 for update;
+  select * into bk from public.bookings x where x.order_id = o.id and x.status = 'held' order by x.created_at desc limit 1 for update;
+  if bk.id is null then
+    select * into bk from public.bookings x where x.order_id = o.id order by x.created_at desc limit 1 for update;
+  end if;
   if bk.id is not null then
-    if bk.status <> 'held' then
+    -- A hold past its time (with 15 minutes' grace for a late webhook) or lost to someone else is not booked.
+    if bk.status <> 'held' or bk.hold_expires_at < now() - interval '15 minutes' then
       insert into public.payments (order_id, provider_payment_id, amount_paise, currency, status) values (o.id, pid, amount, o.currency, 'duplicate');
       update public.payment_events set result = 'applied', note = 'owed back: the booked time was lost (' || bk.status || ')' where id = ev;
       return 'applied';

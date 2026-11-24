@@ -96,7 +96,7 @@ export async function holdSlot(formData: FormData): Promise<void> {
   const starts = String(formData.get('starts') ?? '');
   if (!isUuid(engagement) || Number.isNaN(Date.parse(starts))) redirect('/coaching');
   const { error } = await (await supabaseServer()).rpc('reserve_slot', { engagement, starts });
-  const code = error ? (['slot_taken', 'too_soon', 'not_available'].find((c) => error.message.includes(c)) ?? 'failed') : null;
+  const code = error ? (['slot_taken', 'too_soon', 'not_available', 'checkout_open'].find((c) => error.message.includes(c)) ?? 'failed') : null;
   if (error && code === 'failed') console.error('reserve_slot failed', error.message);
-  redirect(`/coaching/${engagement}/pay${code ? `?slot=${code}` : ''}`);
+  redirect(code ? `/coaching/${engagement}/pay?slot=${code}` : `/coaching/${engagement}/pay`);
 }
