@@ -2,7 +2,7 @@ import { connection } from 'next/server';
 import { queueSessionReminders, sendQueuedEmails, sweepEngagements } from '@/lib/email-send';
 import { stopSubscriptions } from '@/lib/payments/reconcile';
 import { sendPendingRefunds } from '@/lib/payments/refunds';
-import { pruneEmailOutbox, recordJob } from '@/lib/jobs';
+import { pruneEmailOutbox, pruneStories, recordJob } from '@/lib/jobs';
 import { authorised } from '@/lib/video-check';
 
 // Once a day (vercel.json), 08:30 India time: ends paid coaching that ran out and stops its subscriptions (M4-11), sends refunds (M4-12), queues today's session
@@ -40,12 +40,17 @@ export async function GET(request: Request) {
     failed.push('pruning the email outbox');
     return null;
   });
+  const stories = await pruneStories().catch((e) => {
+    console.error('pruning client stories failed', e);
+    failed.push('pruning client stories');
+    return null;
+  });
   const result = await sendQueuedEmails().catch((e) => {
     console.error('sending emails failed', e);
     failed.push('sending emails');
     return null;
   });
   await recordJob('send-emails', failed);
-  if (failed.includes('sending emails')) return Response.json({ swept, stopped, refunded, reminded, pruned, failed }, { status: 500 });
-  return result ? Response.json({ swept, stopped, refunded, reminded, pruned, ...result }) : Response.json({ swept, stopped, refunded, reminded, pruned, skipped: 'email is not configured: RESEND_API_KEY, EMAIL_FROM, NEXT_PUBLIC_SITE_URL or SUPABASE_SECRET_KEY is missing' });
+  if (failed.includes('sending emails')) return Response.json({ swept, stopped, refunded, reminded, pruned, stories, failed }, { status: 500 });
+  return result ? Response.json({ swept, stopped, refunded, reminded, pruned, stories, ...result }) : Response.json({ swept, stopped, refunded, reminded, pruned, stories, skipped: 'email is not configured: RESEND_API_KEY, EMAIL_FROM, NEXT_PUBLIC_SITE_URL or SUPABASE_SECRET_KEY is missing' });
 }

@@ -18,15 +18,15 @@ update public.profiles set display_name = 'Kabir' where id = 'f1000000-0000-0000
 insert into public.coach_profiles (coach_id, headline, status, agreement_version) values
   ('f1000000-0000-0000-0000-0000000000c1', 'Boxing', 'live', public.current_coach_agreement());
 -- Kabir: monthly, paid to today, renewing. Neha: monthly, 10 days left, renewing. Ravi: a single session, run out.
--- Isha: cancelling, run out. Arjun: monthly, 8 days past due and the provider silent. Meera: monthly, run out, no
--- subscription to renew it.
+-- Isha: cancelling, run out. Arjun: monthly, 8 days past due and the provider silent. Meera: monthly, 4 days past due, no
+-- subscription: she renews by paying a new order (remaining-tasks-plan Decision 1), and the 3-day grace is over.
 insert into public.engagements (id, athlete_id, coach_id, package_title, package_kind, price_paise, fee_bps, start_date, days_per_week, status, share_data, paid_through) values
   ('f2000000-0000-0000-0000-0000000000e1', 'f1000000-0000-0000-0000-0000000000a1', 'f1000000-0000-0000-0000-0000000000c1', 'Online coaching', 'monthly', 450000, 1500, public.india_today() - 30, 3, 'active', true, public.india_today()),
   ('f2000000-0000-0000-0000-0000000000e2', 'f1000000-0000-0000-0000-0000000000a2', 'f1000000-0000-0000-0000-0000000000c1', 'Online coaching', 'monthly', 450000, 1500, public.india_today() - 20, 3, 'active', true, public.india_today() + 10),
   ('f2000000-0000-0000-0000-0000000000e3', 'f1000000-0000-0000-0000-0000000000a3', 'f1000000-0000-0000-0000-0000000000c1', 'Form check', 'single', 120000, 1500, public.india_today() - 1, 3, 'active', true, public.india_today() - 1),
   ('f2000000-0000-0000-0000-0000000000e4', 'f1000000-0000-0000-0000-0000000000a4', 'f1000000-0000-0000-0000-0000000000c1', 'Online coaching', 'monthly', 450000, 1500, public.india_today() - 31, 3, 'cancelling', true, public.india_today() - 1),
   ('f2000000-0000-0000-0000-0000000000e5', 'f1000000-0000-0000-0000-0000000000a5', 'f1000000-0000-0000-0000-0000000000c1', 'Online coaching', 'monthly', 450000, 1500, public.india_today() - 38, 3, 'active', true, public.india_today() - 8),
-  ('f2000000-0000-0000-0000-0000000000e6', 'f1000000-0000-0000-0000-0000000000a6', 'f1000000-0000-0000-0000-0000000000c1', 'Online coaching', 'monthly', 450000, 1500, public.india_today() - 31, 3, 'active', true, public.india_today() - 1);
+  ('f2000000-0000-0000-0000-0000000000e6', 'f1000000-0000-0000-0000-0000000000a6', 'f1000000-0000-0000-0000-0000000000c1', 'Online coaching', 'monthly', 450000, 1500, public.india_today() - 34, 3, 'active', true, public.india_today() - 4);
 insert into public.subscriptions (engagement_id, provider_subscription_id, status) values
   ('f2000000-0000-0000-0000-0000000000e1', 'sub_kabir', 'active'),
   ('f2000000-0000-0000-0000-0000000000e2', 'sub_neha', 'active'),
@@ -128,13 +128,13 @@ select lives_ok($$ select public.mark_subscription_cancelled((select subscriptio
 select is((select count(*)::int from public.subscriptions_to_stop()), 0, 'and nothing is left to stop');
 select is(pg_temp.sub_event('evt_c1', 'subscription.cancelled', 'sub_neha'), 'applied', 'the provider confirms a cancel');
 
--- The daily sweep ends what ran out: the single session, the cancelled month, the monthly coaching without a
--- subscription, and lapses the one whose provider went silent for a week.
+-- The daily sweep ends what ran out (the single session, the cancelled month), lapses the one whose provider went
+-- silent for a week, and lapses the unpaid monthly coaching after its 3-day grace.
 select is(public.sweep_engagements(), 4, 'the sweep changes four engagements');
 select is((select string_agg(status, ',' order by id) from public.engagements where id in ('f2000000-0000-0000-0000-0000000000e3',
   'f2000000-0000-0000-0000-0000000000e4', 'f2000000-0000-0000-0000-0000000000e5', 'f2000000-0000-0000-0000-0000000000e6', 'f2000000-0000-0000-0000-0000000000e2')),
-  'cancelling,ended,ended,lapsed,ended', 'run-out coaching ends, a silent renewal lapses, and paid time is kept');
-select is((select count(*)::int from public.email_outbox where template in ('coaching_ended', 'coaching_lapsed') and data ->> 'engagement' in
+  'cancelling,ended,ended,lapsed,lapsed', 'run-out coaching ends, a silent renewal and an unpaid month lapse, and paid time is kept');
+select is((select count(*)::int from public.email_outbox where template in ('coaching_ended', 'coaching_lapsed', 'coaching_unpaid') and data ->> 'engagement' in
   ('f2000000-0000-0000-0000-0000000000e3', 'f2000000-0000-0000-0000-0000000000e4', 'f2000000-0000-0000-0000-0000000000e5', 'f2000000-0000-0000-0000-0000000000e6')), 8,
   'each change emails both');
 select is(public.sweep_engagements(), 0, 'a second sweep changes nothing');

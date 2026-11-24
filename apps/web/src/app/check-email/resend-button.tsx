@@ -2,6 +2,7 @@
 
 import { Button } from '@fitsphere/ui';
 import { useEffect, useState, useTransition } from 'react';
+import { Turnstile } from '@/components/turnstile';
 import { resendLink } from '../sign-in/actions';
 
 const WAIT_SECONDS = 60;
@@ -12,6 +13,8 @@ export function ResendButton({ email }: { email: string }) {
   const [left, setLeft] = useState(WAIT_SECONDS);
   const [message, setMessage] = useState<string>();
   const [pending, startTransition] = useTransition();
+  const [token, setToken] = useState<string>();
+  const [sends, setSends] = useState(0);
 
   useEffect(() => {
     const tick = () => setLeft(Math.max(0, Math.ceil((until - Date.now()) / 1000)));
@@ -22,7 +25,8 @@ export function ResendButton({ email }: { email: string }) {
 
   const resend = () =>
     startTransition(async () => {
-      const error = await resendLink(email);
+      const error = await resendLink(email, token);
+      setSends((n) => n + 1);
       setMessage(error ?? 'We sent a new link.');
       if (!error) setUntil(Date.now() + WAIT_SECONDS * 1000);
     });
@@ -30,6 +34,7 @@ export function ResendButton({ email }: { email: string }) {
   const clock = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`;
   return (
     <>
+      <Turnstile resetKey={sends} onToken={setToken} />
       <Button variant="light" disabled={left > 0 || pending} onClick={resend}>
         {left > 0 ? `Resend link in ${clock}` : 'Resend link'}
       </Button>

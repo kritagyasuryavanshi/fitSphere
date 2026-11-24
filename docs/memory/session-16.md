@@ -64,3 +64,36 @@ The owner asked for a goal: finish every remaining task that needs no owner inpu
 - The owner approved the plan. PR #72 (M6-15 invite gate) and PR #73 (M6-12 ops) are merged, with 20261223 and 20261224 pushed first. Production has 57 of 57 migrations.
 - The Codex review of #72 found that `reserve_ai_question` let an uninvited account write rows. It now calls `require_step1`.
 - A branch whose history adds a `.github/workflows` file cannot be pushed without the `workflow` scope. Squash it so that no commit touches the file.
+
+## Building more of the plan (the stop hook asked)
+- Merged #74 M6-13, #75 M6-11 code, #76 S0-08 code, #77 renewal by order (Decision 1) and #78 M4-13 manual payouts. Each migration went to production after the owner's yes. Production has 60 of 60.
+- The Codex final-diff review of #77 found duplicate reminders, fixed with a sweep lock. The review of #78 found a refund-vs-payout race, fixed by refusing refunds once a payout is paid. One claimed finding was rejected: duplicate payments never get a payout.
+- M6-05's perf workflow push was refused for the missing workflow scope, which confirms the block.
+- CI failures from the Docker registry rate limit and port errors were not code problems. A rerun of the failed jobs fixed them.
+- Lessons:
+  - A prompt to `codex exec` that holds a big diff goes on stdin (`codex exec - < file`), because the argument list is too long.
+  - A pgTAP statement cannot see a row that its own function call inserts.
+  - Long heredocs with quotes break the Bash tool, so write such files with the Write tool.
+
+## Reviews after the stop hook, M4-15, and try counts
+- #74, #75 and #76 had merged without a review. Codex reviewed them after the merge. The fixes are in #79: Sentry now redacts id-like path parts and drops `extra`, breadcrumb data and request contexts, and the captcha token is no longer reused on retry. Rejected with reason: captcha on Google OAuth, which Supabase does not cover; the invite gate covers that path.
+- #80 M4-15 client stories is merged. Codex found orphaned photos, now pruned by the cron, and photo keys missing from the export, now added.
+- Tries per task (CI or review rounds before the merge; none reached the cap of 5):
+  - M6-15: 2. M6-12: 2.
+  - M6-13: 1, plus an infrastructure rerun. M6-11: 1.
+  - S0-08: 2, plus an infrastructure rerun.
+  - Renewal orders: 3. M4-13: 4, including an infrastructure rerun.
+  - M4-15: 3. #79: 1.
+
+## M4-18 (2026-11-24)
+- The owner chose to build M4-18 now and leave M4-17. PR #81 is merged, with 20261229 pushed first. Production has 62 of 62.
+- Suspension refunds the unused days pro rata, the only partial refund. The payout is cut by the same share, or a coach debt is recorded when it was already paid. A bounced payout drops the debt and cuts the payout instead.
+- The Codex final-diff review found a deadlock risk in lock order and a stale debt; both are fixed. Tries: 4.
+- Lesson: in pgTAP, row security hides other people's rows from an admin user, so run checks as the owner (`reset role`).
+
+## M4-17 (2026-11-24)
+- The owner said "stop asking and do what is best", so M4-17 was built to the agreed plan in PR #82. It is green and waits for the production push.
+- pgTAP caught a real bug. In a SQL function, a column wins over a parameter of the same name, so `fits_availability(minutes)` read the window length. The parameter is now called `len`.
+- The Codex review found three issues, all fixed: hold expiry at capture, with 15 minutes' grace; ended or lapsed coaching releasing future bookings; and no time change while a checkout is open. One point was rejected with reason: an expired own hold shown as free.
+- Tries: 4 code runs, plus 1 infrastructure rerun after a Docker registry rate limit.
+- PR #82 merged after the owner's yes. Production has 63 of 63.

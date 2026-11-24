@@ -2,6 +2,7 @@
 
 import { normaliseEmail } from '@fitsphere/core';
 import { redirect } from 'next/navigation';
+import { captchaToken, otpOptions } from '@/lib/captcha';
 import { siteOrigin } from '@/lib/site-origin';
 import { supabaseServer } from '@/lib/supabase/server';
 
@@ -15,14 +16,17 @@ async function callbackUrl() {
   return `${await siteOrigin()}/auth/callback`;
 }
 
-async function sendLink(email: string): Promise<string | undefined> {
+async function sendLink(email: string, captcha?: string): Promise<string | undefined> {
   const supabase = await supabaseServer();
-  const send = async () => supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: await callbackUrl() } });
+  const send = async () => supabase.auth.signInWithOtp({ email, options: otpOptions(await callbackUrl(), captcha) });
   let { error } = await send();
   // Two requests for a new address at once make Supabase fail one of them on a duplicate user.
-  // The other one created the user, so a single retry sends the link.
-  if (error && error.status === 500) ({ error } = await send());
+  // The other one created the user, so a single retry sends the link. A captcha token works once, so with one the
+  // retry is left to the person, with a fresh check (Codex review).
+  if (error && error.status === 500 && !captcha) ({ error } = await send());
   if (!error) return undefined;
+  // A missing or used-up Turnstile token, once captcha is on in Supabase Auth (M6-11).
+  if (error.code === 'captcha_failed') return 'Complete the check above the button, then try again.';
   return error.status === 429 ? 'Too many sign-in emails. Wait a few minutes, then try again.' : 'We could not send the link. Try again.';
 }
 
@@ -30,14 +34,14 @@ export async function requestLink(_prev: SendLinkState, formData: FormData): Pro
   const typed = String(formData.get('email') ?? '');
   const email = normaliseEmail(typed);
   if (!email) return { email: typed, error: INVALID_EMAIL };
-  const error = await sendLink(email);
+  const error = await sendLink(email, captchaToken(formData));
   if (error) return { email: typed, error };
   redirect(`/check-email?email=${encodeURIComponent(email)}`);
 }
 
-export async function resendLink(email: string): Promise<string | undefined> {
+export async function resendLink(email: string, captcha?: string): Promise<string | undefined> {
   const valid = normaliseEmail(email);
-  return valid ? sendLink(valid) : INVALID_EMAIL;
+  return valid ? sendLink(valid, captcha && captcha.length <= 2048 ? captcha : undefined) : INVALID_EMAIL;
 }
 
 export async function signInWithGoogle() {

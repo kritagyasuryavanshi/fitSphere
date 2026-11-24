@@ -17,6 +17,7 @@
     "@fitsphere/core": "*",
     "@fitsphere/db": "*",
     "@fitsphere/ui": "*",
+    "@sentry/nextjs": "11.11.0",
     "@supabase/ssr": "^0.12.7",
     "next": "16.4.5",
     "react": "19.3.0",

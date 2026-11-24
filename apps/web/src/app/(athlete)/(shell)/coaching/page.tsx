@@ -31,7 +31,7 @@ async function Coaching() {
   const supabase = await supabaseServer();
   const { data, error } = await supabase
     .from('engagements')
-    .select('id, coach_id, package_title, package_kind, price_paise, start_date, status, created_at, paid_through, subscriptions(status), orders(payments(refunds(status)))')
+    .select('id, coach_id, package_title, package_kind, price_paise, start_date, status, created_at, paid_through, subscriptions(status), orders(payments(refunds(status))), stories(id)')
     .eq('athlete_id', viewer.userId)
     .order('created_at', { ascending: false });
   if (error) throw error;
@@ -109,6 +109,11 @@ async function Coaching() {
             {g.status === 'active' && g.package_kind === 'monthly' ? (
               <Link href={`/coaching/${g.id}/cancel`} className="self-start text-[15px] font-medium text-danger underline underline-offset-4">
                 Cancel coaching
+              </Link>
+            ) : null}
+            {g.stories ? (
+              <Link href={`/coaching/${g.id}/story`} className="self-start text-[15px] font-medium underline underline-offset-4">
+                Read the story {coach} wrote about you
               </Link>
             ) : null}
             {reviewable[i].data ? (

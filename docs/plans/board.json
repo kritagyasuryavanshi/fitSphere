@@ -406,13 +406,14 @@
       "deps": [
         "O-11"
       ],
-      "status": "todo",
+      "status": "in_progress",
       "owner": "claude",
       "test": "manual",
       "ac": [
         "Server and browser errors reach Sentry (free tier) with no personal data",
         "Usage analytics are cut (decision-m6-launch); weekly returners come from SQL",
-        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md",
+        "2026-11-23: PR #76 merged: Sentry (errors only, scrubbed) off until SENTRY_DSN; admin_weekly_training(). Left: the DSN (O-11) and one hand check in Sentry for personal data"
       ]
     },
     {
@@ -1568,7 +1569,8 @@
         "The renewal period comes from the provider payload (current_start, current_end), so on conflict catches a double charge",
         "The real adapter treats 'already cancelled' as success, so stopSubscriptions never loops",
         "The 7-day lapse grace is longer than Razorpay's retry window, or lapsing waits for subscription.halted",
-        "2026-11-23: deferred. The marketplace launches with a new Order each month (docs/plans/remaining-tasks-plan.md); Subscriptions only if manual renewal churn is high"
+        "2026-11-23: deferred. The marketplace launches with a new Order each month (docs/plans/remaining-tasks-plan.md); Subscriptions only if manual renewal churn is high",
+        "2026-11-23: PR #77 merged: renewal by a new order each month (Decision 1), with reminders, a 3-day grace and an unpaid lapse"
       ]
     },
     {
@@ -1604,7 +1606,7 @@
         "M4-09a",
         "O-04"
       ],
-      "status": "todo",
+      "status": "in_progress",
       "owner": "claude",
       "test": "unit+e2e",
       "screens": [
@@ -1615,7 +1617,8 @@
         "Earnings page totals equal the payments table",
         "pgTAP: a coach sees only their own payouts",
         "From M4-12: never release a payout while its payment has a requested refund; a session payout is held to the day before the session",
-        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md",
+        "2026-11-23: PR #78 merged (phase a): admin payouts page, mark paid with a UTR, failed transfers, coach earnings as estimates; refunds refused once a payout is paid (Codex review). Left: Route (phase b) after O-04; live payouts after the CA"
       ]
     },
     {
@@ -1673,7 +1676,7 @@
       "deps": [
         "M4-14"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "db",
       "ac": [
@@ -1681,8 +1684,10 @@
         "Body photos need a second, separate consent",
         "The client can withdraw consent and the story disappears",
         "2026-11-22: moved to after launch (decision-m6-launch)",
-        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
-      ]
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md",
+        "2026-11-23: PR #80 merged, 20261228 pushed first (production 61 of 61). Codex review: orphaned photos are now pruned; the export lists photo keys. The coach editor, client approval page and profile section wait for the owner's look (no design existed)"
+      ],
+      "done_on": "2026-11-23"
     },
     {
       "id": "M4-17",
@@ -1695,7 +1700,7 @@
         "O-09",
         "O-10"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "unit+e2e",
       "ac": [
@@ -1703,12 +1708,16 @@
         "A slot can be booked once; a second booking of the same slot fails (database constraint test)",
         "Booking needs payment; cancel follows the refund terms",
         "2026-11-22: moved to after launch (decision-m6-launch)",
-        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md",
+        "2026-11-24: the owner chose to build M4-18 now and leave M4-17 until bookings are near",
+        "2026-11-24: PR #82 green (owner: 'do what is best'). Codex review: hold expiry at capture, ended/lapsed release, no time change during checkout, all fixed; one point rejected with reason. Tries: 4 code runs + 1 infrastructure rerun. Waits for the owner's yes to push 20261230 to production, then merge",
+        "2026-11-24: PR #82 merged after the owner's yes; 20261230 pushed first (production 63 of 63)"
       ],
       "screens": [
         "X-Book",
         "X-Booked"
-      ]
+      ],
+      "done_on": "2026-11-24"
     },
     {
       "id": "M4-18",
@@ -1722,7 +1731,7 @@
         "O-09",
         "O-10"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "db+e2e",
       "ac": [
@@ -1732,13 +1741,15 @@
         "From the M4-19 Codex review (2026-11-22): a suspended coach, or one who lost the role, leaves the athlete a cancelling engagement to the paid date with no coach; decide a pro-rata refund or an earlier end",
         "From M4-12: an admin page lists payments, money owed back and failed or stuck refunds (money_invariants), with a Refund button that calls admin_refund",
         "From M4-14: a Report link on each public review; hiding sets reviews.hidden_at, which drops it from the profile and the rating",
-        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md",
+        "2026-11-24: PR #81 merged after the owner chose to build it on the plan's rules; 20261229 pushed first (production 62 of 62). Codex review: suspension lock order and the debt on a bounced payout fixed. Tries: 4. /admin/reports and the Report disclosure wait for the owner's look"
       ],
       "screens": [
         "X-Report",
         "X-ReportSent",
         "R-Reports"
-      ]
+      ],
+      "done_on": "2026-11-24"
     },
     {
       "id": "M4-16",
@@ -1976,7 +1987,8 @@
         "Images served in modern formats at the right size",
         "2026-11-23: PageSpeed's keyless daily quota was used up, and a local npx lighthouse run needs the owner's permission",
         "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md",
-        "2026-11-23: the agreed perf job is a GitHub workflow, so it also waits for gh auth refresh -s workflow"
+        "2026-11-23: the agreed perf job is a GitHub workflow, so it also waits for gh auth refresh -s workflow",
+        "2026-11-23: perf.yml and scripts/perf-cookie.mjs are on local branch m6-05-perf; the push was refused for the missing workflow scope (checked)"
       ]
     },
     {
@@ -2141,13 +2153,14 @@
       "deps": [
         "O-11"
       ],
-      "status": "todo",
+      "status": "in_progress",
       "owner": "claude",
       "test": "manual",
       "ac": [
         "Every release-gate item in TASKS.md is done: confirm email, custom SMTP, Turnstile on sign-in, NEXT_PUBLIC_SITE_URL, our own domains only in the redirect allow-list, auth rate limits",
         "A magic link reaches an outside Gmail inbox",
-        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md",
+        "2026-11-23: PR #75 merged: Turnstile wired into sign-in and resend, off until NEXT_PUBLIC_TURNSTILE_SITE_KEY. docs/ops/release-gate.md lists the hosted settings. Left: O-11 (domain, Resend, Turnstile keys, captcha on in Supabase) and the Gmail test"
       ]
     },
     {
@@ -2179,14 +2192,16 @@
       "deps": [
         "O-06"
       ],
-      "status": "todo",
+      "status": "done",
       "owner": "claude",
       "test": "unit",
       "ac": [
         "A script counts at least 20 boxing skills and 30 S&C drills, published and not samples",
         "The script runs in CI before release",
-        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md"
-      ]
+        "2026-11-23: plan agreed with Codex in docs/plans/remaining-tasks-plan.md",
+        "2026-11-23: PR #74. npm run gate:content (packages/db) counts with the publishable key and exits 1 below 20 boxing skills / 30 S&C items. Run it in the M6-08 release checklist; it fails until the founding coaches publish (O-06)"
+      ],
+      "done_on": "2026-11-23"
     },
     {
       "id": "M6-14",
