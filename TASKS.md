@@ -6,7 +6,7 @@ Build tasks live on the board: `docs/plans/board.json` (rendered at https://clau
 - [ ] Owner: rotate the GitHub token, because it appeared in the chat.
 - [ ] Owner: push the `suryavanshi-claude` rulebook commit that brings Codex back (the push from LENOVO gets 403).
 - [ ] Owner: push the rulebook, and switch off unused plugins. The tooling audit lists the steps: https://claude.ai/artifact/NAWsRxJUah4godqxBrXA6T.
-- [ ] Owner: email: a Resend account and a verified sending domain, then `RESEND_API_KEY`, `EMAIL_FROM` and `NEXT_PUBLIC_SITE_URL` in Vercel. Until then emails wait in the queue (up to 7 days). Anthropic API and Google OAuth still to create (O-02). This blocks preview deploys (S0-06) and Google sign-in.
+- [ ] Owner: email without a domain (2026-11-25): a Gmail app password, then `SMTP_USER` and `SMTP_PASS` in Vercel and the same login in Supabase → Authentication → SMTP (`smtp.gmail.com`, port 465). Later, with a domain, Resend (`RESEND_API_KEY`, `EMAIL_FROM`) can replace it. Until then emails wait in the queue (up to 7 days). Anthropic API and Google OAuth still to create (O-02). This blocks preview deploys (S0-06) and Google sign-in.
 - [ ] Owner: answer Q-01 to Q-15 in `docs/architecture/risks-and-gaps.md`, or accept the defaults (O-09).
 - [ ] Owner: decide on branch protection for `main`. It needs GitHub Pro (paid) or a public repo. Until then, merge only on a green CI run.
 - [ ] Owner: meet one boxing coach and one S&C coach this week (the assignment in the design doc).
