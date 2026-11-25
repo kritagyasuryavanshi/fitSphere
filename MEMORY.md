@@ -5,6 +5,7 @@ Read `docs/memory/INDEX.md` next, then open only the notes the task needs.
 How the graph works: `docs/memory/memory-system.md`. See the graph in the board's Memory tab: https://claude.ai/artifact/BPCG8ghatzZkV7v1haJ1z1
 
 ## Current state
+- **Latest (2026-11-25):** PRs #84 to #86 merged; no open PRs. Email works without a domain through Gmail SMTP (PR #86). The owner is adding the Gmail, Turnstile and Sentry keys; then test sign-in live. Details: `docs/memory/session-16.md`.
 - **Phase:** building. Plan and stack approved. Design system, local DB and CI done.
 - **Current milestone:** M3 Coach-Led Training is done ([[M3-check]]); now M4 (marketplace) per `docs/plans/m4-plan.md`; M4-01 to M4-08 done (PRs #40 to #47). All 16 M3 tasks are done (PRs #22 to #39); reviews, fixes and the live checks are in `docs/memory/session-13.md`.
 - **Open PRs:** none (2026-11-23). Merge only after the CI run for the PR's head commit is green (`docs/memory/lesson-merge-checks-head-sha.md`).

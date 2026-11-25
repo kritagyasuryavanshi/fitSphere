@@ -107,3 +107,8 @@ The owner asked for a goal: finish every remaining task that needs no owner inpu
 - At the owner's request, production has one demo coach: "Arjun Mehta (demo)", id `d0000000-0000-4000-8000-00000000c0a1`. It has 2 packages, 11 weekly slots and a 6-week demo program shown on the profile. It has no reviews, stories or client numbers, because those would be invented evidence. The account cannot sign in.
 - Script: `docs/ops/demo-data.sql`. Remove before launch with `docs/ops/demo-data-remove.sql`.
 - Lesson: `supabase db query --remote` needs `--yes` for writes in agent mode. Untyped literals in `union all` and enum columns need explicit casts there.
+
+## Polish and email without a domain (2026-11-25)
+- PR #84: the coach profile follows the P-Coach design. PR #85: the stats hide until a coach has a client; Find a coach drops "Hire online or in person" and says "No coaches are live yet" when no filter is set.
+- The owner does not want to buy a domain yet. PR #86: emails can go through Gmail SMTP (`SMTP_USER`, `SMTP_PASS`, port 465) or Resend. Gmail wins when both are set. nodemailer is pinned at 10.5.0, because 6.x has audit findings and 10.6.1 was under two weeks old.
+- Owner next: a Gmail app password into Vercel and Supabase SMTP, `NEXT_PUBLIC_SITE_URL`, Turnstile (hostname fit-sphere-xi.vercel.app) and Sentry keys, then a redeploy. After that, test sign-in and Sentry live (M6-11, S0-08).
