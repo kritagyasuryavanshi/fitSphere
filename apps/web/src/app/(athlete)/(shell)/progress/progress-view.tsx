@@ -3,6 +3,7 @@ import { Tag } from '@fitsphere/ui';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { records, SPORT_GROUPS as SPORTS } from '@/lib/progress';
+import { progressView } from '@/lib/sports';
 import { supabaseServer } from '@/lib/supabase/server';
 import { WeightForm } from './weight-form';
 
@@ -28,7 +29,7 @@ function Stat({ label, value, line }: { label: string; value: string; line?: str
 }
 
 /** The caller checks the athlete role and passes their id; route guards live in each page.tsx. */
-export async function ProgressView({ sport, userId }: { sport: keyof typeof SPORTS; userId: string }) {
+export async function ProgressView({ sport, userId, stay = false }: { sport: keyof typeof SPORTS; userId: string; stay?: boolean }) {
   const supabase = await supabaseServer();
   const today = indiaToday();
   const week = calendarWeek(today);
@@ -37,8 +38,13 @@ export async function ProgressView({ sport, userId }: { sport: keyof typeof SPOR
   const { data: programs, error } = await supabase.rpc('my_programs');
   if (error) throw error;
   const mine = programs.filter((p) => (SPORTS[sport] as readonly string[]).includes(p.category_id));
-  // The Progress tab opens here; a gym-only athlete goes straight to their gym progress.
-  if (sport === 'training' && !mine.length && programs.some((p) => p.category_id === 'gym')) redirect('/progress/gym');
+  // The Progress tab opens here. With no boxing or S&C program, a gym athlete (by program, or by the sports chosen at
+  // sign-up) goes to gym progress, unless they picked this tab (stay).
+  if (sport === 'training' && !stay && !mine.length) {
+    const prefs = await supabase.from('athlete_prefs').select('category_id').eq('user_id', userId);
+    if (prefs.error) throw prefs.error;
+    if (programs.some((p) => p.category_id === 'gym') || progressView(prefs.data.map((p) => p.category_id)) === 'gym') redirect('/progress/gym');
+  }
 
   const [counts, history, ratings, muscles, weights] = await Promise.all([
     Promise.all(mine.map((p) => supabase.rpc('adherence', { athlete: userId, program: p.program_id }))),

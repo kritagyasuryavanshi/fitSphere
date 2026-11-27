@@ -46,7 +46,7 @@ The owner asked for a Coach Marketplace: discover, compare, shortlist and hire c
 
 ## Premises
 1. **Content and cold start are the main risks, not code.** Coaches solve both: they bring reviewed content, athletes, and willingness to pay. (Revised after the second opinion.)
-2. **Two connected categories at launch:** Boxing (primary) and S&C (supporting, integrated, not a generic gym app). *Superseded on 2026-11-27 by the multi-sport focus below.* The data model stays multi-sport so cricket, football and MMA slot in later without a rebuild.
+2. **Two connected categories at launch:** Boxing (primary) and S&C (supporting, integrated, not a generic gym app). *Superseded on 2026-11-27 by the multi-sport focus section above.* The data model stays multi-sport so cricket, football and MMA slot in later without a rebuild.
 3. **Mobile-first web app (PWA)** for v1, not native apps.
 4. **No age limit** (changed 2026-11-12). Parental consent for minors before launch.
 5. **Real-user evidence before Phase 2 work** (marketplace, payments, academies).

@@ -1,22 +1,14 @@
 import type { Metadata } from 'next';
-import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
-import { progressView } from '@/lib/sports';
-import { supabaseServer } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/viewer';
 import { ProgressView } from './progress-view';
 
 export const metadata: Metadata = { title: 'Progress · FitSphere' };
 
-// C-Progress: boxing and S&C. A gym-only athlete opens on gym progress; the tab adds ?view=training to stay here.
+// C-Progress: boxing and S&C. The tab adds ?view=training, so a chosen tab always stays put.
 async function Training({ searchParams }: { searchParams: PageProps<'/progress'>['searchParams'] }) {
   const viewer = await requireRole('athlete');
-  if ((await searchParams).view !== 'training') {
-    const prefs = await (await supabaseServer()).from('athlete_prefs').select('category_id').eq('user_id', viewer.userId);
-    if (prefs.error) throw prefs.error;
-    if (progressView(prefs.data.map((p) => p.category_id)) === 'gym') redirect('/progress/gym');
-  }
-  return <ProgressView sport="training" userId={viewer.userId} />;
+  return <ProgressView sport="training" userId={viewer.userId} stay={(await searchParams).view === 'training'} />;
 }
 
 export default function ProgressPage({ searchParams }: PageProps<'/progress'>) {

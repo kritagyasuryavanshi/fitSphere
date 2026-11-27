@@ -110,15 +110,18 @@ async function Sections() {
   if (coaches.error) throw coaches.error;
   if (categories.error) throw categories.error;
   const liveCoaches = coaches.data.slice(0, 3);
-  const counts: Record<string, number> = { boxing: boxing.length, sc: sc.length, gym: gym.length };
+  const live = categories.data.filter((c) => c.is_live);
+  const loaded: Record<string, number> = { boxing: boxing.length, sc: sc.length, gym: gym.length };
+  // A sport added later gets its real count too.
+  const counts = Object.fromEntries(await Promise.all(live.map(async (c) => [c.id, loaded[c.id] ?? (await libraryItems(c.id)).length] as const)));
   return (
     <>
       <section aria-labelledby="paths" className={`${wrap} flex flex-col gap-6 py-14`}>
         <h2 id="paths" className={h2}>
-          Three ways to train
+          Pick your path
         </h2>
         <SportPaths
-          paths={categories.data.filter((c) => c.is_live).map((c) => ({ id: c.id, name: c.name, tagline: c.tagline, count: counts[c.id] ?? 0 }))}
+          paths={live.map((c) => ({ id: c.id, name: c.name, tagline: c.tagline, count: counts[c.id] ?? 0 }))}
           planned={categories.data.filter((c) => !c.is_live).map((c) => c.name)}
         />
       </section>

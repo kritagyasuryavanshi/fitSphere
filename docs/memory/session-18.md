@@ -31,6 +31,6 @@ Follows [[session-17]]. Touched: [[lesson-lenovo-local-storage]], [[env-producti
 - The 3.4.0 test pulled about 1.8 GB of Supabase images. They stay, because the owner said to delete nothing here.
 
 ## Multi-sport focus (branch multi-sport-focus)
-- The owner corrected the focus: [[decision-multi-sport]]. Landing hero is a moving carousel of what is live (asked for by the owner), then "Three ways to train". `/learn` is a hub; every Learn link points there.
+- The owner corrected the focus: [[decision-multi-sport]]. Landing hero is a moving carousel of what is live (asked for by the owner), then "Pick your path". `/learn` is a hub; every Learn link points there.
 - Sign-in and sign-up use a plain ink panel. Today and Progress follow the athlete's sports (`lib/sports.ts`, unit tested; e2e for a gym-only athlete).
 - Not done: the S&C tagline "Built for the ring" in `categories` needs a migration; the owner did not approve one.

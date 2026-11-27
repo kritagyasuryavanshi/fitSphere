@@ -14,7 +14,7 @@ test('home page shows real lessons and no placeholder', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1, name: 'Learn it. Train it. Get stronger.' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Start training free' }).first()).toHaveAttribute('href', '/sign-in');
   // Every live sport is an equal path with its real count; cricket is named only as planned.
-  const paths = page.getByRole('region', { name: 'Three ways to train' });
+  const paths = page.getByRole('region', { name: 'Pick your path' });
   for (const [href, noun] of [['/learn/boxing', 'lessons'], ['/learn/sc', 'exercises'], ['/learn/gym', 'exercises']])
     await expect(paths.locator(`a[href="${href}"]`)).toContainText(new RegExp(`\\d+ ${noun}`));
   await expect(paths.getByText('Planned, not on FitSphere yet: Cricket.')).toBeVisible();
