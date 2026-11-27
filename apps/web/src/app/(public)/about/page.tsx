@@ -44,12 +44,12 @@ export default function AboutPage() {
           </ul>
         </section>
         <section aria-label="Get started" className="flex flex-col gap-4 border-t border-line pt-10">
-          <p className="m-0 font-display text-[40px] uppercase leading-none">Start with the jab.</p>
+          <p className="m-0 font-display text-[40px] uppercase leading-none">Start with one session.</p>
           <div className="flex flex-wrap gap-3">
             <Link href="/sign-in" className={buttonClass()}>
               Join free
             </Link>
-            <Link href="/learn/boxing" className={buttonClass({ variant: 'light' })}>
+            <Link href="/learn" className={buttonClass({ variant: 'light' })}>
               Browse lessons
             </Link>
           </div>

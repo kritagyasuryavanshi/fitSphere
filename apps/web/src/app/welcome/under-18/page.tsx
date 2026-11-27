@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: '18+ for now · FitSphere' };
 // Step 1 sends an under-18 here and saves nothing (decision-m6-launch). Static: it reads no session.
 export default function UnderEighteenPage() {
   return (
-    <AuthShell back={{ href: '/welcome/1', label: 'Back' }} photo={{ src: '/images/gloves-red.jpg', alt: 'Pair of red boxing gloves' }} slogan="See you soon.">
+    <AuthShell back={{ href: '/welcome/1', label: 'Back' }} slogan="See you soon.">
       <AuthHeading>FitSphere is 18+ for now</AuthHeading>
       <p className="m-0 max-w-[62ch] text-[16px] leading-[1.6] text-ink-soft">
         During the beta, you must be 18 or older to use FitSphere. We did not save your date of birth or anything else from that step.

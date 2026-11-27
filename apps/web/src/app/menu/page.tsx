@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: 'Menu · FitSphere' };
 // M-Menu: the visitor menu on phones. A page, not a pop-over, so it needs no script.
 // Only pages that exist; the AI guide (M5) adds its own.
 const links = [
-  { href: '/learn/boxing', label: 'Learn' },
+  { href: '/learn', label: 'Learn' },
   { href: '/programs', label: 'Programs' },
   { href: '/coaches', label: 'Coaches' },
   { href: '/for-coaches', label: 'For coaches' },

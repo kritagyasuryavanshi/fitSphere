@@ -10,7 +10,7 @@ import { BottomTabs, HeaderLinks, type NavItem } from './nav-links';
 // Header links per audience, from the mockups (C-Landing, C-Today, C-CoachDash, R-Roles, and the phone tab bars).
 // Only pages that exist: Programs returns with the marketplace (M4).
 const publicLinks: NavItem[] = [
-  { href: '/learn/boxing', label: 'Learn' },
+  { href: '/learn', label: 'Learn' },
   { href: '/programs', label: 'Programs' },
   { href: '/coaches', label: 'Coaches' },
   { href: '/for-coaches', label: 'For coaches' },
@@ -169,7 +169,7 @@ async function CoachNav({ part }: { part: 'links' | 'right' | 'tabs' }) {
           Train
         </Link>
       ) : admin ? (
-        <Link href="/learn/boxing" className="hidden text-[14px] font-medium underline underline-offset-4 md:inline">
+        <Link href="/learn" className="hidden text-[14px] font-medium underline underline-offset-4 md:inline">
           Athlete site
         </Link>
       ) : null}

@@ -89,7 +89,7 @@ export async function ProgressView({ sport, userId }: { sport: keyof typeof SPOR
         <nav aria-label="Training" className="flex gap-1 rounded-[30px] bg-mist p-1">
           {(
             [
-              ['/progress', 'Boxing and S&C', !gym],
+              ['/progress?view=training', 'Boxing and S&C', !gym],
               ['/progress/gym', 'Gym', gym],
             ] as const
           ).map(([href, label, on]) => (

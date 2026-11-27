@@ -31,8 +31,7 @@ export default function AboutYouPage() {
   return (
     <AuthShell
       back={{ href: '/sign-in', label: 'Back' }}
-      photo={{ src: '/images/gloves-red.jpg', alt: 'Pair of red boxing gloves' }}
-      slogan="Let’s build your camp."
+      slogan="Let’s build your plan."
       step={{ now: 1, of: 4 }}
     >
       <Suspense fallback={null}>

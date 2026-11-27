@@ -10,7 +10,7 @@ import { ApplyForm } from './apply-form';
 export const metadata: Metadata = { title: 'Coach with FitSphere' };
 
 const tools = [
-  ['Build', 'Weeks, sessions and exercises. Mix boxing and gym work from the reviewed library.'],
+  ['Build', 'Weeks, sessions and exercises from the reviewed library, for boxing, S&C or the gym, or a mix.'],
   ['Share', 'One invite link per program. You see who joined and can turn the link off.'],
   ['See', 'Who trained, what they logged, and who needs a word from you.'],
 ];
@@ -64,7 +64,7 @@ export default function ForCoachesPage() {
         <Image src="/images/coach-ring.jpg" alt="Coach leaning on the ring ropes" fill priority sizes="100vw" className="object-cover" />
         <div aria-hidden="true" className="absolute inset-0 bg-black/45" />
         <div className="relative mx-auto flex w-full max-w-[1440px] flex-col gap-4 px-4 pb-12 text-paper md:px-10">
-          <h1 className="m-0 max-w-[14ch] font-display text-[48px] font-normal uppercase leading-[0.95] md:text-[80px]">Your program. One link. Every round logged.</h1>
+          <h1 className="m-0 max-w-[14ch] font-display text-[48px] font-normal uppercase leading-[0.95] md:text-[80px]">Your program. One link. Every session logged.</h1>
           <p className="m-0 text-[18px]">Build the plan, send one link on WhatsApp, and see who trained.</p>
           <a href="#apply" className={`${buttonClass({ variant: 'volt' })} self-start`}>
             Apply to coach
@@ -98,7 +98,7 @@ export default function ForCoachesPage() {
             <h2 id="applyh" className="m-0 font-display text-[40px] font-normal uppercase leading-[0.95]">
               Apply
             </h2>
-            <p className="m-0 text-[16px] text-ink-soft">We are starting with a few founding coaches in boxing and S&amp;C. Tell us how you coach today.</p>
+            <p className="m-0 text-[16px] text-ink-soft">We are starting with a few founding coaches in boxing, S&amp;C and the gym. Tell us how you coach today.</p>
           </div>
           <Suspense fallback={null}>
             <Apply />

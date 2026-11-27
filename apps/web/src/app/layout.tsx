@@ -15,7 +15,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "FitSphere",
-  description: "Coach-led boxing, strength and gym training.",
+  description: "Coach-led training for boxing, strength and conditioning, and the gym.",
   appleWebApp: { capable: true, title: "FitSphere", statusBarStyle: "default" },
 };
 

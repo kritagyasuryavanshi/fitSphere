@@ -47,7 +47,7 @@ async function ShownPrograms() {
 const steps: [string, string][] = [
   ['Your coach sends you a link', 'Usually on WhatsApp. Each program has its own link.'],
   ['You sign up in a minute', 'With an email link. FitSphere is for adults 18 and over.'],
-  ['It shows up in Today', 'Boxing and S&C sessions from every program, in one view.'],
+  ['It shows up in Today', 'Sessions from every program, whatever the sport, in one view.'],
 ];
 
 export default function ProgramsPage() {

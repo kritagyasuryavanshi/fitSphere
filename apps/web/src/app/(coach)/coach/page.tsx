@@ -39,7 +39,7 @@ async function CoachHome() {
     <main className="mx-auto flex max-w-[1440px] flex-col gap-8 px-4 py-10 md:px-10">
       <div className="flex flex-col gap-2">
         <p className="m-0 text-[15px] font-medium text-muted">Welcome, {viewer.name}. Your coach tools are on.</p>
-        <h1 className="m-0 font-display text-[48px] font-normal uppercase leading-[0.95] md:text-[64px]">Set up your camp</h1>
+        <h1 className="m-0 font-display text-[48px] font-normal uppercase leading-[0.95] md:text-[64px]">Set up your coaching</h1>
       </div>
       <div className="grid gap-6 md:grid-cols-[2fr_1fr]">
         <section aria-labelledby="steps" className="flex flex-col gap-4 border border-line-strong p-5">

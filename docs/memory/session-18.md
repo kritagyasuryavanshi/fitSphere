@@ -1,13 +1,13 @@
 ---
 name: session-18
 type: session
-description: 2026-11-27: check of the latest update; stale memory lines fixed, email keys in .env.example, Vercel CLI linked on LENOVO, local Supabase still blocked
+description: 2026-11-27: memory fixes, local Supabase fixed on LENOVO, multi-sport focus (landing carousel, Learn hub, neutral sign-in)
 updated: 2026-11-27
 date: 2026-11-27
 pc: lenovo
 ---
 
-Follows [[session-17]]. Touched: [[lesson-lenovo-local-storage]], [[env-production]].
+Follows [[session-17]]. Touched: [[lesson-lenovo-local-storage]], [[env-production]], [[decision-multi-sport]], [[decision-launch-sports]].
 
 ## Checked
 - CI is green on the four latest commits on main. `npm run verify` passes: 46 test files, the build and lint. The board check passes.
@@ -25,6 +25,12 @@ Follows [[session-17]]. Touched: [[lesson-lenovo-local-storage]], [[env-producti
 - Production has only `CRON_SECRET`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` and `SUPABASE_SECRET_KEY`. No email, Turnstile, Sentry or site URL keys yet, so no emails send.
 - M6-04 and M6-07 are rightly in progress: each waits on an owner step (a phone install test; a preview Supabase project).
 
-## Open
-- The local Supabase still fails on this PC. The freeze file and the CLI version are ruled out: [[lesson-lenovo-local-storage]].
-- The 3.4.0 test pulled about 1.8 GB of new Supabase images (studio, postgres-meta). They stay, because the owner said to delete nothing here.
+## Local Supabase fixed
+- Cause: the `supabase link` version pins in `packages/db/supabase/.temp`. Moved to `.temp.off`; pgTAP passes (1133 tests). See [[lesson-lenovo-local-storage]].
+- E2E with email links needs port 3000: the local auth redirects there, so `E2E_PORT=3100` breaks sign-in tests. Parallel phone sign-up tests can time out on the dev server; one worker passes.
+- The 3.4.0 test pulled about 1.8 GB of Supabase images. They stay, because the owner said to delete nothing here.
+
+## Multi-sport focus (branch multi-sport-focus)
+- The owner corrected the focus: [[decision-multi-sport]]. Landing hero is a moving carousel of what is live (asked for by the owner), then "Three ways to train". `/learn` is a hub; every Learn link points there.
+- Sign-in and sign-up use a plain ink panel. Today and Progress follow the athlete's sports (`lib/sports.ts`, unit tested; e2e for a gym-only athlete).
+- Not done: the S&C tagline "Built for the ring" in `categories` needs a migration; the owner did not approve one.

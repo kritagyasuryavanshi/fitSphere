@@ -3,8 +3,10 @@ import { buttonClass } from '@fitsphere/ui';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Suspense } from 'react';
+import { itemNoun } from '@/lib/content';
 import { describePrescription, type Numbers, type PrescriptionType } from '@/lib/program-draft';
 import { playable } from '@/lib/session-player';
+import { firstSport } from '@/lib/sports';
 import { supabaseServer } from '@/lib/supabase/server';
 import { requireRole } from '@/lib/viewer';
 import { InviteLinkForm } from './invite-link-form';
@@ -86,6 +88,14 @@ async function Today() {
   ) : null;
 
   if (!programs.length) {
+    // Point at the athlete's own sport, never boxing by default; with no live sport chosen, the whole library.
+    const [prefs, live] = await Promise.all([
+      supabase.from('athlete_prefs').select('category_id').eq('user_id', viewer.userId),
+      supabase.from('categories').select('id, name').eq('is_live', true).order('sort'),
+    ]);
+    if (prefs.error) throw prefs.error;
+    if (live.error) throw live.error;
+    const sport = live.data.find((c) => c.id === firstSport(prefs.data.map((p) => p.category_id), live.data));
     return (
       <>
         <Header today={today} line={`Welcome, ${viewer.name}`} />
@@ -94,11 +104,11 @@ async function Today() {
           <h2 id="none" className="m-0 font-display text-[32px] font-normal uppercase leading-none">
             No program yet
           </h2>
-          <p className="m-0 max-w-[56ch] text-[16px] text-ink-soft">Join your coach&rsquo;s program with their invite link. Or start with the first lessons on the boxing path.</p>
+          <p className="m-0 max-w-[56ch] text-[16px] text-ink-soft">Join your coach&rsquo;s program with their invite link. Or start with the lessons in the library.</p>
           <InviteLinkForm />
           <div className="flex flex-wrap gap-3">
-            <Link href="/learn/boxing" className={buttonClass({ variant: 'light' })}>
-              Start the boxing path
+            <Link href={sport ? `/learn/${sport.id}` : '/learn'} className={buttonClass({ variant: 'light' })}>
+              {sport ? `Browse ${sport.name} ${itemNoun(sport.id, 2)}` : 'Browse the library'}
             </Link>
             <Link href="/search" className={buttonClass({ variant: 'ghost' })}>
               Search lessons

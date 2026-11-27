@@ -11,10 +11,15 @@ const seededUsers = [
 
 test('home page shows real lessons and no placeholder', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { level: 1, name: 'Every round starts with the jab.' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Start training free' })).toHaveAttribute('href', '/sign-in');
+  await expect(page.getByRole('heading', { level: 1, name: 'Learn it. Train it. Get stronger.' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Start training free' }).first()).toHaveAttribute('href', '/sign-in');
+  // Every live sport is an equal path with its real count; cricket is named only as planned.
+  const paths = page.getByRole('region', { name: 'Three ways to train' });
+  for (const [href, noun] of [['/learn/boxing', 'lessons'], ['/learn/sc', 'exercises'], ['/learn/gym', 'exercises']])
+    await expect(paths.locator(`a[href="${href}"]`)).toContainText(new RegExp(`\\d+ ${noun}`));
+  await expect(paths.getByText('Planned, not on FitSphere yet: Cricket.')).toBeVisible();
   // The boxing rail lists published lessons from the database, with their real count.
-  const rail = page.getByRole('region', { name: 'Learn the fundamentals' });
+  const rail = page.getByRole('region', { name: 'Boxing fundamentals' });
   await expect(rail.getByRole('link', { name: /^All \d+ boxing lessons$/ })).toBeVisible();
   await expect(rail.getByRole('listitem').first()).toBeVisible();
   await expect(page.getByText('App scaffold')).toHaveCount(0);
@@ -43,13 +48,13 @@ test('every page refuses to load in a frame on another site', async ({ request }
 test('an unknown URL shows the designed 404 page with a 404 status', async ({ page }) => {
   const res = await page.goto('/no-such-page');
   expect(res?.status()).toBe(404);
-  await expect(page.getByRole('heading', { level: 1, name: 'Out of the ring.' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Page not found.' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Browse lessons' })).toHaveAttribute('href', '/learn');
 });
 
 test('the styleguide is hidden in a production build', async ({ page }) => {
   await page.goto('/styleguide');
-  await expect(page.getByRole('heading', { level: 1, name: 'Out of the ring.' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Page not found.' })).toBeVisible();
 });
 
 for (const [email, role] of seededUsers) {

@@ -37,8 +37,7 @@ export default function StepTwoPage() {
   return (
     <AuthShell
       back={{ href: '/welcome/1', label: 'Back' }}
-      photo={{ src: '/images/gloves-red.jpg', alt: 'Pair of red boxing gloves' }}
-      slogan="Let’s build your camp."
+      slogan="Let’s build your plan."
       step={{ now: 2, of: 4 }}
     >
       <Suspense fallback={null}>

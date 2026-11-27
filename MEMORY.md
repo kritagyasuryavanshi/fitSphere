@@ -6,11 +6,11 @@ How the graph works: `docs/memory/memory-system.md`. See the graph in the board'
 
 ## Current state
 - **Latest (2026-11-25):** PRs #84 to #86 merged; no open PRs. Email works without a domain through Gmail SMTP (PR #86). The owner is adding the Gmail, Turnstile and Sentry keys; then test sign-in live. Details: `docs/memory/session-16.md`.
-- **LENOVO PC (2026-11-25):** on main, `npm ci` and `npm run verify` pass. The local Supabase does not start (storage tables missing), so pgTAP and e2e run on the WELCOME PC for now: `docs/memory/lesson-lenovo-local-storage.md`, `docs/memory/session-17.md`. The owner said: delete nothing on this PC.
+- **LENOVO PC (2026-11-25):** on main, `npm ci` and `npm run verify` pass. The local Supabase works again since 2026-11-27 (link pins moved to `.temp.off`): `docs/memory/lesson-lenovo-local-storage.md`. The owner said: delete nothing on this PC.
 - **Phase:** building. Every build task in the plan is merged; what is left waits on the owner (keys, accounts, lawyer, CA).
 - **Current milestone:** M6 launch, step 1 (18+ invite beta). M3 to M5 builds are merged; M4-09b, M4-11b, M4-13 phase b and M4-16 wait for Razorpay (O-04), and M5-05 waits for the judge run.
 - **Open PRs:** none (2026-11-23). Merge only after the CI run for the PR's head commit is green (`docs/memory/lesson-merge-checks-head-sha.md`).
-- **WELCOME PC:** Docker works; local DB, pgTAP and Playwright run: `docs/memory/env-welcome-pc.md`. The LENOVO PC runs only verify (see above).
+- **Both PCs:** Docker works; local DB, pgTAP and Playwright run. WELCOME PC details: `docs/memory/env-welcome-pc.md`. Start Docker Desktop first.
 - **Money terms (owner, 2026-11-20, "use the defaults"; O-05):** platform fee 15% (`fee_bps=1500`, FitSphere pays the gateway fee from it); a full refund within 7 days of the first payment, no refund on renewals, 1:1 sessions refundable up to 24 hours before; the coach payout is held 7 days. The coach agreement wording is still a draft (O-05b).
 - **Owner, 2026-11-20: spend nothing for now; build payment gateways later.** Live payments wait for the Razorpay keys (O-04).
 - **State (2026-11-21):** the repo is now public (owner's choice, after a history scan found no secrets), so GitHub Actions runs free. PRs #49 to #54 are merged with green CI, each migration pushed to production first: M4-09a payment core, then M5-01 to M5-04. Production has 45 of 45 migrations. Live checkout stays closed (no provider, and the fake-payment guard is off in production), and Ask AI stays off (no AI_PROVIDER in production).

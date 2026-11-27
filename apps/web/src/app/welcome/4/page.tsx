@@ -64,8 +64,7 @@ export default function ReadyPage() {
   return (
     <AuthShell
       back={{ href: '/welcome/3', label: 'Back' }}
-      photo={{ src: '/images/heavybag.jpg', alt: 'Boxers training on heavy bags' }}
-      slogan="Camp is open."
+      slogan="Ready to train."
       step={{ now: 4, of: 4 }}
     >
       <Suspense fallback={null}>

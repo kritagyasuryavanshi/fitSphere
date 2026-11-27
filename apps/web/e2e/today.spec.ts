@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { admin, coachWithProgram, signInAs } from './helpers';
+import { admin, coachWithProgram, signInAs, userIdByEmail } from './helpers';
 
 async function join(page: import('@playwright/test').Page, path: string) {
   await page.goto(path);
@@ -8,13 +8,27 @@ async function join(page: import('@playwright/test').Page, path: string) {
 }
 
 test.describe('Today', () => {
+  test('a gym-only athlete is pointed at the gym, not boxing, on Today and Progress', async ({ page }) => {
+    const email = await signInAs(page, ['athlete'], { name: 'Asha' });
+    const { error } = await admin().from('athlete_prefs').insert({ user_id: await userIdByEmail(email), category_id: 'gym' });
+    expect(error).toBeNull();
+    await page.goto('/today');
+    await expect(page.getByRole('link', { name: 'Browse Gym & Fitness exercises' })).toHaveAttribute('href', '/learn/gym');
+    await page.goto('/progress');
+    await expect(page).toHaveURL(/\/progress\/gym$/);
+    // The other tab still opens the boxing and S&C view.
+    await page.getByRole('link', { name: 'Boxing and S&C' }).click();
+    await expect(page).toHaveURL(/\/progress\?view=training$/);
+  });
+
   test('with no program, the empty state opens an invite from a pasted link', async ({ page }) => {
     const { joinPath } = await coachWithProgram(`Footwork Lab ${Date.now()}`);
     await signInAs(page, ['athlete'], { name: 'Kabir' });
     await page.goto('/today');
     await expect(page.getByRole('heading', { name: 'No program yet' })).toBeVisible();
     await expect(page.getByText('Welcome, Kabir')).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Start the boxing path' })).toHaveAttribute('href', '/learn/boxing');
+    // No sport chosen: the whole library, never boxing by default.
+    await expect(page.getByRole('link', { name: 'Browse the library' })).toHaveAttribute('href', '/learn');
 
     await page.getByLabel('I have an invite link').fill('not a link');
     await page.getByRole('button', { name: 'Open the invite' }).click();

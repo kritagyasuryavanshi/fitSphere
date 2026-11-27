@@ -96,7 +96,7 @@ test.describe('invite links', () => {
   // The page streams behind Suspense, so notFound() shows the not-found page with a 200 status.
   test('a code that never existed is not found', async ({ page }) => {
     await page.goto(`/join/${'0'.repeat(32)}`);
-    await expect(page.getByRole('heading', { name: 'Out of the ring.' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Page not found.' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Join program' })).toHaveCount(0);
   });
 });

@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'FitSphere',
     short_name: 'FitSphere',
-    description: 'Coach-led boxing, strength and gym training.',
+    description: 'Coach-led training for boxing, strength and conditioning, and the gym.',
     start_url: '/today',
     scope: '/',
     display: 'standalone',

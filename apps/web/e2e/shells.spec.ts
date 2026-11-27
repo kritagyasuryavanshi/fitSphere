@@ -79,7 +79,7 @@ test('an admin-only user lands on People and is offered no coach pages', async (
 test('a coach lands on the coach dashboard with the coach header', async ({ page }, testInfo) => {
   await signInAs(page, ['coach']);
   await expect(page).toHaveURL('/coach');
-  await expect(page.getByRole('heading', { name: 'Set up your camp' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Set up your coaching' })).toBeVisible();
   // K-CoachEmpty: a new coach has done no step, and every step and card links somewhere real.
   await expect(page.getByText('0 of 4 done')).toBeVisible();
   await expect(page.getByText('Available soon')).toHaveCount(0);

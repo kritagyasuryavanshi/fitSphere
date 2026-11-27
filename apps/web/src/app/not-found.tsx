@@ -11,7 +11,7 @@ export default function NotFound() {
   return (
     <>
       <PublicHeader />
-      <ErrorHero eyebrow="Error 404" title="Out of the ring." body="This page does not exist, or the lesson is not published yet.">
+      <ErrorHero eyebrow="Error 404" title="Page not found." body="This page does not exist, or the lesson is not published yet.">
         <Link href="/learn" className={buttonClass({ variant: 'volt' })}>
           Browse lessons
         </Link>

@@ -118,7 +118,7 @@ test.describe('Boxing session player', () => {
     const { data: v1 } = await admin().from('program_versions').select('program_sessions(id)').eq('program_id', programId).eq('version', 1).single();
     await signInAs(page, ['athlete'], { name: 'Kabir' });
     await page.goto(`/session/${v1!.program_sessions[0]!.id}`);
-    await expect(page.getByRole('heading', { name: 'Out of the ring.' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Page not found.' })).toBeVisible();
     await expect(page.getByRole('timer')).toHaveCount(0);
   });
 });
