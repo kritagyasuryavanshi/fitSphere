@@ -34,3 +34,4 @@ Follows [[session-17]]. Touched: [[lesson-lenovo-local-storage]], [[env-producti
 - The owner corrected the focus: [[decision-multi-sport]]. Landing hero is a moving carousel of what is live (asked for by the owner), then "Pick your path". `/learn` is a hub; every Learn link points there.
 - Sign-in and sign-up use a plain ink panel. Today and Progress follow the athlete's sports (`lib/sports.ts`, unit tested; e2e for a gym-only athlete).
 - Not done: the S&C tagline "Built for the ring" in `categories` needs a migration; the owner did not approve one.
+- 2026-11-27: PR #89 merged (53f18ee): sign-in and sign-up show a sports video montage; phone form is a sheet over it. Live and checked. See [[decision-multi-sport]].
