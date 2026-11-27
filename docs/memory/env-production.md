@@ -2,7 +2,7 @@
 name: env-production
 type: environment
 description: 2026-11-19: production hosting: Vercel project fitsphere (Mumbai functions) on Supabase mxrwjhdqglozdxsgtjgw (Mumbai)
-updated: 2026-11-19
+updated: 2026-11-27
 ---
 
 Set up in [[session-13]].
@@ -16,3 +16,4 @@ Set up in [[session-13]].
 - **Open:** Supabase Auth URL configuration (site URL and redirect URLs) by the owner; the release gate in `TASKS.md` before real users.
 
 Hub: [[project-overview]].
+- **2026-11-27 check ([[session-18]]):** production still has only the four variables above; the email (`SMTP_USER`, `SMTP_PASS`), Turnstile, Sentry and `NEXT_PUBLIC_SITE_URL` keys are not set yet. The LENOVO PC's Vercel CLI is linked at the repo root.

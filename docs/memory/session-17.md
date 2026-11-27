@@ -10,7 +10,7 @@ pc: lenovo
 Follows [[session-16]]. Plan: [[decision-m6-launch]].
 
 ## Done
-- The M6 plan was written with Codex and the planner and pushed as `docs/plans/m6-plan.html`. The owner approved the defaults on the WELCOME PC.
+- Caught up with the M6 plan (`docs/plans/m6-plan.html`, written 2026-11-21, defaults approved 2026-11-22 on the WELCOME PC).
 - `AGENTS.md` and `.codex/hooks.json` are on main.
 - LENOVO PC moved from the M4-19 branch to main (73d0fef). The scratch worktree `wt-49` was detached, not removed, to free main.
 - `npm ci` was blocked by an old Next server holding `next-swc.win32-x64-msvc.node`. The owner stopped PID 26776; the file was moved to the scratchpad; `npm ci` then passed.

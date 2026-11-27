@@ -39,7 +39,7 @@ async function resend(m: Email, from: string) {
 let transport: ReturnType<typeof createTransport> | null = null;
 async function smtp(m: Email, from: string) {
   transport ??= createTransport({
-    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    host: 'smtp.gmail.com',
     port: 465,
     secure: true,
     auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },

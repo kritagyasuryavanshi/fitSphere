@@ -49,4 +49,6 @@ Rotate a key at once if it appeared in a chat, a log, a screenshot or a commit. 
 | `BACKUP_PASSPHRASE` | Your password manager | `fitsphere-ops` repo secret. Old backups keep the old passphrase, so keep it too. |
 | GitHub token | GitHub → Settings → Developer settings | Local `gh` login |
 
+To move email from Gmail to Resend, delete `SMTP_USER` and `SMTP_PASS` in Vercel. Gmail wins while both senders are set.
+
 After a rotation, check that the site loads, sign-in works and the Ops health run passes.
