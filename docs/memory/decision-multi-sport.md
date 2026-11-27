@@ -16,3 +16,8 @@ The owner corrected the focus in [[session-18]]. FitSphere helps people learn sk
 Supersedes [[decision-launch-sports]] ("boxing primary, S&C not a generic gym app"). The owner's request is the approval that [[decision-no-design-edits]] needs for these design changes.
 
 Open: the S&C tagline in `categories` still reads "Built for the ring". Changing it needs a data migration, which the owner has not approved yet.
+
+## Sign-in video (2026-11-27)
+Sign-in and sign-up show a 12-second muted montage (`apps/web/public/video/sports.{webm,mp4}`, about 0.6 MB) in place of a photo: boxing pads, track sprint, front squat, bench press, jump rope, overhead lift.
+The clips are Mixkit 40948, 32813, 44414, 100543, 40234 and 52094, under the Mixkit free license (commercial use, no attribution).
+It starts paused under reduced motion, and a Pause button stops it (WCAG 2.2.2).
