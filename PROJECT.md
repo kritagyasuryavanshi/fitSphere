@@ -6,7 +6,7 @@ FitSphere is a sports learning, training and coaching platform. It connects lear
 Full long-term vision: `docs/PRODUCT_BRIEF.md`. Approved v1 design: `docs/designs/fitsphere-v1.md`.
 
 ## v1 scope
-- **Categories:** Boxing (primary), Strength & Conditioning for boxers, and Gym & Fitness. Categories are data, so more can be added.
+- **Categories:** three equal paths: Boxing, general Strength & Conditioning (for any sport or everyday fitness), and Gym & Fitness (hypertrophy, strength, fat loss). No sport is the default. Categories are data, so more can be added. Cricket and other sports are planned and show only as "coming later" until they have real plans, content, tracking and coaching (`docs/memory/decision-multi-sport.md`).
 - **Pillar 1, Video Learning Library:** public, coach-authored, reviewed lessons with YouTube embeds, search, filters, save and complete.
 - **Pillar 2, AI Instructional Assistant:** grounded in published content, cites sources, labelled apart from coach-verified content, safe.
 - **Pillar 3, Coach-Led Training:** coach programs, invite links, a combined Today dashboard, sport-specific logging, coach feedback, basic progress.

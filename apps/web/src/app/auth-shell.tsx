@@ -5,21 +5,24 @@ import type { ReactNode } from 'react';
 type ShellProps = {
   back: { href: string; label: string };
   children: ReactNode;
+  /** Without a photo the panel is plain ink with the slogan, so no one sport fronts sign-in for everyone. */
   photo?: { src: string; alt: string };
   slogan?: string;
   /** Shown opposite the back link, like "Step 1 of 4". A step screen starts at the top instead of the middle. */
   step?: { now: number; of: number };
 };
 
-const glovesBlack = { src: '/images/gloves-black.jpg', alt: 'Black boxing gloves hanging in a gym' };
-
 /** The photo panel and form column shared by the sign-in and sign-up screens. */
-export function AuthShell({ back, children, photo = glovesBlack, slogan = 'Glove up.', step }: ShellProps) {
+export function AuthShell({ back, children, photo, slogan = 'Train with a plan.', step }: ShellProps) {
   return (
     <div className="flex min-h-screen flex-wrap">
       <section className="relative min-h-[322px] flex-[1_1_480px] overflow-hidden bg-ink md:min-h-[520px]">
-        <Image src={photo.src} alt={photo.alt} fill priority sizes="(min-width: 1040px) 50vw, 100vw" className="object-cover" />
-        <div aria-hidden="true" className="absolute inset-0 bg-black/40" />
+        {photo ? (
+          <>
+            <Image src={photo.src} alt={photo.alt} fill priority sizes="(min-width: 1040px) 50vw, 100vw" className="object-cover" />
+            <div aria-hidden="true" className="absolute inset-0 bg-black/40" />
+          </>
+        ) : null}
         <Link href="/" className="absolute left-10 top-8 font-display text-[28px] uppercase text-paper hover:text-paper">
           FitSphere
         </Link>

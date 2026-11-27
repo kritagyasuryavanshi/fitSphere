@@ -33,12 +33,20 @@ None yet. The founder answered "No evidence yet" to the demand question. Every v
 ## Change, 2026-11-05: three categories
 The owner added general gym fitness: weight loss, muscle building (hypertrophy), strength and general fitness. There are now three categories, each with its own library: Boxing, Strength & Conditioning (S&C for boxers, unchanged), and Gym & Fitness (new). Gym logging uses sets × reps × load, shows last time's numbers, and suggests the next small increase. Body weight and height are optional, self-reported, and reach the AI only with separate consent. Meal plans and calorie targets stay out of v1 (nutrition advice); open question for the owner.
 
+## Change, 2026-11-27: multi-sport focus
+The owner corrected the product focus: FitSphere is a multi-sport training platform, not a boxing app with other sports around it. Decision: `docs/memory/decision-multi-sport.md`.
+- Boxing, general Strength & Conditioning and Gym & Fitness (hypertrophy) are equal paths. S&C serves any sport or everyday fitness, not only boxers.
+- No shared screen assumes boxing. Today and Progress follow the sports the athlete chose at sign-up; with none chosen they show the whole library.
+- The landing hero is a carousel of what is live today. Sign-in and sign-up use a plain ink panel, not boxing photos; a photo fits only a screen about that sport.
+- A sport that is not live (cricket) is named only as planned. It needs real plans, content, tracking and coaching before any page offers it.
+- The mockups' boxing-first landing hero, sign-in photo and slogans ("Every round starts with the jab", "Glove up", "Strength for the ring") are superseded. The Fight Camp look stays.
+
 ## Change, 2026-11-05: Coach Marketplace is in v1
 The owner asked for a Coach Marketplace: discover, compare, shortlist and hire coaches, with packages, payment, verified reviews and a coach business dashboard. It is designed (canvas rows "Hire a coach" and "Coach business") and the owner moved it into v1 as milestone M4. AI moves to M5, launch to M6. Build risks: an empty marketplace before about 20 coaches, payments with split payouts and refunds in India, credential checks by an admin, and written consent for client stories. Rules in the design: client statistics come only from FitSphere records; only clients with a paid, finished engagement can review; coaches cannot pay to rank higher; payments stay on FitSphere.
 
 ## Premises
 1. **Content and cold start are the main risks, not code.** Coaches solve both: they bring reviewed content, athletes, and willingness to pay. (Revised after the second opinion.)
-2. **Two connected categories at launch:** Boxing (primary) and S&C (supporting, integrated, not a generic gym app). The data model stays multi-sport so cricket, football and MMA slot in later without a rebuild.
+2. **Two connected categories at launch:** Boxing (primary) and S&C (supporting, integrated, not a generic gym app). *Superseded on 2026-11-27 by the multi-sport focus section above.* The data model stays multi-sport so cricket, football and MMA slot in later without a rebuild.
 3. **Mobile-first web app (PWA)** for v1, not native apps.
 4. **No age limit** (changed 2026-11-12). Parental consent for minors before launch.
 5. **Real-user evidence before Phase 2 work** (marketplace, payments, academies).

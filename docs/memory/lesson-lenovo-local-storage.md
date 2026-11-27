@@ -1,7 +1,7 @@
 ---
 name: lesson-lenovo-local-storage
 type: lesson
-description: 2026-11-25: on the LENOVO PC the local Supabase cannot start; storage never creates its tables, so migration 20261130000000 fails
+description: 2026-11-25, fixed 2026-11-27: link pins in packages/db/supabase/.temp (storage-version, postgres-version, storage-migration) stopped the local storage tables
 updated: 2026-11-27
 ---
 
@@ -14,7 +14,9 @@ What is known:
 - A test with that file renamed crashed the CLI (a bun crash report, exit 3) before it showed anything. The file is back as it was.
 - Supabase CLI is 3.0.0 here; 3.4.0 exists.
 
-Ruled out on 2026-11-27 ([[session-18]]), each with Docker Desktop freshly started and `supabase stop --no-backup` first:
+**Fixed on 2026-11-27 ([[session-18]]).** Cause: the version pins that `supabase link` wrote into `packages/db/supabase/.temp`: `storage-version` (v1.96.4), `postgres-version` (17.12.0.000) and `storage-migration`. With them, `supabase start` set up storage from the pinned versions and created no storage tables. They now sit in `.temp.off` (ignored by git), and the link files are back in `.temp`. Then `db:start`, 1133 pgTAP tests and e2e run here. A new `supabase link` writes the pins again: move those three files aside after it.
+
+Ruled out first, on 2026-11-27 ([[session-18]]), each with Docker Desktop freshly started and `supabase stop --no-backup` first:
 - The freeze file: renamed, the same error. It is back in place.
 - The CLI version: `npx supabase@3.4.0 start` gives the same error.
 

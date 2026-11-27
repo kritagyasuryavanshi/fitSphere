@@ -33,7 +33,7 @@ test('M2: browse to the jab, filter drills, save and complete, drafts 404, searc
   const slug = `m2-draft-${test.info().project.name}-${Date.now()}`;
   await db.from('content_items').insert({ discipline_id: discipline!.id, kind: 'skill', slug, title: 'Unreleased', status: 'draft' });
   await page.goto(`/learn/boxing/${slug}`);
-  await expect(page.getByRole('heading', { name: 'Out of the ring.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Page not found.' })).toBeVisible();
   await db.from('content_items').delete().eq('slug', slug);
 
   // Search for "jab" returns the jab skill first, and its drills.

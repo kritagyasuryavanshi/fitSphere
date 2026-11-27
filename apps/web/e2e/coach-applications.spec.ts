@@ -38,7 +38,7 @@ test('an applicant applies, the admin makes them a coach, and they get coach too
   // The next page load shows the coach header.
   await page.goto('/coach');
   await expect(page.getByRole('navigation', { name: 'Coach' }).first().getByText('Coach', { exact: true })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Set up your camp' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Set up your coaching' })).toBeVisible();
   // The new coach can move between both sides.
   await page.getByRole('link', { name: 'Train' }).click();
   await expect(page).toHaveURL('/today');

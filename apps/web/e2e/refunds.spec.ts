@@ -37,5 +37,5 @@ test('a new monthly client asks for a refund within 7 days: the coaching ends an
   expect(count).toBe(2);
   // A refund link from an old tab now leads nowhere (a soft 404 under Suspense, lesson-next16-suspense).
   await page.goto(`/coaching/${g!.id}/refund`);
-  await expect(page.getByRole('heading', { name: 'Out of the ring.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Page not found.' })).toBeVisible();
 });

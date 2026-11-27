@@ -28,7 +28,7 @@ async function Saved({ searchParams }: PageProps<'/account/saved'>) {
       <div className="flex flex-col items-start gap-3 bg-mist p-8">
         <p className="m-0 text-[18px] font-medium">Nothing saved yet.</p>
         <p className="m-0 text-[16px] text-muted">Tap Save on any lesson to keep it here.</p>
-        <Link href="/learn/boxing" className="text-[16px] font-medium underline underline-offset-4">
+        <Link href="/learn" className="text-[16px] font-medium underline underline-offset-4">
           Browse the library
         </Link>
       </div>
