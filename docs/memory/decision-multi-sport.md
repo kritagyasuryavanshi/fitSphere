@@ -15,7 +15,7 @@ The owner corrected the focus in [[session-18]]. FitSphere helps people learn sk
 
 Supersedes [[decision-launch-sports]] ("boxing primary, S&C not a generic gym app"). The owner's request is the approval that [[decision-no-design-edits]] needs for these design changes.
 
-Open: the S&C tagline in `categories` still reads "Built for the ring". Changing it needs a data migration, which the owner has not approved yet.
+The tagline migration `20261231000000_sport_taglines.sql` sets S&C to "Strength and power for any sport" and gym to "Hypertrophy, strength, fat loss". The owner approved it on 2026-11-28, and it is pushed to production.
 
 ## Sign-in video (2026-11-27)
 Sign-in and sign-up show a 12-second muted montage (`apps/web/public/video/sports.{webm,mp4}`, about 0.6 MB) in place of a photo: boxing pads, track sprint, front squat, bench press, jump rope, overhead lift.
