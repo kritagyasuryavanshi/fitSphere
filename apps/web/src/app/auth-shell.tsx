@@ -1,36 +1,40 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { SportsVideo } from '@/components/sports-video';
 
 type ShellProps = {
   back: { href: string; label: string };
   children: ReactNode;
-  /** Without a photo the panel is plain ink with the slogan, so no one sport fronts sign-in for everyone. */
-  photo?: { src: string; alt: string };
   slogan?: string;
   /** Shown opposite the back link, like "Step 1 of 4". A step screen starts at the top instead of the middle. */
   step?: { now: number; of: number };
 };
 
-/** The photo panel and form column shared by the sign-in and sign-up screens. */
-export function AuthShell({ back, children, photo, slogan = 'Train with a plan.', step }: ShellProps) {
+/**
+ * The video panel and form column shared by the sign-in and sign-up screens. The montage shows every live sport,
+ * so no one sport fronts sign-in. On a phone the form is a sheet over the video; a step screen keeps a short strip.
+ */
+export function AuthShell({ back, children, slogan = 'Train with a plan.', step }: ShellProps) {
   return (
-    <div className="flex min-h-screen flex-wrap">
-      <section className="relative min-h-[322px] flex-[1_1_480px] overflow-hidden bg-ink md:min-h-[520px]">
-        {photo ? (
-          <>
-            <Image src={photo.src} alt={photo.alt} fill priority sizes="(min-width: 1040px) 50vw, 100vw" className="object-cover" />
-            <div aria-hidden="true" className="absolute inset-0 bg-black/40" />
-          </>
-        ) : null}
-        <Link href="/" className="absolute left-10 top-8 font-display text-[28px] uppercase text-paper hover:text-paper">
+    <div className="flex min-h-screen flex-col md:flex-row">
+      <section
+        className={`relative shrink-0 overflow-hidden bg-ink md:sticky md:top-0 md:h-screen md:flex-1 ${step ? 'h-[200px]' : 'h-[46vh] min-h-[300px]'}`}
+      >
+        <SportsVideo />
+        <div aria-hidden="true" className="absolute inset-0 bg-linear-to-b from-black/55 via-black/10 to-black/75" />
+        <Link href="/" className="absolute left-5 top-5 font-display text-[28px] uppercase text-paper hover:text-paper md:left-10 md:top-8">
           FitSphere
         </Link>
-        <p aria-hidden="true" className="absolute bottom-12 left-10 right-10 m-0 font-display text-[clamp(56px,6vw,104px)] uppercase leading-[0.9] text-paper">
-          {slogan}
-        </p>
+        <div className={`absolute left-5 right-5 md:bottom-12 md:left-10 md:right-10 ${step ? 'bottom-5' : 'bottom-12'}`}>
+          <p aria-hidden="true" className="m-0 font-display text-[clamp(44px,6vw,104px)] uppercase leading-[0.9] text-paper">
+            {slogan}
+          </p>
+          <p className="m-0 mt-4 hidden text-[15px] font-medium text-paper/80 md:block">Boxing · Strength &amp; conditioning · Gym</p>
+        </div>
       </section>
-      <main className="box-border flex min-w-0 flex-[1_1_560px] flex-col px-5 pb-5 pt-4 md:px-14 md:pb-14 md:pt-10">
+      <main
+        className={`relative z-10 box-border flex min-w-0 flex-1 flex-col bg-paper px-5 pb-5 md:mt-0 md:rounded-none md:px-14 md:pb-14 md:pt-10 ${step ? 'pt-4' : '-mt-6 rounded-t-[28px] pt-6'}`}
+      >
         <div className="flex items-center justify-between gap-4">
           <Link href={back.href} className="inline-flex min-h-11 items-center gap-1.5 text-[15px] font-medium">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
@@ -50,7 +54,7 @@ export function AuthShell({ back, children, photo, slogan = 'Train with a plan.'
             <div className="mt-10 flex w-full max-w-[640px] flex-col gap-5">{children}</div>
           </>
         ) : (
-          <div className="my-auto flex w-full max-w-[480px] flex-col gap-6 pt-12">{children}</div>
+          <div className="flex w-full max-w-[480px] flex-col gap-6 pt-6 md:my-auto md:pt-12">{children}</div>
         )}
       </main>
     </div>

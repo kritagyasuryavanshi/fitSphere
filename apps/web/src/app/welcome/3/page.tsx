@@ -33,7 +33,6 @@ export default function StepThreePage() {
   return (
     <AuthShell
       back={{ href: '/welcome/2', label: 'Back' }}
-      photo={{ src: '/images/squat-bw.jpg', alt: 'Woman with a barbell on her back' }}
       slogan="Train with a reason."
       step={{ now: 3, of: 4 }}
     >
